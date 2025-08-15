@@ -1,0 +1,27 @@
+{
+  "name": "defuse-prime-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "frontend"
+  ],
+  "scripts": {
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "prepare": "simple-git-hooks",
+    "prettier": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.6",
+    "prettier": "^3.6.2",
+    "prettier-plugin-multiline-arrays": "^4.0.3",
+    "prettier-plugin-packagejson": "^2.5.15",
+    "prettier-plugin-sort-json": "^4.1.1",
+    "simple-git-hooks": "^2.13.0",
+    "typescript": "^5"
+  }
+}
