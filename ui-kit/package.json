@@ -1,5 +1,6 @@
 {
   "name": "defuse-prime-ui-kit",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "sideEffects": false
 }
