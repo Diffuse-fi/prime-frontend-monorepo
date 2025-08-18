@@ -13,9 +13,9 @@
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w ui-kit\" --kill-others --success last",
     "knip": "knip --production",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "prepare": "simple-git-hooks && npm run build",
     "prettier": "prettier --write .",
-    "prettier:check": "prettier --check ."
+    "prettier:check": "prettier --check .",
+    "setup": "npx --no-install allow-scripts && simple-git-hooks && npm run build"
   },
   "simple-git-hooks": {
     "pre-commit": "npx --no-install lint-staged",
@@ -26,8 +26,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,md,json}": [
-      "npm run prettier",
-      "git add"
+      "npm run prettier"
     ]
   },
   "overrides": {
@@ -43,6 +42,8 @@
     "@commitlint/format": "^19.8.1",
     "@commitlint/types": "^19.8.0",
     "@eslint/eslintrc": "^3",
+    "@lavamoat/allow-scripts": "^3.3.4",
+    "@lavamoat/preinstall-always-fail": "^2.1.1",
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -68,5 +69,13 @@
       "commitlint",
       "commit-msg"
     ]
+  },
+  "lavamoat": {
+    "allowScripts": {
+      "@lavamoat/preinstall-always-fail": false,
+      "eslint-config-next>eslint-import-resolver-typescript>unrs-resolver": true,
+      "knip>oxc-resolver": true,
+      "simple-git-hooks": true
+    }
   }
 }
