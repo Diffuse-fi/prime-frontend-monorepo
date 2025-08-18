@@ -1,5 +1,5 @@
 {
-  "name": "defuse-prime-sdk-js",
+  "name": "@defuse/sdk-js",
   "version": "0.1.0",
   "private": true
 }

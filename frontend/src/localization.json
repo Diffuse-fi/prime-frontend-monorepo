@@ -1,0 +1,5 @@
+{
+  "default": "en",
+  "rtl": ["ar", "he", "fa", "ur"],
+  "supported": ["en"]
+}

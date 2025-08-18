@@ -1,14 +1,14 @@
 "use client";
 
-import type React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { config } from "../lib/wagmi";
-import { Locale, PropsWithLocale } from "@/lib/localization";
+import { Locale, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { config } from "@/lib/crypto/wagmi";
+import { PropsWithLocale } from "@/lib/localization/locale";
+import { ReactNode } from "react";
 
 type ProvidersProps = PropsWithLocale<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>;
 
 const queryClient = new QueryClient();
@@ -17,7 +17,7 @@ export function Providers({ children, locale }: ProvidersProps) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider locale={locale}>{children}</RainbowKitProvider>
+        <RainbowKitProvider locale={locale as Locale}>{children}</RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

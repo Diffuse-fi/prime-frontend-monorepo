@@ -2,31 +2,18 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Defuse Prime",
-    short_name: "Defuse",
-    description: "Defuse Prime is a ...",
-    theme_color: "",
-    background_color: "",
-    display: "standalone",
-    orientation: "portrait",
-    scope: "/",
+    name: "Next.js App",
+    short_name: "Next.js App",
+    description: "Next.js App",
     start_url: "/",
+    display: "standalone",
+    background_color: "#fff",
+    theme_color: "#fff",
     icons: [
       {
-        src: "/icons/logo_192.png",
-        type: "image/png",
-        sizes: "192x192",
-      },
-      {
-        src: "/icons/logo_maskable_192.png",
-        type: "image/png",
-        sizes: "192x192",
-        purpose: "maskable",
-      },
-      {
-        src: "/icons/logo_512.png",
-        type: "image/png",
-        sizes: "512x512",
+        src: "/favicon.ico",
+        sizes: "any",
+        type: "image/x-icon",
       },
     ],
   };

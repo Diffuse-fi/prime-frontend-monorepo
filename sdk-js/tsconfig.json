@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "composite": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@": ["./src"],
+      "@/*": ["./src/*"]
+    }
+  },
+  "extends": "../tsconfig.json",
+  "include": ["src", "**.ts", "**.tsx", "package.json"]
+}

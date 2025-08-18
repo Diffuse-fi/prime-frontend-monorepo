@@ -10,12 +10,24 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...compat.config({
+    extends: ["next/typescript", "next/core-web-vitals"],
+    settings: {
+      next: {
+        rootDir: "frontend",
+      },
+    },
+  }),
   {
     ignores: [
       "**/node_modules",
       "**/dist",
       "**/coverage/",
+      "**/build",
+      "**/out",
+      "**/public",
+      "**/frontend/src/dictionaries/*.json",
+      "**/frontend/next-sitemap.config.js",
     ],
   },
 ];

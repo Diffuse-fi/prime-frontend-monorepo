@@ -1,14 +1,21 @@
 {
-  "name": "defuse-prime-monorepo",
+  "name": "defuse-monorepo-js",
   "version": "0.1.0",
   "private": true,
+  "description": "Monorepo for Defuse Prime JavaScript projects, including frontend, UI kit, and js SDK.",
   "workspaces": [
-    "frontend"
+    "frontend",
+    "ui-kit",
+    "sdk-js"
   ],
   "scripts": {
+    "build": "npm run build -w ui-kit && npm run build -w frontend",
+    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w ui-kit\" --kill-others --success last",
+    "knip": "knip --production",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "prepare": "simple-git-hooks",
-    "prettier": "prettier --write ."
+    "prepare": "simple-git-hooks && npm run build",
+    "prettier": "prettier --write .",
+    "prettier:check": "prettier --check ."
   },
   "simple-git-hooks": {
     "pre-commit": "npx --no-install lint-staged",
@@ -18,8 +25,9 @@
     ]
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "prettier --write"
+    "*.{ts,tsx,md,json}": [
+      "npm run prettier",
+      "git add"
     ]
   },
   "overrides": {
@@ -38,8 +46,10 @@
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^9.2.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
+    "knip": "^5.62.0",
     "lint-staged": "^16.1.5",
     "prettier": "^3.6.2",
     "prettier-plugin-multiline-arrays": "^4.0.3",
@@ -51,5 +61,12 @@
   "engines": {
     "node": ">=24.0.0",
     "npm": ">=10.0.0"
+  },
+  "knip": {
+    "ignore": [],
+    "ignoreBinaries": [
+      "commitlint",
+      "commit-msg"
+    ]
   }
 }

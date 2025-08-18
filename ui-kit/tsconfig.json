@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "composite": true,
+    "jsx": "preserve",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "extends": "../tsconfig.json",
+  "include": ["src/**/*.ts", "src/**/*.tsx", "package.json"],
+  "references": [
+    { "path": "./tsconfig.node.json" }]
+}

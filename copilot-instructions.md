@@ -7,6 +7,7 @@
 ## 0) Stack & Scope
 
 **Primary tech**
+
 - Framework: **Next.js (App Router, TypeScript, RSC-first)**
 - Wallet/Connect: **RainbowKit** + **Wagmi** (v2) + **viem**
 - Styling/UI: **Tailwind CSS** + **shadcn/ui** (Radix primitives). Custom UI kit lives in a **separate workspace package**.
@@ -15,6 +16,7 @@
 - Lint/format: **ESLint** + **Prettier**
 
 **Core product rules**
+
 - Contract **reads**: server‑side (RSC/server actions) wherever possible.
 - Contract **writes**: client‑side via Wagmi; never sign on server.
 - No private keys in code. No server-side wallets. No secrets in client bundle.
@@ -46,6 +48,7 @@
 - **Routing**: group routes under `app/(marketing)`, `app/(app)`, etc.
 
 **Example: server read in a Server Component**
+
 ```ts
 // apps/web/app/(app)/markets/page.tsx
 import { createPublicClient, http } from 'viem'
@@ -72,11 +75,13 @@ export default async function Page() {
 ## 3) UI & Styling
 
 ### Tailwind + shadcn/ui kit (separate package)
+
 - The **UI kit** lives in `packages/ui` and exports components + `styles.css` (CSS variables/tokens).
 - Apps import tokens once: `@acme/ui/styles.css`.
 - Next config must transpile the UI package: `transpilePackages: ['@acme/ui']`.
 
 **Tailwind preset** (shared in `packages/tailwind-config`):
+
 - Exposes theme tokens (colors, radius) and plugins (`tailwindcss-animate`).
 - App `tailwind.config.ts` consumes via `presets: [preset]`.
 - Add UI package sources to Tailwind `content` globs to enable tree-shaking.
@@ -91,6 +96,7 @@ export default async function Page() {
 ## 4) Wallet, Wagmi & RainbowKit
 
 ### Config
+
 - Keep the Wagmi/RainbowKit provider **in a Client Layout** (`app/(app)/providers.tsx`), not at the root Server Layout.
 
 ```ts
@@ -130,9 +136,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 ```
 
 **Usage**
+
 ```tsx
 // apps/web/app/(app)/layout.tsx
-import Providers from './providers'
+import Providers from "./providers";
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -140,51 +147,56 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>{children}</Providers>
       </body>
     </html>
-  )
+  );
 }
 
 // Client component (button)
-'use client'
-import { ConnectButton } from '@rainbow-me/rainbowkit'
+("use client");
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 export function WalletButton() {
-  return <ConnectButton />
+  return <ConnectButton />;
 }
 ```
 
 ### Reads vs Writes
+
 - **Reads**: prefer Server Components via `viem` public client.
 - **Writes**: only in Client Components via Wagmi `useWriteContract`, `useSimulateContract`, `useWaitForTransactionReceipt`.
 
 ```tsx
 // Client write pattern
-'use client'
-import { useWriteContract, useSimulateContract, useWaitForTransactionReceipt } from 'wagmi'
-import { useState } from 'react'
+"use client";
+import {
+  useWriteContract,
+  useSimulateContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
+import { useState } from "react";
 
 export function ApproveButton({ token, spender, amount, abi }: any) {
-  const [hash, setHash] = useState<`0x${string}` | undefined>(undefined)
+  const [hash, setHash] = useState<`0x${string}` | undefined>(undefined);
 
   const { data: sim } = useSimulateContract({
     address: token,
     abi,
-    functionName: 'approve',
+    functionName: "approve",
     args: [spender, amount],
-  })
+  });
 
-  const { writeContractAsync } = useWriteContract()
-  const { data: receipt } = useWaitForTransactionReceipt({ hash })
+  const { writeContractAsync } = useWriteContract();
+  const { data: receipt } = useWaitForTransactionReceipt({ hash });
 
   return (
     <button
       onClick={async () => {
-        if (!sim) return
-        const txHash = await writeContractAsync(sim.request)
-        setHash(txHash)
+        if (!sim) return;
+        const txHash = await writeContractAsync(sim.request);
+        setHash(txHash);
       }}
     >
-      {hash ? 'Pending…' : 'Approve'}
+      {hash ? "Pending…" : "Approve"}
     </button>
-  )
+  );
 }
 ```
 
@@ -207,7 +219,7 @@ export function ApproveButton({ token, spender, amount, abi }: any) {
 - **RPC providers**: prefer Alchemy/Infura/Ankr etc. Always read from env. Gracefully handle rate limits.
 - **Chain safety**: validate `chainId` before sending writes; block unsupported chains.
 - **Re-entrancy & approvals UX**: suggest minimal allowances; surface spender + exact allowance; support “Revoke” paths.
-- **Transaction UI**: stages = *simulated → prompted → pending → confirmed/failed*; always show hashes and a link to the explorer.
+- **Transaction UI**: stages = _simulated → prompted → pending → confirmed/failed_; always show hashes and a link to the explorer.
 
 ---
 
@@ -220,7 +232,7 @@ export function ApproveButton({ token, spender, amount, abi }: any) {
 - State: use Wagmi’s internal TanStack Query for onchain data; optional **Zustand** for pure UI state (drawings, filters).
 - Avoid moment/dayjs for heavy date ops when not needed; native `Intl` first.
 
-**Lint/format**: ESLint + Prettier; run on CI; block merges on errors.  
+**Lint/format**: ESLint + Prettier; run on CI; block merges on errors.
 
 ---
 
@@ -229,18 +241,23 @@ export function ApproveButton({ token, spender, amount, abi }: any) {
 Use these when asking Copilot in this repo.
 
 ### A) Server contract read (RSC)
+
 > “Create a Server Component that reads `userAccountData(address)` from the Aave pool contract on Arbitrum using viem, caches it for 60s, and renders LTV and health factor. Format large numbers.”
 
 ### B) Client write with simulation
+
 > “Add a Client Component `SupplyButton` that simulates and then calls `supply(asset, amount, onBehalfOf, referralCode)` on the market contract using Wagmi. Show steps: ‘Simulated’, ‘Confirm in wallet’, ‘Pending tx…’, ‘Confirmed’. Handle user rejection.”
 
 ### C) UI kit component
+
 > “In `packages/ui`, add a `StatCard` component with props `{ label, value, hint, icon }`, responsive layout, and export from the package. Write stories and tests.”
 
 ### D) Indexer facade
+
 > “Create `lib/indexer.ts` with a function `getUserPositions(address): Promise<…>` that calls `/api/positions?address=…`, caches with `revalidate: 120`, and types the response. The component must not loop RPC calls.”
 
 ### E) Error-first UX
+
 > “Wrap async actions in a toast-enabled boundary: show errors with a human label + raw reason from RPC. Map common viem `RpcError` codes to friendly text.”
 
 ---
@@ -248,6 +265,7 @@ Use these when asking Copilot in this repo.
 ## 9) Environment Variables (examples)
 
 `.env.local` (not committed):
+
 ```
 ALCHEMY_HTTP_URL=
 INFURA_HTTP_URL=
@@ -256,12 +274,14 @@ INDEXER_BASE_URL=
 ```
 
 Client-safe (if needed):
+
 ```
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=
 NEXT_PUBLIC_DEFAULT_CHAIN_ID=1
 ```
 
 **Rules**
+
 - Never expose RPC keys publicly if the provider forbids it.
 - All secrets must be read only on the server.
 
@@ -273,80 +293,107 @@ NEXT_PUBLIC_DEFAULT_CHAIN_ID=1
 
 ```tsx
 // apps/web/app/(app)/lend/page.tsx (Server Component)
-import { createPublicClient, http, formatUnits } from 'viem'
-import { arbitrum } from 'viem/chains'
-import { Card } from '@acme/ui'
+import { createPublicClient, http, formatUnits } from "viem";
+import { arbitrum } from "viem/chains";
+import { Card } from "@acme/ui";
 
-const client = createPublicClient({ chain: arbitrum, transport: http(process.env.ALCHEMY_HTTP_URL) })
+const client = createPublicClient({
+  chain: arbitrum,
+  transport: http(process.env.ALCHEMY_HTTP_URL),
+});
 
 export default async function LendPage() {
-  const { totalDeposits } = await client.readContract({
-    address: '0xMarket…',
-    abi: [{ name: 'totalDeposits', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ type: 'uint256' }] }],
-    functionName: 'totalDeposits',
-  }) as { totalDeposits: bigint }
+  const { totalDeposits } = (await client.readContract({
+    address: "0xMarket…",
+    abi: [
+      {
+        name: "totalDeposits",
+        type: "function",
+        stateMutability: "view",
+        inputs: [],
+        outputs: [{ type: "uint256" }],
+      },
+    ],
+    functionName: "totalDeposits",
+  })) as { totalDeposits: bigint };
 
   return (
     <div className="grid gap-6">
       <Card>
         <div className="text-xs text-muted-foreground">Protocol Deposits</div>
-        <div className="text-2xl font-semibold">{Number(formatUnits(totalDeposits, 18)).toLocaleString()}</div>
+        <div className="text-2xl font-semibold">
+          {Number(formatUnits(totalDeposits, 18)).toLocaleString()}
+        </div>
       </Card>
 
       {/* Client write below */}
       {/* @ts-expect-error Server/Client boundary */}
       <SupplyWidget />
     </div>
-  )
+  );
 }
 ```
 
 ```tsx
 // apps/web/app/(app)/lend/SupplyWidget.tsx (Client Component)
-'use client'
-import { useSimulateContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
-import { Button, Input, useToast } from '@acme/ui'
-import { useState } from 'react'
+"use client";
+import {
+  useSimulateContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+} from "wagmi";
+import { Button, Input, useToast } from "@acme/ui";
+import { useState } from "react";
 
-const market = '0xMarket…'
-const abi = [ /* … */ ] as const
+const market = "0xMarket…";
+const abi = [
+  /* … */
+] as const;
 
 export default function SupplyWidget() {
-  const [amount, setAmount] = useState('')
-  const { toast } = useToast()
+  const [amount, setAmount] = useState("");
+  const { toast } = useToast();
 
   const { data: sim } = useSimulateContract({
     address: market,
     abi,
-    functionName: 'supply',
-    args: ['0xAsset…', BigInt(amount || '0'), '0xSelf…', 0],
+    functionName: "supply",
+    args: ["0xAsset…", BigInt(amount || "0"), "0xSelf…", 0],
     query: { enabled: Boolean(amount) },
-  })
+  });
 
-  const { writeContractAsync } = useWriteContract()
-  const [hash, setHash] = useState<`0x${string}` | undefined>()
-  const { isSuccess, isError } = useWaitForTransactionReceipt({ hash })
+  const { writeContractAsync } = useWriteContract();
+  const [hash, setHash] = useState<`0x${string}` | undefined>();
+  const { isSuccess, isError } = useWaitForTransactionReceipt({ hash });
 
   return (
     <div className="flex gap-3">
-      <Input value={amount} onChange={e => setAmount(e.target.value)} placeholder="Amount" />
+      <Input
+        value={amount}
+        onChange={e => setAmount(e.target.value)}
+        placeholder="Amount"
+      />
       <Button
         disabled={!sim}
         onClick={async () => {
           try {
-            if (!sim) return
-            const h = await writeContractAsync(sim.request)
-            setHash(h)
-            toast({ title: 'Transaction sent', description: h })
+            if (!sim) return;
+            const h = await writeContractAsync(sim.request);
+            setHash(h);
+            toast({ title: "Transaction sent", description: h });
           } catch (e: any) {
-            toast({ title: 'Transaction failed', description: e?.shortMessage ?? e?.message, variant: 'destructive' })
+            toast({
+              title: "Transaction failed",
+              description: e?.shortMessage ?? e?.message,
+              variant: "destructive",
+            });
           }
         }}
       >
-        {hash ? (isSuccess ? 'Supplied' : 'Pending…') : 'Supply'}
+        {hash ? (isSuccess ? "Supplied" : "Pending…") : "Supply"}
       </Button>
     </div>
-  )
+  );
 }
 ```
 

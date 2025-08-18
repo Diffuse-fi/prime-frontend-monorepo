@@ -1,6 +1,46 @@
 {
-  "name": "defuse-prime-ui-kit",
+  "name": "@defuse/ui-kit",
   "version": "0.1.0",
   "private": true,
-  "sideEffects": false
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/defuse-prime-ui-kit.mjs",
+      "require": "./dist/defuse-prime-ui-kit.js"
+    },
+    "./package.json": "./package.json",
+    "./css": "./dist/style.css"
+  },
+  "main": "dist/defuse-prime-ui-kit.js",
+  "module": "dist/defuse-prime-ui-kit.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.1.12",
+    "vite": "^7.1.2",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "peerDependencies": {
+    "@radix-ui/react-dialog": "^1",
+    "@radix-ui/react-popover": "^1",
+    "@radix-ui/react-select": "^2",
+    "@radix-ui/react-tabs": "^1",
+    "@radix-ui/react-toast": "^1",
+    "@radix-ui/react-tooltip": "^1",
+    "lucide-react": "^0.460.0",
+    "react": ">=18",
+    "react-dom": ">=18",
+    "tailwind-merge": "3.3.1",
+    "tailwind-variants": "2.1.0"
+  }
 }

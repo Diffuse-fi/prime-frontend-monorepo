@@ -1,67 +1,53 @@
 import { Metadata } from "next";
+import localizationSettings from "../localization.json" with { type: "json" };
+
+const SUPPORTED_LOCALES = localizationSettings.supported;
+const origin = process.env.ORIGIN ?? "";
 
 const metadata: Metadata = {
   title: {
-    default: "Salsaviva",
-    template: "Salsaviva | %s",
+    default: "Defuse Prime",
+    template: "%s | Defuse Prime",
   },
-  description: "Salsa, Bachata and Kizomba in Yerevan",
+  description: "",
   keywords: [
-    "Salsa",
-    "Bachata",
-    "Kizomba",
-    "Yerevan",
-    "Armenia",
-    "dance",
-    "latina",
-    "dance studio",
-    "dance school",
-    "social dance",
+    "",
   ],
   authors: [{ name: "ukorvl", url: "https://github.com/ukorvl" }],
-  metadataBase: new URL("https://origin"),
-  openGraph: {
-    title: "Salsaviva",
-    description: "Salsa, Bachata and Kizomba in Yerevan",
-    images: [
-      {
-        url: "/og.jpg",
-        width: 800,
-        height: 600,
+  metadataBase: new URL(origin),
+  alternates: {
+    canonical: origin,
+    languages: SUPPORTED_LOCALES.reduce(
+      (acc, lang) => {
+        acc[lang] = `${origin}/${lang}`;
+        return acc;
       },
-    ],
+      {} as Record<string, string>
+    ),
+  },
+  openGraph: {
+    title: "Defuse Prime",
+    description: "",
     locale: "en_US",
     type: "website",
     siteName: "Salsaviva",
-    url: "origin",
+    url: origin,
+    images: [
+      {
+        url: `${origin}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: "Defuse Prime",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Salsaviva",
-    description: "Salsa, Bachata and Kizomba in Yerevan",
-    images: ["/og.jpg"],
-    site: "@salsaviva",
-  },
-  icons: [
-    {
-      rel: "icon",
-      sizes: "any",
-      url: "/icons/favicon.ico",
-    },
-    {
-      rel: "icon",
-      type: "image/svg+xml",
-      url: "/icons/icon.svg",
-    },
-    {
-      rel: "apple-touch-icon",
-      sizes: "180x180",
-      url: "/icons/apple-touch-icon.png",
-    },
-  ],
-  robots: {
-    index: true,
-    follow: true,
+    title: "Defuse Prime",
+    description: "",
+    site: "@defuseprime",
+    creator: "@defuseprime",
+    images: [`${origin}/og-image.png`],
   },
 };
 

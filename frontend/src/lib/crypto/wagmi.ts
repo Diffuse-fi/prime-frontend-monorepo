@@ -1,5 +1,5 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { mainnet, sepolia, berachain } from "wagmi/chains";
+import { mainnet, berachain } from "wagmi/chains";
 import { http } from "wagmi";
 import {
   metaMaskWallet,
@@ -13,11 +13,10 @@ export const config = getDefaultConfig({
   projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
   chains: [
     mainnet,
-    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [sepolia, berachain] : []),
+    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [berachain] : []),
   ],
   transports: {
     [mainnet.id]: http(),
-    [sepolia.id]: http(),
     [berachain.id]: http(),
   },
   ssr: true,

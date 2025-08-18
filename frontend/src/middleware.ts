@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
-import { Locale, SUPPORTED_LOCALES as locales, DEFAULT_LOCALE } from "@/lib/localization";
+import {
+  Locale,
+  SUPPORTED_LOCALES as locales,
+  DEFAULT_LOCALE,
+} from "@/lib/localization/locale";
 
 const LOCALE_COOKIE = "NEXT_LOCALE";
 
