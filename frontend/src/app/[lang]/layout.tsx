@@ -11,8 +11,9 @@ import {
 } from "@/lib/localization/locale";
 import defaultMeta from "../metadata";
 import { getDictionary } from "@/lib/localization/dictionaries";
-import { Container } from "@/ui/Container";
+import { Container } from "@/components/ui/Container";
 import { LocalizationProvider } from "@/lib/localization/LocalizationContext";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   ...defaultMeta,
@@ -47,19 +48,25 @@ export default async function RootLayout({
   const dictionary = await getDictionary(lang);
 
   return (
-    <html lang={lang} dir={dir}>
-      <body
-        className={`${fonts.SFProText.variable} ${fonts.GeistMono.variable} antialiased`}
-      >
+    <html lang={lang} dir={dir} suppressHydrationWarning>
+      <body className={`${fonts.SFProText.variable} antialiased`}>
         <LocalizationProvider
           value={{
             lang,
             dictionary,
           }}
         >
-          <Providers locale={lang}>
-            <Container>{children}</Container>
-          </Providers>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+            nonce="FILL ME (CSP)"
+          >
+            <Providers locale={lang}>
+              <Container>{children}</Container>
+            </Providers>
+          </ThemeProvider>
         </LocalizationProvider>
       </body>
     </html>

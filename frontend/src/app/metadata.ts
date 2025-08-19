@@ -30,7 +30,7 @@ const metadata: Metadata = {
     description: "",
     locale: "en_US",
     type: "website",
-    siteName: "Salsaviva",
+    siteName: "Defuse Prime",
     url: origin,
     images: [
       {

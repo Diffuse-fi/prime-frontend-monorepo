@@ -1,0 +1,18 @@
+{
+  "chainId": 1,
+  "contracts": {
+    "LendingVault": {
+      "current": "0xProxyOnMainnet",
+      "versions": {
+        "1.1.0": "0xOldProxyMainnet",
+        "1.2.0": "0xProxyOnMainnet"
+      }
+    },
+    "VaultFactory": {
+      "current": "0xFactoryMainnet",
+      "versions": {
+        "1.0.0": "0xFactoryMainnet"
+      }
+    }
+  }
+}

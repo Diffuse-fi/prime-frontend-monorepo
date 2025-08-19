@@ -1,5 +1,26 @@
 {
   "name": "@defuse/sdk-js",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "description": "Defuse Prime SDK for JavaScript",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json",
+    "./addresses/*": "./src/addresses/*.json"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src/addresses/*.json"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite"
+  }
 }

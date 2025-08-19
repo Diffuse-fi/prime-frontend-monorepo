@@ -1,5 +1,4 @@
 import localFont from "next/font/local";
-import { Geist_Mono } from "next/font/google";
 
 const SFProText = localFont({
   src: [
@@ -35,16 +34,8 @@ const SFProText = localFont({
   fallback: ["sans-serif"],
 });
 
-const GeistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
-  display: "swap",
-  preload: true,
-});
-
 export const fonts = {
   SFProText,
-  GeistMono,
 };
 
 export type Fonts = typeof fonts;

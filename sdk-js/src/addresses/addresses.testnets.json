@@ -1,0 +1,23 @@
+{
+  "chains": {
+    "80085": {
+      "contracts": {
+        "LendingVault": {
+          "current": "0xProxyOnBera",
+          "versions": {
+            "1.1.0": "0xOldProxyBera",
+            "1.2.0": "0xProxyOnBera"
+          }
+        }
+      }
+    },
+    "11155111": {
+      "contracts": {
+        "LendingVault": {
+          "current": "0xProxyOnSepolia",
+          "versions": { "1.0.0": "0xProxyOnSepolia" }
+        }
+      }
+    }
+  }
+}
