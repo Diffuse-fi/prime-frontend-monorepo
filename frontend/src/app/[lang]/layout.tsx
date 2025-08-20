@@ -17,6 +17,7 @@ import { Container } from "@defuse/ui-kit";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { headers } from "next/headers";
 import { nonceHeader } from "@/lib/nonce";
+import { WebVitals } from "@/components/WebVitals";
 
 export const metadata: Metadata = {
   ...defaultMeta,
@@ -50,10 +51,17 @@ export default async function RootLayout({
   const dir = isLocaleRtl(lang) ? "rtl" : "ltr";
   const dictionary = await getDictionary(lang);
   const nonce = (await headers()).get(nonceHeader) ?? undefined;
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || "";
+  const gtagEnabled = process.env.NEXT_PUBLIC_ENABLE_GTAG === "true";
 
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning>
-      <GoogleTagManager gtmId="" nonce={nonce} />
+      {gtagEnabled && (
+        <>
+          <GoogleTagManager gtmId={gtmId} nonce={nonce} />
+          <WebVitals />
+        </>
+      )}
       <body className={`${fonts.SFProText.variable} antialiased`}>
         <LocalizationProvider
           value={{

@@ -8,6 +8,7 @@ const testnetsEnabled = process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true";
 
 const allowedSources = [
   "'self'",
+  "https://www.google-analytics.com",
   ...(testnetsEnabled
     ? [berachain.rpcUrls.default.http, berachain.rpcUrls.public.http]
     : []),
