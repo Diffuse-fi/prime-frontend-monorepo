@@ -1,8 +1,6 @@
-"use client";
-
-import { Locale } from "./locale";
+import { createContext } from "react";
 import { Dictionary } from "./dictionaries";
-import { createContext, ReactNode } from "react";
+import { Locale } from "./locale";
 
 export type LocalizationValue = {
   lang: Locale;
@@ -10,15 +8,3 @@ export type LocalizationValue = {
 };
 
 export const LocalizationContext = createContext<LocalizationValue | null>(null);
-
-export function LocalizationProvider({
-  value,
-  children,
-}: {
-  value: LocalizationValue;
-  children: ReactNode;
-}) {
-  return (
-    <LocalizationContext.Provider value={value}>{children}</LocalizationContext.Provider>
-  );
-}

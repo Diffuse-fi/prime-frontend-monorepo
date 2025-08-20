@@ -3,7 +3,7 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { Locale, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { config } from "@/lib/shared/wagmi";
+import { config } from "@/lib/wagmi/config";
 import { PropsWithLocale } from "@/lib/localization/locale";
 import { ReactNode } from "react";
 import { queryClient } from "@/lib/query/client";

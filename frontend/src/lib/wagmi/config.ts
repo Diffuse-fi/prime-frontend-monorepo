@@ -1,5 +1,5 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { mainnet, berachain } from "wagmi/chains";
+import { berachain } from "wagmi/chains";
 import { http } from "wagmi";
 import {
   metaMaskWallet,
@@ -7,16 +7,17 @@ import {
   injectedWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
+import { ethMainnet } from "./chains/mainnet";
 
 export const config = getDefaultConfig({
   appName: process.env.NEXT_PUBLIC_APP_NAME!,
   projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
   chains: [
-    mainnet,
+    ethMainnet,
     ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [berachain] : []),
   ],
   transports: {
-    [mainnet.id]: http(),
+    [ethMainnet.id]: http(),
     [berachain.id]: http(),
   },
   ssr: true,

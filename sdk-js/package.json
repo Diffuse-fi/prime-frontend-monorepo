@@ -6,14 +6,14 @@
   "sideEffects": false,
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/defuse-prime-sdk-js.mjs",
+      "require": "./dist/defuse-prime-sdk-js.js"
     },
     "./package.json": "./package.json",
     "./addresses/*": "./src/addresses/*.json"
   },
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "main": "dist/defuse-prime-sdk-js.js",
+  "module": "dist/defuse-prime-sdk-js.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
@@ -22,5 +22,13 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite"
+  },
+  "devDependencies": {
+    "vite": "^7.1.2",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "peerDependencies": {
+    "viem": "^2.33.3"
   }
 }

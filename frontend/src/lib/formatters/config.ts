@@ -1,7 +1,5 @@
 import type { HealthFactorThresholds, LtvThresholds } from "./types";
 
-export const DEFAULT_LOCALE = "en";
-
 export const HEALTH_FACTOR: Required<HealthFactorThresholds> = {
   warnAt: 1.2,
   dangerAt: 1.05,

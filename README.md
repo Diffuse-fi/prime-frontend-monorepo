@@ -1,5 +1,7 @@
 ## Setup
 
+## Development
+
 ## Security measures
 
 This project implements security measures to protect against common vulnerabilities.
@@ -13,4 +15,7 @@ This is a common practice to ensure stability and security of the project. Alas,
 
 In nextjs [frontend](/frontend/) app, we have implemented security headers to mitigate various attacks in production mode. Headers are specified in `next.config.ts` and `headers.ts` files.
 
-In nextjs we use env variables to store sensitive information, such as API keys. These variables are defined in `.env*` files. Ensure that env varbales are not exposed to the client-side code by prefixing them with `NEXT_PUBLIC_` only when necessary. This is a [common practice](https://nextjs.org/docs/app/guides/environment-variables#bundling-environment-variables-for-the-browser) in nextjs to prevent accidental exposure of sensitive information.
+In nextjs we use env variables to store sensitive information. These variables are defined in `.env*` files. Ensure that env varbales are not exposed to the client-side code by prefixing them with `NEXT_PUBLIC_` only when necessary. This is a [common practice](https://nextjs.org/docs/app/guides/environment-variables#bundling-environment-variables-for-the-browser) in nextjs to prevent accidental exposure of sensitive information.
+Moreover, `.env` files are acceptable only in development mode. In production, you should use environment variables set on the server or in your deployment platform (e.g., Vercel, AWS, etc.) and not rely on `.env` files.
+
+Content security policy (CSP) considerations.

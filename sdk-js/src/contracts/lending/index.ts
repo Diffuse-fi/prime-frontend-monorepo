@@ -1,14 +1,9 @@
-import { Address, getContract, PublicClient, WalletClient } from "viem";
+import { Address, getContract } from "viem";
 import { lendingAbi } from "./abi";
 import { resolveAddress } from "../../addresses/resolve";
+import { Init } from "@/types";
 
-export type LendingInit = {
-  client: { public: PublicClient; wallet?: WalletClient };
-  chainId: number;
-  address?: Address;
-};
-
-function _addr(init: LendingInit): Address {
+function _addr(init: Init): Address {
   return resolveAddress({
     chainId: init.chainId,
     contract: "LendingVault",
@@ -16,32 +11,34 @@ function _addr(init: LendingInit): Address {
   });
 }
 
-function getLendingContract(init: LendingInit) {
+export function getLendingContract(init: Init) {
   const address = _addr(init);
+
   const client = init.client.wallet
     ? { public: init.client.public, wallet: init.client.wallet }
     : { public: init.client.public };
+
   return getContract({ address, abi: lendingAbi, client });
 }
 
 export const Lending = Object.freeze({
-  async availableLiquidity(init: LendingInit): Promise<bigint> {
+  async availableLiquidity(init: Init): Promise<bigint> {
     const c = getLendingContract(init);
     return c.read.availableLiquidity();
   },
-  async getBorrowAPR(init: LendingInit): Promise<bigint> {
+  async getBorrowAPR(init: Init): Promise<bigint> {
     const c = getLendingContract(init);
     return c.read.getBorrowAPR();
   },
-  async totalAssets(init: LendingInit): Promise<bigint> {
+  async totalAssets(init: Init): Promise<bigint> {
     const c = getLendingContract(init);
     return c.read.totalAssets();
   },
-  async balanceOf(init: LendingInit, user: Address): Promise<bigint> {
+  async balanceOf(init: Init, user: Address): Promise<bigint> {
     const c = getLendingContract(init);
     return c.read.balanceOf([user]);
   },
-  async getBorrowerPositions(init: LendingInit, user: Address) {
+  async getBorrowerPositions(init: Init, user: Address) {
     const c = getLendingContract(init);
     const client = init.client.public;
     const ids = (await c.read.getBorrowerPositionIds([user])) as bigint[];
@@ -58,8 +55,7 @@ export const Lending = Object.freeze({
     return results;
   },
 
-  /** ---- Curated helpers (writes). These simulate before sending. ---- */
-  async deposit(init: LendingInit, args: [bigint, Address]) {
+  async deposit(init: Init, args: [bigint, Address]) {
     if (!init.client.wallet) throw new Error("wallet client is required for writes");
     const c = getLendingContract(init);
     const sim = await init.client.public.simulateContract({
@@ -72,7 +68,7 @@ export const Lending = Object.freeze({
     return init.client.wallet.writeContract(sim.request);
   },
 
-  async withdraw(init: LendingInit, args: [bigint, Address, Address]) {
+  async withdraw(init: Init, args: [bigint, Address, Address]) {
     if (!init.client.wallet) throw new Error("wallet client is required for writes");
     const c = getLendingContract(init);
     const sim = await init.client.public.simulateContract({
@@ -85,7 +81,7 @@ export const Lending = Object.freeze({
     return init.client.wallet.writeContract(sim.request);
   },
 
-  async redeem(init: LendingInit, args: [bigint, Address, Address]) {
+  async redeem(init: Init, args: [bigint, Address, Address]) {
     if (!init.client.wallet) throw new Error("wallet client is required for writes");
     const c = getLendingContract(init);
     const sim = await init.client.public.simulateContract({
@@ -98,7 +94,7 @@ export const Lending = Object.freeze({
     return init.client.wallet.writeContract(sim.request);
   },
 
-  async borrow(init: LendingInit, args: [bigint, bigint, bigint, bigint, bigint]) {
+  async borrow(init: Init, args: [bigint, bigint, bigint, bigint, bigint]) {
     if (!init.client.wallet) throw new Error("wallet client is required for writes");
     const c = getLendingContract(init);
     const sim = await init.client.public.simulateContract({
@@ -111,7 +107,7 @@ export const Lending = Object.freeze({
     return init.client.wallet.writeContract(sim.request);
   },
 
-  async unborrow(init: LendingInit, args: [bigint, bigint]) {
+  async unborrow(init: Init, args: [bigint, bigint]) {
     if (!init.client.wallet) throw new Error("wallet client is required for writes");
     const c = getLendingContract(init);
     const sim = await init.client.public.simulateContract({

@@ -11,9 +11,9 @@ import {
 } from "@/lib/localization/locale";
 import defaultMeta from "../metadata";
 import { getDictionary } from "@/lib/localization/dictionaries";
-import { Container } from "@/components/ui/Container";
-import { LocalizationProvider } from "@/lib/localization/LocalizationContext";
+import { LocalizationProvider } from "@/components/LocalizationProvider";
 import { ThemeProvider } from "next-themes";
+import { Container } from "@defuse/ui-kit";
 
 export const metadata: Metadata = {
   ...defaultMeta,

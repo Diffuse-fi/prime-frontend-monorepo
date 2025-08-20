@@ -1,5 +1,5 @@
+import { cn } from "@/lib";
 import { forwardRef, HTMLAttributes } from "react";
-import { cn } from "@defuse/ui-kit";
 
 export interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
   fluid?: boolean;

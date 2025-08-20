@@ -6,7 +6,7 @@ export function resolveAddress(opts: {
   chainId: number;
   contract: ContractName;
   addressOverride?: Address;
-}): `0x${string}` {
+}): Address {
   const { chainId, contract, addressOverride } = opts;
   if (addressOverride) {
     if (!isAddress(addressOverride)) {
@@ -20,11 +20,11 @@ export function resolveAddress(opts: {
   }
 
   try {
-    const addr = getAddressFor(chainId, contract, version);
+    const addr = getAddressFor(chainId, contract);
     return getAddress(addr);
   } catch (e) {
     if (e?.code === "ADDRESS_NOT_FOUND") throw e;
 
-    throw new AddressNotFoundError({ chainId, contract, version });
+    throw new AddressNotFoundError({ chainId, contract });
   }
 }

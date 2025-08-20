@@ -1,9 +1,8 @@
-// chains/berachainBepolia.ts
 import { Chain } from "wagmi/chains";
 
-export const berachainBepolia = {
+export const berachain = {
   id: 80069,
-  name: "Berachain Bepolia",
+  name: "Berachain",
   nativeCurrency: { name: "BERA", symbol: "BERA", decimals: 18 },
   rpcUrls: {
     default: { http: ["https://bepolia.rpc.berachain.com"] },

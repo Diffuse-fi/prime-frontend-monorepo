@@ -18,8 +18,14 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/defuse-prime-ui-kit.mjs",
-      "require": "./dist/defuse-prime-ui-kit.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/defuse-prime-ui-kit.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/defuse-prime-ui-kit.js"
+      }
     },
     "./package.json": "./package.json",
     "./css": "./dist/style.css"
