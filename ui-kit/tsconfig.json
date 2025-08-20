@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "composite": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "lib": ["dom", "dom.iterable", "esnext"],
     "module": "esnext",
     "moduleResolution": "bundler",

@@ -1,8 +1,10 @@
+## Description
+
 ## Setup
 
 ## Development
 
-## Security measures
+## Security considerations
 
 This project implements security measures to protect against common vulnerabilities.
 
@@ -19,3 +21,4 @@ In nextjs we use env variables to store sensitive information. These variables a
 Moreover, `.env` files are acceptable only in development mode. In production, you should use environment variables set on the server or in your deployment platform (e.g., Vercel, AWS, etc.) and not rely on `.env` files.
 
 Content security policy (CSP) considerations.
+CPS is implemented in the nextjs [frontend](/frontend/) app to mitigate cross-site scripting (XSS) attacks and other code injection attacks. CSP is configured in `middlewares/applyCsp.ts` file.

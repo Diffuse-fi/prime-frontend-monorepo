@@ -1,4 +1,5 @@
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
+
 export type Ctx = Record<string, unknown>;
 export type MW = (
   req: NextRequest,
@@ -13,24 +14,21 @@ export type Finalizer = (
   res: NextResponse
 ) => Promise<NextResponse> | NextResponse;
 
-function asNextResponse(res?: NextResponse): NextResponse {
-  return res ?? NextResponse.next();
-}
-
 export function compose(opts: { stack: MW[]; always?: Finalizer[] }) {
   const { stack, always = [] } = opts;
+
   return async (req: NextRequest, ev: NextFetchEvent) => {
     const ctx: Ctx = {};
-    let out: NextResponse | void;
+    let out: NextResponse | void = undefined;
 
     for (const mw of stack) {
       out = await mw(req, ev, ctx);
-      if (out) break; // early exit allowed
+      if (out) break;
     }
 
-    // Always-run phase
-    let finalRes = asNextResponse(out as NextResponse | undefined);
+    let finalRes = out ?? NextResponse.next();
     for (const f of always) finalRes = await f(req, ev, ctx, finalRes);
+
     return finalRes;
   };
 }

@@ -6,6 +6,7 @@ import {
   SUPPORTED_LOCALES as locales,
   DEFAULT_LOCALE,
 } from "@/lib/localization/locale";
+import { Finalizer, MW } from "./utils";
 
 const LOCALE_COOKIE = "NEXT_LOCALE";
 
@@ -23,7 +24,7 @@ function asPlainHeaders(request: NextRequest) {
   return h;
 }
 
-function getNegotiatedLocale(request: NextRequest) {
+function negotiateLocale(request: NextRequest) {
   const headers = asPlainHeaders(request);
 
   const languages = new Negotiator({ headers }).languages();
@@ -38,66 +39,57 @@ function getPathLocale(pathname: string) {
   return { isSupported, locale, restPath };
 }
 
-export function localizationMiddleware(request: NextRequest) {
+export const localizationRewrite: MW = (request, _ev, ctx) => {
   const { pathname } = request.nextUrl;
   const { locale: pathLocale, isSupported, restPath } = getPathLocale(pathname);
-  const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value;
+  const cookieLocale = request.cookies.get(LOCALE_COOKIE)?.value as Locale | undefined;
 
   if (pathLocale) {
     if (!isSupported) {
       const url = request.nextUrl.clone();
       url.pathname = `/${DEFAULT_LOCALE}${restPath}`;
+      ctx.locale = DEFAULT_LOCALE;
 
-      const res = NextResponse.redirect(url);
-
-      res.cookies.set(LOCALE_COOKIE, DEFAULT_LOCALE, cookieOpts);
-      return res;
+      return NextResponse.redirect(url);
     }
 
     if (pathLocale === DEFAULT_LOCALE) {
       const url = request.nextUrl.clone();
       url.pathname = restPath;
+      ctx.locale = DEFAULT_LOCALE;
 
-      const res = NextResponse.redirect(url);
-      res.cookies.set(LOCALE_COOKIE, DEFAULT_LOCALE, cookieOpts);
-
-      return res;
+      return NextResponse.redirect(url);
     }
 
-    if (cookieLocale !== pathLocale) {
-      const res = NextResponse.next();
-      res.cookies.set(LOCALE_COOKIE, pathLocale, cookieOpts);
-      return res;
-    }
-
+    ctx.locale = pathLocale;
     return NextResponse.next();
   }
 
-  const targetLocale =
-    (cookieLocale && locales.includes(cookieLocale as Locale) && cookieLocale) ||
-    getNegotiatedLocale(request);
+  const target =
+    cookieLocale && locales.includes(cookieLocale)
+      ? cookieLocale
+      : negotiateLocale(request);
 
-  if (targetLocale === DEFAULT_LOCALE) {
+  if (target === DEFAULT_LOCALE) {
     const url = request.nextUrl.clone();
     url.pathname = `/${DEFAULT_LOCALE}${pathname}`;
+    ctx.locale = DEFAULT_LOCALE;
 
-    const res = NextResponse.rewrite(url);
-    if (cookieLocale !== targetLocale)
-      res.cookies.set(LOCALE_COOKIE, targetLocale, cookieOpts);
-    return res;
+    return NextResponse.rewrite(url);
   }
 
+  const isTargetSupported = locales.includes(target);
+  const finalLocale = isTargetSupported ? target : DEFAULT_LOCALE;
   const url = request.nextUrl.clone();
-  const isTargetLocaleSupported = locales.includes(targetLocale as Locale);
+  url.pathname = `/${finalLocale}${pathname}`;
+  ctx.locale = finalLocale;
 
-  if (!isTargetLocaleSupported) {
-    url.pathname = `/${DEFAULT_LOCALE}${pathname}`;
-  } else {
-    url.pathname = `/${targetLocale}${pathname}`;
-  }
+  return NextResponse.redirect(url);
+};
 
-  const res = NextResponse.redirect(url);
-  res.cookies.set(LOCALE_COOKIE, targetLocale, cookieOpts);
+export const ensureLocaleCookie: Finalizer = (req, _ev, ctx, res) => {
+  const chosen = (ctx.locale as string) || req.cookies.get(LOCALE_COOKIE)?.value;
+  if (chosen) res.cookies.set(LOCALE_COOKIE, chosen, cookieOpts);
 
   return res;
-}
+};

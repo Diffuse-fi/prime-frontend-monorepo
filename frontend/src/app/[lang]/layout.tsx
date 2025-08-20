@@ -14,6 +14,9 @@ import { getDictionary } from "@/lib/localization/dictionaries";
 import { LocalizationProvider } from "@/components/LocalizationProvider";
 import { ThemeProvider } from "next-themes";
 import { Container } from "@defuse/ui-kit";
+import { GoogleTagManager } from "@next/third-parties/google";
+import { headers } from "next/headers";
+import { nonceHeader } from "@/lib/nonce";
 
 export const metadata: Metadata = {
   ...defaultMeta,
@@ -46,9 +49,11 @@ export default async function RootLayout({
   const { lang = DEFAULT_LOCALE } = await params;
   const dir = isLocaleRtl(lang) ? "rtl" : "ltr";
   const dictionary = await getDictionary(lang);
+  const nonce = (await headers()).get(nonceHeader) ?? undefined;
 
   return (
     <html lang={lang} dir={dir} suppressHydrationWarning>
+      <GoogleTagManager gtmId="" nonce={nonce} />
       <body className={`${fonts.SFProText.variable} antialiased`}>
         <LocalizationProvider
           value={{
