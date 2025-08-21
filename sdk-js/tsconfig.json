@@ -11,5 +11,11 @@
     "useUnknownInCatchVariables": false
   },
   "extends": "../tsconfig.json",
-  "include": ["src", "**.ts", "**.tsx", "package.json"]
+  "include": [
+    "package.json",
+    "src/addresses/**/*.json",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.d.ts"
+  ]
 }

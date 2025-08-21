@@ -61,7 +61,7 @@ export class AddressNotFoundError extends SdkError {
 
 export class InvalidAddressError extends SdkError {
   constructor(addr: string, ctx?: Record<string, unknown>) {
-    super(SdkErrorCode.CONFIG_ERROR, `Invalid address provided: ${addr}`, {
+    super(SdkErrorCode.INVALID_ADDRESS, `Invalid address provided: ${addr}`, {
       userMessage: "Invalid contract address configuration.",
       context: { address: addr, ...ctx },
     });

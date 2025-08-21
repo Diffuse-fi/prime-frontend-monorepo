@@ -1,28 +1,19 @@
-// packages/sdk/src/config/addressBook.ts
-import mainnetJson from "./addresses.mainnet.json";
-import testnetsJson from "./addresses.testnets.json";
-
+import addressesJson from "./addresses.json" with { type: "json" };
 import { getAddress, isAddress, type Address } from "viem";
 import { AddressNotFoundError, InvalidAddressError } from "../errors";
 
-export type ContractName = "LendingVault" | "VaultFactory" | "Curator" | "Liquidator";
-
+export type ContractName = "LendingVault" | "VaultFactory";
 export type VersionedEntry = {
-  current?: Address; // optional but recommended
-  versions?: Record<string, Address>; // semver-like keys
+  current?: Address;
 };
-
-export type AddressBook = Record<
-  number, // chainId
-  Partial<Record<ContractName, VersionedEntry>>
->;
+export type AddressBook = Record<number, Partial<Record<ContractName, VersionedEntry>>>;
 
 function asAddressUnsafe(x: unknown): Address {
   return x as Address;
 }
 
 function normalizeEntry(
-  raw: { current?: string; versions?: Record<string, string> },
+  raw: { current?: string },
   ctx: { chainId: number; contract: string }
 ): VersionedEntry {
   const out: VersionedEntry = {};
@@ -58,12 +49,9 @@ function normalizeContracts(
   return out;
 }
 
-/** ------------ Build the merged book at module load ------------ **/
-
 const BOOK: AddressBook = (() => {
   const merged: AddressBook = {};
 
-  // mainnet.json: { chainId, contracts }
   if (typeof mainnetJson?.chainId === "number" && mainnetJson.contracts) {
     const cid = mainnetJson.chainId as number;
     merged[cid] = {
@@ -89,47 +77,29 @@ const BOOK: AddressBook = (() => {
   return merged;
 })();
 
-/** Public constant your resolver imports */
 export const ADDRESS_BOOK: AddressBook = BOOK;
-
-/** ------------ Helpers for resolver & consumers ------------ **/
 
 export function getEntryOrThrow(chainId: number, contract: ContractName): VersionedEntry {
   const byChain = ADDRESS_BOOK[chainId];
   const entry = byChain?.[contract];
+
   if (!entry) {
     throw new AddressNotFoundError({ chainId, contract });
   }
+
   return entry;
 }
 
-export function getAddressFor(
-  chainId: number,
-  contract: ContractName,
-  version?: string
-): Address {
+export function getAddressFor(chainId: number, contract: ContractName): Address {
   const entry = getEntryOrThrow(chainId, contract);
 
-  if (version) {
-    const addr = entry.versions?.[version];
-    if (!addr) {
-      throw new AddressNotFoundError({ chainId, contract, version });
-    }
-    return addr;
-  }
-
   if (!entry.current) {
-    // Fallback to highest semver if you want; otherwise require 'current'
     throw new AddressNotFoundError({
       chainId,
       contract,
       reason: "no current version set",
     });
   }
-  return entry.current;
-}
 
-export function listVersions(chainId: number, contract: ContractName): string[] {
-  const entry = getEntryOrThrow(chainId, contract);
-  return Object.keys(entry.versions ?? {});
+  return entry.current;
 }

@@ -74,7 +74,7 @@ export default async function RootLayout({
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
-            nonce="FILL ME (CSP)"
+            nonce={nonce}
           >
             <Providers locale={lang}>
               <Container>{children}</Container>

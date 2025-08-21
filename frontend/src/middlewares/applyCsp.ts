@@ -10,7 +10,9 @@ const allowedSources = [
   "'self'",
   "https://www.google-analytics.com",
   ...(testnetsEnabled
-    ? [berachain.rpcUrls.default.http, berachain.rpcUrls.public.http]
+    ? [
+        berachain.rpcUrls.default.http,
+      ]
     : []),
   ethMainnet.rpcUrls.default.http,
 ]
@@ -20,6 +22,12 @@ const allowedSources = [
 const allowedTrirdPartyScripts = [
   "https://www.googletagmanager.com",
   // Add any other third-party scripts that are allowed in production
+]
+  .filter(Boolean)
+  .join(" ");
+
+const allowedFrameAncestors = [
+  // Specify here if a website needs to be embedded in an iframe on a specific domain
 ]
   .filter(Boolean)
   .join(" ");
@@ -47,7 +55,7 @@ export const applyCsp: Finalizer = (_req, _ev, ctx, res) => {
           img-src 'self' blob: data:;
           font-src 'self';
           frame-src 'self';
-          frame-ancestors 'none';
+          frame-ancestors ${allowedFrameAncestors || "'none'"};
           object-src 'none';
           base-uri 'self';
           form-action 'self';
