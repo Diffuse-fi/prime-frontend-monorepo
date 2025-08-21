@@ -1,85 +1,43 @@
 import addressesJson from "./addresses.json" with { type: "json" };
-import { getAddress, isAddress, type Address } from "viem";
-import { AddressNotFoundError, InvalidAddressError } from "../errors";
+import { type Address } from "viem";
+import { AddressNotFoundError } from "../errors";
 
-export type ContractName = "LendingVault" | "VaultFactory";
-export type VersionedEntry = {
+export type ContractName = "LendingVault";
+
+export type Entry = {
   current?: Address;
 };
-export type AddressBook = Record<number, Partial<Record<ContractName, VersionedEntry>>>;
 
-function asAddressUnsafe(x: unknown): Address {
-  return x as Address;
+export type AddressBook = {
+  [chainId: number]: {
+    [contractName in ContractName]: Entry;
+  } & { name?: string };
+};
+
+function createAddressBookFromJson(): AddressBook {
+  return Object.entries(addressesJson.chains).reduce((acc, [chainIdStr, chainData]) => {
+    const chainId = Number(chainIdStr);
+
+    acc[chainId] = Object.entries(chainData.contracts).reduce(
+      (chainAcc, [contractName, contractData]) => {
+        chainAcc[contractName as ContractName] = {
+          current: contractData.current ? (contractData.current as Address) : undefined,
+        };
+
+        return chainAcc;
+      },
+      {} as Record<ContractName, Entry>
+    );
+
+    acc[chainId].name = chainData.name;
+
+    return acc;
+  }, {} as AddressBook);
 }
 
-function normalizeEntry(
-  raw: { current?: string },
-  ctx: { chainId: number; contract: string }
-): VersionedEntry {
-  const out: VersionedEntry = {};
+export const ADDRESS_BOOK: AddressBook = createAddressBookFromJson();
 
-  if (raw.current != null) {
-    if (!isAddress(raw.current)) {
-      throw new InvalidAddressError(raw.current, { ...ctx, field: "current" });
-    }
-    out.current = getAddress(asAddressUnsafe(raw.current));
-  }
-
-  if (raw.versions) {
-    out.versions = {};
-    for (const [ver, addr] of Object.entries(raw.versions)) {
-      if (!isAddress(addr)) {
-        throw new InvalidAddressError(addr, { ...ctx, field: `versions.${ver}` });
-      }
-      out.versions[ver] = getAddress(asAddressUnsafe(addr));
-    }
-  }
-
-  return out;
-}
-
-function normalizeContracts(
-  contracts: Record<string, any>,
-  chainId: number
-): AddressBook[number] {
-  const out: AddressBook[number] = {};
-  for (const [name, entry] of Object.entries(contracts)) {
-    out[name as ContractName] = normalizeEntry(entry, { chainId, contract: name });
-  }
-  return out;
-}
-
-const BOOK: AddressBook = (() => {
-  const merged: AddressBook = {};
-
-  if (typeof mainnetJson?.chainId === "number" && mainnetJson.contracts) {
-    const cid = mainnetJson.chainId as number;
-    merged[cid] = {
-      ...(merged[cid] ?? {}),
-      ...normalizeContracts(mainnetJson.contracts, cid),
-    };
-  }
-
-  // testnets.json: { chains: { [chainId]: { contracts } } }
-  if (testnetsJson?.chains && typeof testnetsJson.chains === "object") {
-    for (const [cidStr, cfg] of Object.entries(testnetsJson.chains)) {
-      const cid = Number(cidStr);
-      if (!Number.isFinite(cid)) continue;
-      if (!cfg?.contracts) continue;
-
-      merged[cid] = {
-        ...(merged[cid] ?? {}),
-        ...normalizeContracts(cfg.contracts, cid),
-      };
-    }
-  }
-
-  return merged;
-})();
-
-export const ADDRESS_BOOK: AddressBook = BOOK;
-
-export function getEntryOrThrow(chainId: number, contract: ContractName): VersionedEntry {
+export function getEntryOrThrow(chainId: number, contract: ContractName): Entry {
   const byChain = ADDRESS_BOOK[chainId];
   const entry = byChain?.[contract];
 
@@ -97,7 +55,6 @@ export function getAddressFor(chainId: number, contract: ContractName): Address 
     throw new AddressNotFoundError({
       chainId,
       contract,
-      reason: "no current version set",
     });
   }
 

@@ -27,3 +27,11 @@ const lendingInit = {
   },
 };
 ```
+
+```javascript
+// Create an instance of the Lending contract
+const lendingContract = new Lending(lendingInit);
+// Now you can use the contract instance to interact with the Defuse protocol
+// For example, to get the current interest rate:
+const interestRate = await lendingContract.getInterestRate(); // Or any other method provided by the contract
+```

@@ -5,14 +5,16 @@
         "LendingVault": {
           "current": "MainnetAddress"
         }
-      }
+      },
+      "name": "Mainnet"
     },
     "80094": {
       "contracts": {
         "LendingVault": {
           "current": "BerachainAddress"
         }
-      }
+      },
+      "name": "Berachain"
     }
   }
 }

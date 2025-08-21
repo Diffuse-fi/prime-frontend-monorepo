@@ -8,3 +8,5 @@ export type SdkErrorJSON = {
   cause?: { name?: string; message?: string; stack?: string } | undefined;
   version?: string;
 };
+
+export type ErrorCtx = Record<string, unknown> | undefined;

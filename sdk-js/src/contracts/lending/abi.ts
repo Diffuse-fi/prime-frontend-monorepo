@@ -1,3 +1,5 @@
+import { Abi } from "viem";
+
 export const lendingAbi = [
   {
     type: "function",
@@ -557,4 +559,4 @@ export const lendingAbi = [
     ],
     anonymous: false,
   },
-];
+] as const satisfies Abi;

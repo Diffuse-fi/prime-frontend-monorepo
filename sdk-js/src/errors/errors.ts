@@ -1,0 +1,151 @@
+import { SdkErrorCode } from "./codes";
+import type { ErrorCtx, SdkErrorJSON } from "./types";
+import { version } from "../version";
+
+type ErrorOptions = {
+  userMessage?: string;
+  cause?: unknown;
+  context?: ErrorCtx;
+};
+
+export class SdkError extends Error {
+  readonly code: SdkErrorCode;
+  readonly userMessage?: string;
+  readonly cause?: unknown;
+  readonly version: string;
+  readonly context?: ErrorCtx;
+
+  constructor(code: SdkErrorCode, message: string, opts?: ErrorOptions) {
+    super(message);
+
+    this.name = this.constructor.name;
+    this.code = code;
+    this.userMessage = opts?.userMessage;
+    this.cause = opts?.cause;
+    this.version = version;
+    this.context = opts?.context;
+
+    Object.setPrototypeOf(this, SdkError.prototype);
+  }
+
+  toJSON(): SdkErrorJSON {
+    return {
+      name: this.name,
+      message: this.message,
+      code: this.code,
+      userMessage: this.userMessage,
+      stack: this.stack,
+      version: this.version,
+      context: this.context,
+      cause:
+        this.cause && typeof this.cause === "object"
+          ? {
+              name: (this.cause as Error).name,
+              message: (this.cause as Error).message,
+              stack: (this.cause as Error).stack,
+            }
+          : undefined,
+    };
+  }
+}
+
+export class AddressNotFoundError extends SdkError {
+  constructor(ctx?: ErrorCtx) {
+    super(
+      SdkErrorCode.ADDRESS_NOT_FOUND,
+      "Contract address is not configured for this chain.",
+      { userMessage: "Contract address not found.", context: ctx }
+    );
+  }
+}
+
+export class InvalidAddressError extends SdkError {
+  constructor(addr: string, ctx?: ErrorCtx) {
+    super(SdkErrorCode.INVALID_ADDRESS, `Invalid address provided: ${addr}`, {
+      userMessage: "Invalid contract address configuration.",
+      context: { address: addr, ...ctx },
+    });
+  }
+}
+
+export class WalletRequiredError extends SdkError {
+  constructor(op?: string) {
+    super(
+      SdkErrorCode.WALLET_REQUIRED,
+      `Wallet client is required${op ? ` for ${op}` : ""}.`,
+      {
+        userMessage: "Connect a wallet to continue.",
+      }
+    );
+  }
+}
+
+export class UserRejectedError extends SdkError {
+  constructor(ctx?: ErrorCtx, cause?: unknown) {
+    super(SdkErrorCode.USER_REJECTED, "User rejected the request.", {
+      userMessage: "Request rejected in wallet.",
+      context: ctx,
+      cause,
+    });
+  }
+}
+
+export class InsufficientFundsError extends SdkError {
+  constructor(ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.INSUFFICIENT_FUNDS, "Insufficient funds for gas or value.", {
+      userMessage: "Insufficient funds for gas.",
+      context: ctx,
+      cause,
+    });
+  }
+}
+
+export class SimulationRevertedError extends SdkError {
+  constructor(details?: string, ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.SIMULATION_REVERTED, details ?? "Transaction would revert.", {
+      userMessage: "This action would fail (simulation).",
+      context: ctx,
+      cause,
+    });
+  }
+}
+
+export class ContractRevertError extends SdkError {
+  constructor(details?: string, ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.CONTRACT_REVERTED, details ?? "Transaction failed.", {
+      userMessage: "Transaction reverted on-chain.",
+      context: ctx,
+      cause,
+    });
+  }
+}
+
+export class RpcError extends SdkError {
+  constructor(message: string, ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.RPC_ERROR, message, {
+      userMessage: "RPC error. Please retry.",
+      context: ctx,
+      cause,
+    });
+  }
+}
+
+export class NetworkError extends SdkError {
+  constructor(message: string, ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.NETWORK_ERROR, message, {
+      userMessage: "Network error. Check your connection.",
+      context: ctx,
+      cause,
+    });
+  }
+}
+
+export class UnknownError extends SdkError {
+  constructor(ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.UNKNOWN, "Unknown error.", {
+      userMessage: "Something went wrong.",
+      context: ctx,
+      cause,
+    });
+  }
+}

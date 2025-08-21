@@ -7,4 +7,6 @@ export type Init = {
   };
   chainId: number;
   address?: Address;
+  // TODO - later we can add a flag to skip simulateWrites
+  simulateWrites?: boolean;
 };

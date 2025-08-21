@@ -1,6 +1,6 @@
 import { Address, getAddress, isAddress } from "viem";
 import { type ContractName, getAddressFor } from "./addressBook";
-import { AddressNotFoundError, InvalidAddressError } from "../errors";
+import { InvalidAddressError } from "../errors";
 
 export function resolveAddress(opts: {
   chainId: number;
@@ -19,12 +19,6 @@ export function resolveAddress(opts: {
     return getAddress(addressOverride);
   }
 
-  try {
-    const addr = getAddressFor(chainId, contract);
-    return getAddress(addr);
-  } catch (e) {
-    if (e?.code === "ADDRESS_NOT_FOUND") throw e;
-
-    throw new AddressNotFoundError({ chainId, contract });
-  }
+  const addr = getAddressFor(chainId, contract);
+  return getAddress(addr);
 }
