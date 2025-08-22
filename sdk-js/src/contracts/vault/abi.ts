@@ -1,6 +1,6 @@
 import { Abi } from "viem";
 
-export const lendingAbi = [
+export const vaultAbi = [
   {
     type: "function",
     name: "accruedLenderYield",

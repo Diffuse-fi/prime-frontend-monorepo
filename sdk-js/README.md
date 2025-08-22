@@ -12,15 +12,15 @@ To use the Defuse Prime SDK, you need to install it in your project. You can do 
 npm install @defuse-prime/sdk-js
 ```
 
-To use smart contracts, you need to import the specific contract you want to interact with. For example, to use the Lending contract, you can do the following:
+To use smart contracts, you need to import the specific contract you want to interact with. For example, to use the Vault contract, you can do the following:
 
 ```javascript
-import { Lending } from "@defuse-prime/sdk-js";
+import { Vault } from "@defuse-prime/sdk-js";
 
 // Initialize the contract with the required parameters
-const lendingInit = {
+const vaultInit = {
   chainId: 1, // Ethereum mainnet
-  address: "0xYourLendingContractAddress",
+  address: "0xYourVaultContractAddress",
   client: {
     publicClient: yourPublicClientInstance,
     wallet: yourWalletClientInstance, // Optional, required for write operations
@@ -29,9 +29,9 @@ const lendingInit = {
 ```
 
 ```javascript
-// Create an instance of the Lending contract
-const lendingContract = new Lending(lendingInit);
+// Create an instance of the Vault contract
+const vaultContract = new Vault(vaultInit);
 // Now you can use the contract instance to interact with the Defuse protocol
 // For example, to get the current interest rate:
-const interestRate = await lendingContract.getInterestRate(); // Or any other method provided by the contract
+const interestRate = await vaultContract.getInterestRate(); // Or any other method provided by the contract
 ```

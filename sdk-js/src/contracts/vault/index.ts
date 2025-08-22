@@ -5,17 +5,17 @@ import {
   PublicClient,
   WalletClient,
 } from "viem";
-import { lendingAbi } from "./abi";
+import { vaultAbi } from "./abi";
 import { resolveAddress } from "../../addresses/resolve";
 import { Init } from "@/types";
 import { normalizeViemError } from "@/errors/normalize";
 import { WalletRequiredError } from "@/errors/errors";
 
-type LendingContract =
-  | GetContractReturnType<typeof lendingAbi, WalletClient, Address>
-  | GetContractReturnType<typeof lendingAbi, PublicClient, Address>;
+type VaultContract =
+  | GetContractReturnType<typeof vaultAbi, WalletClient, Address>
+  | GetContractReturnType<typeof vaultAbi, PublicClient, Address>;
 
-const contractName = "LendingVault";
+const contractName = "Vault";
 
 function _addr(init: Init): Address {
   return resolveAddress({
@@ -25,21 +25,21 @@ function _addr(init: Init): Address {
   });
 }
 
-export function getLendingContract(init: Init): LendingContract {
+export function getVaultContract(init: Init): VaultContract {
   const address = _addr(init);
 
   const client = init.client.wallet
     ? { public: init.client.public, wallet: init.client.wallet }
     : { public: init.client.public };
 
-  return getContract({ address, abi: lendingAbi, client }) as LendingContract;
+  return getContract({ address, abi: vaultAbi, client }) as VaultContract;
 }
 
-export class Lending {
+export class Vault {
   constructor(private readonly init: Init) {}
 
   private getContract() {
-    return getLendingContract(this.init);
+    return getVaultContract(this.init);
   }
   private get chainId() {
     return this.init.chainId;
@@ -105,7 +105,7 @@ export class Lending {
         ids.map(id =>
           this.init.client.public.readContract({
             address: this.getContract().address,
-            abi: lendingAbi,
+            abi: vaultAbi,
             functionName: "getBorrowerPosition",
             args: [id],
           })
@@ -133,7 +133,7 @@ export class Lending {
 
       const sim = await this.init.client.public.simulateContract({
         address: c.address,
-        abi: lendingAbi,
+        abi: vaultAbi,
         functionName: "deposit",
         args,
         account: this.init.client.wallet.account!,
@@ -158,7 +158,7 @@ export class Lending {
     try {
       const sim = await this.init.client.public.simulateContract({
         address: c.address,
-        abi: lendingAbi,
+        abi: vaultAbi,
         functionName: "withdraw",
         args,
         account: this.init.client.wallet.account!,
@@ -183,7 +183,7 @@ export class Lending {
     try {
       const sim = await this.init.client.public.simulateContract({
         address: c.address,
-        abi: lendingAbi,
+        abi: vaultAbi,
         functionName: "redeem",
         args,
         account: this.init.client.wallet.account!,
@@ -208,7 +208,7 @@ export class Lending {
     try {
       const sim = await this.init.client.public.simulateContract({
         address: c.address,
-        abi: lendingAbi,
+        abi: vaultAbi,
         functionName: "borrow",
         args,
         account: this.init.client.wallet.account!,
@@ -233,7 +233,7 @@ export class Lending {
     try {
       const sim = await this.init.client.public.simulateContract({
         address: c.address,
-        abi: lendingAbi,
+        abi: vaultAbi,
         functionName: "unborrow",
         args,
         account: this.init.client.wallet.account!,

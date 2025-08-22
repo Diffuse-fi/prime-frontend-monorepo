@@ -11,11 +11,11 @@
     "ui",
     "blockchain",
     "defi",
-    "lending"
+    "lending",
+    "web3",
+    "borrow"
   ],
-  "sideEffects": [
-    "**/*.css"
-  ],
+  "sideEffects": false,
   "exports": {
     ".": {
       "import": {
@@ -27,8 +27,7 @@
         "default": "./dist/defuse-prime-ui-kit.js"
       }
     },
-    "./package.json": "./package.json",
-    "./css": "./dist/style.css"
+    "./package.json": "./package.json"
   },
   "main": "dist/defuse-prime-ui-kit.js",
   "module": "dist/defuse-prime-ui-kit.mjs",

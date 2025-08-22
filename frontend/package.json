@@ -2,6 +2,7 @@
   "name": "defuse-frontend",
   "version": "0.1.0",
   "private": true,
+  "description": "Defuse Prime web application",
   "scripts": {
     "build": "next build",
     "dev": "next dev --turbopack",
@@ -12,6 +13,7 @@
     "@formatjs/intl-localematcher": "0.6.1",
     "@next/third-parties": "15.5.0",
     "@rainbow-me/rainbowkit": "2.2.8",
+    "@sentry/nextjs": "10.5.0",
     "@tailwindcss/postcss": "4.1.12",
     "@tanstack/react-query": "5.85.3",
     "dayjs": "1.11.13",

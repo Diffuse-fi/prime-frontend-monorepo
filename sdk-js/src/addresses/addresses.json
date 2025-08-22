@@ -2,7 +2,7 @@
   "chains": {
     "1": {
       "contracts": {
-        "LendingVault": {
+        "Vault": {
           "current": "MainnetAddress"
         }
       },
@@ -10,7 +10,7 @@
     },
     "80094": {
       "contracts": {
-        "LendingVault": {
+        "Vault": {
           "current": "BerachainAddress"
         }
       },

@@ -8,6 +8,7 @@ import { PropsWithLocale } from "@/lib/localization/locale";
 import { ReactNode } from "react";
 import { queryClient } from "@/lib/query/client";
 import { useRainbowTheme } from "@/lib/theme/rainbowTheme";
+import { getInitialChain } from "@/lib/wagmi/chains";
 
 type ProvidersProps = PropsWithLocale<{
   children: ReactNode;
@@ -19,7 +20,11 @@ export function Providers({ children, locale }: ProvidersProps) {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={theme} locale={locale as Locale}>
+        <RainbowKitProvider
+          theme={theme}
+          locale={locale as Locale}
+          initialChain={getInitialChain()}
+        >
           {children}
         </RainbowKitProvider>
       </QueryClientProvider>
