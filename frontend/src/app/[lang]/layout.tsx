@@ -9,7 +9,7 @@ import {
   Locale,
   SUPPORTED_LOCALES,
 } from "@/lib/localization/locale";
-import defaultMeta from "../metadata";
+import { defaultMetadata } from "../metadata";
 import { getDictionary } from "@/lib/localization/dictionaries";
 import { LocalizationProvider } from "@/components/LocalizationProvider";
 import { ThemeProvider } from "next-themes";
@@ -20,7 +20,7 @@ import { nonceHeader } from "@/lib/nonce";
 import { WebVitals } from "@/components/WebVitals";
 
 export const metadata: Metadata = {
-  ...defaultMeta,
+  ...defaultMetadata,
 };
 
 export async function generateStaticParams() {

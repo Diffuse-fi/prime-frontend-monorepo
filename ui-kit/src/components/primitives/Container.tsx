@@ -1,7 +1,13 @@
 import { cn } from "@/lib";
 import { forwardRef, HTMLAttributes } from "react";
 
+/**
+ * Container component props.
+ */
 export interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
+  /**
+   * If true, the container will always take the full width of its parent.
+   */
   fluid?: boolean;
 }
 
