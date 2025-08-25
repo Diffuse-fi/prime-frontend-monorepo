@@ -4,11 +4,11 @@ import { ImageResponse } from "next/og";
 export const runtime = "edge";
 
 const sfProRegularURL = new URL(
-  "../../../fonts/sf-pro-text/sf-pro-text-regular.woff",
+  "../../fonts/sf-pro-text/sf-pro-text-regular.woff",
   import.meta.url
 );
 const sfProSemiBoldURL = new URL(
-  "../../../fonts/sf-pro-text/sf-pro-text-semibold.woff",
+  "../../fonts/sf-pro-text/sf-pro-text-semibold.woff",
   import.meta.url
 );
 

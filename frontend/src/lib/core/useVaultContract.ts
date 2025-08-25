@@ -2,7 +2,7 @@
 
 import { getAddress, type Address } from "viem";
 import { useClients } from "../wagmi/useClients";
-import { Vault } from "@defuse/sdk-js";
+import { Vault } from "@diffuse/sdk-js";
 import { useMemo } from "react";
 
 export function useVaultContract(addressOverride?: Address) {

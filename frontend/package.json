@@ -1,15 +1,15 @@
 {
-  "name": "defuse-frontend",
+  "name": "diffuse-frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "Defuse Prime web application",
+  "description": "Diffuse Prime web application",
   "scripts": {
     "build": "next build",
     "dev": "next dev --turbopack",
     "start": "next start"
   },
   "dependencies": {
-    "@defuse/ui-kit": "0.1.0",
+    "@diffuse/ui-kit": "0.1.0",
     "@formatjs/intl-localematcher": "0.6.1",
     "@next/third-parties": "15.5.0",
     "@rainbow-me/rainbowkit": "2.2.8",

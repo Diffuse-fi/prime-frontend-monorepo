@@ -1,10 +1,10 @@
 {
-  "name": "@defuse/ui-kit",
+  "name": "@diffuse/ui-kit",
   "version": "0.1.0",
   "private": true,
-  "description": "Defuse Prime UI Kit React components",
+  "description": "Diffuse Prime UI Kit React components",
   "keywords": [
-    "defuse",
+    "diffuse",
     "ui-kit",
     "react",
     "components",
@@ -20,17 +20,17 @@
     ".": {
       "import": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/defuse-prime-ui-kit.mjs"
+        "default": "./dist/diffuse-prime-ui-kit.mjs"
       },
       "require": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/defuse-prime-ui-kit.js"
+        "default": "./dist/diffuse-prime-ui-kit.js"
       }
     },
     "./package.json": "./package.json"
   },
-  "main": "dist/defuse-prime-ui-kit.js",
-  "module": "dist/defuse-prime-ui-kit.mjs",
+  "main": "dist/diffuse-prime-ui-kit.js",
+  "module": "dist/diffuse-prime-ui-kit.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -46,15 +46,10 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "peerDependencies": {
-    "@radix-ui/react-dialog": "^1",
-    "@radix-ui/react-popover": "^1",
-    "@radix-ui/react-select": "^2",
-    "@radix-ui/react-tabs": "^1",
-    "@radix-ui/react-toast": "^1",
-    "@radix-ui/react-tooltip": "^1",
     "lucide-react": "^0.460.0",
-    "react": ">=18",
-    "react-dom": ">=18",
+    "radix-ui": "1.4.3",
+    "react": ">=19",
+    "react-dom": ">=19",
     "tailwind-merge": "3.3.1",
     "tailwind-variants": "2.1.0"
   }

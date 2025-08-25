@@ -13,7 +13,7 @@ import { defaultMetadata } from "../metadata";
 import { getDictionary } from "@/lib/localization/dictionaries";
 import { LocalizationProvider } from "@/components/LocalizationProvider";
 import { ThemeProvider } from "next-themes";
-import { Container } from "@defuse/ui-kit";
+import { Container } from "@diffuse/ui-kit";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { headers } from "next/headers";
 import { nonceHeader } from "@/lib/nonce";

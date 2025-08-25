@@ -15,9 +15,9 @@ const banner = `
 const getFileName = (format: string) => {
   switch (format) {
     case "es":
-      return "defuse-prime-ui-kit.mjs";
+      return "diffuse-prime-ui-kit.mjs";
     case "cjs":
-      return "defuse-prime-ui-kit.js";
+      return "diffuse-prime-ui-kit.js";
     default:
       throw new Error(`Unsupported format: ${format}`);
   }

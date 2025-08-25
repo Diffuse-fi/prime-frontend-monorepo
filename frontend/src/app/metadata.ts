@@ -15,7 +15,7 @@ function addSearchParamsToUrl(url: string, params: Record<string, string>) {
 }
 
 export const defaultMetadata = {
-  title: "Defuse Prime",
+  title: "Diffuse Prime",
   description: "",
   keywords: [
     "",
@@ -33,29 +33,29 @@ export const defaultMetadata = {
     ),
   },
   openGraph: {
-    title: "Defuse Prime",
+    title: "Diffuse Prime",
     description: "",
     locale: "en_US",
     type: "website",
-    siteName: "Defuse Prime",
+    siteName: "Diffuse Prime",
     url: "/",
     images: [
       {
-        url: addSearchParamsToUrl("/api/og", { title: "Defuse Prime" }),
+        url: addSearchParamsToUrl("/api/og", { title: "Diffuse Prime" }),
         width: 1200,
         height: 630,
-        alt: "Defuse Prime",
+        alt: "Diffuse Prime",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Defuse Prime",
+    title: "Diffuse Prime",
     description: "",
-    site: "@defuseprime",
-    creator: "@defuseprime",
+    site: "@diffuseprime",
+    creator: "@diffuseprime",
     images: [
-      addSearchParamsToUrl("/api/og", { title: "Defuse Prime" }),
+      addSearchParamsToUrl("/api/og", { title: "Diffuse Prime" }),
     ],
   },
 } satisfies Metadata;
@@ -67,7 +67,7 @@ export function buildMetadataForPage({
 }: PageMetadataOptions): Metadata {
   return {
     ...defaultMetadata,
-    title: `${title} | Defuse Prime`,
+    title: `${title} | Diffuse Prime`,
     description,
     alternates: {
       canonical: `${origin}/${path}`,
@@ -81,26 +81,26 @@ export function buildMetadataForPage({
     },
     openGraph: {
       ...defaultMetadata.openGraph,
-      title: `${title} | Defuse Prime`,
+      title: `${title} | Diffuse Prime`,
       description,
       url: `/${path}`,
       images: [
         {
           url: addSearchParamsToUrl(`/api/og/${path}`, {
-            title: title || "Defuse Prime",
+            title: title || "Diffuse Prime",
           }),
           width: 1200,
           height: 630,
-          alt: `${title} | Defuse Prime`,
+          alt: `${title} | Diffuse Prime`,
         },
       ],
     },
     twitter: {
       ...defaultMetadata.twitter,
-      title: `${title} | Defuse Prime`,
+      title: `${title} | Diffuse Prime`,
       description,
       images: [
-        addSearchParamsToUrl(`/api/og/${path}`, { title: title || "Defuse Prime" }),
+        addSearchParamsToUrl(`/api/og/${path}`, { title: title || "Diffuse Prime" }),
       ],
     },
   };

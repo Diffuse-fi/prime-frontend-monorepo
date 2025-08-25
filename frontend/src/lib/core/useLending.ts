@@ -6,9 +6,10 @@ import type { Address, Hex } from "viem";
 import { useClients } from "../wagmi/useClients";
 import { useVaultContract } from "./useVaultContract";
 import { defaultRetry } from "../query/defaults";
-import { WalletRequiredError } from "@defuse/sdk-js";
+import { WalletRequiredError } from "@diffuse/sdk-js";
 
 type ProgressPhase = "simulate" | "sign" | "broadcast" | "confirm";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ProgressCb = (p: ProgressPhase, data?: any) => void;
 
 export function useLending({
@@ -19,6 +20,7 @@ export function useLending({
   const qc = useQueryClient();
 
   const vault = useVaultContract(vaultAddressOverride);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const vaultAddress = (vault as any)?.getContract?.().address as Address | undefined;
 
   const qk = {

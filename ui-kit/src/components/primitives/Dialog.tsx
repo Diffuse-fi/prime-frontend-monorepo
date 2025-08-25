@@ -1,4 +1,4 @@
-import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { Dialog as DialogPrimitive } from "radix-ui";
 import { cn } from "@/lib/cn";
 import { ComponentPropsWithoutRef, ComponentRef, forwardRef } from "react";
 
@@ -22,4 +22,5 @@ export const DialogContent = forwardRef<
     />
   </DialogPrimitive.Portal>
 ));
+
 DialogContent.displayName = "DialogContent";

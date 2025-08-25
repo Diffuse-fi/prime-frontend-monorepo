@@ -1,8 +1,8 @@
 {
-  "name": "defuse-monorepo-js",
+  "name": "diffuse-monorepo-js",
   "version": "0.1.0",
   "private": true,
-  "description": "Monorepo for Defuse Prime JavaScript projects, including frontend, UI kit, and js SDK.",
+  "description": "Monorepo for Diffuse Prime JavaScript projects, including frontend, UI kit, and js SDK.",
   "workspaces": [
     "frontend",
     "ui-kit",
@@ -49,6 +49,7 @@
     "@eslint/eslintrc": "^3",
     "@lavamoat/allow-scripts": "^3.3.4",
     "@lavamoat/preinstall-always-fail": "^2.1.1",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",

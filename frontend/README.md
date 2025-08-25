@@ -1,4 +1,4 @@
-# Defuse Prime Frontend
+# Diffuse Prime Frontend
 
 ## Description
 

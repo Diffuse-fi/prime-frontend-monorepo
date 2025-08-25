@@ -1,4 +1,4 @@
-import { SdkError, SdkErrorCode } from "@defuse/sdk-js";
+import { SdkError, SdkErrorCode } from "@diffuse/sdk-js";
 
 export function defaultRetry(_: number, e: unknown) {
   if (!(e instanceof SdkError)) return true;

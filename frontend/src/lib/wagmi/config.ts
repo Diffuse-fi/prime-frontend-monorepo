@@ -3,7 +3,6 @@ import { http } from "wagmi";
 import {
   metaMaskWallet,
   trustWallet,
-  injectedWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { getAvailableChains } from "./chains";
@@ -30,10 +29,6 @@ export const config = getDefaultConfig({
         trustWallet,
         walletConnectWallet,
       ],
-    },
-    {
-      groupName: "Other",
-      wallets: [injectedWallet],
     },
   ],
 });

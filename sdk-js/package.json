@@ -1,10 +1,10 @@
 {
-  "name": "@defuse/sdk-js",
+  "name": "@diffuse/sdk-js",
   "version": "0.1.0",
   "private": true,
-  "description": "Defuse Prime SDK for JavaScript",
+  "description": "Diffuse Prime SDK for JavaScript",
   "keywords": [
-    "defuse",
+    "diffuse",
     "sdk",
     "javascript",
     "blockchain",
@@ -16,18 +16,18 @@
     ".": {
       "import": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/defuse-prime-sdk-js.mjs"
+        "default": "./dist/diffuse-prime-sdk-js.mjs"
       },
       "require": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/defuse-prime-sdk-js.js"
+        "default": "./dist/diffuse-prime-sdk-js.js"
       }
     },
     "./package.json": "./package.json",
     "./addresses/*": "./src/addresses/*.json"
   },
-  "main": "dist/defuse-prime-sdk-js.js",
-  "module": "dist/defuse-prime-sdk-js.mjs",
+  "main": "dist/diffuse-prime-sdk-js.js",
+  "module": "dist/diffuse-prime-sdk-js.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
