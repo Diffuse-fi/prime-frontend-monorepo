@@ -1,4 +1,3 @@
-// keep this small and brand-focused; map to Radix scales later
 export const tokens = {
   radius: {
     sm: "0.375rem",

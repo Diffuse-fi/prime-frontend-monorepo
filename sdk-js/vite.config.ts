@@ -33,6 +33,7 @@ export default defineConfig(() => {
   ];
 
   return {
+    tsconfig: "tsconfig.json",
     plugins,
     build: {
       outDir: "dist",

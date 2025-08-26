@@ -2,6 +2,10 @@
 
 ## Description
 
+## Stack
+
+- tailwindcss
+
 ## Environment setup
 
 Before running the forntend ensure that you have the following environment variables set:

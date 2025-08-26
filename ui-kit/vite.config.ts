@@ -12,15 +12,18 @@ const banner = `
 * ${packageJson.name} v${packageJson.version}
 */`;
 
-const getFileName = (format: string) => {
-  switch (format) {
-    case "es":
-      return "diffuse-prime-ui-kit.mjs";
-    case "cjs":
-      return "diffuse-prime-ui-kit.js";
-    default:
-      throw new Error(`Unsupported format: ${format}`);
+const getFileName = (format: string, entryName: string) => {
+  if (format !== "es" && format !== "cjs") {
+    throw new Error(`Unsupported format: ${format}`);
   }
+
+  const ext = format === "es" ? "mjs" : "cjs";
+
+  if (entryName === "index") {
+    return `diffuse-prime-ui-kit.${ext}`;
+  }
+
+  return `${entryName}.${ext}`;
 };
 
 export default defineConfig(() => {
@@ -36,12 +39,14 @@ export default defineConfig(() => {
     plugins,
     build: {
       outDir: "dist",
-      minify: true,
+      minify: false,
       sourcemap: true,
       emptyOutDir: true,
-      cssCodeSplit: false,
       lib: {
-        entry: resolve(__dirname, "src/index.ts"),
+        entry: {
+          index: resolve(__dirname, "src/index.ts"),
+          "tailwind.preset": resolve(__dirname, "src/theme/tailwind.preset.ts"),
+        },
         formats: ["es", "cjs"],
         fileName: getFileName,
       },

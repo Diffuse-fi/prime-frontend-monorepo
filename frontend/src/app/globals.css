@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Import UI Kit tailwind classes */
+@source "../../../node_modules/@diffuse/ui-kit";
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -21,11 +24,4 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sf);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }

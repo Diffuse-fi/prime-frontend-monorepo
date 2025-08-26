@@ -11,12 +11,14 @@ import { Init } from "@/types";
 import { normalizeViemError } from "@/errors/normalize";
 import { WalletRequiredError } from "@/errors/errors";
 
+/** @internal */
 type VaultContract =
   | GetContractReturnType<typeof vaultAbi, WalletClient, Address>
   | GetContractReturnType<typeof vaultAbi, PublicClient, Address>;
 
 const contractName = "Vault";
 
+/** @internal */
 function _addr(init: Init): Address {
   return resolveAddress({
     chainId: init.chainId,
@@ -25,6 +27,7 @@ function _addr(init: Init): Address {
   });
 }
 
+/** @internal */
 export function getVaultContract(init: Init): VaultContract {
   const address = _addr(init);
 

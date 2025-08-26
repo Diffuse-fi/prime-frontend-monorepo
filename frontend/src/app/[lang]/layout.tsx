@@ -13,11 +13,14 @@ import { defaultMetadata } from "../metadata";
 import { getDictionary } from "@/lib/localization/dictionaries";
 import { LocalizationProvider } from "@/components/LocalizationProvider";
 import { ThemeProvider } from "next-themes";
-import { Container } from "@diffuse/ui-kit";
+import { Container, Navbar } from "@diffuse/ui-kit";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { headers } from "next/headers";
 import { nonceHeader } from "@/lib/nonce";
 import { WebVitals } from "@/components/WebVitals";
+import Link from "@/components/Link";
+import ConnectButton from "@/components/ConnectButton";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
@@ -77,7 +80,18 @@ export default async function RootLayout({
             nonce={nonce}
           >
             <Providers locale={lang}>
-              <Container>{children}</Container>
+              <Container>
+                <Navbar
+                  logo={<Link href="/" className="font-semibold text-lg"></Link>}
+                  wallet={
+                    <div className="flex gap-4">
+                      <ThemeSwitcher />
+                      <ConnectButton />
+                    </div>
+                  }
+                />
+                {children}
+              </Container>
             </Providers>
           </ThemeProvider>
         </LocalizationProvider>

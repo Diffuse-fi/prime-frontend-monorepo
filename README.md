@@ -2,6 +2,10 @@
 
 ## Description
 
+## Workspaces
+
+This repository uses [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) to manage multiple packages within a single repository.
+
 ## Setup
 
 ## Development

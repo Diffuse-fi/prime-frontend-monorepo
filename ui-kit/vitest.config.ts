@@ -22,5 +22,6 @@ export default defineConfig({
         },
       },
     },
+    setupFiles: ["@testing-library/jest-dom"],
   },
 });

@@ -1,5 +1,6 @@
 import { Abi } from "viem";
 
+/** @internal */
 export const vaultAbi = [
   {
     type: "function",

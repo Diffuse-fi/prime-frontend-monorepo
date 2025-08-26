@@ -1,15 +1,11 @@
 import { localizePath, PropsWithLocale } from "@/lib/localization/locale";
 import NextLink, { LinkProps } from "next/link";
-import { ReactNode } from "react";
+import { RefAttributes } from "react";
 
 export default function Link({
   locale,
   href,
   ...p
-}: PropsWithLocale<
-  LinkProps & {
-    children: ReactNode;
-  }
->) {
+}: PropsWithLocale<LinkProps & RefAttributes<HTMLAnchorElement>>) {
   return <NextLink href={localizePath(String(href), locale)} {...p} />;
 }

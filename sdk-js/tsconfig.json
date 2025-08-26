@@ -8,6 +8,7 @@
       "@": ["./src"],
       "@/*": ["./src/*"]
     },
+    "stripInternal": true,
     "useUnknownInCatchVariables": false
   },
   "extends": "../tsconfig.json",

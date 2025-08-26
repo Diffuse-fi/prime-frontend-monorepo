@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import uiKitPreset from "@diffuse/ui-kit/tw-preset";
 
 const config: Config = {
   darkMode: "class",
@@ -11,6 +12,7 @@ const config: Config = {
     extend: {},
   },
   plugins: [],
+  presets: [uiKitPreset],
 };
 
 export default config;

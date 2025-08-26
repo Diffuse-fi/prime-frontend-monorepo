@@ -7,11 +7,20 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": ["./src/*"],
+      "@/atoms": ["./src/components/atoms/index"],
+      "@/molecules": ["./src/components/molecules/index"],
+      "@/organisms": ["./src/components/organisms/index"]
+    },
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "extends": "../tsconfig.json",
-  "include": ["src/**/*.ts", "src/**/*.tsx", "package.json"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "package.json",
+    "src/theme/tailwind.preset.ts"
+  ],
   "references": [
     { "path": "./tsconfig.node.json" }]
 }
