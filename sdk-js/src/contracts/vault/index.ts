@@ -1,20 +1,13 @@
-import {
-  Address,
-  getContract,
-  GetContractReturnType,
-  PublicClient,
-  WalletClient,
-} from "viem";
+import { Address, getContract } from "viem";
 import { vaultAbi } from "./abi";
 import { resolveAddress } from "../../addresses/resolve";
 import { Init } from "@/types";
 import { normalizeViemError } from "@/errors/normalize";
 import { WalletRequiredError } from "@/errors/errors";
+import { ContractBase, GenericContractType } from "../shared";
 
 /** @internal */
-type VaultContract =
-  | GetContractReturnType<typeof vaultAbi, WalletClient, Address>
-  | GetContractReturnType<typeof vaultAbi, PublicClient, Address>;
+type VaultContract = GenericContractType<typeof vaultAbi>;
 
 const contractName = "Vault";
 
@@ -38,14 +31,13 @@ export function getVaultContract(init: Init): VaultContract {
   return getContract({ address, abi: vaultAbi, client }) as VaultContract;
 }
 
-export class Vault {
-  constructor(private readonly init: Init) {}
+export class Vault extends ContractBase {
+  constructor(init: Init) {
+    super(init);
+  }
 
   private getContract() {
     return getVaultContract(this.init);
-  }
-  private get chainId() {
-    return this.init.chainId;
   }
 
   async availableLiquidity(): Promise<bigint> {
@@ -72,7 +64,7 @@ export class Vault {
     }
   }
 
-  async totalAssets(): Promise<bigint> {
+  async totalAssets() {
     try {
       return this.getContract().read.totalAssets();
     } catch (e) {
@@ -120,6 +112,18 @@ export class Vault {
       throw normalizeViemError(e, {
         op: "getBorrowerPositions",
         user,
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
+
+  async getStrategies() {
+    try {
+      return this.getContract().read.getStrategies();
+    } catch (e) {
+      throw normalizeViemError(e, {
+        op: "getStrategies",
         contract: contractName,
         chainId: this.chainId,
       });

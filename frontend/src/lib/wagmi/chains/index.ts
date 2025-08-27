@@ -17,3 +17,7 @@ export function getAvailableChains(): readonly [Chain, ...Chain[]] {
 export function getInitialChain(): Chain {
   return process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? berachain : ethMainnet;
 }
+
+export function getAvailableChainsIds(): number[] {
+  return getAvailableChains().map(c => c.id);
+}

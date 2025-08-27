@@ -2,7 +2,7 @@ import addressesJson from "./addresses.json" with { type: "json" };
 import { type Address } from "viem";
 import { AddressNotFoundError } from "../errors";
 
-export type ContractName = "Vault";
+export type ContractName = string;
 
 export type Entry = {
   current?: Address;

@@ -6,7 +6,7 @@ export type Locale = (typeof SUPPORTED_LOCALES)[number];
 export type PropsWithLocale<T extends object> = {
   [K in keyof T]: K extends "locale" ? Locale : T[K];
 } & {
-  locale: Locale;
+  locale?: Locale;
 };
 
 export const DEFAULT_LOCALE: Locale = localizationSettings.default;
@@ -16,6 +16,9 @@ export function isLocaleRtl(locale: Locale): boolean {
   return RTL.has(locale);
 }
 
-export function localizePath(path: string, locale: Locale) {
-  return locale === DEFAULT_LOCALE ? path : `/${locale}${path}`;
+export function localizePath(path: string, locale?: Locale) {
+  if (!locale || locale === DEFAULT_LOCALE) {
+    return path;
+  }
+  return `/${locale}${path}`;
 }

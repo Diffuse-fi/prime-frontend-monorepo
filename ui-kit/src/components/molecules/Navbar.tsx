@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "@/lib";
 import { forwardRef, HTMLAttributes } from "react";
+import { Container } from "../atoms";
 
 export interface NavbarProps extends HTMLAttributes<HTMLElement> {
   logo?: React.ReactNode;
@@ -9,17 +10,19 @@ export interface NavbarProps extends HTMLAttributes<HTMLElement> {
 }
 
 export const Navbar = forwardRef<HTMLElement, NavbarProps>(
-  ({ className, ...props }, ref) => (
+  ({ className, logo, navigation, wallet, ...props }, ref) => (
     <nav
       ref={ref}
       className={cn("w-full border-b bg-white/50 backdrop-blur-sm", className)}
       {...props}
     >
-      <div className="mx-auto flex h-16 max-w-screen-xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {props.logo}
-        {props.navigation}
-        {props.wallet}
-      </div>
+      <Container className="flex h-16 items-center justify-between gap-4">
+        <div className="gap-4 flex">
+          {logo}
+          {navigation}
+        </div>
+        <div>{wallet}</div>
+      </Container>
     </nav>
   )
 );

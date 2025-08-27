@@ -1,0 +1,41 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getTokenList } from "@/lib/tokens";
+import { QuerySchema } from "./validations";
+
+export const runtime = "edge";
+
+export async function GET(req: NextRequest) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const { chains } = QuerySchema.parse({
+      chains: searchParams.get("chains") ?? undefined,
+    });
+
+    const list = await getTokenList();
+
+    if (chains?.length === 0) {
+      return NextResponse.json(list, {
+        headers: {
+          "Cache-Control": "public, max-age=300, stale-while-revalidate=600",
+          "X-Token-Count": String(list.length),
+        },
+      });
+    }
+
+    const filteredList = chains
+      ? {
+          ...list,
+          tokens: list.filter(token => chains.includes(token.chainId)),
+        }
+      : list;
+
+    return NextResponse.json(filteredList, {
+      headers: {
+        "Cache-Control": "public, max-age=300",
+        "X-Token-Count": String(filteredList.length),
+      },
+    });
+  } catch (err) {
+    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+  }
+}

@@ -2,16 +2,16 @@
   "chains": {
     "1": {
       "contracts": {
-        "Vault": {
-          "current": "MainnetAddress"
+        "VaultRegistry": {
+          "current": "FILL_ME"
         }
       },
       "name": "Mainnet"
     },
     "80094": {
       "contracts": {
-        "Vault": {
-          "current": "BerachainAddress"
+        "VaultRegistry": {
+          "current": "0xFB31b75426141E264F9005C4676845EB87CB73e1"
         }
       },
       "name": "Berachain"

@@ -9,6 +9,7 @@
       "@/*": ["./src/*"]
     },
     "stripInternal": true,
+    "types": ["vitest/globals"],
     "useUnknownInCatchVariables": false
   },
   "extends": "../tsconfig.json",

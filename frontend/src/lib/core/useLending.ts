@@ -7,79 +7,88 @@ import { useClients } from "../wagmi/useClients";
 import { useVaultContract } from "./useVaultContract";
 import { defaultRetry } from "../query/defaults";
 import { WalletRequiredError } from "@diffuse/sdk-js";
+import { QV } from "../query/versions";
+import { opt, qk } from "../query/helpers";
 
 type ProgressPhase = "simulate" | "sign" | "broadcast" | "confirm";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ProgressCb = (p: ProgressPhase, data?: any) => void;
 
-export function useLending({
-  vaultAddressOverride,
-}: { vaultAddressOverride?: Address } = {}) {
+type UseLendingParams = {
+  vaultAddressOverride?: Address;
+};
+
+const ROOT = "lending" as const;
+const version = QV.lending;
+
+const vaultKeys = {
+  root: (vault: Address | null) => qk(ROOT, version, opt(vault)),
+
+  liquidity: (vault: Address | null) => qk(ROOT, version, opt(vault), "liquidity"),
+  totalAssets: (vault: Address | null) => qk(ROOT, version, opt(vault), "totalAssets"),
+  balanceOf: (vault: Address | null, user: Address | null) =>
+    qk(ROOT, version, opt(vault), "balanceOf", opt(user)),
+  positions: (vault: Address | null, user: Address | null) =>
+    qk(ROOT, version, opt(vault), "positions", opt(user)),
+
+  deposit: (vault: Address | null, user: Address | null) =>
+    qk(ROOT, version, opt(vault), "deposit", opt(user)),
+  withdraw: (vault: Address | null, user: Address | null) =>
+    qk(ROOT, version, opt(vault), "withdraw", opt(user)),
+  redeem: (vault: Address | null, user: Address | null) =>
+    qk(ROOT, version, opt(vault), "redeem", opt(user)),
+};
+
+export function useLending({ vaultAddressOverride }: UseLendingParams = {}) {
   const { address: account } = useAccount();
   const { publicClient } = useClients();
   const qc = useQueryClient();
-
   const vault = useVaultContract(vaultAddressOverride);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const vaultAddress = (vault as any)?.getContract?.().address as Address | undefined;
 
-  const qk = {
-    liquidity: ["vault", vaultAddress, "liquidity"] as const,
-    borrowApr: ["vault", vaultAddress, "borrowApr"] as const,
-    totalAssets: ["vault", vaultAddress, "totalAssets"] as const,
-    balanceOf: (u?: Address) => ["vault", vaultAddress, "balanceOf", u] as const,
-    positions: (u?: Address) => ["vault", vaultAddress, "positions", u] as const,
-  };
-
-  // Reads via SDK -> TanStack
   const availableLiquidity = useQuery({
     enabled: !!vault,
-    queryKey: qk.liquidity,
+    queryKey: vaultKeys.liquidity(vaultAddressOverride ?? null),
     queryFn: () => vault!.availableLiquidity(),
     staleTime: 30_000,
-    select: v => v, // place for formatting
-  });
-
-  const borrowAPR = useQuery({
-    enabled: !!vault,
-    queryKey: qk.borrowApr,
-    queryFn: () => vault!.getBorrowAPR(),
-    staleTime: 60_000,
+    select: v => v,
   });
 
   const totalAssets = useQuery({
     enabled: !!vault,
-    queryKey: qk.totalAssets,
+    queryKey: vaultKeys.totalAssets(vaultAddressOverride ?? null),
     queryFn: () => vault!.totalAssets(),
     staleTime: 30_000,
   });
 
   const balance = useQuery({
     enabled: !!vault && !!account,
-    queryKey: qk.balanceOf(account),
+    queryKey: vaultKeys.balanceOf(vaultAddressOverride ?? null, account ?? null),
     queryFn: () => vault!.balanceOf(account!),
-  });
-
-  const borrowerPositions = useQuery({
-    enabled: !!vault && !!account,
-    queryKey: qk.positions(account),
-    queryFn: () => vault!.getBorrowerPositions(account!),
   });
 
   const waitFor = (hash: Hex) => publicClient!.waitForTransactionReceipt({ hash });
 
   const onWriteSuccess = () => {
-    qc.invalidateQueries({ queryKey: qk.liquidity });
-    qc.invalidateQueries({ queryKey: qk.totalAssets });
+    qc.invalidateQueries({ queryKey: vaultKeys.root(vaultAddressOverride ?? null) });
+    qc.invalidateQueries({ queryKey: vaultKeys.liquidity(vaultAddressOverride ?? null) });
+    qc.invalidateQueries({
+      queryKey: vaultKeys.totalAssets(vaultAddressOverride ?? null),
+    });
     if (account) {
-      qc.invalidateQueries({ queryKey: qk.balanceOf(account) });
-      qc.invalidateQueries({ queryKey: qk.positions(account) });
+      qc.invalidateQueries({
+        queryKey: vaultKeys.balanceOf(vaultAddressOverride ?? null, account),
+      });
+      qc.invalidateQueries({
+        queryKey: vaultKeys.positions(vaultAddressOverride ?? null, account),
+      });
     }
   };
 
-  // Writes via SDK -> TanStack (SDK already simulates)
   const deposit = useMutation({
-    mutationKey: ["deposit", vaultAddress, account],
+    mutationKey: [
+      "deposit",
+      vaultKeys.deposit(vaultAddressOverride ?? null, account ?? null),
+    ],
     mutationFn: async (vars: {
       assets: bigint;
       receiver?: Address;
@@ -99,7 +108,10 @@ export function useLending({
   });
 
   const withdraw = useMutation({
-    mutationKey: ["withdraw", vaultAddress, account],
+    mutationKey: [
+      "withdraw",
+      vaultKeys.withdraw(vaultAddressOverride ?? null, account ?? null),
+    ],
     mutationFn: async (vars: {
       assets: bigint;
       receiver?: Address;
@@ -124,7 +136,10 @@ export function useLending({
   });
 
   const redeem = useMutation({
-    mutationKey: ["redeem", vaultAddress, account],
+    mutationKey: [
+      "redeem",
+      vaultKeys.redeem(vaultAddressOverride ?? null, account ?? null),
+    ],
     mutationFn: async (vars: {
       shares: bigint;
       receiver?: Address;
@@ -148,67 +163,13 @@ export function useLending({
     retry: defaultRetry,
   });
 
-  const borrow = useMutation({
-    mutationKey: ["borrow", vaultAddress, account],
-    mutationFn: async (vars: {
-      collateral: bigint;
-      debt: bigint;
-      maxLTV: bigint;
-      rate: bigint;
-      deadline: bigint;
-      onProgress?: ProgressCb;
-    }) => {
-      if (!vault) throw new Error("Vault not initialized");
-      vars.onProgress?.("simulate");
-      vars.onProgress?.("sign");
-      const hash = await vault.borrow([
-        vars.collateral,
-        vars.debt,
-        vars.maxLTV,
-        vars.rate,
-        vars.deadline,
-      ]);
-      vars.onProgress?.("broadcast", { hash });
-      const receipt = await waitFor(hash);
-      vars.onProgress?.("confirm", { receipt });
-      return { hash, receipt };
-    },
-    onSuccess: onWriteSuccess,
-    retry: (count, e) => !(e instanceof WalletRequiredError) && count < 2,
-  });
-
-  const unborrow = useMutation({
-    mutationKey: ["unborrow", vaultAddress, account],
-    mutationFn: async (vars: {
-      positionId: bigint;
-      repayAmount: bigint;
-      onProgress?: ProgressCb;
-    }) => {
-      if (!vault) throw new Error("Vault not initialized");
-      vars.onProgress?.("simulate");
-      vars.onProgress?.("sign");
-      const hash = await vault.unborrow([vars.positionId, vars.repayAmount]);
-      vars.onProgress?.("broadcast", { hash });
-      const receipt = await waitFor(hash);
-      vars.onProgress?.("confirm", { receipt });
-      return { hash, receipt };
-    },
-    onSuccess: onWriteSuccess,
-    retry: (count, e) => !(e instanceof WalletRequiredError) && count < 2,
-  });
-
   return {
     vault,
-    vaultAddress,
     availableLiquidity,
-    borrowAPR,
     totalAssets,
     balance,
-    borrowerPositions,
     deposit,
     withdraw,
     redeem,
-    borrow,
-    unborrow,
   };
 }

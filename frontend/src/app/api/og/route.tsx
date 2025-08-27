@@ -1,5 +1,6 @@
 import type { NextRequest, ImageResponseOptions } from "next/server";
 import { ImageResponse } from "next/og";
+import { CacheLifetimeSchema, OgSizeSchema, QuerySchema } from "./validations";
 
 export const runtime = "edge";
 
@@ -30,18 +31,17 @@ const memoLoadRetryOnUndefined = (url: URL) => {
 const loadSfProRegular = memoLoadRetryOnUndefined(sfProRegularURL);
 const loadSfProSemiBold = memoLoadRetryOnUndefined(sfProSemiBoldURL);
 
-const standardOgSize = { width: 1200, height: 630 };
-const cacheLifeTime = 60 * 60 * 24 * 7;
-
+const standardOgSize = OgSizeSchema.parse({ width: 1200, height: 630 });
+const cacheLifeTime = CacheLifetimeSchema.parse(60 * 60 * 24 * 7);
 const BRAND = "Your dApp";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const preset = {
-      title: searchParams.get("title")?.slice(0, 100),
-      description: searchParams.get("description")?.slice(0, 200) || "",
-    };
+    const preset = QuerySchema.parse({
+      title: searchParams.get("title") ?? undefined,
+      description: searchParams.get("description") ?? undefined,
+    });
 
     const [regular, semibold] = await Promise.all([
       loadSfProRegular(),
