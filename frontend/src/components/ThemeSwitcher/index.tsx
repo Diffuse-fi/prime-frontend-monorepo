@@ -10,6 +10,6 @@ const ThemeSwitch = dynamic(() => import("./ThemeSwitcher"), {
 
 export default function ThemeSwitcher() {
   const tokensList = useTokensList();
-  console.log("tokensList", tokensList.data);
+  console.log("tokensList", tokensList);
   return <ThemeSwitch />;
 }

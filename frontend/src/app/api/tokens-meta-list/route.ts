@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTokenList } from "@/lib/tokens";
+import { getTokenMetaList } from "@/lib/tokens/tokensMeta";
 import { QuerySchema } from "./validations";
 
 export const runtime = "edge";
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
       chains: searchParams.get("chains") ?? undefined,
     });
 
-    const list = await getTokenList();
+    const list = await getTokenMetaList();
 
     if (chains?.length === 0) {
       return NextResponse.json(list, {
@@ -22,12 +22,7 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    const filteredList = chains
-      ? {
-          ...list,
-          tokens: list.filter(token => chains.includes(token.chainId)),
-        }
-      : list;
+    const filteredList = chains ? list.filter(t => chains.includes(t.chainId)) : list;
 
     return NextResponse.json(filteredList, {
       headers: {

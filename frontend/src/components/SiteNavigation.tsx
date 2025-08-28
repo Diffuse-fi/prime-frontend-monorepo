@@ -1,3 +1,6 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import Link from "./Link";
 
 type NavigationConfig = Array<{
@@ -12,15 +15,26 @@ type SiteNavigationProps = {
 };
 
 export function SiteNavigation({ config = [] }: SiteNavigationProps) {
+  const pathname = usePathname();
+
   return (
     <ul className="flex gap-4">
-      {config?.map(item => (
-        <li key={item.href}>
-          <Link locale={item.locale} disabled={item.disabled} href={item.href}>
-            {item.title}
-          </Link>
-        </li>
-      ))}
+      {config?.map(item => {
+        const isActive = pathname.includes(item.href);
+
+        return (
+          <li key={item.href}>
+            <Link
+              locale={item.locale}
+              disabled={item.disabled}
+              href={item.href}
+              className={isActive ? "font-bold" : ""}
+            >
+              {item.title}
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }

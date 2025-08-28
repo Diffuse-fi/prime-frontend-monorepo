@@ -7,11 +7,8 @@ import { VaultWithAddress } from "./types";
 export function useVaults(): VaultWithAddress[] {
   const { chainId, publicClient, walletClient } = useClients();
   const {
-    allVaults: { data, error },
+    allVaults: { data },
   } = useVaultRegistry();
-
-  console.log("useVaults", { data, error });
-
   const vaults = useMemo(() => {
     if (!publicClient || !data) return [];
 

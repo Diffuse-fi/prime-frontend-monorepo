@@ -19,7 +19,8 @@
     "**/build/**",
     "**/coverage/**",
     "**/*.config.mjs",
-    "**/*.config.js"
+    "**/*.config.js",
+    "**/.next/**"
   ],
   "references": [
     { "path": "sdk-js" },

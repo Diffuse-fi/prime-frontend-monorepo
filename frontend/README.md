@@ -26,6 +26,11 @@ npm run dev
 
 ## Tokens
 
+Tokens metadata (e.g. logoURIs) is stored in `src/lib/tokens/meta.json` file. The file should follow the [Token List Schema](https://tokenlists.org) format.
+We don't have many tokens, so it is much easier (and secure) to maintain a local token metadata list instead of fetching it from a remote source.
+
+To add a new token or change metadata of an existing token, just update the `meta.json` file.
+
 ## Internalization and Localization
 
 The frontend supports multiple languages through a localization system. The localization files are stored in the `src/dictionaries` directory, and the available languages are defined in `src/localization.json`. Default language is set to English (`en`) and also can be configured in `src/localization.json`.
