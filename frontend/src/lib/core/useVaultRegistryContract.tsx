@@ -2,20 +2,18 @@
 
 import { getAddress, type Address } from "viem";
 import { useClients } from "../wagmi/useClients";
-import { Vault } from "@diffuse/sdk-js";
+import { VaultRegistry } from "@diffuse/sdk-js";
 import { useMemo } from "react";
 
-export function useVaultContract(addressOverride?: Address) {
+export function useVaultRegistryContract(addressOverride?: Address) {
   const { chainId, publicClient, walletClient } = useClients();
 
   const vault = useMemo(() => {
     if (!publicClient) return null;
 
-    const normalized = addressOverride
-      ? (getAddress(addressOverride) as Address)
-      : undefined;
+    const normalized = addressOverride ? getAddress(addressOverride) : undefined;
 
-    return new Vault({
+    return new VaultRegistry({
       client: { public: publicClient, wallet: walletClient },
       chainId,
       address: normalized,

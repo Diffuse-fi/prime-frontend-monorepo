@@ -41,6 +41,7 @@ export async function GET(req: NextRequest) {
     const preset = QuerySchema.parse({
       title: searchParams.get("title") ?? undefined,
       description: searchParams.get("description") ?? undefined,
+      path: searchParams.get("path") ?? undefined,
     });
 
     const [regular, semibold] = await Promise.all([

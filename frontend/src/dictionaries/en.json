@@ -1,6 +1,11 @@
 {
   "common": {
     "navbar": {
+      "navigation": {
+        "borrow": "Borrow",
+        "lend": "Lend"
+      },
+      "title": "Diffuse Prime",
       "walletConect": "Connect Wallet"
     }
   }

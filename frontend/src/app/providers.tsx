@@ -8,7 +8,7 @@ import { PropsWithLocale } from "@/lib/localization/locale";
 import { ReactNode } from "react";
 import { queryClient } from "@/lib/query/client";
 import { useRainbowTheme } from "@/lib/theme/rainbowTheme";
-import { getInitialChain } from "@/lib/wagmi/chains";
+import { getInitialChain } from "@/lib/chains";
 
 type ProvidersProps = PropsWithLocale<{
   children: ReactNode;

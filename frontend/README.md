@@ -24,6 +24,8 @@ npm run dev
 
 ## Chains
 
+## Tokens
+
 ## Internalization and Localization
 
 The frontend supports multiple languages through a localization system. The localization files are stored in the `src/dictionaries` directory, and the available languages are defined in `src/localization.json`. Default language is set to English (`en`) and also can be configured in `src/localization.json`.

@@ -1,3 +1,5 @@
+import { Abi } from "viem";
+
 /** @internal */
 export const vaultRegistryAbi = [
   {
@@ -99,4 +101,4 @@ export const vaultRegistryAbi = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+] as const satisfies Abi;

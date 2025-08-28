@@ -9,6 +9,12 @@ export interface TokenAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
   showChainBadge?: boolean; // render chain overlay badge
 }
 
+type RenderImage = (props: {
+  src: string;
+  alt: string;
+  className: string;
+}) => React.ReactNode;
+
 export const TokenAvatar = React.forwardRef<HTMLDivElement, TokenAvatarProps>(
   (
     { symbol, logoUrl, chainId, size = 32, showChainBadge = true, className, ...props },

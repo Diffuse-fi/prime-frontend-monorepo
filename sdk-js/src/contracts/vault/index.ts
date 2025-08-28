@@ -130,6 +130,18 @@ export class Vault extends ContractBase {
     }
   }
 
+  async getAssets() {
+    try {
+      return this.getContract().read.getAssets();
+    } catch (e) {
+      throw normalizeViemError(e, {
+        op: "getAssets",
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
+
   async deposit(args: [bigint, Address]) {
     if (!this.init.client.wallet) throw new WalletRequiredError("deposit");
 

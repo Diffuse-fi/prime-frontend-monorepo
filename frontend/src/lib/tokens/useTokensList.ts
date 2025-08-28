@@ -2,24 +2,25 @@ import { useQuery } from "@tanstack/react-query";
 import { QV } from "../query/versions";
 import { TokenList } from "@uniswap/token-lists";
 import { useChainId } from "wagmi";
+import { apiUrl } from "../api";
 
-export function useTokenList() {
+export function useTokensList() {
   const chainId = useChainId();
-  console.log("chainId", chainId);
   const queryParamsStr = chainId ? `?chains=${chainId}` : "";
 
-  const tokenList = useQuery({
-    queryKey: ["tokenList", QV.tokensList, queryParamsStr],
+  const tokensList = useQuery({
+    queryKey: ["tokensList", QV.tokensList, queryParamsStr],
     queryFn: async () => {
-      const r = await fetch(`/api/token-list${queryParamsStr}`);
+      const r = await fetch(apiUrl("tokensList", { chains: [chainId] }));
+
+      console.log("fetch tokens list", r);
 
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
 
       return r.json() as Promise<TokenList[]>;
     },
-    staleTime: 1000 * 60 * 60 * 24,
-    initialData: [],
+    staleTime: 1000 * 60 * 60,
   });
 
-  return tokenList;
+  return tokensList;
 }

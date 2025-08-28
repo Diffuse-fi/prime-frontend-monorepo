@@ -1,35 +1,34 @@
-import { Address } from "viem";
-import { useVaultContract } from "./useVaultContract";
 import { QV } from "../query/versions";
 import { opt, qk } from "../query/helpers";
 import { useQuery } from "@tanstack/react-query";
+import { useVaults } from "./useVaults";
 
 type UseStrategiesParams = {
-  vaultAddressOverride?: Address;
+  //
 };
 
 const ROOT = "strategies" as const;
 const version = QV.strategies;
 
 const vaultKeys = {
-  allStrategies: (vault: Address | null) => qk([ROOT, version, opt(vault), "all"]),
+  allStrategies: (address: string | null) => qk([ROOT, version, opt(address), "all"]),
 };
 
-export function useStrategies({ vaultAddressOverride }: UseStrategiesParams = {}) {
-  const vault = useVaultContract(vaultAddressOverride);
+export function useStrategies({}: UseStrategiesParams = {}) {
+  const vaults = useVaults();
+  console.log("useStrategies", vaults);
+  const addressesKey = vaults.length > 0 ? vaults.map(v => v.address).join(",") : null;
 
   const allStrategies = useQuery({
-    enabled: !!vault,
-    queryKey: vaultKeys.allStrategies(vaultAddressOverride ?? null),
+    enabled: vaults.length > 0,
+    queryKey: vaultKeys.allStrategies(addressesKey),
     queryFn: async () => {
-      try {
-        const res = await vault!.getStrategies();
-        console.log("res", res);
-        return res;
-      } catch (e) {
-        console.error("Error fetching strategies", e);
-        throw e;
-      }
+      const strategies = await Promise.all(
+        vaults.map(v =>
+          v.vault.getStrategies().then(res => res.map(s => ({ ...s, vault: v })))
+        )
+      );
+      return strategies.flat();
     },
     staleTime: 30_000,
   });

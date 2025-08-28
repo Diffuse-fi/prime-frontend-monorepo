@@ -23,8 +23,10 @@
     "next-themes": "0.4.6",
     "node-cache": "5.1.2",
     "pino-pretty": "13.1.1",
+    "qs": "6.14.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-jazzicon": "1.0.4",
     "remove-trailing-slash": "0.1.1",
     "tailwindcss": "4.1.12",
     "viem": "2.33.3",
@@ -32,6 +34,7 @@
     "zod": "3.22.4"
   },
   "devDependencies": {
-    "@types/negotiator": "^0.6.4"
+    "@types/negotiator": "^0.6.4",
+    "@types/qs": "^6.14.0"
   }
 }

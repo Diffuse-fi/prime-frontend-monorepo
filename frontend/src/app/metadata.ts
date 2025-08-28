@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import localizationSettings from "../localization.json" with { type: "json" };
+import { apiUrl } from "@/lib/api";
 
 interface PageMetadataOptions {
   title: string;
@@ -9,10 +10,6 @@ interface PageMetadataOptions {
 
 const SUPPORTED_LOCALES = localizationSettings.supported;
 const origin = process.env.ORIGIN ?? "";
-
-function addSearchParamsToUrl(url: string, params: Record<string, string>) {
-  return `${url}?${new URLSearchParams(params).toString()}`;
-}
 
 export const defaultMetadata = {
   title: "Diffuse Prime",
@@ -41,7 +38,7 @@ export const defaultMetadata = {
     url: "/",
     images: [
       {
-        url: addSearchParamsToUrl("/api/og", { title: "Diffuse Prime" }),
+        url: apiUrl("og", { title: "Diffuse Prime" }),
         width: 1200,
         height: 630,
         alt: "Diffuse Prime",
@@ -55,7 +52,7 @@ export const defaultMetadata = {
     site: "@diffuseprime",
     creator: "@diffuseprime",
     images: [
-      addSearchParamsToUrl("/api/og", { title: "Diffuse Prime" }),
+      apiUrl("og", { title: "Diffuse Prime" }),
     ],
   },
 } satisfies Metadata;
@@ -86,9 +83,7 @@ export function buildMetadataForPage({
       url: `/${path}`,
       images: [
         {
-          url: addSearchParamsToUrl(`/api/og/${path}`, {
-            title: title || "Diffuse Prime",
-          }),
+          url: apiUrl("og", { title: title || "Diffuse Prime", path, description }),
           width: 1200,
           height: 630,
           alt: `${title} | Diffuse Prime`,
@@ -100,7 +95,7 @@ export function buildMetadataForPage({
       title: `${title} | Diffuse Prime`,
       description,
       images: [
-        addSearchParamsToUrl(`/api/og/${path}`, { title: title || "Diffuse Prime" }),
+        apiUrl("og", { title: title || "Diffuse Prime", path, description }),
       ],
     },
   };

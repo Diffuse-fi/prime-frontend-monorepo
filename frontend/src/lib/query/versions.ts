@@ -4,4 +4,5 @@ export const QV = {
   lending: "v1",
   tokensList: "v1",
   strategies: "v1",
+  vaultsList: "v1",
 } as const;

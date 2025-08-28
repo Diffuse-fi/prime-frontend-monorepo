@@ -1,0 +1,40 @@
+{
+  "chains": [
+    {
+      "chainId": 1,
+      "name": "Ethereum Mainnet",
+      "tokens": [
+        {
+          "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          "chainId": 1,
+          "decimals": 6,
+          "logoURI": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
+          "name": "USD Coin",
+          "symbol": "USDC"
+        }
+      ]
+    },
+    {
+      "chainId": 80094,
+      "name": "Berachain Mainnet",
+      "tokens": [
+        {
+          "address": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+          "chainId": 80094,
+          "decimals": 18,
+          "logoURI": "https://assets.smold.app/api/token/80094/0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE/logo-128.png",
+          "name": "Bera",
+          "symbol": "BERA"
+        },
+        {
+          "address": "0x549943e04f40284185054145c6E4e9568C1D3241",
+          "chainId": 80094,
+          "decimals": 6,
+          "logoURI": "https://assets.smold.app/api/token/80094/0x549943e04f40284185054145c6E4e9568C1D3241/logo-128.png",
+          "name": "Bridged USDC (Stargate)",
+          "symbol": "USDC.e"
+        }
+      ]
+    }
+  ]
+}

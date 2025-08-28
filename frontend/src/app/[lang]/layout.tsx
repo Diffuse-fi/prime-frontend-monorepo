@@ -22,6 +22,7 @@ import Link from "@/components/Link";
 import ConnectButton from "@/components/ConnectButton";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import Image from "next/image";
+import { SiteNavigation } from "@/components/SiteNavigation";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
@@ -83,12 +84,29 @@ export default async function RootLayout({
             <Providers locale={lang}>
               <Navbar
                 logo={
-                  <Link href="/" className="flex gap-2 items-center">
+                  <Link href="/" className="flex gap-2 items-center" locale={lang}>
                     <Image src="/logo.png" alt="Logo" width={32} height={32} />
                     <Text weight="semibold" className="uppercase">
-                      Diffuse Prime
+                      {dictionary.common.navbar.title}
                     </Text>
                   </Link>
+                }
+                navigation={
+                  <SiteNavigation
+                    config={[
+                      {
+                        href: "/lend",
+                        title: dictionary.common.navbar.navigation.lend,
+                        locale: lang,
+                      },
+                      {
+                        href: "/borrow",
+                        title: dictionary.common.navbar.navigation.borrow,
+                        disabled: true,
+                        locale: lang,
+                      },
+                    ]}
+                  />
                 }
                 wallet={
                   <div className="flex gap-4">

@@ -6,7 +6,7 @@ export type Locale = (typeof SUPPORTED_LOCALES)[number];
 export type PropsWithLocale<T extends object> = {
   [K in keyof T]: K extends "locale" ? Locale : T[K];
 } & {
-  locale?: Locale;
+  locale: Locale;
 };
 
 export const DEFAULT_LOCALE: Locale = localizationSettings.default;

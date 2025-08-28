@@ -5,7 +5,7 @@ import {
   // trustWallet,
   // walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { getAvailableChains } from "./chains";
+import { getAvailableChains } from "../chains";
 
 export const config = getDefaultConfig({
   appName: process.env.NEXT_PUBLIC_APP_NAME!,

@@ -2,7 +2,7 @@ import { Init } from "@/types";
 import { Abi, Address, GetContractReturnType, PublicClient, WalletClient } from "viem";
 
 export class ContractBase {
-  constructor(protected readonly init: Init) {}
+  constructor(readonly init: Init) {}
 
   get chainId() {
     return this.init.chainId;

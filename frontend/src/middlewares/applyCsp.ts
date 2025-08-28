@@ -1,11 +1,13 @@
 import { nonceHeader, randomNonce } from "@/lib/nonce";
 import { type Finalizer } from "./utils";
-import { berachain } from "@/lib/wagmi/chains/berachain";
-import { ethMainnet } from "@/lib/wagmi/chains/mainnet";
+import { berachain } from "@/lib/chains/berachain";
+import { ethMainnet } from "@/lib/chains/mainnet";
 
 const isProd = process.env.NODE_ENV === "production";
 const testnetsEnabled = process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true";
+const mainnetsEnabled = process.env.NEXT_PUBLIC_ENABLE_MAINNETS === "true";
 
+// Allowed sources to connect to, e.g. for fetch, WebSocket, etc.
 const allowedSources = [
   "'self'",
   "https://www.google-analytics.com",
@@ -14,7 +16,11 @@ const allowedSources = [
         berachain.rpcUrls.default.http,
       ]
     : []),
-  ethMainnet.rpcUrls.default.http,
+  ...(mainnetsEnabled
+    ? [
+        ethMainnet.rpcUrls.default.http,
+      ]
+    : []),
 ]
   .filter(Boolean)
   .join(" ");

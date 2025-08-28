@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import type { Address, Hex } from "viem";
 import { useClients } from "../wagmi/useClients";
-import { useVaultContract } from "./useVaultContract";
+import { useVaultContract } from "./contracts/useVaultContract";
 import { defaultRetry } from "../query/defaults";
 import { WalletRequiredError } from "@diffuse/sdk-js";
 import { QV } from "../query/versions";
