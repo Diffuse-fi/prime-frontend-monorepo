@@ -8,5 +8,14 @@
       "title": "Diffuse Prime",
       "walletConect": "Connect Wallet"
     }
+  },
+  "lend": {
+    "assetsToLend": "Assets to lend",
+    "description": "Access the high-yield strategies used by institutions",
+    "myPositions": {
+      "description": "Track your lending positions and earnings across all pools",
+      "title": "My Lending Positions"
+    },
+    "title": "Explore Prime Broker"
   }
 }

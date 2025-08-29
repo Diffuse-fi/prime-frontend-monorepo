@@ -1,6 +1,6 @@
 "use client";
 
-import { useTokensList } from "@/lib/tokens/useTokensList";
+import { useStrategies } from "@/lib/core/useStrategies";
 import dynamic from "next/dynamic";
 
 const ThemeSwitch = dynamic(() => import("./ThemeSwitcher"), {
@@ -9,7 +9,7 @@ const ThemeSwitch = dynamic(() => import("./ThemeSwitcher"), {
 });
 
 export default function ThemeSwitcher() {
-  const tokensList = useTokensList();
-  console.log("tokensList", tokensList);
+  const tokensList = useStrategies();
+  console.log("tokensList", tokensList.strategies);
   return <ThemeSwitch />;
 }

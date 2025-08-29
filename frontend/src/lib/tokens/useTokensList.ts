@@ -1,10 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { QV } from "../query/versions";
 import { useChainId } from "wagmi";
 import { apiUrl } from "../api";
 import { qk } from "../query/helpers";
 import { useVaults } from "../core/useVaults";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { populateTokenListWithMeta } from "./tokensMeta";
 import { TokenInfo } from "./validations";
 
@@ -19,6 +19,7 @@ const qKeys = {
 export function useTokensList() {
   const chainId = useChainId();
   const vaults = useVaults();
+  const qc = useQueryClient();
   const vaultsIds = vaults.map(v => v.address).join(",");
 
   const tokensMetaList = useQuery({
@@ -31,6 +32,7 @@ export function useTokensList() {
       return r.json() as Promise<TokenInfo[]>;
     },
     staleTime: 1000 * 60 * 60,
+    placeholderData: keepPreviousData,
   });
 
   const allowedTokens = useQuery({
@@ -52,6 +54,7 @@ export function useTokensList() {
     },
     enabled: vaults.length > 0,
     staleTime: 1000 * 60 * 60,
+    placeholderData: keepPreviousData,
   });
 
   const tokensList = useMemo(() => {
@@ -65,5 +68,30 @@ export function useTokensList() {
     return [];
   }, [tokensMetaList.data, allowedTokens.data]);
 
-  return tokensList;
+  const invalidate = useCallback(
+    () =>
+      Promise.all([
+        qc.invalidateQueries({ queryKey: qKeys.tokensMetaList(chainId) }),
+        qc.invalidateQueries({ queryKey: qKeys.allowedTokens(chainId, vaultsIds) }),
+      ]),
+    [qc, chainId, vaultsIds]
+  );
+
+  const isPending =
+    tokensMetaList.isPending || (allowedTokens.isEnabled && allowedTokens.isPending);
+
+  const isFetching =
+    tokensMetaList.isFetching || (allowedTokens.isEnabled && allowedTokens.isFetching);
+
+  const isRefetching =
+    tokensMetaList.isRefetching ||
+    (allowedTokens.isEnabled && allowedTokens.isRefetching);
+
+  return {
+    tokensList,
+    invalidate,
+    isPending,
+    isFetching,
+    isRefetching,
+  };
 }

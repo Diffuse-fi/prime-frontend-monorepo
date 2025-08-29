@@ -84,7 +84,11 @@ export default async function RootLayout({
             <Providers locale={lang}>
               <Navbar
                 logo={
-                  <Link href="/" className="flex gap-2 items-center" locale={lang}>
+                  <Link
+                    href="/"
+                    className="flex gap-2 items-center select-none"
+                    locale={lang}
+                  >
                     <Image src="/logo.png" alt="Logo" width={32} height={32} />
                     <Text weight="semibold" className="uppercase">
                       {dictionary.common.navbar.title}

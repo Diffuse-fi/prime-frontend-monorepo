@@ -1,6 +1,8 @@
 import { Locale } from "@/lib/localization/locale";
-import { getDictionary } from "../../../lib/localization/dictionaries";
 import { buildMetadataForPage } from "@/app/metadata";
+import { Heading, Text } from "@diffuse/ui-kit";
+import { getDictionary } from "@/lib/localization/dictionaries";
+import LendPage from "@/components/pages/lend";
 
 export const metadata = buildMetadataForPage({
   title: "Lend",
@@ -8,9 +10,15 @@ export const metadata = buildMetadataForPage({
   path: "lend",
 });
 
-export default async function Home({ params }: { params: Promise<{ lang: Locale }> }) {
+export default async function Lend({ params }: { params: Promise<{ lang: Locale }> }) {
   const { lang } = await params;
   const dict = await getDictionary(lang);
 
-  return <></>;
+  return (
+    <section>
+      <Heading level={1}>{dict.lend.title}</Heading>
+      <Text>{dict.lend.description}</Text>
+      <LendPage />
+    </section>
+  );
 }

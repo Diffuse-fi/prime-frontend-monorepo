@@ -1,11 +1,7 @@
 import { QV } from "../query/versions";
 import { opt, qk } from "../query/helpers";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useVaults } from "./useVaults";
-
-type UseStrategiesParams = {
-  //
-};
 
 const ROOT = "strategies" as const;
 const version = QV.strategies;
@@ -14,9 +10,9 @@ const vaultKeys = {
   allStrategies: (address: string | null) => qk([ROOT, version, opt(address), "all"]),
 };
 
-export function useStrategies({}: UseStrategiesParams = {}) {
+export function useStrategies() {
+  const qc = useQueryClient();
   const vaults = useVaults();
-  console.log("useStrategies", vaults);
   const addressesKey = vaults.length > 0 ? vaults.map(v => v.address).join(",") : null;
 
   const allStrategies = useQuery({
@@ -33,5 +29,16 @@ export function useStrategies({}: UseStrategiesParams = {}) {
     staleTime: 30_000,
   });
 
-  return { allStrategies };
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: vaultKeys.allStrategies(addressesKey) });
+  };
+
+  return {
+    strategies: allStrategies.data,
+    invalidate,
+    error: allStrategies.error,
+    isPending: allStrategies.isPending,
+    isFetching: allStrategies.isFetching,
+    isRefetching: allStrategies.isRefetching,
+  };
 }
