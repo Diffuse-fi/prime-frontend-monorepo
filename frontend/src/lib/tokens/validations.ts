@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { isAddress } from "viem";
 
-const TokenInfoSchema = z.object({
+export const TokenInfoSchema = z.object({
   chainId: z.number().int().nonnegative(),
   address: z.string().refine(s => isAddress(s), {
     message: "Invalid EVM address",

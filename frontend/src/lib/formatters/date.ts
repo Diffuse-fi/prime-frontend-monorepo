@@ -15,10 +15,21 @@ dayjsBase.extend(duration);
 dayjsBase.extend(customParseFormat);
 dayjsBase.extend(advancedFormat);
 
-export type Dateish = number | string | Date;
+export type Dateish = number | string | bigint;
+
+function normalizeTimestamp(ts: number | bigint): number {
+  const n = typeof ts === "bigint" ? Number(ts) : ts;
+  const isUnix = n < 1_000_000_000_000;
+  return isUnix ? n * 1000 : n;
+}
 
 const day = (ts?: Dateish, opts?: DateFormatOpts) => {
-  const d = ts !== undefined ? dayjsBase(ts) : dayjsBase();
+  const d =
+    ts !== undefined
+      ? dayjsBase(
+          typeof ts === "number" || typeof ts === "bigint" ? normalizeTimestamp(ts) : ts
+        )
+      : dayjsBase();
   const withLocale = opts?.locale ? d.locale(opts.locale) : d;
   const tz = opts?.tz;
 

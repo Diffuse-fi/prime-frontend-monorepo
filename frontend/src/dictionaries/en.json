@@ -10,8 +10,12 @@
     }
   },
   "lend": {
+    "approveButtonText": "Approve",
     "assetsToLend": "Assets to lend",
+    "deposit": "Deposit",
     "description": "Access the high-yield strategies used by institutions",
+    "enterAmountButtonText": "Enter amount to lend",
+    "listOfStrategies": "List of Strategies",
     "myPositions": {
       "description": "Track your lending positions and earnings across all pools",
       "title": "My Lending Positions"

@@ -21,6 +21,7 @@ export default defineConfig({
           lines: 90,
         },
       },
+      reportOnFailure: true,
     },
     setupFiles: ["./tests/setupFile.ts"],
   },

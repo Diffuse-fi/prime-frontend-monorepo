@@ -2,13 +2,46 @@
 
 ## Description
 
+This is a monorepo for the **Diffuse Prime** frontend application, which includes multiple packages such as the main frontend application and a shared UI kit.
+
+Repository structure:
+
+- `frontend/`: The main frontend application built with Next.js.
+- `ui-kit/`: A shared UI component library built with React, Radix UI, and Tailwind CSS preset.
+- `sdk-js/`: A JavaScript SDK for interacting with the Diffuse Prime smart contracts.
+
+Each package has its own `README.md` file with more details about the specific package.
+
 ## Workspaces
 
 This repository uses [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) to manage multiple packages within a single repository.
 
+But all general scripts you may need are deifined in the root `package.json` "scripts" section.
+
 ## Setup
 
+To setup the project, run the following command in the root directory:
+
+```bash
+npm ci
+npm run setup
+```
+
+This will install all dependencies and run necessary setup scripts for each package.
+
 ## Development
+
+To start developing, you can use the following command to run all packages in watch mode:
+
+```bash
+npm run dev
+```
+
+This will start the development servers for all packages and all the source code changes will be reflected automatically. E.g. if you change something in `ui-kit`, the changes will be reflected in `frontend` immediately.
+
+#### Env variables for local development
+
+You may want to override some env variables for local development. You can do this by creating a `.env.local` file. For more details please refer to frontend's [README](./frontend/README.md) development section.
 
 ## Security considerations (on repository level)
 

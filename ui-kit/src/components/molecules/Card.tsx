@@ -19,15 +19,19 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
 }
 
-export function Card({ header, children, className, ...rest }: CardProps) {
-  return (
-    <div className={card({ className })} {...rest}>
-      {header ? (
-        <div className={cardHeader()}>
-          {typeof header === "string" ? <Heading level={3}>{header}</Heading> : header}
-        </div>
-      ) : null}
-      <div className={cardBody()}>{children}</div>
-    </div>
-  );
-}
+export const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ header, children, className, ...rest }, ref) => {
+    return (
+      <div ref={ref} className={card({ className })} {...rest}>
+        {header ? (
+          <div className={cardHeader()}>
+            {typeof header === "string" ? <Heading level={3}>{header}</Heading> : header}
+          </div>
+        ) : null}
+        <div className={cardBody()}>{children}</div>
+      </div>
+    );
+  }
+);
+
+Card.displayName = "Card";

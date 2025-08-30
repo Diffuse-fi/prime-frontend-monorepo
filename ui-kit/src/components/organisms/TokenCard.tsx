@@ -1,69 +1,34 @@
 import * as React from "react";
 import { cn } from "@/lib/cn";
+import { Card } from "../molecules";
+import { Text } from "../atoms";
 
-export interface TokenAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
+type RenderImage = (props: { alt: string; className: string }) => React.ReactNode;
+
+export interface TokenCardProps extends React.HTMLAttributes<HTMLDivElement> {
   symbol: string;
-  logoUrl?: string;
-  chainId?: number;
-  size?: number; // px size (default 32)
-  showChainBadge?: boolean; // render chain overlay badge
+  renderImage: RenderImage;
 }
 
-type RenderImage = (props: {
-  src: string;
-  alt: string;
-  className: string;
-}) => React.ReactNode;
-
-export const TokenAvatar = React.forwardRef<HTMLDivElement, TokenAvatarProps>(
-  (
-    { symbol, logoUrl, chainId, size = 32, showChainBadge = true, className, ...props },
-    ref
-  ) => {
-    const initials = symbol?.slice(0, 3).toUpperCase();
-
+export const TokenCard = React.forwardRef<HTMLDivElement, TokenCardProps>(
+  ({ symbol, className, renderImage, ...props }, ref) => {
     return (
-      <div
+      <Card
         ref={ref}
         className={cn(
-          "relative inline-flex items-center justify-center rounded-full border border-border bg-muted text-foreground overflow-hidden",
+          "flex items-center gap-2 border-[color:var(--ui-accent)] flex-nowrap",
           className
         )}
-        style={{ width: size, height: size, fontSize: size * 0.4 }}
         {...props}
       >
-        {logoUrl ? (
-          <img
-            src={logoUrl}
-            alt={symbol}
-            className="w-full h-full object-cover"
-            onError={e => {
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-        ) : (
-          <span className="font-bold">{initials}</span>
-        )}
-
-        {showChainBadge && chainId && (
-          <span
-            className="absolute bottom-0 right-0 rounded-full border border-background bg-background shadow"
-            style={{
-              width: size * 0.4,
-              height: size * 0.4,
-              fontSize: size * 0.25,
-            }}
-          >
-            {/* placeholder: chainId as text.
-               later swap with <ChainBadge /> */}
-            <span className="flex items-center justify-center h-full w-full text-xs">
-              {chainId}
-            </span>
-          </span>
-        )}
-      </div>
+        {renderImage({
+          alt: symbol,
+          className: "flex-shrink-0",
+        })}
+        <Text>{symbol}</Text>
+      </Card>
     );
   }
 );
 
-TokenAvatar.displayName = "TokenAvatar";
+TokenCard.displayName = "TokenCard";

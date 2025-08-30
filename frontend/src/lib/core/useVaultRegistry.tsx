@@ -22,12 +22,16 @@ export function useVaultRegistry({ addressOverride }: UseVaultRegistryParams = {
   const normalizedAddr = addressOverride ? getAddress(addressOverride) : undefined;
   const registry = useVaultRegistryContract(normalizedAddr);
 
-  const allVaults = useQuery({
+  const data = useQuery({
     enabled: !!registry,
     queryKey: queryKeys.allVaults(addressOverride || null),
     queryFn: async () => registry!.getVaults(),
     staleTime: 30_000,
   });
 
-  return { allVaults };
+  return {
+    allVaults: data.data,
+    isLoading: data.isLoading,
+    error: data.error,
+  };
 }
