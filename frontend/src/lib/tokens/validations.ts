@@ -8,7 +8,7 @@ export const TokenInfoSchema = z.object({
   }),
   name: z.string().min(1),
   symbol: z.string().min(1),
-  decimals: z.number().int().min(0).max(255).optional(),
+  decimals: z.number().int().min(0).max(255),
   logoURI: z.string().url().optional(),
   extensions: z.record(z.any()).optional(),
 });

@@ -37,7 +37,10 @@ export const TokenInput = React.forwardRef<HTMLInputElement, TokenInputProps>(
         size={size}
         right={right}
         type="text"
-        decimalScale={0}
+        decimalScale={2}
+        fixedDecimalScale
+        allowNegative={false}
+        allowLeadingZeros={false}
         valueIsNumericString
         value={value}
         onValueChange={onValueChange}

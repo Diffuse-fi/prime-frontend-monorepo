@@ -39,7 +39,7 @@ const vaultKeys = {
     qk(ROOT, version, opt(vault), "redeem", opt(user)),
 };
 
-export function useLending({ vaultAddressOverride }: UseLendingParams = {}) {
+export function useLend({ vaultAddressOverride }: UseLendingParams = {}) {
   const { address: account } = useAccount();
   const { publicClient } = useClients();
   const qc = useQueryClient();

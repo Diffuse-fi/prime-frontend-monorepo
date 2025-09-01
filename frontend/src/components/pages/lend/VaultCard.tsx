@@ -1,7 +1,7 @@
 import { TokenImage } from "@/components/TokenImage";
 import { VaultFullInfo } from "../../../lib/core/types";
 import { formatDate } from "@/lib/formatters/date";
-import { formatAprPercent } from "@/lib/formatters/finance";
+import { formatAprToPercent } from "@/lib/formatters/finance";
 import { useLocalization } from "@/lib/localization/useLocalization";
 import {
   Badge,
@@ -15,30 +15,33 @@ import {
 import { useState } from "react";
 import { TokenInfo } from "@/lib/tokens/validations";
 import { calcAprInterest } from "@/lib/formulas";
+import { formatToken, formatUnits } from "@/lib/formatters/token";
 import { formatThousandsSpace } from "@/lib/formatters/number";
 
 type VaultProps = {
   vault: VaultFullInfo;
   selectedAsset: TokenInfo;
-  amount?: string;
+  amount?: bigint;
   onAmountChange?: TokenInputProps["onValueChange"];
 };
 
 export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: VaultProps) {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const { dict } = useLocalization();
-  const vaultAprFormatted = formatAprPercent(vault.targetApr);
+  const vaultAprFormatted = formatAprToPercent(vault.targetApr);
   const defaultLockupPerdiod = 90; // TODO - get real value from the vault data when ready
   const headerText = `${vault.name}. ${vaultAprFormatted.text} (${defaultLockupPerdiod}-day lockup)`;
   const reward = amount
-    ? calcAprInterest(BigInt(amount), vault.targetApr, {
-        durationInDays: defaultLockupPerdiod,
-      })
-    : 0n;
-  const rewardDisplay =
-    reward === 0n
-      ? ""
-      : `${formatThousandsSpace(reward).text} ${selectedAsset.symbol} (${vaultAprFormatted.text} APR)`;
+    ? formatUnits(
+        calcAprInterest(vault.targetApr, amount, {
+          durationInDays: defaultLockupPerdiod,
+        }),
+        selectedAsset.decimals
+      ).text
+    : "";
+  const rewardDisplay = reward
+    ? `${reward} ${selectedAsset.symbol} (${vaultAprFormatted.text} APR)`
+    : "";
 
   return (
     <Card
@@ -53,7 +56,8 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
     >
       <Text className="font-bold">{dict.lend.deposit}</Text>
       <TokenInput
-        value={amount}
+        placeholder="0.0"
+        value={amount ? formatUnits(amount, selectedAsset.decimals).text : ""}
         onValueChange={onAmountChange}
         tokenSymbol="mUSDC"
         renderTokenImage={() => (
@@ -68,7 +72,7 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
       >
         {vault?.strategies?.map(s => (
           <div key={s.apr}>
-            {formatAprPercent(s.apr).text} APR, until&nbsp;
+            {formatAprToPercent(s.apr).text} APR, until&nbsp;
             {formatDate(s.endDate).text}
           </div>
         ))}

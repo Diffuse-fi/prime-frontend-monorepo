@@ -12,6 +12,9 @@ import dedupe from "dedupe";
 import { useSelectedVaults } from "@/lib/core/useSelectVaults";
 import { useEnsureAllowances } from "@/lib/core/useEnsureAllowances";
 import { showSkeletons } from "@/lib/misc/showSkeletons";
+import { parseUnits } from "viem";
+import { useRouter } from "next/navigation";
+import { localizePath } from "@/lib/localization/locale";
 
 const validateTokenInfo = (value: TokenInfo | null) => {
   return TokenInfoSchema.safeParse(value).success;
@@ -23,12 +26,50 @@ export default function LendPage() {
   const { selectedVaults, setAmountForVault } = useSelectedVaults();
   const dedupedTokenList = dedupe(tokenList, t => t.address);
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(dedupedTokenList);
-  const { dict } = useLocalization();
-  const { ready, approveMissing } = useEnsureAllowances(selectedVaults);
+  const { dict, lang } = useLocalization();
+  const router = useRouter();
+  const { allAllowed, approveMissing, ableToRequest } =
+    useEnsureAllowances(selectedVaults);
+  const onDepositSuccess = () => {
+    router.push(localizePath("/lend/my-positions", lang));
+  };
 
   const vaultsForSelectedAsset = selectedAsset
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
     : vaults;
+
+  const actionButtonMeta = (() => {
+    if (selectedVaults.length === 0) {
+      return {
+        text: dict.lend.enterAmountButtonText,
+        disabled: true,
+        onClick: undefined,
+        className: "",
+      };
+    }
+
+    if (ableToRequest) {
+      return {
+        text: dict.lend.approveButtonText,
+        disabled: false,
+        onClick: () => approveMissing({ mode: "exact" }),
+        className: "bg-blue-500 hover:bg-blue-600 text-white",
+      };
+    }
+
+    if (allAllowed) {
+      return {
+        text: dict.lend.depositButtonText,
+        disabled: false,
+        onClick: () => {
+          alert("Reviewing not implemented yet");
+        },
+        className: "bg-orange-500 hover:bg-orange-600 text-white",
+      };
+    }
+
+    return {};
+  })();
 
   return (
     <div className="grid sm:grid-cols-9 grid-cols-1 gap-2 sm:gap-4">
@@ -51,11 +92,9 @@ export default function LendPage() {
                 <VaultCard
                   selectedAsset={selectedAsset!}
                   vault={vault}
-                  amount={selectedVaults
-                    .find(v => v.address === vault.address)
-                    ?.amount.toString()}
+                  amount={selectedVaults.find(v => v.address === vault.address)?.amount}
                   onAmountChange={evt => {
-                    const value = BigInt(evt.value || 0);
+                    const value = parseUnits(evt.value, selectedAsset!.decimals);
                     setAmountForVault(vault, value);
                   }}
                 />
@@ -66,8 +105,12 @@ export default function LendPage() {
       </div>
       <div className="flex flex-col gap-4 sm:col-span-5 col-span-1">
         <Card>
-          <Button onClick={() => approveMissing({ mode: "exact" })}>
-            {dict.lend.enterAmountButtonText}
+          <Button
+            onClick={actionButtonMeta.onClick}
+            disabled={actionButtonMeta.disabled}
+            className={actionButtonMeta.className}
+          >
+            {actionButtonMeta.text}
           </Button>
         </Card>
       </div>

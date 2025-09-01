@@ -1,24 +1,29 @@
 import type { FormatResult } from "./types";
+import { formatUnits as formatUnitsViem } from "viem";
 import { formatThousandsSpace } from "./number";
 
-export function formatTokenAmount(
-  amount: string,
+export function formatToken(
+  amount: bigint,
   decimals: number,
-  symbol: string,
-  delimiter = "."
+  symbol: string
 ): FormatResult<string> {
-  const factor = 10 ** decimals;
-  const num = Number(amount) / factor;
+  const formatted = formatUnitsViem(amount, decimals);
 
   return {
-    text: `${num.toLocaleString(undefined, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: decimals,
-    })} ${symbol}`,
-    value: amount,
-    meta: {
-      decimals,
-      symbol,
-    },
+    text: `${formatThousandsSpace(Number(formatted)).text} ${symbol}`,
+    value: formatted,
+    meta: { amount, decimals, symbol },
+  };
+}
+
+export function formatUnits(
+  ...params: Parameters<typeof formatUnitsViem>
+): FormatResult<bigint> {
+  const res = formatUnitsViem(...params);
+
+  return {
+    text: formatThousandsSpace(Number(res)).text,
+    value: params[0],
+    meta: { amount: params[0], decimals: params[1] },
   };
 }

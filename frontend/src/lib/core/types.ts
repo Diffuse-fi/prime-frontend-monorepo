@@ -19,6 +19,6 @@ export type SelectedVault = {
   address: Address;
   assetAddress: Address;
   assetSymbol: string;
-  assetDecimals?: number;
+  assetDecimals: number;
   amount: bigint;
 };

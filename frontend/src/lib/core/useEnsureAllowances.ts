@@ -13,6 +13,8 @@ import { opt, qk } from "../query/helpers";
 import { useClients } from "../wagmi/useClients";
 import { SelectedVault } from "./types";
 import { produce } from "immer";
+import { raceSignal as abortable } from "race-signal";
+import useIsMountedRef from "use-is-mounted-ref";
 
 export type ApprovalPolicy = "exact" | "infinite";
 export type AllowanceStatus = "ok" | "missing" | "insufficient" | "unknown";
@@ -26,8 +28,9 @@ export type VaultAllowance = {
 type Pending = Record<`${Address}:${Address}`, boolean>;
 
 export type EnsureAllowancesResult = {
-  data: VaultAllowance[] | undefined;
-  ready: boolean;
+  allowances: VaultAllowance[] | undefined;
+  ableToRequest: boolean;
+  allAllowed: boolean;
   isLoading: boolean;
   approveMissing: (opts?: { mode?: ApprovalPolicy }) => Promise<void>;
   pending: Pending;
@@ -49,6 +52,7 @@ const qKeys = {
       ROOT,
       opt(chainId),
       opt(assets),
+      opt(amounts),
       opt(owner),
       opt(spenders),
     ]),
@@ -58,16 +62,19 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
   const [pending, setPending] = useState<Pending>({});
   const [error, setError] = useState<Error | null>(null);
   const { address: ownerAddr, publicClient, chainId } = useClients();
+  const isMounted = useIsMountedRef();
   const { writeContractAsync } = useWriteContract();
   const enabled = sv?.length > 0 && !!ownerAddr && !!publicClient;
   const addressKey = sv.map(v => v.address.toLowerCase()).join("-") || undefined;
   const assetsKey = sv.map(v => v.assetAddress.toLowerCase()).join("-") || undefined;
   const amountsKey = sv.map(v => v.amount.toString()).join("-") || undefined;
 
+  console.log("useEnsureAllowances", { sv, enabled, ownerAddr, chainId });
+
   const { data: allowances, refetch } = useQuery({
     queryKey: qKeys.allowances(chainId, assetsKey, amountsKey, ownerAddr, addressKey),
     enabled,
-    queryFn: async (): Promise<VaultAllowance[]> => {
+    queryFn: async ({ signal }): Promise<VaultAllowance[]> => {
       const calls = sv.map(v => ({
         abi: erc20Abi,
         address: v.assetAddress,
@@ -76,10 +83,20 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
       }));
 
       try {
-        const results = await publicClient!.multicall({ contracts: calls });
+        console.log("Fetching allowances with multicall");
+        const results = await abortable(
+          publicClient!.multicall({ contracts: calls }),
+          signal
+        );
+
+        console.log("allowance results", { results });
+
         return sv.map((v, i) => {
+          if (signal.aborted) throw new DOMException("Aborted", "AbortError");
+
           const r = results[i];
           const current = r.status === "success" ? (r.result as bigint) : null;
+
           const status: AllowanceStatus =
             current == null
               ? "unknown"
@@ -88,10 +105,12 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
                 : current === 0n
                   ? "missing"
                   : "insufficient";
+
           return { vault: v, current, status };
         });
       } catch {
         const out: VaultAllowance[] = [];
+
         for (const v of sv) {
           try {
             const current = await publicClient!.readContract({
@@ -100,6 +119,7 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
               functionName: "allowance",
               args: [ownerAddr!, v.address],
             });
+
             const status: AllowanceStatus =
               current >= v.amount ? "ok" : current === 0n ? "missing" : "insufficient";
             out.push({ vault: v, current, status });
@@ -112,17 +132,22 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
     },
   });
 
+  console.log("allowances", { allowances });
+
   const approveOne = useCallback(
     async (v: SelectedVault, opts?: { mode?: ApprovalPolicy }) => {
       if (!ownerAddr) throw new Error("WALLET_REQUIRED");
 
       const key = `${v.assetAddress}:${v.address}` as const;
-      setPending(
-        produce(draft => {
-          draft[key] = true;
-        })
-      );
-      setError(null);
+
+      if (isMounted.current) {
+        setError(null);
+        setPending(
+          produce(draft => {
+            draft[key] = true;
+          })
+        );
+      }
 
       try {
         const amount = opts?.mode === "infinite" ? maxUint256 : v.amount;
@@ -135,8 +160,8 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
             args: [v.address, amount],
             account: ownerAddr,
           });
-        } catch (e) {
-          throw new Error(e?.shortMessage ?? e?.message ?? "SIMULATION_REVERTED");
+        } catch {
+          throw new Error("SIMULATION_REVERTED");
         }
 
         const hash = await writeContractAsync({
@@ -147,21 +172,25 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
         });
 
         await publicClient!.waitForTransactionReceipt({ hash });
+
         await refetch();
       } finally {
-        setPending(
-          produce(draft => {
-            delete draft[key];
-          })
-        );
+        if (isMounted.current) {
+          setPending(
+            produce(draft => {
+              delete draft[key];
+            })
+          );
+        }
       }
     },
-    [ownerAddr, publicClient, writeContractAsync, refetch]
+    [ownerAddr, publicClient, writeContractAsync, refetch, isMounted]
   );
 
   const approveMissing = useCallback(
     async (opts: { mode?: ApprovalPolicy } = {}) => {
-      if (!allowances) throw new Error("NO_ALLOWANCES");
+      if (!allowances || allowances.length === 0) throw new Error("NO_ALLOWANCES");
+
       const targets = allowances.filter(x => x.status !== "ok").map(x => x.vault);
 
       for (const v of targets) {
@@ -171,14 +200,17 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
     [allowances, approveOne]
   );
 
-  const ready = allowances !== undefined && allowances.every(a => a.status === "ok");
+  const ableToRequest =
+    sv.length > 0 && !!allowances && !allowances.some(a => a.status === "unknown");
+  const allAllowed = allowances !== undefined && allowances.every(a => a.status === "ok");
 
   return {
     pending,
     approveMissing,
     error,
-    data: allowances,
-    ready,
+    allowances,
+    allAllowed,
+    ableToRequest,
     isLoading: false,
     enabled,
   };

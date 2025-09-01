@@ -1,7 +1,7 @@
 import { FORMAT_DEFAULTS, SCALES } from "./config";
 import type { FormatResult } from "./types";
 
-export function formatAprPercent(
+export function formatAprToPercent(
   raw: bigint,
   fractionDigits = FORMAT_DEFAULTS.fractionDigits
 ): FormatResult<bigint> {
