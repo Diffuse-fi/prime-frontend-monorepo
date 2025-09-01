@@ -39,12 +39,14 @@ export default function LendPage() {
     : vaults;
 
   const actionButtonMeta = (() => {
-    if (selectedVaults.length === 0) {
+    if (allAllowed) {
       return {
-        text: dict.lend.enterAmountButtonText,
-        disabled: true,
-        onClick: undefined,
-        className: "",
+        text: dict.lend.depositButtonText,
+        disabled: false,
+        onClick: () => {
+          alert("Reviewing not implemented yet");
+        },
+        className: "bg-orange-500 hover:bg-orange-600 text-white",
       };
     }
 
@@ -57,18 +59,12 @@ export default function LendPage() {
       };
     }
 
-    if (allAllowed) {
-      return {
-        text: dict.lend.depositButtonText,
-        disabled: false,
-        onClick: () => {
-          alert("Reviewing not implemented yet");
-        },
-        className: "bg-orange-500 hover:bg-orange-600 text-white",
-      };
-    }
-
-    return {};
+    return {
+      text: dict.lend.approveButtonText,
+      disabled: true,
+      onClick: undefined,
+      className: "",
+    };
   })();
 
   return (

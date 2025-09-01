@@ -31,9 +31,6 @@ export function IconButton({
   "aria-label": ariaLabel,
   ...rest
 }: Props) {
-  if (!ariaLabel) {
-    console.warn("IconButton should have aria-label for accessibility");
-  }
   return (
     <button
       className={iconButton({ size, variant, className })}

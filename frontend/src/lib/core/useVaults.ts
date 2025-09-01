@@ -7,13 +7,17 @@ import { QV } from "../query/versions";
 import { opt, qk } from "../query/helpers";
 import { useTokensMeta } from "../tokens/useTokensMeta";
 import { populateTokenListWithMeta } from "../tokens/tokensMeta";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import { raceSignal as abortable } from "race-signal";
+import pLimit from "p-limit";
 
 const ROOT = "vault" as const;
 const version = QV.vault;
 const qKeys = {
-  strategies: (address: string | null) => qk([ROOT, version, opt(address), "strategies"]),
-  assets: (address: string | null) => qk([ROOT, version, opt(address), "assets"]),
+  strategies: (address: string | null, chainId: number) =>
+    qk([ROOT, version, opt(address), chainId, "strategies"]),
+  assets: (address: string | null, chainId: number) =>
+    qk([ROOT, version, opt(address), chainId, "assets"]),
 };
 
 export function useVaults() {
@@ -21,10 +25,17 @@ export function useVaults() {
   const { allVaults } = useVaultRegistry();
   const qc = useQueryClient();
   const { meta } = useTokensMeta(chainId);
-  const addressKey = allVaults?.map(v => v.vault.toLowerCase()).join("-") ?? "-";
+
+  const addressKey = useMemo(() => {
+    if (!allVaults?.length) return "-";
+
+    const sorted = [...allVaults].map(v => v.vault.toLowerCase()).sort();
+
+    return sorted.join("|");
+  }, [allVaults]);
 
   const vaultContracts = useMemo(() => {
-    if (!publicClient || !allVaults) return [];
+    if (!publicClient || !allVaults?.length || !chainId) return [];
 
     return allVaults.map(({ vault: vaultAddress, name, targetApr }) => ({
       name,
@@ -38,22 +49,34 @@ export function useVaults() {
     }));
   }, [publicClient, walletClient, chainId, allVaults]);
 
+  const stratLimit = useMemo(() => pLimit(6), []);
+  const assetLimit = useMemo(() => pLimit(6), []);
+
+  const enabled = !!chainId && !!publicClient && vaultContracts.length > 0;
+
   const strategiesQueries = useQuery({
-    enabled: vaultContracts.length > 0,
-    queryKey: qKeys.strategies(addressKey),
-    queryFn: async () => {
-      if (!vaultContracts) return [];
+    placeholderData: keepPreviousData,
+    enabled,
+    queryKey: qKeys.strategies(addressKey, chainId),
+    refetchOnWindowFocus: false,
+    queryFn: async ({ signal }) => {
+      if (!vaultContracts.length) return [];
 
-      const results = await Promise.all(
-        vaultContracts.map(async vault => {
-          const strs = await vault.contract.getStrategies();
-
-          return {
-            vaultAddress: vault.address,
-            strategies: strs,
-          };
-        })
+      const results = await abortable(
+        Promise.all(
+          vaultContracts.map(vault =>
+            stratLimit(() =>
+              vault.contract.getStrategies().then(strs => ({
+                vaultAddress: vault.address,
+                strategies: strs,
+              }))
+            )
+          )
+        ),
+        signal
       );
+
+      if (signal.aborted) throw new DOMException("Aborted", "AbortError");
 
       return results.flatMap(({ strategies, vaultAddress }) =>
         strategies.map(s => ({
@@ -68,21 +91,28 @@ export function useVaults() {
   });
 
   const rawAssetsQueries = useQuery({
-    enabled: vaultContracts.length > 0,
-    queryKey: qKeys.assets(addressKey),
-    queryFn: async () => {
-      if (!vaultContracts) return [];
+    enabled,
+    placeholderData: keepPreviousData,
+    queryKey: qKeys.assets(addressKey, chainId),
+    refetchOnWindowFocus: false,
+    queryFn: async ({ signal }) => {
+      if (!vaultContracts.length) return [];
 
-      const results = await Promise.all(
-        vaultContracts.map(async vault => {
-          const vaultAssets = await vault.contract.getAssets();
-
-          return {
-            vaultAddress: vault.address,
-            assets: vaultAssets,
-          };
-        })
+      const results = await abortable(
+        Promise.all(
+          vaultContracts.map(vault =>
+            assetLimit(() =>
+              vault.contract.getAssets().then(assets => ({
+                vaultAddress: vault.address,
+                assets,
+              }))
+            )
+          )
+        ),
+        signal
       );
+
+      if (signal.aborted) throw new DOMException("Aborted", "AbortError");
 
       return results.flatMap(({ assets, vaultAddress }) =>
         assets.map(({ asset, symbol, decimals }) => ({
@@ -109,29 +139,32 @@ export function useVaults() {
 
   const strategies = strategiesQueries.data;
 
-  const vaults: VaultFullInfo[] = vaultContracts.map(v => {
-    const vaultAssets = assets.filter(a => a.vaultAddress === v.address);
-    const vaultStrategies = strategies?.filter(s => s.vaultAddress === v.address) ?? [];
+  const vaults: VaultFullInfo[] = useMemo(
+    () =>
+      vaultContracts.map(v => {
+        const vaultAssets = assets.filter(a => a.vaultAddress === v.address);
+        const vaultStrategies =
+          strategies?.filter(s => s.vaultAddress === v.address) ?? [];
 
-    return {
-      ...v,
-      strategies: vaultStrategies,
-      assets: vaultAssets,
-    };
-  });
+        return {
+          ...v,
+          strategies: vaultStrategies,
+          assets: vaultAssets,
+        };
+      }),
+    [vaultContracts, assets, strategies]
+  );
 
   const invalidate = () => {
-    qc.invalidateQueries({ queryKey: qKeys.assets(addressKey) });
-    qc.invalidateQueries({ queryKey: qKeys.strategies(addressKey) });
+    qc.invalidateQueries({ queryKey: qKeys.assets(addressKey, chainId) });
+    qc.invalidateQueries({ queryKey: qKeys.strategies(addressKey, chainId) });
   };
 
-  const isLoading = strategiesQueries.isLoading || rawAssetsQueries.isLoading;
   const isPending = strategiesQueries.isPending || rawAssetsQueries.isPending;
 
   return {
     vaults,
     invalidate,
-    isLoading,
     isPending,
   };
 }

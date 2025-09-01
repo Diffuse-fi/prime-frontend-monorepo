@@ -11,6 +11,7 @@ export const TokenInfoSchema = z.object({
   decimals: z.number().int().min(0).max(255),
   logoURI: z.string().url().optional(),
   extensions: z.record(z.any()).optional(),
+  legacyAllowance: z.boolean().optional(),
 });
 
 export type TokenInfo = z.infer<typeof TokenInfoSchema>;

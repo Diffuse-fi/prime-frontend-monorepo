@@ -15,8 +15,7 @@ import {
 import { useState } from "react";
 import { TokenInfo } from "@/lib/tokens/validations";
 import { calcAprInterest } from "@/lib/formulas";
-import { formatToken, formatUnits } from "@/lib/formatters/token";
-import { formatThousandsSpace } from "@/lib/formatters/number";
+import { formatUnits } from "@/lib/formatters/token";
 
 type VaultProps = {
   vault: VaultFullInfo;

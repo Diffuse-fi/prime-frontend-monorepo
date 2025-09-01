@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { opt, qk } from "../query/helpers";
 import { useVaultRegistryContract } from "./useVaultRegistryContract";
 import { Address, getAddress } from "viem";
+import { raceSignal as abortable } from "race-signal";
 
 type UseVaultRegistryParams = {
   addressOverride?: Address;
@@ -25,13 +26,13 @@ export function useVaultRegistry({ addressOverride }: UseVaultRegistryParams = {
   const data = useQuery({
     enabled: !!registry,
     queryKey: queryKeys.allVaults(addressOverride || null),
-    queryFn: async () => registry!.getVaults(),
+    queryFn: ({ signal }) => abortable(registry!.getVaults(), signal),
     staleTime: 30_000,
   });
 
   return {
     allVaults: data.data,
-    isLoading: data.isLoading,
+    isPending: data.isPending,
     error: data.error,
   };
 }

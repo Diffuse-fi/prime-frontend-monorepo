@@ -16,12 +16,15 @@ export function useSelectedVaults() {
             return;
           }
 
+          // TODO - later support multiple assets per vault
           draft.push({
             address: vault.address,
             assetAddress: vault.assets[0].address,
             assetSymbol: vault.assets[0].symbol,
             assetDecimals: vault.assets[0].decimals,
             amount,
+            legacyAllowance: vault.assets[0].legacyAllowance ?? false,
+            chainId: vault.contract.chainId,
           });
 
           return;

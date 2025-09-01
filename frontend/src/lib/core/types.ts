@@ -21,4 +21,6 @@ export type SelectedVault = {
   assetSymbol: string;
   assetDecimals: number;
   amount: bigint;
+  legacyAllowance: boolean;
+  chainId: number;
 };
