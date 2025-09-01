@@ -7,39 +7,38 @@ export async function getTokenMetaList(): Promise<TokenInfo[]> {
   return TokenInfoArraySchema.parseAsync(tokensMeta.chains.flatMap(c => c.tokens));
 }
 
-export function populateTokenListWithMeta({
+export function populateTokenListWithMeta<T extends TokenInfo>({
   list,
   meta,
 }: {
-  list: TokenInfo[];
+  list: T[];
   meta: TokenInfo[];
-}): TokenInfo[] {
-  const map = new Map<string, TokenInfo>();
+}): T[] {
+  const result: T[] = [];
 
   for (const token of list) {
-    map.set(`${token.chainId}-${token.address.toLowerCase()}`, token);
-  }
+    const metaToken = meta.find(
+      t =>
+        t.chainId === token.chainId &&
+        t.address.toLowerCase() === token.address.toLowerCase()
+    );
 
-  for (const token of meta) {
-    const key = `${token.chainId}-${token.address.toLowerCase()}`;
-    const existing = map.get(key);
-
-    if (!existing) {
-      continue;
+    if (metaToken) {
+      result.push({
+        ...token,
+        logoURI: metaToken.logoURI ?? token.logoURI,
+        name: metaToken.name ?? token.name,
+        symbol: metaToken.symbol ?? token.symbol,
+        decimals: metaToken.decimals ?? token.decimals,
+        extensions: {
+          ...token.extensions,
+          ...metaToken.extensions,
+        },
+      });
+    } else {
+      result.push(token);
     }
-
-    map.set(key, {
-      ...existing,
-      logoURI: token.logoURI ?? existing.logoURI,
-      name: token.name ?? existing.name,
-      symbol: token.symbol ?? existing.symbol,
-      decimals: token.decimals ?? existing.decimals,
-      extensions: {
-        ...existing.extensions,
-        ...token.extensions,
-      },
-    });
   }
 
-  return Array.from(map.values());
+  return result;
 }

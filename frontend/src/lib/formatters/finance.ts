@@ -1,14 +1,12 @@
+import { FORMAT_DEFAULTS, SCALES } from "./config";
 import type { FormatResult } from "./types";
 
-export function formatAprPercent(raw: bigint, fractionDigits = 2): FormatResult<bigint> {
-  const percent = Number(raw) / 100;
-  const res = percent.toFixed(fractionDigits) + "%";
-
-  return { value: raw, text: res, tooltip: res };
-}
-
-export function formatAprFraction(raw: bigint): FormatResult<bigint> {
-  const res = (Number(raw) / 10_000).toString();
+export function formatAprPercent(
+  raw: bigint,
+  fractionDigits = FORMAT_DEFAULTS.fractionDigits
+): FormatResult<bigint> {
+  const percent = raw / SCALES.PERCENT;
+  const res = Number(percent).toFixed(fractionDigits) + "%";
 
   return { value: raw, text: res, tooltip: res };
 }

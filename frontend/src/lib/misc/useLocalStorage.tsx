@@ -10,12 +10,14 @@ export function useLocalStorage<T>(
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key);
+
       if (item) {
         const parsed: T = JSON.parse(item);
         if (!validate || validate(parsed)) {
           return parsed;
         }
       }
+
       return initialValue;
     } catch (error) {
       console.error(error);

@@ -20,6 +20,8 @@
       "description": "Track your lending positions and earnings across all pools",
       "title": "My Lending Positions"
     },
+    "rewards": "Reward",
+    "rewardsType": "Rewards type",
     "title": "Explore Prime Broker"
   }
 }

@@ -8,7 +8,7 @@ import { useMemo } from "react";
 export function useVaultRegistryContract(addressOverride?: Address) {
   const { chainId, publicClient, walletClient } = useClients();
 
-  const vault = useMemo(() => {
+  const vaultRegistry = useMemo(() => {
     if (!publicClient) return null;
 
     const normalized = addressOverride ? getAddress(addressOverride) : undefined;
@@ -20,5 +20,5 @@ export function useVaultRegistryContract(addressOverride?: Address) {
     });
   }, [publicClient, walletClient, chainId, addressOverride]);
 
-  return vault;
+  return vaultRegistry;
 }

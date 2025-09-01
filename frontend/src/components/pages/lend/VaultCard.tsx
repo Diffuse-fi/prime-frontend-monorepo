@@ -1,6 +1,5 @@
 import { TokenImage } from "@/components/TokenImage";
-import { VaultWithAddress } from "@/lib/core/types";
-import { useVault } from "@/lib/core/useVault";
+import { VaultFullInfo } from "../../../lib/core/types";
 import { formatDate } from "@/lib/formatters/date";
 import { formatAprPercent } from "@/lib/formatters/finance";
 import { useLocalization } from "@/lib/localization/useLocalization";
@@ -11,18 +10,35 @@ import {
   Heading,
   Text,
   TokenInput,
+  TokenInputProps,
 } from "@diffuse/ui-kit";
 import { useState } from "react";
+import { TokenInfo } from "@/lib/tokens/validations";
+import { calcAprInterest } from "@/lib/formulas";
+import { formatThousandsSpace } from "@/lib/formatters/number";
 
 type VaultProps = {
-  vault: VaultWithAddress;
+  vault: VaultFullInfo;
+  selectedAsset: TokenInfo;
+  amount?: string;
+  onAmountChange?: TokenInputProps["onValueChange"];
 };
 
-export function VaultCard({ vault }: VaultProps) {
+export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: VaultProps) {
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const { vaultFull } = useVault({ vault });
   const { dict } = useLocalization();
-  const headerText = `${vault.name}. ${formatAprPercent(vault?.targetApr).text}`;
+  const vaultAprFormatted = formatAprPercent(vault.targetApr);
+  const defaultLockupPerdiod = 90; // TODO - get real value from the vault data when ready
+  const headerText = `${vault.name}. ${vaultAprFormatted.text} (${defaultLockupPerdiod}-day lockup)`;
+  const reward = amount
+    ? calcAprInterest(BigInt(amount), vault.targetApr, {
+        durationInDays: defaultLockupPerdiod,
+      })
+    : 0n;
+  const rewardDisplay =
+    reward === 0n
+      ? ""
+      : `${formatThousandsSpace(reward).text} ${selectedAsset.symbol} (${vaultAprFormatted.text} APR)`;
 
   return (
     <Card
@@ -37,21 +53,20 @@ export function VaultCard({ vault }: VaultProps) {
     >
       <Text className="font-bold">{dict.lend.deposit}</Text>
       <TokenInput
+        value={amount}
+        onValueChange={onAmountChange}
         tokenSymbol="mUSDC"
         renderTokenImage={() => (
-          <TokenImage
-            imgURI=""
-            alt=""
-            address={vaultFull?.assets?.at(0)?.address ?? ""}
-          />
+          <TokenImage imgURI="" alt="" address={vault?.assets?.at(0)?.address ?? ""} />
         )}
       />
+      <Text className="mt-2">{`${dict.lend.rewards}: ${rewardDisplay}`}</Text>
       <ControlledCollapsible
         summary="List of strategies"
         open={detailsOpen}
         onOpenChange={setDetailsOpen}
       >
-        {vaultFull?.strategies?.map(s => (
+        {vault?.strategies?.map(s => (
           <div key={s.apr}>
             {formatAprPercent(s.apr).text} APR, until&nbsp;
             {formatDate(s.endDate).text}

@@ -62,8 +62,6 @@ const td = tv({
   defaultVariants: { align: "left" },
 });
 
-/* ---------- API ---------- */
-
 export interface TableProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof table> {}
@@ -150,7 +148,6 @@ const TableCaption = React.forwardRef<HTMLTableCaptionElement, TableCaptionProps
 );
 TableCaption.displayName = "Table.Caption";
 
-/* Export as a namespaced object */
 export const Table = Object.assign(TableRoot, {
   Header: TableHeader,
   Body: TableBody,

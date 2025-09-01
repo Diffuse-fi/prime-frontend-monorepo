@@ -15,17 +15,16 @@ export const TokenCard = React.forwardRef<HTMLDivElement, TokenCardProps>(
     return (
       <Card
         ref={ref}
-        className={cn(
-          "flex items-center gap-2 border-[color:var(--ui-accent)] flex-nowrap",
-          className
-        )}
+        className={cn("border-[color:var(--ui-accent)]", className)}
         {...props}
       >
-        {renderImage({
-          alt: symbol,
-          className: "flex-shrink-0",
-        })}
-        <Text>{symbol}</Text>
+        <div className="flex items-center gap-2 flex-nowrap">
+          {renderImage({
+            alt: symbol,
+            className: "flex-shrink-0",
+          })}
+          <Text>{symbol}</Text>
+        </div>
       </Card>
     );
   }

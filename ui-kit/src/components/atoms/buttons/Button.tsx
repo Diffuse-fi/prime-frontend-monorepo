@@ -1,5 +1,5 @@
 import * as React from "react";
-import { tv } from "@/lib";
+import { tv, VariantProps } from "@/lib";
 
 const button = tv({
   base: [
@@ -7,6 +7,7 @@ const button = tv({
     "px-4 py-2 rounded-md font-medium",
     "bg-primary text-primary-fg",
     "hover:opacity-95 focus:outline-none",
+    "cursor-pointer disabled:cursor-not-allowed",
   ],
   variants: {
     variant: {
@@ -18,11 +19,14 @@ const button = tv({
   defaultVariants: { size: "md" },
 });
 
-export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
-};
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+  VariantProps<typeof button>;
 
-export function Button({ className, variant, size, ...rest }: ButtonProps) {
-  return <button className={button({ variant, size, className })} {...rest} />;
-}
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  { className, variant, size, ...rest },
+  ref
+) {
+  return <button ref={ref} className={button({ variant, size, className })} {...rest} />;
+});
+
+Button.displayName = "Button";

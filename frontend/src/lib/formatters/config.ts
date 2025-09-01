@@ -9,3 +9,12 @@ export const LTV: Required<LtvThresholds> = {
   warnAt: 0.75,
   dangerAt: 0.85,
 };
+
+export const SCALES = {
+  BPS: 10_000n,
+  PERCENT: 100n,
+} as const;
+
+export const FORMAT_DEFAULTS = {
+  fractionDigits: 2,
+} as const;

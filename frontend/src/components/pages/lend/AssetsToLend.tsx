@@ -5,8 +5,8 @@ import { Skeleton, TokenCard } from "@diffuse/ui-kit";
 type Option = TokenInfo;
 
 interface AssetsToLendProps {
-  selectedAsset?: string | null;
-  onSelectAsset?: (asset: string) => void;
+  selectedAsset?: TokenInfo | null;
+  onSelectAsset?: (asset: TokenInfo) => void;
   options: Option[];
   isLoading?: boolean;
   skeletonsToShow?: number;
@@ -38,9 +38,9 @@ export function AssetsTolend({
                 />
               )}
               className={`cursor-pointer h-12 ${
-                selectedAsset === option.address && "border-orange-500"
+                selectedAsset?.address === option.address && "border-orange-500"
               }`}
-              onClick={() => onSelectAsset?.(option.address)}
+              onClick={() => onSelectAsset?.(option)}
             />
           ))}
     </div>
