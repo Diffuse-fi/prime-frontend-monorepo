@@ -60,7 +60,7 @@ export default function LendPage() {
     }
 
     return {
-      text: dict.lend.approveButtonText,
+      text: dict.lend.enterAmountButtonText,
       disabled: true,
       onClick: undefined,
       className: "",

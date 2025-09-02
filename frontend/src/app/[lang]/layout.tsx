@@ -22,7 +22,7 @@ import Link from "@/components/Link";
 import ConnectButton from "@/components/ConnectButton";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import Image from "next/image";
-import { SiteNavigation } from "@/components/SiteNavigation";
+import { ClientNavigation } from "@/components/ClientNavigation";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
@@ -83,6 +83,7 @@ export default async function RootLayout({
           >
             <Providers locale={lang}>
               <Navbar
+                className="sticky top-0 z-50"
                 logo={
                   <Link
                     href="/"
@@ -96,18 +97,18 @@ export default async function RootLayout({
                   </Link>
                 }
                 navigation={
-                  <SiteNavigation
+                  <ClientNavigation
+                    ariaLabel="Site navigation"
+                    locale={lang}
                     config={[
                       {
                         href: "/lend",
-                        title: dictionary.common.navbar.navigation.lend,
-                        locale: lang,
+                        label: dictionary.common.navbar.navigation.lend,
                       },
                       {
                         href: "/borrow",
-                        title: dictionary.common.navbar.navigation.borrow,
+                        label: dictionary.common.navbar.navigation.borrow,
                         disabled: true,
-                        locale: lang,
                       },
                     ]}
                   />

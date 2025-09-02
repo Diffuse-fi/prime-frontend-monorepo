@@ -19,7 +19,8 @@ export type VaultAllowance = {
   status: AllowanceStatus;
 };
 
-type Pending = Record<`${Address}:${Address}`, boolean>;
+type AddressPair = `${Address}:${Address}`;
+type Pending = Record<AddressPair, boolean>;
 
 export type EnsureAllowancesResult = {
   allowances: VaultAllowance[] | undefined;
@@ -37,21 +38,21 @@ const ROOT = "allowance-erc20";
 const qKeys = {
   allowances: (
     chainId: number | undefined,
-    assets: string | undefined,
-    amounts: string | undefined,
     owner: Address | undefined,
-    spenders: string | undefined
+    pairKey: string | undefined
   ) =>
     qk([
       QV.allowance,
       ROOT,
       opt(chainId),
-      opt(assets),
-      opt(amounts),
       opt(owner),
-      opt(spenders),
+      opt(pairKey),
     ]),
 };
+
+function pairKey(asset: Address, spender: Address) {
+  return `${asset}:${spender}` as const;
+}
 
 export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult {
   const [pending, setPending] = useState<Pending>({});
@@ -59,27 +60,40 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
   const { address: ownerAddr, publicClient, chainId } = useClients();
   const isMounted = useIsMountedRef();
   const { writeContractAsync } = useWriteContract();
-  const addressKey = sv.map(v => v.address.toLowerCase()).join("-") || undefined;
-  const assetsKey = sv.map(v => v.assetAddress.toLowerCase()).join("-") || undefined;
-  const amountsKey = sv.map(v => v.amount.toString()).join("-") || undefined;
   const vaultsConsistency = sv.every(v => v.chainId === chainId);
   const enabled = sv?.length > 0 && !!ownerAddr && !!publicClient && vaultsConsistency;
 
+  const pairs = useMemo(() => {
+    const set = new Map<`${Address}:${Address}`, { asset: Address; spender: Address }>();
+    for (const v of sv) {
+      const asset = getAddress(v.assetAddress);
+      const spender = getAddress(v.address);
+      set.set(pairKey(asset, spender), { asset, spender });
+    }
+    return Array.from(set.values());
+  }, [sv]);
+
+  const pairsKey = useMemo(
+    () =>
+      pairs.length ? pairs.map(p => `${p.asset}-${p.spender}`).join("|") : undefined,
+    [pairs]
+  );
+
   const {
-    data: allowances,
+    data: rawAllowances,
     refetch,
     isPending,
   } = useQuery({
-    queryKey: qKeys.allowances(chainId, assetsKey, amountsKey, ownerAddr, addressKey),
+    queryKey: qKeys.allowances(chainId, ownerAddr, pairsKey),
     enabled,
     refetchOnWindowFocus: false,
     gcTime: 1000 * 60 * 10,
-    queryFn: async ({ signal }): Promise<VaultAllowance[]> => {
-      const calls = sv.map(v => ({
+    queryFn: async ({ signal }): Promise<Map<AddressPair, bigint | null>> => {
+      const calls = pairs.map(p => ({
         abi: erc20Abi,
-        address: getAddress(v.assetAddress),
+        address: p.asset,
         functionName: "allowance" as const,
-        args: [getAddress(ownerAddr!), getAddress(v.address)],
+        args: [getAddress(ownerAddr!), p.spender],
       }));
 
       try {
@@ -87,54 +101,61 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
           publicClient!.multicall({ contracts: calls }),
           signal
         );
+        const map = new Map<AddressPair, bigint | null>();
 
-        return sv.map((v, i) => {
-          if (signal.aborted) throw new DOMException("Aborted", "AbortError");
-
-          const r = results[i];
-          const current = r.status === "success" ? r.result : null;
-
-          const status: AllowanceStatus =
-            current == null
-              ? "unknown"
-              : current >= v.amount
-                ? "ok"
-                : current === 0n
-                  ? "missing"
-                  : "insufficient";
-
-          return { vault: v, current, status };
+        results.forEach((r, i) => {
+          const key = pairKey(pairs[i].asset, pairs[i].spender);
+          map.set(key, r.status === "success" ? (r.result as bigint) : null);
         });
-      } catch {
-        const out: VaultAllowance[] = [];
 
-        for (const v of sv) {
+        return map;
+      } catch {
+        const map = new Map<AddressPair, bigint | null>();
+
+        for (const p of pairs) {
           try {
             const current = await publicClient!.readContract({
               abi: erc20Abi,
-              address: v.assetAddress,
+              address: p.asset,
               functionName: "allowance",
-              args: [ownerAddr!, v.address],
+              args: [ownerAddr!, p.spender],
             });
-
-            const status: AllowanceStatus =
-              current >= v.amount ? "ok" : current === 0n ? "missing" : "insufficient";
-            out.push({ vault: v, current, status });
+            map.set(pairKey(p.asset, p.spender), current);
           } catch {
-            out.push({ vault: v, current: null, status: "unknown" });
+            map.set(pairKey(p.asset, p.spender), null);
           }
         }
-        return out;
+        return map;
       }
     },
   });
 
+  const allowances: VaultAllowance[] | undefined = useMemo(() => {
+    if (!rawAllowances) return undefined;
+
+    return sv.map(v => {
+      const key = pairKey(getAddress(v.assetAddress), getAddress(v.address));
+      const current = rawAllowances.get(key) ?? null;
+
+      const status: AllowanceStatus =
+        current == null
+          ? "unknown"
+          : current >= v.amount
+            ? "ok"
+            : current === 0n
+              ? "missing"
+              : "insufficient";
+
+      return { vault: v, current, status };
+    });
+  }, [sv, rawAllowances]);
+
   const allowanceByKey = useMemo(() => {
-    const map = new Map<`${Address}:${Address}`, VaultAllowance>();
-    allowances?.forEach(a => {
+    const map = new Map<AddressPair, VaultAllowance>();
+    allowances?.forEach(allowance => {
       map.set(
-        `${getAddress(a.vault.assetAddress)}:${getAddress(a.vault.address)}` as const,
-        a
+        `${getAddress(allowance.vault.assetAddress)}:${getAddress(allowance.vault.address)}` as const,
+        allowance
       );
     });
     return map;

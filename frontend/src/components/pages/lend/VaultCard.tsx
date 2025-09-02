@@ -6,16 +6,16 @@ import { useLocalization } from "@/lib/localization/useLocalization";
 import {
   Badge,
   Card,
-  ControlledCollapsible,
   Heading,
   Text,
   TokenInput,
   TokenInputProps,
+  UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
-import { useState } from "react";
 import { TokenInfo } from "@/lib/tokens/validations";
 import { calcAprInterest } from "@/lib/formulas";
 import { formatUnits } from "@/lib/formatters/token";
+import { RisksNotice } from "./RisksNotice";
 
 type VaultProps = {
   vault: VaultFullInfo;
@@ -25,7 +25,6 @@ type VaultProps = {
 };
 
 export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: VaultProps) {
-  const [detailsOpen, setDetailsOpen] = useState(false);
   const { dict } = useLocalization();
   const vaultAprFormatted = formatAprToPercent(vault.targetApr);
   const defaultLockupPerdiod = 90; // TODO - get real value from the vault data when ready
@@ -64,18 +63,17 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
         )}
       />
       <Text className="mt-2">{`${dict.lend.rewards}: ${rewardDisplay}`}</Text>
-      <ControlledCollapsible
-        summary="List of strategies"
-        open={detailsOpen}
-        onOpenChange={setDetailsOpen}
-      >
+      <UncontrolledCollapsible summary="List of strategies" defaultOpen={false}>
         {vault?.strategies?.map(s => (
           <div key={s.apr}>
             {formatAprToPercent(s.apr).text} APR, until&nbsp;
             {formatDate(s.endDate).text}
           </div>
         ))}
-      </ControlledCollapsible>
+      </UncontrolledCollapsible>
+      <UncontrolledCollapsible summary="Risks" defaultOpen={false}>
+        <RisksNotice risks={dict.lend.risks} />
+      </UncontrolledCollapsible>
     </Card>
   );
 }

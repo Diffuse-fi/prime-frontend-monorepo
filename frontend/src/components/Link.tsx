@@ -1,5 +1,4 @@
 import { localizePath, PropsWithLocale } from "@/lib/localization/locale";
-import { cn } from "@diffuse/ui-kit";
 import NextLink, { LinkProps } from "next/link";
 import { AnchorHTMLAttributes, ReactNode } from "react";
 
@@ -19,15 +18,13 @@ export default function Link({
   className,
   ...p
 }: LinkPropsExtended) {
-  const computedCn = cn("c", className);
-
   if (disabled) {
     return (
       <span
         aria-disabled="true"
         tabIndex={-1}
         inert
-        className={`${computedCn ?? ""} opacity-60 cursor-not-allowed`}
+        className={`${className} opacity-60 cursor-not-allowed`}
         role="link"
       >
         {children}
@@ -36,7 +33,7 @@ export default function Link({
   }
 
   return (
-    <NextLink href={localizePath(String(href), locale)} className={computedCn} {...p}>
+    <NextLink href={localizePath(String(href), locale)} className={className} {...p}>
       {children}
     </NextLink>
   );

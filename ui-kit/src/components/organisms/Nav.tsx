@@ -1,33 +1,43 @@
 import * as React from "react";
-import { NavigationMenu } from "radix-ui";
 import { cn, tv } from "@/lib";
 
 export type NavVariant = "default" | "tabs";
 
 export interface NavItem {
   href: string;
-  label: React.ReactNode;
-  icon?: React.ReactNode;
+  label: string;
   disabled?: boolean;
-  className?: string;
-  active?: boolean;
+  exact?: boolean;
+  external?: boolean;
+  target?: string;
+  rel?: string;
 }
 
 export interface NavProps extends React.HTMLAttributes<HTMLElement> {
   items: NavItem[];
+  "aria-label": string;
+  variant?: NavVariant;
+  dir?: "ltr" | "rtl";
   listClassName?: string;
   itemClassName?: string;
   activeClassName?: string;
-  variant?: NavVariant;
-  dir?: "ltr" | "rtl";
+  renderLink?: (props: {
+    href: string;
+    className?: string;
+    children: React.ReactNode;
+    "aria-current"?: "page";
+    disabled?: boolean;
+  }) => React.ReactElement;
+  getIsActive?: (item: NavItem, pathname: string) => boolean;
+  pathname: string;
 }
 
-const root = tv({
+const list = tv({
   base: "flex items-center gap-2",
   variants: {
     variant: {
       default: "",
-      tabs: "border-b border-border",
+      tabs: "border-b [border-color:var(--ui-border)]",
     },
   },
   defaultVariants: {
@@ -35,73 +45,92 @@ const root = tv({
   },
 });
 
-export const Nav = React.forwardRef<HTMLElement, NavProps>(
-  (
-    {
-      items,
-      listClassName,
-      itemClassName,
-      activeClassName,
-      className,
-      defaultValue,
-      variant = "default",
-      ...rest
+const linkBase =
+  "inline-flex items-center gap-2 px-3 py-2 text-sm font-medium " +
+  "transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 " +
+  "focus-visible:ring-primary/60 focus-visible:ring-offset-transparent";
+
+const linkVariants: Record<NavVariant, string> = {
+  default: "rounded-md text-foreground/80 hover:text-primary",
+  tabs: "rounded-none -mb-px border-b-2 border-transparent text-foreground/80 hover:text-primary",
+};
+
+const activeVariants: Record<NavVariant, string> = {
+  default: "text-primary font-bold",
+  tabs: "border-primary text-primary",
+};
+
+export const Nav = React.forwardRef<HTMLElement, NavProps>(function Nav(
+  {
+    items,
+    variant = "default",
+    dir,
+    className,
+    listClassName,
+    itemClassName,
+    activeClassName,
+    renderLink,
+    getIsActive,
+    pathname,
+    ...rest
+  },
+  ref
+) {
+  const isActive = React.useCallback(
+    (item: NavItem) => {
+      if (getIsActive) return getIsActive(item, pathname);
+      if (item.exact) return pathname === item.href;
+      if (item.href === "/") return pathname === "/";
+
+      return pathname.startsWith(item.href);
     },
-    ref
-  ) => {
-    return (
-      <NavigationMenu.Root ref={ref} className={root({ variant, className })} {...rest}>
-        <NavigationMenu.List className={cn("flex gap-2", listClassName)}>
-          {items.map(item => {
-            const active = item.active ?? false;
-            const content = (
-              <>
-                {item.icon ? <span className="shrink-0">{item.icon}</span> : null}
-                <span>{item.label}</span>
-              </>
-            );
+    [getIsActive, pathname]
+  );
 
-            if (item.disabled) {
-              return (
-                <li
-                  key={item.href}
-                  className={cn(
-                    "opacity-50 cursor-not-allowed flex items-center gap-1 px-3 py-2 rounded-[var(--ui-radius,10px)]",
-                    item.className
-                  )}
-                >
-                  {content}
-                </li>
-              );
-            }
+  return (
+    <nav ref={ref} dir={dir} className={className} {...rest}>
+      <ul className={cn(list({ variant }), listClassName)}>
+        {items.map(item => {
+          const active = isActive(item);
+          const disabled = item.disabled;
+          const classes = cn(
+            linkBase,
+            linkVariants[variant],
+            active && activeVariants[variant],
+            active && activeClassName,
+            disabled && "opacity-50",
+            itemClassName
+          );
 
-            return (
-              <li key={item.href}>
-                <Link
+          const children = <span>{item.label}</span>;
+
+          return (
+            <li key={item.href}>
+              {renderLink ? (
+                renderLink({
+                  href: item.href,
+                  className: classes,
+                  children,
+                  "aria-current": active ? "page" : undefined,
+                  disabled,
+                })
+              ) : (
+                <a
                   href={item.href}
-                  className={cn(
-                    "flex items-center gap-1 px-3 py-2 rounded-[var(--ui-radius,10px)] transition-colors",
-                    "hover:bg-[color:var(--ui-border)]/20",
-                    active
-                      ? cn(
-                          "bg-[color:var(--ui-primary)] text-[color:var(--ui-primary-fg)]",
-                          activeClassName
-                        )
-                      : "text-[color:var(--ui-fg)]",
-                    itemClassName,
-                    item.className
-                  )}
+                  className={classes}
                   aria-current={active ? "page" : undefined}
+                  target={item.external ? (item.target ?? "_blank") : item.target}
+                  rel={item.external ? (item.rel ?? "noopener noreferrer") : item.rel}
                 >
-                  {content}
-                </Link>
-              </li>
-            );
-          })}
-        </NavigationMenu.List>
-      </NavigationMenu.Root>
-    );
-  }
-);
+                  {children}
+                </a>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+});
 
 Nav.displayName = "Nav";

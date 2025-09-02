@@ -21,8 +21,22 @@
       "description": "Track your lending positions and earnings across all pools",
       "title": "My Lending Positions"
     },
+    "navigation": {
+      "lend": "Lend",
+      "myPositions": "My Positions"
+    },
     "rewards": "Reward",
     "rewardsType": "Rewards type",
+    "risks": [
+      {
+        "description": "If borrower demand is high, your funds may be fully utilized in active strategies. This limits the ability to withdraw early or rebalance.",
+        "title": "Utilization & Liquidity Risk"
+      },
+      {
+        "description": "Strategies may interact with external protocols such as Aave, Pendle, Spectra, Ethena, Resolv, etc. Smart contract bugs, economic design flaws, governance failures, or insolvency in any of these protocols could lead to partial or total loss of deposited funds.",
+        "title": "Underlying Protocol Risk"
+      }
+    ],
     "title": "Explore Prime Broker"
   }
 }
