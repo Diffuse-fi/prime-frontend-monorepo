@@ -8,8 +8,19 @@ import { opt, qk } from "../query/helpers";
 import { useTokensMeta } from "../tokens/useTokensMeta";
 import { populateTokenListWithMeta } from "../tokens/tokensMeta";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import { raceSignal as abortable } from "race-signal";
 import pLimit from "p-limit";
+import { Address, getAddress } from "viem";
+
+export type UseVaultsResult = {
+  vaults: VaultFullInfo[];
+  invalidate: () => void;
+  isPending: boolean;
+  isPendingLimits: boolean;
+};
+
+const STRATEGY_LIMIT = pLimit(6);
+const ASSET_LIMIT = pLimit(6);
+const VAULT_LIMITS_LIMIT = pLimit(3);
 
 const ROOT = "vault" as const;
 const version = QV.vault;
@@ -18,16 +29,25 @@ const qKeys = {
     qk([ROOT, version, opt(address), chainId, "strategies"]),
   assets: (address: string | null, chainId: number) =>
     qk([ROOT, version, opt(address), chainId, "assets"]),
+  limits: (addresses: string | null, chainId: number, owner: Address | undefined) =>
+    qk([
+      ROOT,
+      version,
+      opt(addresses),
+      chainId,
+      opt(owner),
+      "limits",
+    ]),
 };
 
-export function useVaults() {
-  const { chainId, publicClient, walletClient } = useClients();
+export function useVaults(): UseVaultsResult {
+  const { chainId, publicClient, walletClient, address: owner } = useClients();
   const { allVaults } = useVaultRegistry();
   const qc = useQueryClient();
   const { meta } = useTokensMeta(chainId);
 
   const addressKey = useMemo(() => {
-    if (!allVaults?.length) return "-";
+    if (!allVaults?.length) return null;
 
     const sorted = [...allVaults].map(v => v.vault.toLowerCase()).sort();
 
@@ -37,22 +57,24 @@ export function useVaults() {
   const vaultContracts = useMemo(() => {
     if (!publicClient || !allVaults?.length || !chainId) return [];
 
-    return allVaults.map(({ vault: vaultAddress, name, targetApr }) => ({
-      name,
-      address: vaultAddress,
-      targetApr,
-      contract: new Vault({
-        address: vaultAddress,
-        chainId,
-        client: { public: publicClient, wallet: walletClient },
-      }),
-    }));
+    return allVaults.map(({ vault: vaultAddress, name, targetApr }) => {
+      const address = getAddress(vaultAddress);
+
+      return {
+        name,
+        address,
+        targetApr,
+        contract: new Vault({
+          address,
+          chainId,
+          client: { public: publicClient, wallet: walletClient },
+        }),
+      };
+    });
   }, [publicClient, walletClient, chainId, allVaults]);
 
-  const stratLimit = useMemo(() => pLimit(6), []);
-  const assetLimit = useMemo(() => pLimit(6), []);
-
-  const enabled = !!chainId && !!publicClient && vaultContracts.length > 0;
+  const enabled =
+    !!chainId && !!publicClient && !!addressKey && vaultContracts.length > 0;
 
   const strategiesQueries = useQuery({
     placeholderData: keepPreviousData,
@@ -62,21 +84,16 @@ export function useVaults() {
     queryFn: async ({ signal }) => {
       if (!vaultContracts.length) return [];
 
-      const results = await abortable(
-        Promise.all(
-          vaultContracts.map(vault =>
-            stratLimit(() =>
-              vault.contract.getStrategies().then(strs => ({
-                vaultAddress: vault.address,
-                strategies: strs,
-              }))
-            )
+      const results = await Promise.all(
+        vaultContracts.map(vault =>
+          STRATEGY_LIMIT(() =>
+            vault.contract.getStrategies({ signal }).then(strs => ({
+              vaultAddress: vault.address,
+              strategies: strs,
+            }))
           )
-        ),
-        signal
+        )
       );
-
-      if (signal.aborted) throw new DOMException("Aborted", "AbortError");
 
       return results.flatMap(({ strategies, vaultAddress }) =>
         strategies.map(s => ({
@@ -90,6 +107,51 @@ export function useVaults() {
     staleTime: 60 * 1000 * 5,
   });
 
+  const limitsQueries = useQuery({
+    enabled: enabled && !!owner,
+    placeholderData: keepPreviousData,
+    queryKey: qKeys.limits(addressKey, chainId, owner),
+    refetchOnWindowFocus: false,
+    queryFn: async ({ signal }) => {
+      if (!vaultContracts.length) return [];
+
+      const results = await Promise.all(
+        vaultContracts.flatMap(v => [
+          VAULT_LIMITS_LIMIT(() =>
+            v.contract
+              .getMaxDeposit(owner!, { signal })
+              .then(maxDeposit => ({ v: v.address, maxDeposit }))
+          ),
+          VAULT_LIMITS_LIMIT(() =>
+            v.contract
+              .getMaxWithdraw(owner!, { signal })
+              .then(maxWithdraw => ({ v: v.address, maxWithdraw }))
+          ),
+        ])
+      );
+
+      if (signal.aborted) throw new DOMException("Aborted", "AbortError");
+
+      const limitsMap = new Map<Address, { maxDeposit: bigint; maxWithdraw: bigint }>();
+
+      for (const r of results) {
+        const prev = limitsMap.get(r.v) ?? { maxDeposit: 0n, maxWithdraw: 0n };
+        if ("maxDeposit" in r) prev.maxDeposit = r.maxDeposit;
+        if ("maxWithdraw" in r) prev.maxWithdraw = r.maxWithdraw;
+
+        limitsMap.set(r.v, prev);
+      }
+
+      return Array.from(limitsMap, ([vaultAddress, { maxDeposit, maxWithdraw }]) => ({
+        vaultAddress,
+        maxDeposit,
+        maxWithdraw,
+      }));
+    },
+    staleTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 60 * 2,
+  });
+
   const rawAssetsQueries = useQuery({
     enabled,
     placeholderData: keepPreviousData,
@@ -98,18 +160,15 @@ export function useVaults() {
     queryFn: async ({ signal }) => {
       if (!vaultContracts.length) return [];
 
-      const results = await abortable(
-        Promise.all(
-          vaultContracts.map(vault =>
-            assetLimit(() =>
-              vault.contract.getAssets().then(assets => ({
-                vaultAddress: vault.address,
-                assets,
-              }))
-            )
+      const results = await Promise.all(
+        vaultContracts.map(vault =>
+          ASSET_LIMIT(() =>
+            vault.contract.getAssets({ signal }).then(assets => ({
+              vaultAddress: vault.address,
+              assets,
+            }))
           )
-        ),
-        signal
+        )
       );
 
       if (signal.aborted) throw new DOMException("Aborted", "AbortError");
@@ -117,7 +176,7 @@ export function useVaults() {
       return results.flatMap(({ assets, vaultAddress }) =>
         assets.map(({ asset, symbol, decimals }) => ({
           chainId,
-          address: asset,
+          address: getAddress(asset),
           symbol,
           name: symbol,
           decimals,
@@ -137,34 +196,75 @@ export function useVaults() {
     });
   }, [rawAssetsQueries.data, meta]);
 
-  const strategies = strategiesQueries.data;
+  const limits = limitsQueries.data;
+
+  const strategiesByVault = useMemo(() => {
+    const m = new Map<Address, typeof strategiesQueries.data>();
+
+    strategiesQueries.data?.forEach(s => {
+      const k = s.vaultAddress;
+      const arr = m.get(k);
+      if (arr) arr.push(s);
+      else m.set(k, [s]);
+    });
+
+    return m;
+  }, [strategiesQueries]);
+
+  const assetsByVault = useMemo(() => {
+    const m = new Map<Address, ReturnType<typeof populateTokenListWithMeta>>();
+
+    assets.forEach(a => {
+      const k = a.vaultAddress;
+      const arr = m.get(k);
+      if (arr) arr.push(a);
+      else m.set(k, [a]);
+    });
+
+    return m;
+  }, [assets]);
+
+  const limitsByVault = useMemo(() => {
+    const m = new Map<Address, { maxDeposit?: bigint; maxWithdraw?: bigint }>();
+
+    limits?.forEach(l => m.set(l.vaultAddress, l));
+
+    return m;
+  }, [limits]);
 
   const vaults: VaultFullInfo[] = useMemo(
     () =>
-      vaultContracts.map(v => {
-        const vaultAssets = assets.filter(a => a.vaultAddress === v.address);
-        const vaultStrategies =
-          strategies?.filter(s => s.vaultAddress === v.address) ?? [];
-
-        return {
-          ...v,
-          strategies: vaultStrategies,
-          assets: vaultAssets,
-        };
-      }),
-    [vaultContracts, assets, strategies]
+      vaultContracts.map(v => ({
+        ...v,
+        strategies: strategiesByVault.get(v.address) ?? [],
+        assets: assetsByVault.get(v.address) ?? [],
+        limits: {
+          maxDeposit: limitsByVault.get(v.address)?.maxDeposit,
+          maxWithdraw: limitsByVault.get(v.address)?.maxWithdraw,
+        },
+      })),
+    [vaultContracts, strategiesByVault, assetsByVault, limitsByVault]
   );
 
   const invalidate = () => {
-    qc.invalidateQueries({ queryKey: qKeys.assets(addressKey, chainId) });
-    qc.invalidateQueries({ queryKey: qKeys.strategies(addressKey, chainId) });
+    if (!chainId || !addressKey) return;
+
+    const promises = [
+      qc.invalidateQueries({ queryKey: qKeys.assets(addressKey, chainId) }),
+      qc.invalidateQueries({ queryKey: qKeys.strategies(addressKey, chainId) }),
+      qc.invalidateQueries({ queryKey: qKeys.limits(addressKey, chainId, owner) }),
+    ];
+
+    return Promise.all(promises);
   };
 
   const isPending = strategiesQueries.isPending || rawAssetsQueries.isPending;
+  const isPendingLimits = limitsQueries.isPending;
 
   return {
     vaults,
     invalidate,
     isPending,
+    isPendingLimits,
   };
 }

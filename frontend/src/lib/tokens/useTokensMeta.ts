@@ -9,15 +9,13 @@ const qk = {
   tokensMeta: (chainId: number) => [ROOT, version, "tokensMeta", chainId] as const,
 };
 
-async function fetchTokensMeta(chainId: number): Promise<TokenInfo[]> {
-  const r = await fetch(apiUrl("tokensMetaList", { chains: [chainId] }));
-  return await (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)));
-}
-
 export function useTokensMeta(chainId: number) {
-  const res = useQuery({
+  const res = useQuery<TokenInfo[]>({
     queryKey: qk.tokensMeta(chainId),
-    queryFn: () => fetchTokensMeta(chainId),
+    queryFn: async ({ signal }) => {
+      const r = await fetch(apiUrl("tokensMetaList", { chains: [chainId] }), { signal });
+      return await (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)));
+    },
     staleTime: 1000 * 60 * 60,
     placeholderData: keepPreviousData,
   });

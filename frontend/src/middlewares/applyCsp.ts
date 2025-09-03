@@ -1,29 +1,26 @@
 import { nonceHeader, randomNonce } from "@/lib/nonce";
 import { type Finalizer } from "./utils";
-import { berachain } from "@/lib/chains/berachain";
-import { ethMainnet } from "@/lib/chains/mainnet";
+import { chains } from "@/lib/chains";
 
 const isProd = process.env.NODE_ENV === "production";
 const testnetsEnabled = process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true";
 const mainnetsEnabled = process.env.NEXT_PUBLIC_ENABLE_MAINNETS === "true";
 
 // Allowed sources to connect to, e.g. for fetch, WebSocket, etc.
-const allowedSources = [
+const allowedSourcesRaw = [
   "'self'",
   "https://www.google-analytics.com",
-  ...(testnetsEnabled
-    ? [
-        berachain.rpcUrls.default.http,
-      ]
-    : []),
-  ...(mainnetsEnabled
-    ? [
-        ethMainnet.rpcUrls.default.http,
-      ]
-    : []),
-]
-  .filter(Boolean)
-  .join(" ");
+];
+
+if (mainnetsEnabled) {
+  allowedSourcesRaw.push(...chains.mainnets.map(c => c.rpcUrls.default.http).flat());
+}
+
+if (testnetsEnabled) {
+  allowedSourcesRaw.push(...chains.testnets.map(c => c.rpcUrls.default.http).flat());
+}
+
+const allowedSources = allowedSourcesRaw.filter(Boolean).join(" ");
 
 const allowedTrirdPartyScripts = [
   "https://www.googletagmanager.com",

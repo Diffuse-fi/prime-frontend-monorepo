@@ -9,6 +9,7 @@ import { SelectedVault } from "./types";
 import { produce } from "immer";
 import { raceSignal as abortable } from "race-signal";
 import useIsMountedRef from "use-is-mounted-ref";
+import { WalletRequiredError } from "@diffuse/sdk-js";
 
 export type ApprovalPolicy = "exact" | "infinite";
 export type AllowanceStatus = "ok" | "missing" | "insufficient" | "unknown";
@@ -64,10 +65,11 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
   const enabled = sv?.length > 0 && !!ownerAddr && !!publicClient && vaultsConsistency;
 
   const pairs = useMemo(() => {
-    const set = new Map<`${Address}:${Address}`, { asset: Address; spender: Address }>();
+    const set = new Map<AddressPair, { asset: Address; spender: Address }>();
     for (const v of sv) {
       const asset = getAddress(v.assetAddress);
       const spender = getAddress(v.address);
+
       set.set(pairKey(asset, spender), { asset, spender });
     }
     return Array.from(set.values());
@@ -114,12 +116,15 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
 
         for (const p of pairs) {
           try {
-            const current = await publicClient!.readContract({
-              abi: erc20Abi,
-              address: p.asset,
-              functionName: "allowance",
-              args: [ownerAddr!, p.spender],
-            });
+            const current = await abortable(
+              publicClient!.readContract({
+                abi: erc20Abi,
+                address: p.asset,
+                functionName: "allowance",
+                args: [getAddress(ownerAddr!), p.spender],
+              }),
+              signal
+            );
             map.set(pairKey(p.asset, p.spender), current);
           } catch {
             map.set(pairKey(p.asset, p.spender), null);
@@ -163,7 +168,7 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
 
   const approveOne = useCallback(
     async (v: SelectedVault, opts?: { mode?: ApprovalPolicy }) => {
-      if (!ownerAddr) throw new Error("WALLET_REQUIRED");
+      if (!ownerAddr) throw new WalletRequiredError();
 
       const key = `${v.assetAddress}:${v.address}` as const;
       const needsLegacyAllowance = v.legacyAllowance;

@@ -2,9 +2,10 @@ import { Address, getContract } from "viem";
 import { vaultAbi } from "./abi";
 import { resolveAddress } from "../../addresses/resolve";
 import { Init } from "@/types";
-import { normalizeViemError } from "@/errors/normalize";
+import { normalizeError } from "@/errors/normalize";
 import { WalletRequiredError } from "@/errors/errors";
-import { ContractBase, GenericContractType } from "../shared";
+import { ContractBase, GenericContractType, SdkRequestOptions } from "../shared";
+import { raceSignal as abortable } from "race-signal";
 
 /** @internal */
 type VaultContract = GenericContractType<typeof vaultAbi>;
@@ -36,93 +37,15 @@ export class Vault extends ContractBase {
     super(init);
   }
 
-  private getContract() {
+  private getContract(): VaultContract {
     return getVaultContract(this.init);
   }
 
-  async availableLiquidity(): Promise<bigint> {
+  async getStrategies({ signal }: SdkRequestOptions = {}) {
     try {
-      return this.getContract().read.availableLiquidity();
+      return abortable(this.getContract().read.getStrategies(), signal);
     } catch (e) {
-      throw normalizeViemError(e, {
-        op: "availableLiquidity",
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
-  async getBorrowAPR(): Promise<bigint> {
-    try {
-      return this.getContract().read.getBorrowAPR();
-    } catch (e) {
-      throw normalizeViemError(e, {
-        op: "getBorrowAPR",
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
-  async totalAssets() {
-    try {
-      return this.getContract().read.totalAssets();
-    } catch (e) {
-      throw normalizeViemError(e, {
-        op: "totalAssets",
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
-  async balanceOf(user: Address): Promise<bigint> {
-    try {
-      return this.getContract().read.balanceOf([user]);
-    } catch (e) {
-      throw normalizeViemError(e, {
-        op: "balanceOf",
-        contract: contractName,
-        chainId: this.chainId,
-        user,
-      });
-    }
-  }
-
-  async getBorrowerPositions(user: Address) {
-    try {
-      const ids = await this.getContract().read.getBorrowerPositionIds([
-        user,
-      ]);
-      if (!ids.length) return [];
-
-      const positions = await Promise.all(
-        ids.map(id =>
-          this.init.client.public.readContract({
-            address: this.getContract().address,
-            abi: vaultAbi,
-            functionName: "getBorrowerPosition",
-            args: [id],
-          })
-        )
-      );
-
-      return positions;
-    } catch (e) {
-      throw normalizeViemError(e, {
-        op: "getBorrowerPositions",
-        user,
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
-  async getStrategies() {
-    try {
-      return this.getContract().read.getStrategies();
-    } catch (e) {
-      throw normalizeViemError(e, {
+      throw normalizeError(e, {
         op: "getStrategies",
         contract: contractName,
         chainId: this.chainId,
@@ -130,11 +53,11 @@ export class Vault extends ContractBase {
     }
   }
 
-  async getAssets() {
+  async getAssets({ signal }: SdkRequestOptions = {}) {
     try {
-      return this.getContract().read.getAssets();
+      return abortable(this.getContract().read.getAssets(), signal);
     } catch (e) {
-      throw normalizeViemError(e, {
+      throw normalizeError(e, {
         op: "getAssets",
         contract: contractName,
         chainId: this.chainId,
@@ -142,7 +65,7 @@ export class Vault extends ContractBase {
     }
   }
 
-  async deposit(args: [bigint, Address]) {
+  async deposit(args: [bigint, Address], { signal }: SdkRequestOptions = {}) {
     if (!this.init.client.wallet) throw new WalletRequiredError("deposit");
 
     const c = this.getContract();
@@ -150,17 +73,20 @@ export class Vault extends ContractBase {
     try {
       if (!this.init.client.wallet) throw new WalletRequiredError("deposit");
 
-      const sim = await this.init.client.public.simulateContract({
-        address: c.address,
-        abi: vaultAbi,
-        functionName: "deposit",
-        args,
-        account: this.init.client.wallet.account!,
-      });
+      const sim = await abortable(
+        this.init.client.public.simulateContract({
+          address: c.address,
+          abi: vaultAbi,
+          functionName: "deposit",
+          args,
+          account: this.init.client.wallet.account!,
+        }),
+        signal
+      );
 
-      return await this.init.client.wallet.writeContract(sim.request);
+      return await abortable(this.init.client.wallet.writeContract(sim.request), signal);
     } catch (e) {
-      throw normalizeViemError(e, {
+      throw normalizeError(e, {
         op: "deposit",
         args,
         contract: contractName,
@@ -169,23 +95,26 @@ export class Vault extends ContractBase {
     }
   }
 
-  async withdraw(args: [bigint, Address, Address]) {
+  async withdraw(args: [bigint, Address, Address], { signal }: SdkRequestOptions = {}) {
     if (!this.init.client.wallet) throw new WalletRequiredError("withdraw");
 
     const c = this.getContract();
 
     try {
-      const sim = await this.init.client.public.simulateContract({
-        address: c.address,
-        abi: vaultAbi,
-        functionName: "withdraw",
-        args,
-        account: this.init.client.wallet.account!,
-      });
+      const sim = await abortable(
+        this.init.client.public.simulateContract({
+          address: c.address,
+          abi: vaultAbi,
+          functionName: "withdraw",
+          args,
+          account: this.init.client.wallet.account!,
+        }),
+        signal
+      );
 
-      return await this.init.client.wallet.writeContract(sim.request);
+      return await abortable(this.init.client.wallet.writeContract(sim.request), signal);
     } catch (e) {
-      throw normalizeViemError(e, {
+      throw normalizeError(e, {
         op: "withdraw",
         args,
         contract: contractName,
@@ -194,75 +123,26 @@ export class Vault extends ContractBase {
     }
   }
 
-  async redeem(args: [bigint, Address, Address]) {
-    if (!this.init.client.wallet) throw new WalletRequiredError("redeem");
-
-    const c = this.getContract();
-
+  async getMaxDeposit(receiver: Address, { signal }: SdkRequestOptions = {}) {
     try {
-      const sim = await this.init.client.public.simulateContract({
-        address: c.address,
-        abi: vaultAbi,
-        functionName: "redeem",
-        args,
-        account: this.init.client.wallet.account!,
-      });
-
-      return await this.init.client.wallet.writeContract(sim.request);
+      return abortable(this.getContract().read.maxDeposit([receiver]), signal);
     } catch (e) {
-      throw normalizeViemError(e, {
-        op: "redeem",
-        args,
+      throw normalizeError(e, {
+        op: "getMaxDeposit",
+        args: [receiver],
         contract: contractName,
         chainId: this.chainId,
       });
     }
   }
 
-  async borrow(args: [bigint, bigint, bigint, bigint, bigint]) {
-    if (!this.init.client.wallet) throw new WalletRequiredError("borrow");
-
-    const c = this.getContract();
-
+  async getMaxWithdraw(owner: Address, { signal }: SdkRequestOptions = {}) {
     try {
-      const sim = await this.init.client.public.simulateContract({
-        address: c.address,
-        abi: vaultAbi,
-        functionName: "borrow",
-        args,
-        account: this.init.client.wallet.account!,
-      });
-
-      return await this.init.client.wallet.writeContract(sim.request);
+      return abortable(this.getContract().read.maxWithdraw([owner]), signal);
     } catch (e) {
-      throw normalizeViemError(e, {
-        op: "borrow",
-        args,
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
-  async unborrow(args: [bigint, bigint]) {
-    if (!this.init.client.wallet) throw new WalletRequiredError("unborrow");
-
-    const c = this.getContract();
-
-    try {
-      const sim = await this.init.client.public.simulateContract({
-        address: c.address,
-        abi: vaultAbi,
-        functionName: "unborrow",
-        args,
-        account: this.init.client.wallet.account!,
-      });
-
-      return await this.init.client.wallet.writeContract(sim.request);
-    } catch (e) {
-      throw normalizeViemError(e, {
-        op: "unborrow",
-        args,
+      throw normalizeError(e, {
+        op: "getMaxWithdraw",
+        args: [owner],
         contract: contractName,
         chainId: this.chainId,
       });

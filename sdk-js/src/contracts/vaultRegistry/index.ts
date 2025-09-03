@@ -2,8 +2,9 @@ import { Address, getContract } from "viem";
 import { vaultRegistryAbi } from "./abi";
 import { resolveAddress } from "../../addresses/resolve";
 import { Init } from "@/types";
-import { normalizeViemError } from "@/errors/normalize";
-import { ContractBase, GenericContractType } from "../shared";
+import { normalizeError } from "@/errors/normalize";
+import { ContractBase, GenericContractType, SdkRequestOptions } from "../shared";
+import { raceSignal as abortable } from "race-signal";
 
 /** @internal */
 type VaultRegistryContract = GenericContractType<typeof vaultRegistryAbi>;
@@ -39,11 +40,11 @@ export class VaultRegistry extends ContractBase {
     return getVaultRegistryContract(this.init);
   }
 
-  async getVaults() {
+  async getVaults({ signal }: SdkRequestOptions = {}) {
     try {
-      return this.getContract().read.getVaults();
+      return abortable(this.getContract().read.getVaults(), signal);
     } catch (e) {
-      throw normalizeViemError(e, {
+      throw normalizeError(e, {
         op: "getVaults",
         contract: contractName,
         chainId: this.chainId,

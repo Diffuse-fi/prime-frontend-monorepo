@@ -12,3 +12,7 @@ export class ContractBase {
 export type GenericContractType<T extends Abi | readonly unknown[] = Abi> =
   | GetContractReturnType<T, WalletClient, Address>
   | GetContractReturnType<T, PublicClient, Address>;
+
+export type SdkRequestOptions = {
+  signal?: AbortSignal;
+};

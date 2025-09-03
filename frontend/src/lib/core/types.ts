@@ -13,6 +13,10 @@ export type VaultFullInfo = {
     tokenAllocation: bigint;
   }>;
   contract: Vault;
+  limits: {
+    maxDeposit?: bigint;
+    maxWithdraw?: bigint;
+  };
 };
 
 export type SelectedVault = {

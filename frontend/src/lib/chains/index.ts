@@ -10,8 +10,8 @@ if (!testnetsEnabled && !mainnetsEnabled) {
 }
 
 export const chains = {
-  testnets: testnetsEnabled ? ([berachain] as const) : [],
-  mainnets: mainnetsEnabled ? ([ethMainnet] as const) : [],
+  testnets: [] as Chain[],
+  mainnets: mainnetsEnabled ? ([ethMainnet, berachain] as const) : [],
 } as const satisfies Record<"testnets" | "mainnets", readonly Chain[]>;
 
 export function getAvailableChains(): readonly [Chain, ...Chain[]] {
@@ -21,8 +21,8 @@ export function getAvailableChains(): readonly [Chain, ...Chain[]] {
   ] as [Chain, ...Chain[]];
 }
 
-export function getInitialChain(): Chain {
-  return testnetsEnabled ? berachain : ethMainnet;
+export function getInitialChain(): Chain | undefined {
+  return testnetsEnabled ? undefined : berachain;
 }
 
 export function getAvailableChainsIds(): number[] {

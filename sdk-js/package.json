@@ -46,6 +46,7 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "peerDependencies": {
+    "race-signal": "2.0.0",
     "viem": "2.33.3"
   }
 }

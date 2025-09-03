@@ -36,7 +36,7 @@ function reasonOf(err: unknown): string | undefined {
   return undefined;
 }
 
-export function normalizeViemError(err: unknown, context?: ErrorCtx): SdkError {
+export function normalizeError(err: unknown, context?: ErrorCtx): SdkError {
   if (err instanceof SdkError) return err;
 
   if (err instanceof UserRejectedRequestError) return new UserRejectedError(context, err);
