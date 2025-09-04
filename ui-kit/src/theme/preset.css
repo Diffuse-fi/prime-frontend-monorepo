@@ -1,1 +1,106 @@
-/* tailwind v4 uses css config so we ship preset as a css file */
+@theme {
+  /* Colors used by classes like bg-bg, text-fg, border-border, text-text-primary */
+  --color-bg: #0b0b12;
+  --color-fg: #e7e7ec;
+  --color-border: #2a2a35;
+  --color-muted: #9aa0a6;
+  --color-primary: #6d5efc;
+  --color-primary-fg: #0b0b12;
+  --color-text-primary: var(--color-fg);
+  /* Radii */
+  --radius-sm: 8px;
+  --radius: 10px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  /* Type scales used by text-h1..h6, text-body, etc. */
+  --text-h1: 2.25rem / 2.75rem;
+  --text-h2: 1.875rem / 2.25rem;
+  --text-h3: 1.5rem / 2rem;
+  --text-h4: 1.25rem / 1.75rem;
+  --text-h5: 1.125rem / 1.75rem;
+  --text-h6: 1rem / 1.5rem;
+
+  
+  --text-body: 0.9375rem / 1.5rem;
+  --text-small: 0.875rem / 1.25rem;
+  --text-subtle: 0.875rem / 1.25rem;
+  --text-xs: 0.75rem / 1rem;
+
+  /* Shadows */
+  --shadow-soft: 0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.12);
+}
+
+/* 2) Dark-mode overrides OUTSIDE @theme */
+.dark {
+  --color-bg: #0a0a0a;
+  --color-border: #26262e;
+  --color-muted: #a1a1aa;
+  --color-text-primary: var(--color-fg);
+}
+
+/* 3) Optional base defaults your kit expects */
+@layer base {
+  html,
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+  }
+}
+
+/* 4) Utilities referenced by your components */
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+/* 5) Animations used by Dialog */
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes zoomOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@utility animate-in-zoom {
+  animation: zoomIn 0.15s ease-out both;
+}
+@utility animate-out-zoom {
+  animation: zoomOut 0.12s ease-in both;
+}
+@utility animate-in-fade {
+  animation: fadeIn 0.12s ease-out both;
+}
+@utility animate-out-fade {
+  animation: fadeOut 0.12s ease-in both;
+}

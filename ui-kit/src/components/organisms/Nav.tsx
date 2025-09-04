@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn, tv } from "@/lib";
+import { Text } from "../atoms";
 
 export type NavVariant = "default" | "tabs";
 
@@ -102,7 +103,7 @@ export const Nav = React.forwardRef<HTMLElement, NavProps>(function Nav(
             itemClassName
           );
 
-          const children = <span>{item.label}</span>;
+          const children = <Text>{item.label}</Text>;
 
           return (
             <li key={item.href}>

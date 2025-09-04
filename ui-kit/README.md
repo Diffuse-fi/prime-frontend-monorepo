@@ -32,14 +32,14 @@ Some components of the package require the use of React's client-side rendering 
 So, in your server-side code, do:
 
 ```tsx
-import { Heading } from "defuse-prime/heading"; // SSR compatible (will not throw error)
-import { Heading } from "defuse-prime"; // Will throw error on SSR because of hooks usage in other components in the bundle
+import { Heading } from "@diffuse/ui-kit/heading"; // SSR compatible (will not throw error)
+import { Heading } from "@diffuse/ui-kit"; // Will throw error on SSR because of hooks usage in other components in the bundle
 ```
 
 In client-side code, you can import from the main package safely:
 
 ```tsx
-import { Heading } from "defuse-prime"; // Will work fine on client-side
+import { Heading } from "@diffuse/ui-kit"; // Will work fine on client-side
 ```
 
 ### Tailwind integration
@@ -49,16 +49,20 @@ To use the components styles, you need to have Tailwind CSS set up in your proje
 Then, add the UI Kit's Tailwind configuration to your tailwind css file (usually `src/index.css` or `src/tailwind.css`):
 
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* !important Add this line to let Tailwind process the UI Kit's classes */
+/* Adjust the path if needed */
 @source "../../../node_modules/@diffuse/ui-kit";
 
 /* Also you want to import tailiwnd preset from the package */
 /* The preset contains default colors, sizes, etc. */
 @import "@diffuse/ui-kit/preset.css";
+
+/* Override ui-kit theme variables here if needed */
+@theme {
+  /* --color-primary: #7c3aed; */
+}
 ```
 
 The above configuration will let Tailwind process the styles from the UI Kit package and make them available in your project.

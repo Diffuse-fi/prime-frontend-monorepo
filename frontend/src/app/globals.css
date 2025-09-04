@@ -1,7 +1,11 @@
 @import "tailwindcss";
 
-/* Import UI Kit tailwind classes */
+/* Import ui-kit tailwind classes so compiler includes them into final tailwind bundle */
 @source "../../../node_modules/@diffuse/ui-kit";
+/* Import ui-kit styles and style tokens */
+@import "@diffuse/ui-kit/preset.css";
+
+@config "../../tailwind.config.ts";
 
 @layer base {
   :root {

@@ -31,7 +31,7 @@
       }
     },
     "./package.json": "./package.json",
-    "./*.css": "./dist/*.css",
+    "./preset.css": "./dist/preset.css",
     "./*": {
       "import": {
         "types": "./dist/*.d.ts",
@@ -51,7 +51,7 @@
   ],
   "scripts": {
     "build": "vite build",
-    "dev": "vite build --watch",
+    "dev": "cross-env BUILD_WATCH=1 && vite build --watch",
     "test:all": "npm run test:unit -- --run",
     "test:unit": "vitest --coverage"
   },
