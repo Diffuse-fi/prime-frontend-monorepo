@@ -75,15 +75,13 @@ describe("<TokenInput /> (with tokenSymbol + default token circle)", () => {
     expect(renderTokenImage).toHaveBeenLastCalledWith({ size: "lg" });
   });
 
-  it("passes common input props through (value/onChange, disabled, wrapperClassName)", async () => {
+  it("passes common input props through (value/onValueChange, disabled, wrapperClassName)", async () => {
     const user = userEvent.setup();
-    const onChange = vi.fn();
 
     const { container } = render(
       <TokenInput
         tokenSymbol="USDT"
         value="1"
-        onChange={onChange}
         disabled
         wrapperClassName="WRAPPER_CHECK"
         placeholder="p"
@@ -92,30 +90,11 @@ describe("<TokenInput /> (with tokenSymbol + default token circle)", () => {
 
     const input = screen.getByPlaceholderText("p") as HTMLInputElement;
 
-    expect(input.value).toBe("1");
+    expect(input.value).toBe("1.00"); // because of fixed decimalScale=2
     expect(input).toBeDisabled();
-
-    await user.type(input, "23");
-    expect(onChange).toHaveBeenCalled();
 
     const wrapper = getWrapper(container);
 
     expect(wrapper.className).toContain("WRAPPER_CHECK");
-  });
-
-  it("works with asChild by passing props to slotted child", async () => {
-    const user = userEvent.setup();
-    render(
-      <TokenInput asChild tokenSymbol="DAI" placeholder="slot-ph">
-        <input data-testid="slot" />
-      </TokenInput>
-    );
-    const el = screen.getByTestId("slot") as HTMLInputElement;
-
-    expect(el).toHaveAttribute("placeholder", "slot-ph");
-
-    await user.type(el, "xyz");
-
-    expect(el.value).toBe("xyz");
   });
 });

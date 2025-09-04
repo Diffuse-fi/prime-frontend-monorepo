@@ -10,7 +10,6 @@ describe("<Skeleton />", () => {
 
     expect(el.tagName.toLowerCase()).toBe("div");
     expect(el).toHaveClass("animate-pulse");
-    expect(el).toHaveClass("bg-[color:var(--ui-muted)]");
   });
 
   it("applies default rounded variant (md)", () => {

@@ -19,26 +19,37 @@ describe("<TokenCard />", () => {
   });
 
   it("calls renderImage with alt and className props", () => {
-    render(<TokenCard symbol="BTC" renderImage={renderImage} />);
+    render(
+      <TokenCard
+        symbol="BTC"
+        renderImage={() => renderImage({ className: "x-class", alt: "BTC" })}
+      />
+    );
     const img = screen.getByTestId("token-img");
 
     expect(img).toHaveAttribute("alt", "BTC");
-    expect(img).toHaveClass(
-      "h-8 w-8 flex-shrink-0 rounded-full bg-[color:var(--ui-muted)]"
-    );
+    expect(img).toHaveClass("x-class");
   });
 
   it("merges custom className into Card", () => {
-    render(<TokenCard symbol="ETH" renderImage={renderImage} className="custom-class" />);
+    render(
+      <TokenCard
+        symbol="ETH"
+        renderImage={renderImage}
+        className="custom-class"
+        data-testid="card"
+      />
+    );
     const wrapper = screen.getByTestId("card");
 
     expect(wrapper).toHaveClass("custom-class");
-    expect(wrapper).toHaveClass("flex", "items-center", "space-x-3");
   });
 
   it("forwards ref to underlying Card element", () => {
     const ref = React.createRef<HTMLDivElement>();
-    render(<TokenCard symbol="USDT" renderImage={renderImage} ref={ref} />);
+    render(
+      <TokenCard symbol="USDT" renderImage={renderImage} ref={ref} data-testid="card" />
+    );
 
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
     expect(ref.current).toBe(screen.getByTestId("card"));

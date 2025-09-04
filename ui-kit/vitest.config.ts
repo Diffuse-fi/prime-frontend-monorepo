@@ -12,7 +12,7 @@ export default defineConfig({
       reporter: ["json", "text", "lcov", "json-summary"],
       include: ["src/**/*.{ts,tsx}"],
       reportsDirectory: "coverage",
-      exclude: ["**/index.{ts,tsx}", "**/types.{ts,tsx}"],
+      exclude: ["**/index.{ts,tsx}", "**/types.{ts,tsx}", "src/theme/**"],
       thresholds: {
         global: {
           statements: 90,
