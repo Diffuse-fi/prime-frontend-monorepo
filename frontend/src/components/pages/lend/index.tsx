@@ -15,7 +15,7 @@ import { showSkeletons } from "@/lib/misc/showSkeletons";
 import { parseUnits } from "viem";
 import { useRouter } from "next/navigation";
 import { localizePath } from "@/lib/localization/locale";
-import { useLend } from "@/lib/core/useLend";
+import { useLend } from "@/lib/core/useDeposit";
 
 const validateTokenInfo = (value: TokenInfo | null) => {
   return TokenInfoSchema.safeParse(value).success;
@@ -27,7 +27,7 @@ export default function LendPage() {
   const { selectedVaults, setAmountForVault } = useSelectedVaults();
   const dedupedTokenList = dedupe(tokenList, t => t.address);
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(dedupedTokenList);
-  const { dict, lang } = useLocalization();
+  const { dict, lang, dir } = useLocalization();
   const router = useRouter();
   const { allAllowed, approveMissing, ableToRequest } =
     useEnsureAllowances(selectedVaults);
@@ -84,6 +84,7 @@ export default function LendPage() {
             selectedAsset={selectedAsset}
             isLoading={isPending}
             options={dedupedTokenList}
+            direction={dir}
           />
         </Card>
         {isPending ? (

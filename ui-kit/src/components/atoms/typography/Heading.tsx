@@ -9,6 +9,8 @@ const heading = tv({
       2: "text-h2",
       3: "text-h3",
       4: "text-h4",
+      5: "text-h5",
+      6: "text-h6",
     },
     align: { left: "text-left", center: "text-center", right: "text-right" },
     tone: { default: "text-text-primary", muted: "text-muted" },
@@ -16,10 +18,9 @@ const heading = tv({
   defaultVariants: { level: 2, align: "left", tone: "default" },
 });
 
-type Level = 1 | 2 | 3 | 4;
+type Level = 1 | 2 | 3 | 4 | 5 | 6;
 
 export function Heading({
-  as,
   level = 2,
   align,
   tone,
@@ -27,12 +28,11 @@ export function Heading({
   className,
   ...rest
 }: React.HTMLAttributes<HTMLHeadingElement> & {
-  as?: keyof React.JSX.IntrinsicElements;
   level?: Level;
   align?: "left" | "center" | "right";
   tone?: "default" | "muted";
 }) {
-  const Tag = as ?? (`h${level}` as const);
+  const Tag = `h${level}` as const;
   return (
     <Tag className={heading({ level, align, tone, className })} {...rest}>
       {children}

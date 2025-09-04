@@ -1,8 +1,9 @@
 import { Locale } from "@/lib/localization/locale";
 import { buildMetadataForPage } from "@/app/metadata";
-import { Heading, Text } from "@diffuse/ui-kit";
+import { Heading } from "@diffuse/ui-kit/Heading";
 import { getDictionary } from "@/lib/localization/dictionaries";
 import LendPage from "@/components/pages/lend";
+import { Text } from "@diffuse/ui-kit/Text";
 
 export const metadata = buildMetadataForPage({
   title: "Lend",

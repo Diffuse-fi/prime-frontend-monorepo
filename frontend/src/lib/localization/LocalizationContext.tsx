@@ -5,6 +5,7 @@ import { Locale } from "./locale";
 export type LocalizationValue = {
   lang: Locale;
   dictionary: Dictionary;
+  dir: "ltr" | "rtl";
 };
 
 export const LocalizationContext = createContext<LocalizationValue | null>(null);

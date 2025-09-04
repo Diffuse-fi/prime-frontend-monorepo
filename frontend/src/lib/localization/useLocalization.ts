@@ -9,5 +9,5 @@ export function useLocalization() {
   if (!ctx)
     throw new Error("useLocalization must be used within <LocalizationProvider/>");
 
-  return { lang: ctx.lang, dict: ctx.dictionary };
+  return { lang: ctx.lang, dict: ctx.dictionary, dir: ctx.dir };
 }

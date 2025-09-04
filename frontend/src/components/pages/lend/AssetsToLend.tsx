@@ -1,6 +1,7 @@
 import { TokenImage } from "@/components/TokenImage";
 import { TokenInfo } from "@/lib/tokens/validations";
-import { Skeleton, TokenCard } from "@diffuse/ui-kit";
+import { Skeleton, TokenCard, RadioGroup, RadioGroupItem } from "@diffuse/ui-kit";
+import { RadioGroupProps } from "@diffuse/ui-kit/RadioGroup";
 
 type Option = TokenInfo;
 
@@ -10,6 +11,7 @@ interface AssetsToLendProps {
   options: Option[];
   isLoading?: boolean;
   skeletonsToShow?: number;
+  direction?: RadioGroupProps["dir"];
 }
 
 export function AssetsTolend({
@@ -18,31 +20,43 @@ export function AssetsTolend({
   options,
   isLoading,
   skeletonsToShow = 4,
+  direction,
 }: AssetsToLendProps) {
   return (
-    <div className="grid gap-2 grid-cols-4">
+    <RadioGroup
+      className="grid-cols-4"
+      dir={direction}
+      value={selectedAsset?.address}
+      onValueChange={value => {
+        const asset = options.find(option => option.address === value);
+        if (asset) {
+          onSelectAsset?.(asset);
+        }
+      }}
+    >
       {isLoading
         ? Array.from({ length: skeletonsToShow }).map((_, i) => (
             <Skeleton key={i} className="h-12" />
           ))
         : options.map(option => (
-            <TokenCard
-              key={option.address}
-              symbol={option.symbol}
-              renderImage={({ alt, className }) => (
-                <TokenImage
-                  imgURI={option.logoURI}
-                  alt={alt}
-                  className={className}
-                  address={option.address}
-                />
-              )}
-              className={`cursor-pointer h-12 ${
-                selectedAsset?.address === option.address && "border-orange-500"
-              }`}
-              onClick={() => onSelectAsset?.(option)}
-            />
+            <RadioGroupItem key={option.address} value={option.address}>
+              <TokenCard
+                symbol={option.symbol}
+                renderImage={({ alt, className }) => (
+                  <TokenImage
+                    imgURI={option.logoURI}
+                    alt={alt}
+                    className={className}
+                    address={option.address}
+                  />
+                )}
+                className={`cursor-pointer h-12 ${
+                  selectedAsset?.address === option.address && "border-orange-500"
+                }`}
+                onClick={() => onSelectAsset?.(option)}
+              />
+            </RadioGroupItem>
           ))}
-    </div>
+    </RadioGroup>
   );
 }

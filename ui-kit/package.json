@@ -15,7 +15,9 @@
     "web3",
     "borrow"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "**/*.css"
+  ],
   "type": "module",
   "exports": {
     ".": {
@@ -29,15 +31,16 @@
       }
     },
     "./package.json": "./package.json",
-    "./tw-preset": {
-      "types": "./dist/tailwind.preset.d.ts",
-      "import": "./dist/tailwind.preset.mjs",
-      "require": "./dist/tailwind.preset.cjs"
-    },
-    "./safelist": {
-      "types": "./dist/safelist.d.ts",
-      "import": "./dist/safelist.mjs",
-      "require": "./dist/safelist.cjs"
+    "./*.css": "./dist/*.css",
+    "./*": {
+      "import": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.mjs"
+      },
+      "require": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.cjs"
+      }
     }
   },
   "main": "dist/diffuse-prime-ui-kit.cjs",
@@ -54,6 +57,8 @@
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.12",
+    "fast-glob": "^3.3.3",
+    "jsdom-testing-mocks": "^1.15.2",
     "vite": "^7.1.2",
     "vite-plugin-dts": "^4.5.4",
     "vite-tsconfig-paths": "^5.1.4"

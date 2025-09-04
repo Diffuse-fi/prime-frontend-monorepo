@@ -13,7 +13,6 @@ import { defaultMetadata } from "../metadata";
 import { getDictionary } from "@/lib/localization/dictionaries";
 import { LocalizationProvider } from "@/components/LocalizationProvider";
 import { ThemeProvider } from "next-themes";
-import { Container, Navbar, Text } from "@diffuse/ui-kit";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { headers } from "next/headers";
 import { nonceHeader } from "@/lib/nonce";
@@ -23,6 +22,9 @@ import ConnectButton from "@/components/ConnectButton";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import Image from "next/image";
 import { ClientNavigation } from "@/components/ClientNavigation";
+import { Navbar } from "@diffuse/ui-kit/Navbar";
+import { Text } from "@diffuse/ui-kit/Text";
+import { Container } from "@diffuse/ui-kit/Container";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
@@ -72,6 +74,7 @@ export default async function RootLayout({
           value={{
             lang,
             dictionary,
+            dir,
           }}
         >
           <ThemeProvider
