@@ -64,6 +64,7 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "peerDependencies": {
+    "@tanstack/react-table": "8.21.3",
     "lucide-react": "0.542.0",
     "radix-ui": "1.4.3",
     "react": ">=19",

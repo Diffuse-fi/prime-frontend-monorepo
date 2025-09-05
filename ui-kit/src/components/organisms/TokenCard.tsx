@@ -16,6 +16,7 @@ export const TokenCard = React.forwardRef<HTMLDivElement, TokenCardProps>(
       <Card
         ref={ref}
         className={cn("border-[color:var(--ui-accent)]", className)}
+        cardBodyClassName="px-2 py-2"
         {...props}
       >
         <div className="flex items-center gap-2 flex-nowrap">

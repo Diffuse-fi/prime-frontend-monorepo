@@ -50,9 +50,7 @@ export default function LendPage() {
       return {
         text: dict.lend.depositButtonText,
         disabled: false,
-        onClick: () => {
-          alert("Reviewing not implemented yet");
-        },
+        onClick: () => deposit(),
         className: "bg-orange-500 hover:bg-orange-600 text-white",
       };
     }

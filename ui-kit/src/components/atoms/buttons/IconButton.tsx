@@ -2,7 +2,7 @@ import * as React from "react";
 import { tv } from "@/lib";
 
 const iconButton = tv({
-  base: "inline-flex items-center justify-center rounded-md focus:outline-none",
+  base: "inline-flex items-center justify-center rounded-md cursor-pointer",
   variants: {
     size: {
       sm: "h-8 w-8",

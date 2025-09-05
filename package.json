@@ -25,7 +25,7 @@
     ]
   },
   "lint-staged": {
-    "*.{ts,tsx,md,json}": [
+    "*.{ts,tsx,md,json,css}": [
       "npm run prettier"
     ]
   },

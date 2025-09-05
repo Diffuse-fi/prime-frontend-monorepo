@@ -1,31 +1,13 @@
 @import "tailwindcss";
 
 /* Import ui-kit tailwind classes so compiler includes them into final tailwind bundle */
-@source "../../../node_modules/@diffuse/ui-kit";
+@source "../../../node_modules/@diffuse/ui-kit/dist";
 /* Import ui-kit styles and style tokens */
 @import "@diffuse/ui-kit/preset.css";
 
 @config "../../tailwind.config.ts";
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-  }
-
-  body {
-    @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))];
-  }
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-sf);
   --font-mono: var(--font-geist-mono);
 }

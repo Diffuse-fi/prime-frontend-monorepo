@@ -3,7 +3,7 @@ import { tv } from "@/lib";
 import { Heading } from "@/atoms";
 
 const card = tv({
-  base: "rounded-lg border border-border bg-bg shadow-soft overflow-hidden",
+  base: "rounded-lg border border-border bg-bg overflow-hidden",
 });
 
 const cardHeader = tv({
@@ -17,10 +17,11 @@ const cardBody = tv({
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   header?: React.ReactNode;
   children?: React.ReactNode;
+  cardBodyClassName?: string;
 }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ header, children, className, ...rest }, ref) => {
+  ({ header, children, className, cardBodyClassName, ...rest }, ref) => {
     return (
       <div ref={ref} className={card({ className })} {...rest}>
         {header ? (
@@ -28,7 +29,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
             {typeof header === "string" ? <Heading level={3}>{header}</Heading> : header}
           </div>
         ) : null}
-        <div className={cardBody()}>{children}</div>
+        <div className={cardBody({ className: cardBodyClassName })}>{children}</div>
       </div>
     );
   }

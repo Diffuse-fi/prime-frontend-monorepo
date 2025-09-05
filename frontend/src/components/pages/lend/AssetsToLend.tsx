@@ -50,7 +50,7 @@ export function AssetsTolend({
                     address={option.address}
                   />
                 )}
-                className={`cursor-pointer h-12 ${
+                className={`cursor-pointer h-12 px-0 ${
                   selectedAsset?.address === option.address && "border-orange-500"
                 }`}
                 onClick={() => onSelectAsset?.(option)}

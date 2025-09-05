@@ -7,6 +7,7 @@ import {
   Badge,
   Card,
   Heading,
+  SimpleTable,
   Text,
   TokenInput,
   TokenInputProps,
@@ -37,9 +38,7 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
         selectedAsset.decimals
       ).text
     : "";
-  const rewardDisplay = reward
-    ? `${reward} ${selectedAsset.symbol} (${vaultAprFormatted.text} APR)`
-    : "";
+  const rewardDisplay = reward ? `${reward} ${selectedAsset.symbol}` : "-";
 
   return (
     <Card
@@ -59,10 +58,29 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
         onValueChange={onAmountChange}
         tokenSymbol="mUSDC"
         renderTokenImage={() => (
-          <TokenImage imgURI="" alt="" address={vault?.assets?.at(0)?.address ?? ""} />
+          <TokenImage alt="" address={vault?.assets?.at(0)?.address ?? ""} />
         )}
       />
-      <Text className="mt-2">{`${dict.lend.rewards}: ${rewardDisplay}`}</Text>
+      <SimpleTable
+        aria-label="Vault rewards based on input amount and target APR"
+        density="compact"
+        columns={["Rewards type", "APR", "Reward"]}
+        rows={[
+          [
+            <div key="d" className="flex items-center">
+              <TokenImage
+                alt=""
+                address={vault?.assets?.at(0)?.address ?? ""}
+                className="mr-1"
+                size={20}
+              />
+              Target APY
+            </div>,
+            vaultAprFormatted.text,
+            rewardDisplay,
+          ],
+        ]}
+      />
       <UncontrolledCollapsible summary="List of strategies" defaultOpen={false}>
         {vault?.strategies?.map(s => (
           <div key={s.apr}>

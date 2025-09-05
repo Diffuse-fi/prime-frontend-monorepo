@@ -69,7 +69,7 @@ export default async function RootLayout({
           <WebVitals />
         </>
       )}
-      <body className={`${fonts.SFProText.variable} antialiased`}>
+      <body className={`${fonts.SFProText.variable} antialiased pb-4`}>
         <LocalizationProvider
           value={{
             lang,

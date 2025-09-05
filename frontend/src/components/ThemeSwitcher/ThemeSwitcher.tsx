@@ -1,3 +1,5 @@
+import { IconButton } from "@diffuse/ui-kit";
+import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 
 export default function ThemeSwitcher() {
@@ -5,12 +7,11 @@ export default function ThemeSwitcher() {
   const current = theme === "system" ? systemTheme : theme;
 
   return (
-    <button
-      aria-label="Toggle theme"
-      className="inline-flex items-center rounded-xl px-3 py-2 border border-border"
+    <IconButton
+      aria-label="Toggle site theme"
       onClick={() => setTheme(current === "dark" ? "light" : "dark")}
-    >
-      {current === "dark" ? "🌙 Dark" : "☀️ Light"}
-    </button>
+      icon={current === "dark" ? <Sun /> : <Moon />}
+      size="sm"
+    />
   );
 }
