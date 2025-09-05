@@ -15,7 +15,7 @@ import { showSkeletons } from "@/lib/misc/showSkeletons";
 import { parseUnits } from "viem";
 import { useRouter } from "next/navigation";
 import { localizePath } from "@/lib/localization/locale";
-import { useLend } from "@/lib/core/useDeposit";
+import { useDeposit } from "@/lib/core/useDeposit";
 
 const validateTokenInfo = (value: TokenInfo | null) => {
   return TokenInfoSchema.safeParse(value).success;
@@ -34,7 +34,7 @@ export default function LendPage() {
   const onDepositSuccess = () => {
     router.push(localizePath("/lend/my-positions", lang));
   };
-  const { reset, deposit } = useLend(selectedVaults, vaults, {
+  const { reset, deposit } = useDeposit(selectedVaults, vaults, {
     onDepositBatchComplete: () => {
       onDepositSuccess();
       reset();

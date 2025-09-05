@@ -2,20 +2,11 @@ import { useMemo, useState } from "react";
 import pLimit from "p-limit";
 import { getAddress, type Address, type Hash } from "viem";
 import { useClients } from "../wagmi/useClients";
-import type { SelectedVault } from "./types";
+import type { SelectedVault, TxInfo, TxState } from "./types";
 import type { VaultFullInfo } from "./types";
 import { useMutation } from "@tanstack/react-query";
 import { opt, qk } from "../query/helpers";
 import { QV } from "../query/versions";
-
-type Phase = "idle" | "submitting" | "mining" | "success" | "error";
-export type TxInfo = {
-  phase: Phase;
-  hash?: Hash;
-  error?: Error;
-};
-
-export type TxState = Record<Address, TxInfo>;
 
 export type UseLendParams = {
   txConcurrency?: number;
@@ -28,16 +19,14 @@ export type LendBatchResult = {
   errors: Record<Address, Error>;
 };
 
-const ROOT = "lend" as const;
-const version = QV.lend;
+const ROOT = "deposit" as const;
+const version = QV.deposit;
 const qKeys = {
-  lend: (chainId: number, addresses: string | null) =>
-    qk([ROOT, version, opt(chainId), opt(addresses), "lend"]),
-  withdraw: (chainId: number, addresses: string | null) =>
-    qk([ROOT, version, opt(chainId), opt(addresses), "withdraw"]),
+  deposit: (chainId: number, addresses: string | null) =>
+    qk([ROOT, version, opt(chainId), opt(addresses), "deposit"]),
 };
 
-export function useLend(
+export function useDeposit(
   selected: SelectedVault[],
   allVaults: VaultFullInfo[],
   {
@@ -118,7 +107,7 @@ export function useLend(
   };
 
   const depositMutation = useMutation({
-    mutationKey: qKeys.lend(
+    mutationKey: qKeys.deposit(
       chainId,
       selected
         .map(v => v.address)
@@ -128,25 +117,12 @@ export function useLend(
     mutationFn: () => runBatch("deposit"),
   });
 
-  const withdrawMutation = useMutation({
-    mutationKey: qKeys.withdraw(
-      chainId,
-      selected
-        .map(v => v.address)
-        .sort()
-        .join("|")
-    ),
-    mutationFn: () => runBatch("withdraw"),
-  });
-
   const deposit = depositMutation.mutateAsync;
-  const withdraw = withdrawMutation.mutateAsync;
 
   const reset = () => {
     setTxState({});
     depositMutation.reset();
-    withdrawMutation.reset();
   };
 
-  return { deposit, withdraw, reset, txState };
+  return { deposit, reset, txState };
 }

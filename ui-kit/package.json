@@ -1,7 +1,6 @@
 {
   "name": "@diffuse/ui-kit",
   "version": "0.1.0",
-  "private": true,
   "description": "Diffuse Prime UI Kit React components",
   "keywords": [
     "diffuse",
@@ -15,6 +14,7 @@
     "web3",
     "borrow"
   ],
+  "license": "Apache-2.0",
   "sideEffects": [
     "**/*.css"
   ],
@@ -39,7 +39,9 @@
   "module": "dist/diffuse-prime-ui-kit.mjs",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "LICENSE",
+    "NOTICE"
   ],
   "scripts": {
     "build": "vite build",

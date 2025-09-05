@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Monorepo for Diffuse Prime JavaScript projects, including frontend, UI kit, and js SDK.",
+  "license": "SEE LICENSE IN LICENSE.md",
   "workspaces": [
     "frontend",
     "ui-kit",

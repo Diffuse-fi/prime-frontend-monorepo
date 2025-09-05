@@ -1,7 +1,6 @@
 {
   "name": "@diffuse/sdk-js",
   "version": "0.1.0",
-  "private": true,
   "description": "Diffuse Prime SDK for JavaScript",
   "keywords": [
     "diffuse",
@@ -11,6 +10,7 @@
     "defi",
     "lending"
   ],
+  "license": "Apache-2.0",
   "sideEffects": false,
   "type": "module",
   "exports": {
@@ -28,7 +28,9 @@
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "src/addresses/*.json"
+    "src/addresses/*.json",
+    "LICENSE",
+    "NOTICE"
   ],
   "scripts": {
     "build": "vite build",

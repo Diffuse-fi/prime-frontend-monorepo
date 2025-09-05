@@ -1,5 +1,5 @@
 import type { Vault } from "@diffuse/sdk-js";
-import { Address } from "viem";
+import { Address, Hash } from "viem";
 import { TokenInfo } from "../tokens/validations";
 
 export type VaultFullInfo = {
@@ -28,3 +28,12 @@ export type SelectedVault = {
   legacyAllowance: boolean;
   chainId: number;
 };
+
+type Phase = "idle" | "submitting" | "mining" | "success" | "error";
+export type TxInfo = {
+  phase: Phase;
+  hash?: Hash;
+  error?: Error;
+};
+
+export type TxState = Record<Address, TxInfo>;

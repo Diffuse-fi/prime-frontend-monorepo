@@ -4,13 +4,18 @@
 
 This is a monorepo for the **Diffuse Prime** frontend application, which includes multiple packages such as the main frontend application and a shared UI kit.
 
-Repository structure:
+A monorepo for the **Diffuse Prime** frontend stack:
 
 - `frontend/`: The main frontend application built with Next.js.
 - `ui-kit/`: A shared UI component library built with React, Radix UI, and Tailwind CSS preset.
 - `sdk-js/`: A JavaScript SDK for interacting with the Diffuse Prime smart contracts.
 
 Each package has its own `README.md` file with more details about the specific package.
+
+#### Prerequisites
+
+- Nodejs v18+ (24+ recommended)
+- npm v9+ (workspaces support)
 
 ## Workspaces
 
@@ -57,3 +62,8 @@ In addition, all **dependencies** versions (not dev dependencies) are pinned to 
 Typically, versions are specified with a caret (`^`) or tilde (`~`) prefix, which allows for minor or patch updates, respectively. However, in this project, we have opted to pin the versions without any prefix (e.g., `"package-name": "1.2.3"`).
 This means that only the exact version specified will be used, and no automatic updates will occur.
 This is a common practice to ensure stability and security of the project. Alas, this means that you will need to update dependencies manually when needed.
+
+## License
+
+This monorepo contains multiple packages with different licenses.
+For more details please refer to the [LICENSE](./LICENSE.md) file.
