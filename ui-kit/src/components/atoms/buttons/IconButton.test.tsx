@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
-import { IconButton } from "./IconButton.js";
+import { IconButton } from "./IconButton";
 
 describe("<IconButton />", () => {
   it("renders with accessible name, default (ghost, md) classes, and the icon", () => {

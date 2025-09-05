@@ -1,4 +1,4 @@
-import { ClientNavigation } from "../../../components/ClientNavigation";
+import { ClientNavigation } from "@/components/shared/ClientNavigation";
 import { getDictionary } from "@/lib/localization/dictionaries";
 import { DEFAULT_LOCALE, Locale } from "@/lib/localization/locale";
 import { ReactNode } from "react";

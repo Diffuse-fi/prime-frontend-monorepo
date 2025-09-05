@@ -1,4 +1,4 @@
-import { TokenImage } from "@/components/TokenImage";
+import { TokenImage } from "../../shared/TokenImage";
 import { TokenInfo } from "@/lib/tokens/validations";
 import { Skeleton, TokenCard, RadioGroup, RadioGroupItem } from "@diffuse/ui-kit";
 import { RadioGroupProps } from "@diffuse/ui-kit/RadioGroup";

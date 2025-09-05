@@ -2,17 +2,18 @@
 
 ## Description
 
-## Stack
+This is the frontend application for the Diffuse Prime protocol. It provides a user interface for interacting with the protocol's features, such as lending, borrowing, and managing positions. The application is built using Next.js and TypeScript. It utilizes the `@diffuse/sdk-js` library to interact with the Diffuse protocol's smart contracts and `@diffuse/ui-kit` for UI components.
 
-- tailwindcss
+You can find more information about sdk and ui-kit in their respective directories:
+
+- [sdk-js](../sdk-js/README.md)
+- [ui-kit](../ui-kit/README.md)
 
 ## Environment setup
 
-Before running the forntend ensure that you have the following environment variables set:
+Before running the forntend in production mode, you need to set up the required environment variables. For more information about the required environment variables, see the `src/lib/env/schemas.ts` file and analyze zod schemas defined there.
 
-- `ORIGIN`: The base URL of your application, e.g., `https://example.com` (for production only).
-
-There is `.env.example` file in the root of the project that contains all the required environment variables. You can copy it to `.env.local` and fill in the values.
+There is `.env` file in the root of the project that contains all the exisitng environment variables with example or empty values. You can copy this file to `.env.local` and modify the values as needed for your local development environment or override them in your deployment platform (e.g. Vercel) for production.
 
 ## Development
 
@@ -22,7 +23,11 @@ To run the frontend in development mode, use the following command:
 npm run dev
 ```
 
+This will listen only for changes in the `frontend` directory. If you want to run the whole monorepo in development mode, use the `npm run dev` command from the root of the monorepo:
+
 ## Chains
+
+Chains configuration is stored in `src/lib/chains/index.ts` file. To add a new chain/remove an existing chain, use native wagmi approach and predefined chains from `wagmi/chains` package or define a custom chain using `defineChain` function from `wagmi`.
 
 ## Tokens
 
@@ -55,8 +60,8 @@ TDB
 
 ## Testing
 
-To run tests, use the following command:
+TBD
 
-```bash
-npm run test
-```
+## Deployment
+
+TBD

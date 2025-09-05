@@ -105,6 +105,7 @@ export function useLend(
 
           hashes[addr] = txHash;
           setOne(addr, { phase: "success", hash: txHash });
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (e: any) {
           const err = e instanceof Error ? e : new Error(String(e));
           errors[addr] = err;
@@ -113,7 +114,6 @@ export function useLend(
       })
     );
 
-    await Promise.allSettled(tasks.map(t => t()));
     return { hashes, errors };
   };
 

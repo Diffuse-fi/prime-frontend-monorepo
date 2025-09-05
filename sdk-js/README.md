@@ -35,3 +35,13 @@ const vaultContract = new Vault(vaultInit);
 // For example, to get the current interest rate:
 const interestRate = await vaultContract.getInterestRate(); // Or any other method provided by the contract
 ```
+
+## Development
+
+To run the SDK in development mode, use the following command:
+
+```bash
+npm run dev
+```
+
+This will start the development server and watch for changes in the source files.

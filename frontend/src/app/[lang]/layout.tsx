@@ -1,3 +1,4 @@
+import "@/lib/env/server";
 import type { Metadata, Viewport } from "next";
 import { Providers } from "../providers";
 import { fonts } from "../fonts/fonts";
@@ -11,17 +12,17 @@ import {
 } from "@/lib/localization/locale";
 import { defaultMetadata } from "../metadata";
 import { getDictionary } from "@/lib/localization/dictionaries";
-import { LocalizationProvider } from "@/components/LocalizationProvider";
+import { LocalizationProvider } from "@/components/localization/LocalizationProvider";
 import { ThemeProvider } from "next-themes";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { headers } from "next/headers";
 import { nonceHeader } from "@/lib/nonce";
-import { WebVitals } from "@/components/WebVitals";
-import Link from "@/components/Link";
-import ConnectButton from "@/components/ConnectButton";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
+import { WebVitals } from "@/components/misc/WebVitals";
+import Link from "@/components/shared/Link";
+import ConnectButton from "@/components/wagmi/ConnectButton";
+import ThemeSwitcher from "@/components/misc/ThemeSwitcher/index";
 import Image from "next/image";
-import { ClientNavigation } from "@/components/ClientNavigation";
+import { ClientNavigation } from "@/components/shared/ClientNavigation";
 import { Navbar } from "@diffuse/ui-kit/Navbar";
 import { Text } from "@diffuse/ui-kit/Text";
 import { Container } from "@diffuse/ui-kit/Container";

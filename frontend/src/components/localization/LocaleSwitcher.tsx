@@ -2,8 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import { Locale } from "@/lib/localization/locale";
-import localizationSettings from "../localization.json" with { type: "json" };
-import Link from "./Link";
+import localizationSettings from "../../localization.json" with { type: "json" };
+import Link from "../shared/Link";
 
 const SUPPORTED_LOCALES = localizationSettings.supported;
 

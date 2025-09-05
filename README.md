@@ -43,6 +43,10 @@ This will start the development servers for all packages and all the source code
 
 You may want to override some env variables for local development. You can do this by creating a `.env.local` file. For more details please refer to frontend's [README](./frontend/README.md) development section.
 
+#### Commitlint
+
+This project uses [commitlint](https://commitlint.js.org/) to enforce a consistent commit message format. Commit messages should follow the configuration defined in `commitlint.config.ts`.
+
 ## Security considerations (on repository level)
 
 This project implements security measures to protect against common vulnerabilities.

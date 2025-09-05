@@ -1,4 +1,4 @@
-import { TokenImage } from "@/components/TokenImage";
+import { TokenImage } from "../../shared/TokenImage";
 import { VaultFullInfo } from "../../../lib/core/types";
 import { formatDate } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
