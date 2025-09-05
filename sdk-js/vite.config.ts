@@ -12,17 +12,6 @@ const banner = `
 * ${packageJson.name} v${packageJson.version}
 */`;
 
-const getFileName = (format: string) => {
-  switch (format) {
-    case "es":
-      return "diffuse-prime-sdk-js.mjs";
-    case "cjs":
-      return "diffuse-prime-sdk-js.js";
-    default:
-      throw new Error(`Unsupported format: ${format}`);
-  }
-};
-
 export default defineConfig(() => {
   const plugins = [
     tsconfigPaths(),
@@ -42,8 +31,8 @@ export default defineConfig(() => {
       emptyOutDir: true,
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
-        formats: ["es", "cjs"],
-        fileName: getFileName,
+        formats: ["es"],
+        fileName: "diffuse-prime-sdk-js.mjs",
       },
       rollupOptions: {
         output: {

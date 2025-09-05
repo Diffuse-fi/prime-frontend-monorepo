@@ -14,12 +14,8 @@ const banner = `
 * ${packageJson.name} v${packageJson.version}
 */`;
 
-const getFileName = (format: string, entryName: string) => {
-  if (format !== "es" && format !== "cjs") {
-    throw new Error(`Unsupported format: ${format}`);
-  }
-
-  const ext = format === "es" ? "mjs" : "cjs";
+const getFileName = (_: string, entryName: string) => {
+  const ext = "mjs";
 
   if (entryName === "index") {
     return `diffuse-prime-ui-kit.${ext}`;
@@ -118,7 +114,7 @@ export default defineConfig(() => {
           index: resolve(__dirname, "src/index.ts"),
           ...componentEntries,
         },
-        formats: ["es", "cjs"],
+        formats: ["es"],
         fileName: getFileName,
       },
       rollupOptions: {

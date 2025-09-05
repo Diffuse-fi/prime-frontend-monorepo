@@ -12,21 +12,18 @@
     "lending"
   ],
   "sideEffects": false,
+  "type": "module",
   "exports": {
     ".": {
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/diffuse-prime-sdk-js.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/diffuse-prime-sdk-js.js"
       }
     },
     "./package.json": "./package.json",
     "./addresses/*": "./src/addresses/*.json"
   },
-  "main": "dist/diffuse-prime-sdk-js.js",
+  "main": "dist/diffuse-prime-sdk-js.mjs",
   "module": "dist/diffuse-prime-sdk-js.mjs",
   "types": "dist/index.d.ts",
   "files": [

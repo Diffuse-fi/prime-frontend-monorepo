@@ -2,7 +2,7 @@
 
 ## Desription
 
-This is a system of reusable, customizable, and accessible React components built with TypeScript, Radix-ui and Tailwind CSS.
+This is a ESM-only package of reusable, customizable, and accessible React components built with TypeScript, Radix-ui and Tailwind CSS.
 Under the hood it follows Atomic Design principles and uses Radix UI for accessibility and complicated headless components.
 
 ## Requirements

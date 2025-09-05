@@ -24,10 +24,6 @@
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/diffuse-prime-ui-kit.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/diffuse-prime-ui-kit.cjs"
       }
     },
     "./package.json": "./package.json",
@@ -36,14 +32,10 @@
       "import": {
         "types": "./dist/*.d.ts",
         "default": "./dist/*.mjs"
-      },
-      "require": {
-        "types": "./dist/*.d.ts",
-        "default": "./dist/*.cjs"
       }
     }
   },
-  "main": "dist/diffuse-prime-ui-kit.cjs",
+  "main": "dist/diffuse-prime-ui-kit.mjs",
   "module": "dist/diffuse-prime-ui-kit.mjs",
   "types": "./dist/index.d.ts",
   "files": [
