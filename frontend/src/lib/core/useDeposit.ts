@@ -7,16 +7,27 @@ import type { VaultFullInfo } from "./types";
 import { useMutation } from "@tanstack/react-query";
 import { opt, qk } from "../query/helpers";
 import { QV } from "../query/versions";
+import { produce } from "immer";
+import { formatUnits } from "../formatters/token";
 
 export type UseLendParams = {
   txConcurrency?: number;
-  onDepositBatchComplete?: (result: LendBatchResult) => void;
-  onWithdrawBatchComplete?: (result: LendBatchResult) => void;
+  onDepositBatchComplete?: (result: DepositBatchResult) => void;
 };
 
-export type LendBatchResult = {
+export type DepositBatchResult = {
   hashes: Record<Address, Hash>;
   errors: Record<Address, Error>;
+};
+
+export type UseDepositResult = {
+  deposit: () => Promise<DepositBatchResult>;
+  reset: () => void;
+  txState: TxState;
+  allConfirmed: boolean;
+  someError: boolean;
+  someAwaitingSignature: boolean;
+  isPendingBatch: boolean;
 };
 
 const ROOT = "deposit" as const;
@@ -26,18 +37,20 @@ const qKeys = {
     qk([ROOT, version, opt(chainId), opt(addresses), "deposit"]),
 };
 
+function makeIdemKey(chainId: number, vault: Address, amount: bigint, receiver: Address) {
+  return `${chainId}:${vault.toLowerCase()}:${amount.toString()}:${receiver.toLowerCase()}`;
+}
+
 export function useDeposit(
   selected: SelectedVault[],
   allVaults: VaultFullInfo[],
-  {
-    txConcurrency = 1,
-    onDepositBatchComplete,
-    onWithdrawBatchComplete,
-  }: UseLendParams = {}
-) {
+  { txConcurrency = 6, onDepositBatchComplete }: UseLendParams = {}
+): UseDepositResult {
   const [txState, setTxState] = useState<TxState>({});
+  const [pendingByKey, setPendingByKey] = useState<Record<string, true>>({});
   const { chainId, address: wallet, publicClient } = useClients();
   const vaultsConsistency = selected.every(v => v.chainId === chainId);
+  const enabled = selected?.length > 0 && !!wallet && !!publicClient && vaultsConsistency;
 
   const vaultByAddr = useMemo(() => {
     const m = new Map<Address, VaultFullInfo>();
@@ -45,84 +58,158 @@ export function useDeposit(
     return m;
   }, [allVaults]);
 
-  const limit = useMemo(() => pLimit(Math.max(1, txConcurrency)), [txConcurrency]);
+  const vaultsKey = useMemo(
+    () =>
+      Object.values(selected)
+        .map(v => getAddress(v.address))
+        .sort()
+        .join("|"),
+    [selected]
+  );
 
-  const runBatch = async (
-    kind: "deposit" | "withdraw"
-  ): Promise<{ hashes: Record<Address, Hash>; errors: Record<Address, Error> }> => {
-    if (!publicClient || !wallet || !vaultsConsistency) throw new Error("NOT_READY");
+  const txConcurrencyInt = Math.max(1, Math.floor(txConcurrency));
+  const limit = useMemo(() => pLimit(Math.max(1, txConcurrencyInt)), [txConcurrencyInt]);
 
-    const addrMe = getAddress(wallet);
-    const targets = selected.filter(v => v.amount && v.amount > 0n);
+  const setPhase = (addr: Address, info: Partial<TxInfo>) =>
+    setTxState(prev => ({
+      ...prev,
+      [addr]: { ...(prev[addr] as TxInfo | undefined), ...info } as TxInfo,
+    }));
 
-    setTxState(prev => {
-      const next = { ...prev };
-      for (const v of targets) next[getAddress(v.address)] = { phase: "submitting" };
-      return next;
-    });
-
-    const hashes: Record<Address, Hash> = {};
-    const errors: Record<Address, Error> = {};
-
-    const setOne = (addr: Address, info: Partial<TxInfo>) =>
-      setTxState(prev => ({
-        ...prev,
-        [addr]: { ...(prev[addr] ?? { phase: "idle" }), ...info },
-      }));
-
-    const tasks = targets.map(v =>
-      limit(async () => {
-        const addr = getAddress(v.address);
-        const vf = vaultByAddr.get(addr);
-        if (!vf) {
-          const err = new Error("VAULT_CONTRACT_NOT_FOUND");
-          errors[addr] = err;
-          setOne(addr, { phase: "error", error: err });
-          return;
-        }
-
-        try {
-          setOne(addr, { phase: "submitting" });
-
-          const txHash =
-            kind === "deposit"
-              ? ((await vf.contract.deposit([v.amount, addrMe])) as Hash)
-              : ((await vf.contract.withdraw([v.amount, addrMe, addrMe])) as Hash);
-
-          setOne(addr, { phase: "mining", hash: txHash });
-          await publicClient.waitForTransactionReceipt({ hash: txHash });
-
-          hashes[addr] = txHash;
-          setOne(addr, { phase: "success", hash: txHash });
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } catch (e: any) {
-          const err = e instanceof Error ? e : new Error(String(e));
-          errors[addr] = err;
-          setOne(addr, { phase: "error", error: err });
-        }
+  const setKeyPending = (key: string) =>
+    setPendingByKey(
+      produce(prev => {
+        prev[key] = true;
       })
     );
-
-    return { hashes, errors };
-  };
+  const clearKeyPending = (key: string) =>
+    setPendingByKey(
+      produce(prev => {
+        delete prev[key];
+      })
+    );
+  const isKeyPending = (key: string) => Boolean(pendingByKey[key]);
 
   const depositMutation = useMutation({
-    mutationKey: qKeys.deposit(
-      chainId,
-      selected
-        .map(v => v.address)
-        .sort()
-        .join("|")
-    ),
-    mutationFn: () => runBatch("deposit"),
+    mutationKey: qKeys.deposit(chainId, vaultsKey),
+    mutationFn: async () => {
+      const result: DepositBatchResult = { hashes: {}, errors: {} };
+
+      if (!enabled) return result;
+
+      for (const v of selected) {
+        setPhase(getAddress(v.address), { phase: "checking" });
+      }
+
+      await Promise.all(
+        selected.map(v =>
+          limit(async () => {
+            const vault = vaultByAddr.get(getAddress(v.address));
+            const maxDeposit = vault?.limits.maxDeposit ?? undefined;
+            const address = getAddress(v.address);
+            const amount = v.amount;
+            const receiver = getAddress(wallet);
+            const idemKey = makeIdemKey(chainId, address, amount, receiver);
+
+            const currentPhase = (txState[address]?.phase ?? "idle") as TxInfo["phase"];
+            const isActive =
+              currentPhase === "awaiting-signature" ||
+              currentPhase === "pending" ||
+              currentPhase === "replaced";
+
+            if (isActive || isKeyPending(idemKey)) {
+              return;
+            }
+
+            let e: Error | null = null;
+
+            if (!vault) {
+              e = new Error("Vault not found");
+            }
+
+            if (amount <= 0n) {
+              e = new Error("Amount must be greater than zero");
+            }
+
+            if (maxDeposit !== undefined && amount > maxDeposit) {
+              e = new Error(
+                `Amount exceeds max deposit limit of ${formatUnits(maxDeposit, v.assetDecimals)} ${
+                  v.assetSymbol
+                }`
+              );
+            }
+
+            if (e) {
+              setPhase(address, { phase: "error", error: e });
+              result.errors[address] = e;
+              return;
+            }
+
+            try {
+              setKeyPending(idemKey);
+              setPhase(address, { phase: "awaiting-signature" });
+
+              const hash = await vault!.contract.deposit([amount, receiver]);
+
+              setPhase(address, { phase: "pending", hash });
+              result.hashes[address] = hash;
+
+              const receipt = await publicClient.waitForTransactionReceipt({
+                hash,
+                onReplaced: r => {
+                  setPhase(address, {
+                    phase: "replaced",
+                    hash: r.transaction.hash,
+                  });
+                  result.hashes[address] = r.transaction.hash;
+                },
+              });
+
+              if (receipt.status === "success") {
+                setPhase(address, { phase: "success", hash: receipt.transactionHash });
+              } else {
+                const e = new Error("Transaction reverted");
+                setPhase(address, { phase: "error", error: e });
+                result.errors[address] = e;
+              }
+            } catch (error) {
+              const e = error instanceof Error ? error : new Error("Unknown error");
+
+              setPhase(address, { phase: "error", error: e });
+              result.errors[address] = e;
+            } finally {
+              clearKeyPending(idemKey);
+            }
+          })
+        )
+      );
+
+      onDepositBatchComplete?.(result);
+      return result;
+    },
   });
 
   const deposit = depositMutation.mutateAsync;
+  const allConfirmed =
+    Object.keys(txState).length > 0 &&
+    Object.values(txState).every(s => s.phase === "success");
+  const someError = Object.values(txState).some(s => s.phase === "error");
+  const someAwaitingSignature = Object.values(txState).some(
+    s => s.phase === "awaiting-signature"
+  );
 
   const reset = () => {
     setTxState({});
     depositMutation.reset();
   };
 
-  return { deposit, reset, txState };
+  return {
+    deposit,
+    reset,
+    txState,
+    allConfirmed,
+    someError,
+    someAwaitingSignature,
+    isPendingBatch: depositMutation.isPending,
+  };
 }

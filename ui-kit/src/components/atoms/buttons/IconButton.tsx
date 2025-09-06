@@ -21,6 +21,7 @@ type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   icon: React.ReactNode;
   size?: "sm" | "md" | "lg";
   variant?: "solid" | "ghost";
+  "aria-label": string;
 };
 
 export function IconButton({

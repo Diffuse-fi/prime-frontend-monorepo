@@ -29,9 +29,18 @@ export type SelectedVault = {
   chainId: number;
 };
 
-type Phase = "idle" | "submitting" | "mining" | "success" | "error";
+export type TxPhase =
+  | "idle"
+  | "checking"
+  | "awaiting-signature"
+  | "broadcasting"
+  | "pending"
+  | "replaced"
+  | "success"
+  | "error";
+
 export type TxInfo = {
-  phase: Phase;
+  phase: TxPhase;
   hash?: Hash;
   error?: Error;
 };

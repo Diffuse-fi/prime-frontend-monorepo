@@ -16,6 +16,7 @@ import { parseUnits } from "viem";
 import { useRouter } from "next/navigation";
 import { localizePath } from "@/lib/localization/locale";
 import { useDeposit } from "@/lib/core/useDeposit";
+import { toast } from "react-toastify";
 
 const validateTokenInfo = (value: TokenInfo | null) => {
   return TokenInfoSchema.safeParse(value).success;
@@ -34,10 +35,21 @@ export default function LendPage() {
   const onDepositSuccess = () => {
     router.push(localizePath("/lend/my-positions", lang));
   };
+  const resetForms = () => {
+    selectedVaults.forEach(v => {
+      const vault = vaults.find(va => va.address === v.address);
+      if (vault) {
+        setAmountForVault(vault, 0n);
+      }
+    });
+  };
   const { reset, deposit } = useDeposit(selectedVaults, vaults, {
     onDepositBatchComplete: () => {
       onDepositSuccess();
-      reset();
+      setTimeout(() => {
+        resetForms();
+        reset();
+      }, 0);
     },
   });
 
@@ -114,6 +126,7 @@ export default function LendPage() {
           >
             {actionButtonMeta.text}
           </Button>
+          <Button onClick={() => toast("cdcsdc", {})}>C</Button>
         </Card>
       </div>
     </div>

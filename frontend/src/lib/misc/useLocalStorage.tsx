@@ -9,6 +9,9 @@ export function useLocalStorage<T>(
 ) {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
+      const isServer = typeof window === "undefined";
+      if (isServer) return initialValue;
+
       const item = window.localStorage.getItem(key);
 
       if (item) {
