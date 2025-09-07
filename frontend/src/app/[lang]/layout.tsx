@@ -26,7 +26,7 @@ import { ClientNavigation } from "@/components/shared/ClientNavigation";
 import { Navbar } from "@diffuse/ui-kit/Navbar";
 import { Text } from "@diffuse/ui-kit/Text";
 import { Container } from "@diffuse/ui-kit/Container";
-import { ToastContainer, Zoom } from "react-toastify";
+import ToastProvider from "@/components/toast";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
@@ -71,13 +71,6 @@ export default async function RootLayout({
         </>
       )}
       <body className={`${fonts.SFProText.variable} antialiased pb-4`}>
-        <ToastContainer
-          position="bottom-right"
-          hideProgressBar
-          closeButton
-          transition={Zoom}
-          draggablePercent={60}
-        />
         <LocalizationProvider
           value={{
             lang,
@@ -85,6 +78,12 @@ export default async function RootLayout({
             dir,
           }}
         >
+          <ToastProvider
+            maxToastsToShow={3}
+            defaultPosition="bottom-right"
+            appearOnTop
+            duration={1000 * 5}
+          />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

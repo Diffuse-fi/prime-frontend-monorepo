@@ -37,6 +37,10 @@
         "title": "Underlying Protocol Risk"
       }
     ],
-    "title": "Explore Prime Broker"
+    "title": "Explore Prime Broker",
+    "toasts": {
+      "approveSuccessToast": "Approval successful!",
+      "depositSuccessToast": "Deposit successful!"
+    }
   }
 }

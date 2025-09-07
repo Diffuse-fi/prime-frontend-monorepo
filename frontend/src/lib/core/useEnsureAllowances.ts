@@ -35,6 +35,10 @@ export type EnsureAllowancesResult = {
   enabled: boolean;
 };
 
+export type EnsureAllowancesOptions = {
+  onSuccess?: () => void;
+};
+
 const ROOT = "allowance-erc20";
 const qKeys = {
   allowances: (
@@ -55,7 +59,10 @@ function pairKey(asset: Address, spender: Address) {
   return `${asset}:${spender}` as const;
 }
 
-export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult {
+export function useEnsureAllowances(
+  sv: SelectedVault[],
+  { onSuccess }: EnsureAllowancesOptions = {}
+): EnsureAllowancesResult {
   const [pending, setPending] = useState<Pending>({});
   const [error, setError] = useState<Error | null>(null);
   const { address: ownerAddr, publicClient, chainId } = useClients();
@@ -230,6 +237,7 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
         await publicClient!.waitForTransactionReceipt({ hash });
 
         await refetch();
+        onSuccess?.();
       } finally {
         if (isMounted.current) {
           setPending(
@@ -247,6 +255,7 @@ export function useEnsureAllowances(sv: SelectedVault[]): EnsureAllowancesResult
       refetch,
       isMounted,
       allowanceByKey,
+      onSuccess,
     ]
   );
 

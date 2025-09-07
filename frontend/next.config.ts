@@ -4,6 +4,7 @@ import { getHeaders } from "./headers";
 import localizatiionSettings from "./src/localization.json" with { type: "json" };
 
 const isProd = process.env.NODE_ENV === "production";
+const enableHSTS = process.env.ENABLE_HSTS === "true";
 const sentryOrg = process.env.SENTRY_ORGANIZATION;
 const sentryProject = process.env.SENTRY_PROJECT;
 const sentryAuthToken = process.env.SENTRY_AUTH_TOKEN;
@@ -22,7 +23,7 @@ const nextConfig: NextConfig = {
     // Memory usage optimization
     serverSourceMaps: false,
   },
-  headers: () => getHeaders(isProd),
+  headers: () => getHeaders(enableHSTS && isProd),
   images: {
     // We use nextjs <Image> component to display token images from external sources.
     // This option enables to fetch those images on the server side and optimize them for

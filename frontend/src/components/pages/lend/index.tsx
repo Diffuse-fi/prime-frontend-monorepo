@@ -4,11 +4,10 @@ import { useVaults } from "../../../lib/core/useVaults";
 import { useLocalization } from "@/lib/localization/useLocalization";
 import { Button, Card, Heading } from "@diffuse/ui-kit";
 import { VaultCard } from "./VaultCard";
-import { AssetsTolend } from "./AssetsToLend";
+import { AssetsList } from "./AssetsList";
 import { useLocalStorage } from "@/lib/misc/useLocalStorage";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { TokenInfo, TokenInfoSchema } from "@/lib/tokens/validations";
-import dedupe from "dedupe";
 import { useSelectedVaults } from "@/lib/core/useSelectVaults";
 import { useEnsureAllowances } from "@/lib/core/useEnsureAllowances";
 import { showSkeletons } from "@/lib/misc/showSkeletons";
@@ -16,22 +15,26 @@ import { parseUnits } from "viem";
 import { useRouter } from "next/navigation";
 import { localizePath } from "@/lib/localization/locale";
 import { useDeposit } from "@/lib/core/useDeposit";
-import { toast } from "react-toastify";
+import { toast } from "@/lib/toast";
 
 const validateTokenInfo = (value: TokenInfo | null) => {
   return TokenInfoSchema.safeParse(value).success;
 };
 
 export default function LendPage() {
-  const { vaults, isPending } = useVaults();
-  const tokenList = vaults.flatMap(v => v.assets ?? []);
+  const { vaults, isPending, vaultsAssetsList: dedupedTokenList } = useVaults();
+  const previousVaulsCount = usePreviousVaulsCount(vaults.length);
   const { selectedVaults, setAmountForVault } = useSelectedVaults();
-  const dedupedTokenList = dedupe(tokenList, t => t.address);
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(dedupedTokenList);
   const { dict, lang, dir } = useLocalization();
   const router = useRouter();
-  const { allAllowed, approveMissing, ableToRequest } =
-    useEnsureAllowances(selectedVaults);
+  const onSuccessAllowance = useCallback(() => {
+    toast(dict.lend.toasts.approveSuccessToast);
+  }, [dict.lend.toasts.approveSuccessToast]);
+  const { allAllowed, approveMissing, ableToRequest } = useEnsureAllowances(
+    selectedVaults,
+    { onSuccess: onSuccessAllowance }
+  );
   const onDepositSuccess = () => {
     router.push(localizePath("/lend/my-positions", lang));
   };
@@ -43,9 +46,11 @@ export default function LendPage() {
       }
     });
   };
+
   const { reset, deposit } = useDeposit(selectedVaults, vaults, {
     onDepositBatchComplete: () => {
       onDepositSuccess();
+      toast(dict.lend.toasts.depositSuccessToast);
       setTimeout(() => {
         resetForms();
         reset();
@@ -89,7 +94,7 @@ export default function LendPage() {
       <div className="flex flex-col gap-4 sm:col-span-4 col-span-1">
         <Card title={dict.lend.assetsToLend}>
           <Heading level={2}>{dict.lend.assetsToLend}</Heading>
-          <AssetsTolend
+          <AssetsList
             onSelectAsset={setSelectedAsset}
             selectedAsset={selectedAsset}
             isLoading={isPending}
@@ -98,7 +103,7 @@ export default function LendPage() {
           />
         </Card>
         {isPending ? (
-          showSkeletons(2, "h-50")
+          showSkeletons(previousVaulsCount || 2, "h-50")
         ) : (
           <ul className="flex flex-col gap-2">
             {vaultsForSelectedAsset.map(vault => (
@@ -126,7 +131,6 @@ export default function LendPage() {
           >
             {actionButtonMeta.text}
           </Button>
-          <Button onClick={() => toast("cdcsdc", {})}>C</Button>
         </Card>
       </div>
     </div>
@@ -151,4 +155,16 @@ function useSelectedAsset(allowedTokens: TokenInfo[]) {
   }, [allowedTokens, selectedAsset, setSelectedAsset]);
 
   return [selectedAsset, setSelectedAsset] as const;
+}
+
+function usePreviousVaulsCount(vaultsLenght: number) {
+  const [count, setCount] = useLocalStorage("lend-prev-vaults-count", 0);
+
+  useEffect(() => {
+    if (vaultsLenght !== count) {
+      setCount(vaultsLenght);
+    }
+  }, [vaultsLenght, count, setCount]);
+
+  return count;
 }

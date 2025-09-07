@@ -5,7 +5,7 @@ import { RadioGroupProps } from "@diffuse/ui-kit/RadioGroup";
 
 type Option = TokenInfo;
 
-interface AssetsToLendProps {
+interface AssetsListProps {
   selectedAsset?: TokenInfo | null;
   onSelectAsset?: (asset: TokenInfo) => void;
   options: Option[];
@@ -14,14 +14,14 @@ interface AssetsToLendProps {
   direction?: RadioGroupProps["dir"];
 }
 
-export function AssetsTolend({
+export function AssetsList({
   selectedAsset,
   onSelectAsset,
   options,
   isLoading,
   skeletonsToShow = 4,
   direction,
-}: AssetsToLendProps) {
+}: AssetsListProps) {
   return (
     <RadioGroup
       className="grid-cols-4"

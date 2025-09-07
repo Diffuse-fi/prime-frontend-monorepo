@@ -53,7 +53,7 @@ export const applyCsp: Finalizer = (_req, _ev, ctx, res) => {
         `
           default-src 'self';
           script-src 'nonce-${nonce}' 'strict-dynamic' ${allowedTrirdPartyScripts};
-          style-src 'self' 'nonce-${nonce}' 'unsafe-inline';
+          style-src 'self' 'nonce-${nonce}';
           connect-src ${allowedSources};
           img-src 'self' blob: data:;
           font-src 'self';

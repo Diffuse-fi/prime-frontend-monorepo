@@ -42,7 +42,7 @@ export type TxPhase =
 export type TxInfo = {
   phase: TxPhase;
   hash?: Hash;
-  error?: Error;
+  errorMessage?: string;
 };
 
 export type TxState = Record<Address, TxInfo>;

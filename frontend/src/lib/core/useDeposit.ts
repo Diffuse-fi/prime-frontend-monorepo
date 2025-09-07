@@ -9,6 +9,7 @@ import { opt, qk } from "../query/helpers";
 import { QV } from "../query/versions";
 import { produce } from "immer";
 import { formatUnits } from "../formatters/token";
+import { toast } from "react-toastify";
 
 export type UseLendParams = {
   txConcurrency?: number;
@@ -71,10 +72,11 @@ export function useDeposit(
   const limit = useMemo(() => pLimit(Math.max(1, txConcurrencyInt)), [txConcurrencyInt]);
 
   const setPhase = (addr: Address, info: Partial<TxInfo>) =>
-    setTxState(prev => ({
-      ...prev,
-      [addr]: { ...(prev[addr] as TxInfo | undefined), ...info } as TxInfo,
-    }));
+    setTxState(
+      produce(prev => {
+        prev[addr] = { ...(prev[addr] as TxInfo | undefined), ...info } as TxInfo;
+      })
+    );
 
   const setKeyPending = (key: string) =>
     setPendingByKey(
@@ -140,7 +142,7 @@ export function useDeposit(
             }
 
             if (e) {
-              setPhase(address, { phase: "error", error: e });
+              setPhase(address, { phase: "error", errorMessage: e.message });
               result.errors[address] = e;
               return;
             }
@@ -169,13 +171,13 @@ export function useDeposit(
                 setPhase(address, { phase: "success", hash: receipt.transactionHash });
               } else {
                 const e = new Error("Transaction reverted");
-                setPhase(address, { phase: "error", error: e });
+                setPhase(address, { phase: "error", errorMessage: e.message });
                 result.errors[address] = e;
               }
             } catch (error) {
               const e = error instanceof Error ? error : new Error("Unknown error");
 
-              setPhase(address, { phase: "error", error: e });
+              setPhase(address, { phase: "error", errorMessage: e.message });
               result.errors[address] = e;
             } finally {
               clearKeyPending(idemKey);
@@ -184,7 +186,9 @@ export function useDeposit(
         )
       );
 
+      toast("Deposit process completed");
       onDepositBatchComplete?.(result);
+
       return result;
     },
   });
@@ -201,6 +205,7 @@ export function useDeposit(
   const reset = () => {
     setTxState({});
     depositMutation.reset();
+    setPendingByKey({});
   };
 
   return {

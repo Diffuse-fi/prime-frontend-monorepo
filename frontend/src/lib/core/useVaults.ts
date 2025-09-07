@@ -10,12 +10,15 @@ import { populateTokenListWithMeta } from "../tokens/tokensMeta";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import pLimit from "p-limit";
 import { Address, getAddress } from "viem";
+import uniqBy from "lodash/uniqBy";
+import { TokenInfo } from "../tokens/validations";
 
 export type UseVaultsResult = {
   vaults: VaultFullInfo[];
   invalidate: () => void;
   isPending: boolean;
   isPendingLimits: boolean;
+  vaultsAssetsList: TokenInfo[];
 };
 
 const STRATEGY_LIMIT = pLimit(6);
@@ -246,6 +249,15 @@ export function useVaults(): UseVaultsResult {
     [vaultContracts, strategiesByVault, assetsByVault, limitsByVault]
   );
 
+  const vaultsAssetsList = useMemo(
+    () =>
+      uniqBy(
+        vaults.flatMap(v => v.assets ?? []),
+        t => t.address
+      ),
+    [vaults]
+  );
+
   const invalidate = () => {
     if (!chainId || !addressKey) return;
 
@@ -266,5 +278,6 @@ export function useVaults(): UseVaultsResult {
     invalidate,
     isPending,
     isPendingLimits,
+    vaultsAssetsList,
   };
 }

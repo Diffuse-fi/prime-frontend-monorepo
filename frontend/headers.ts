@@ -1,11 +1,11 @@
 import { Header } from "next/dist/lib/load-custom-routes";
 
-export async function getHeaders(isProd: boolean): Promise<Header[]> {
+export async function getHeaders(enableHSTS = false): Promise<Header[]> {
   return [
     {
       source: "/(.*)",
       headers: [
-        ...(isProd
+        ...(enableHSTS
           ? [
               // Enforce HTTPS for every request to prevent MITM SSL stripping attacks.
               // TODO - tomake preload work, we need to add the domain to the HSTS preload list:

@@ -27,6 +27,7 @@
   --text-xs: 0.75rem / 1rem;
 
   --shadow-soft: 0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.12);
+  --shadow-strong: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
 .dark {
@@ -46,6 +47,10 @@
 
 @utility shadow-soft {
   box-shadow: var(--shadow-soft);
+}
+
+@utility shadow-strong {
+  box-shadow: var(--shadow-strong);
 }
 
 @keyframes zoomIn {
