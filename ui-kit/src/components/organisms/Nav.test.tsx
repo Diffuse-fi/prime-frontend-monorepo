@@ -58,4 +58,27 @@ describe("<Nav />", () => {
     expect(b).not.toHaveClass("border-primary");
     expect(b).not.toHaveAttribute("aria-current", "page");
   });
+
+  it("render custom link component", () => {
+    const CustomLink = ({
+      customProp,
+      ...rest
+    }: React.ComponentPropsWithoutRef<"a"> & { customProp: string }) => {
+      return <a {...rest} data-custom={customProp} />;
+    };
+
+    render(
+      <Nav
+        aria-label="main"
+        pathname="/a"
+        items={[{ href: "/a", label: "A" }]}
+        renderLink={props => <CustomLink {...props} customProp="x" />}
+      />
+    );
+
+    const a = screen.getByRole("link", { name: "A" });
+
+    expect(a).toHaveAttribute("href", "/a");
+    expect(a).toHaveAttribute("data-custom", "x");
+  });
 });

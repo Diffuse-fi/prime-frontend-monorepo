@@ -9,11 +9,14 @@ import { opt, qk } from "../query/helpers";
 import { QV } from "../query/versions";
 import { produce } from "immer";
 import { formatUnits } from "../formatters/token";
-import { toast } from "react-toastify";
 
 export type UseLendParams = {
   txConcurrency?: number;
   onDepositBatchComplete?: (result: DepositBatchResult) => void;
+  onDepositBatchSomeError?: (errors: Record<Address, Error>) => void;
+  onDepositBatchAllSuccess?: (hashes: Record<Address, Hash>) => void;
+  onDepositError?: (errorMessage: string, address: Address) => void;
+  onDepositSuccess?: (vaultAddress: Address, hash: Hash) => void;
 };
 
 export type DepositBatchResult = {
@@ -45,7 +48,14 @@ function makeIdemKey(chainId: number, vault: Address, amount: bigint, receiver: 
 export function useDeposit(
   selected: SelectedVault[],
   allVaults: VaultFullInfo[],
-  { txConcurrency = 6, onDepositBatchComplete }: UseLendParams = {}
+  {
+    txConcurrency = 6,
+    onDepositBatchComplete,
+    onDepositError,
+    onDepositSuccess,
+    onDepositBatchSomeError,
+    onDepositBatchAllSuccess,
+  }: UseLendParams = {}
 ): UseDepositResult {
   const [txState, setTxState] = useState<TxState>({});
   const [pendingByKey, setPendingByKey] = useState<Record<string, true>>({});
@@ -169,16 +179,22 @@ export function useDeposit(
 
               if (receipt.status === "success") {
                 setPhase(address, { phase: "success", hash: receipt.transactionHash });
+
+                onDepositSuccess?.(address, receipt.transactionHash);
               } else {
                 const e = new Error("Transaction reverted");
                 setPhase(address, { phase: "error", errorMessage: e.message });
                 result.errors[address] = e;
+
+                onDepositError?.(e.message, address);
               }
             } catch (error) {
               const e = error instanceof Error ? error : new Error("Unknown error");
 
               setPhase(address, { phase: "error", errorMessage: e.message });
               result.errors[address] = e;
+
+              onDepositError?.(e.message, address);
             } finally {
               clearKeyPending(idemKey);
             }
@@ -186,8 +202,18 @@ export function useDeposit(
         )
       );
 
-      toast("Deposit process completed");
       onDepositBatchComplete?.(result);
+
+      const errorsCount = Object.keys(result.errors).length;
+      const successCount = Object.keys(result.hashes).length;
+
+      if (errorsCount > 0) {
+        onDepositBatchSomeError?.(result.errors);
+      }
+
+      if (successCount === selected.length && errorsCount === 0) {
+        onDepositBatchAllSuccess?.(result.hashes);
+      }
 
       return result;
     },

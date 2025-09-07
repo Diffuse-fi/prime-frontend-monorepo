@@ -22,6 +22,8 @@ export const envServerSchema = z.object({
   SENTRY_AUTH_TOKEN: emptyToUndef(z.string().min(1)).optional(),
   SENTRY_ORGANIZATION: emptyToUndef(z.string().min(1)).optional(),
   SENTRY_PROJECT: emptyToUndef(z.string().min(1)).optional(),
+
+  ENABLE_HSTS: zBool.optional(),
 });
 
 export const envClientSchema = z.object({

@@ -31,11 +31,9 @@ export default function LendPage() {
   const onSuccessAllowance = useCallback(() => {
     toast(dict.lend.toasts.approveSuccessToast);
   }, [dict.lend.toasts.approveSuccessToast]);
-  const { allAllowed, approveMissing, ableToRequest } = useEnsureAllowances(
-    selectedVaults,
-    { onSuccess: onSuccessAllowance }
-  );
-  const onDepositSuccess = () => {
+  const { allAllowed, approveMissing, ableToRequest, refetchAllowances } =
+    useEnsureAllowances(selectedVaults, { onSuccess: onSuccessAllowance });
+  const onDepositSuccessFn = () => {
     router.push(localizePath("/lend/my-positions", lang));
   };
   const resetForms = () => {
@@ -48,13 +46,19 @@ export default function LendPage() {
   };
 
   const { reset, deposit } = useDeposit(selectedVaults, vaults, {
-    onDepositBatchComplete: () => {
-      onDepositSuccess();
+    onDepositBatchAllSuccess: () => {
+      onDepositSuccessFn();
       toast(dict.lend.toasts.depositSuccessToast);
       setTimeout(() => {
         resetForms();
         reset();
       }, 0);
+    },
+    onDepositBatchSomeError: () => {
+      toast(dict.lend.toasts.depositErrorToast);
+    },
+    onDepositBatchComplete: () => {
+      refetchAllowances();
     },
   });
 

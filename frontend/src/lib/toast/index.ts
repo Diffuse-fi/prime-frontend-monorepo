@@ -8,6 +8,10 @@ export type RenderToastData = {
 
 export type CreateToastData = {
   message: string;
+  position?: ToastPosition;
+  duration?: number;
+  closeable?: boolean;
+  title?: string;
 };
 
 type NotificationActions = {
@@ -22,6 +26,11 @@ export const toastActions: { actions: NotificationActions } = {
   },
 };
 
-export function toast(message: string) {
-  toastActions?.actions.create({ message });
+export function toast(data: string | CreateToastData) {
+  if (typeof data === "string") {
+    toastActions.actions.create({ message: data });
+    return;
+  }
+
+  toastActions.actions.create({ ...data });
 }

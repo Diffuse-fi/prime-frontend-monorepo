@@ -32,7 +32,7 @@ export type EnsureAllowancesResult = {
   approveMissing: (opts?: { mode?: ApprovalPolicy }) => Promise<void>;
   pendingApprovals: Pending;
   error: Error | null;
-  enabled: boolean;
+  refetchAllowances: () => Promise<void>;
 };
 
 export type EnsureAllowancesOptions = {
@@ -285,6 +285,9 @@ export function useEnsureAllowances(
     ableToRequest,
     isPendingAllowances: isPending,
     isPendingApprovals: Object.values(pending).some(v => v),
-    enabled,
+    refetchAllowances: async () => {
+      await refetch();
+      return;
+    },
   };
 }

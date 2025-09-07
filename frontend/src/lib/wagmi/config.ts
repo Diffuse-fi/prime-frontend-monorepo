@@ -2,7 +2,7 @@ import { getDefaultConfig } from "@rainbow-me/rainbowkit";
 import { http } from "wagmi";
 import {
   metaMaskWallet,
-  // trustWallet,
+  trustWallet,
   // walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { getAvailableChains } from "../chains";
@@ -26,7 +26,7 @@ export const config = getDefaultConfig({
       groupName: "Popular",
       wallets: [
         metaMaskWallet,
-        // trustWallet,
+        trustWallet,
         // walletConnectWallet,
       ],
     },

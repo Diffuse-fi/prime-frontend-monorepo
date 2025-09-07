@@ -24,6 +24,7 @@ export function Providers({ children, locale }: ProvidersProps) {
           theme={theme}
           locale={locale as Locale}
           initialChain={getInitialChain()}
+          showRecentTransactions
         >
           {children}
         </RainbowKitProvider>

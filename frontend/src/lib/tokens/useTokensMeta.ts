@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { apiUrl } from "../api";
 import { QV } from "../query/versions";
 import { TokenInfo } from "./validations";
@@ -17,7 +17,6 @@ export function useTokensMeta(chainId: number) {
       return await (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)));
     },
     staleTime: 1000 * 60 * 60,
-    placeholderData: keepPreviousData,
   });
 
   return {

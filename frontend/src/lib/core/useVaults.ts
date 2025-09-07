@@ -7,7 +7,7 @@ import { QV } from "../query/versions";
 import { opt, qk } from "../query/helpers";
 import { useTokensMeta } from "../tokens/useTokensMeta";
 import { populateTokenListWithMeta } from "../tokens/tokensMeta";
-import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import pLimit from "p-limit";
 import { Address, getAddress } from "viem";
 import uniqBy from "lodash/uniqBy";
@@ -80,7 +80,6 @@ export function useVaults(): UseVaultsResult {
     !!chainId && !!publicClient && !!addressKey && vaultContracts.length > 0;
 
   const strategiesQueries = useQuery({
-    placeholderData: keepPreviousData,
     enabled,
     queryKey: qKeys.strategies(addressKey, chainId),
     refetchOnWindowFocus: false,
@@ -112,7 +111,6 @@ export function useVaults(): UseVaultsResult {
 
   const limitsQueries = useQuery({
     enabled: enabled && !!owner,
-    placeholderData: keepPreviousData,
     queryKey: qKeys.limits(addressKey, chainId, owner),
     refetchOnWindowFocus: false,
     queryFn: async ({ signal }) => {
@@ -157,7 +155,6 @@ export function useVaults(): UseVaultsResult {
 
   const rawAssetsQueries = useQuery({
     enabled,
-    placeholderData: keepPreviousData,
     queryKey: qKeys.assets(addressKey, chainId),
     refetchOnWindowFocus: false,
     queryFn: async ({ signal }) => {
