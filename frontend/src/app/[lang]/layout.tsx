@@ -27,6 +27,7 @@ import { Navbar } from "@diffuse/ui-kit/Navbar";
 import { Text } from "@diffuse/ui-kit/Text";
 import { Container } from "@diffuse/ui-kit/Container";
 import ToastProvider from "@/components/toast";
+import { ChainSwitcher } from "@/components/wagmi/ChainSwitcher";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
@@ -70,7 +71,7 @@ export default async function RootLayout({
           <WebVitals />
         </>
       )}
-      <body className={`${fonts.SFProText.variable} antialiased pb-4`}>
+      <body className={`${fonts.SFProText.variable} pb-4 antialiased`}>
         <LocalizationProvider
           value={{
             lang,
@@ -97,7 +98,7 @@ export default async function RootLayout({
                 logo={
                   <Link
                     href="/"
-                    className="flex gap-2 items-center select-none"
+                    className="flex items-center gap-2 select-none"
                     locale={lang}
                   >
                     <Image src="/logo.png" alt="Logo" width={32} height={32} />
@@ -126,6 +127,7 @@ export default async function RootLayout({
                 wallet={
                   <div className="flex gap-4">
                     <ThemeSwitcher />
+                    <ChainSwitcher />
                     <ConnectButton />
                   </div>
                 }

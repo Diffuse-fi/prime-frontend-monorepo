@@ -7,7 +7,6 @@ import { VaultCard } from "./VaultCard";
 import { AssetsList } from "./AssetsList";
 import { useLocalStorage } from "@/lib/misc/useLocalStorage";
 import { useCallback, useEffect } from "react";
-import { TokenInfo, TokenInfoSchema } from "@/lib/tokens/validations";
 import { useSelectedVaults } from "@/lib/core/useSelectVaults";
 import { useEnsureAllowances } from "@/lib/core/useEnsureAllowances";
 import { showSkeletons } from "@/lib/misc/showSkeletons";
@@ -16,16 +15,13 @@ import { useRouter } from "next/navigation";
 import { localizePath } from "@/lib/localization/locale";
 import { useDeposit } from "@/lib/core/useDeposit";
 import { toast } from "@/lib/toast";
-
-const validateTokenInfo = (value: TokenInfo | null) => {
-  return TokenInfoSchema.safeParse(value).success;
-};
+import { useSelectedAsset } from "@/lib/core/useSelectedAsset";
 
 export default function LendPage() {
-  const { vaults, isPending, vaultsAssetsList: dedupedTokenList } = useVaults();
+  const { vaults, isPending, vaultsAssetsList } = useVaults();
   const previousVaulsCount = usePreviousVaulsCount(vaults.length);
   const { selectedVaults, setAmountForVault } = useSelectedVaults();
-  const [selectedAsset, setSelectedAsset] = useSelectedAsset(dedupedTokenList);
+  const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const { dict, lang, dir } = useLocalization();
   const router = useRouter();
   const onSuccessAllowance = useCallback(() => {
@@ -94,15 +90,15 @@ export default function LendPage() {
   })();
 
   return (
-    <div className="grid sm:grid-cols-9 grid-cols-1 gap-2 sm:gap-4">
-      <div className="flex flex-col gap-4 sm:col-span-4 col-span-1">
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-9 sm:gap-4">
+      <div className="col-span-1 flex flex-col gap-4 sm:col-span-4">
         <Card title={dict.lend.assetsToLend}>
           <Heading level={2}>{dict.lend.assetsToLend}</Heading>
           <AssetsList
             onSelectAsset={setSelectedAsset}
             selectedAsset={selectedAsset}
             isLoading={isPending}
-            options={dedupedTokenList}
+            options={vaultsAssetsList}
             direction={dir}
           />
         </Card>
@@ -111,7 +107,7 @@ export default function LendPage() {
         ) : (
           <ul className="flex flex-col gap-2">
             {vaultsForSelectedAsset.map(vault => (
-              <li key={vault.address}>
+              <li key={vault.address} className="animate-in-fade">
                 <VaultCard
                   selectedAsset={selectedAsset!}
                   vault={vault}
@@ -126,7 +122,7 @@ export default function LendPage() {
           </ul>
         )}
       </div>
-      <div className="flex flex-col gap-4 sm:col-span-5 col-span-1">
+      <div className="col-span-1 flex flex-col gap-4 sm:col-span-5">
         <Card>
           <Button
             onClick={actionButtonMeta.onClick}
@@ -139,26 +135,6 @@ export default function LendPage() {
       </div>
     </div>
   );
-}
-
-function useSelectedAsset(allowedTokens: TokenInfo[]) {
-  const [selectedAsset, setSelectedAsset] = useLocalStorage<TokenInfo | null>(
-    "lend-selected-token",
-    null,
-    validateTokenInfo
-  );
-
-  useEffect(() => {
-    if (!selectedAsset && allowedTokens.length > 0) {
-      setSelectedAsset(allowedTokens[0]);
-    }
-
-    if (selectedAsset && !allowedTokens.find(t => t.address === selectedAsset.address)) {
-      setSelectedAsset(allowedTokens.length > 0 ? allowedTokens[0] : null);
-    }
-  }, [allowedTokens, selectedAsset, setSelectedAsset]);
-
-  return [selectedAsset, setSelectedAsset] as const;
 }
 
 function usePreviousVaulsCount(vaultsLenght: number) {

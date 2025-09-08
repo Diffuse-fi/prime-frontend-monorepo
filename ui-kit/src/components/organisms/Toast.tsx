@@ -49,14 +49,15 @@ export const Toast = React.forwardRef<HTMLLIElement, ToastProps>(
     return (
       <li
         ref={ref}
-        className={cn("flex p-4 shadow-strong rounded-b-lg gap-2", className)}
+        className={cn("shadow-strong flex gap-2 rounded-b-lg p-4", className)}
         role={role}
         aria-live="polite"
         aria-atomic="true"
         onMouseEnter={pause}
         onMouseLeave={resume}
+        data-state={open ? "open" : "closed"}
       >
-        <div className="flex flex-1 items-center rounded-md bg-foreground/10">
+        <div className="bg-foreground/10 flex flex-1 items-center rounded-md">
           <div className="flex flex-1 flex-col">
             {title && (
               <Text size="small" weight="semibold" className="mb-1">

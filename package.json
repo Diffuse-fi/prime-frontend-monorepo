@@ -69,6 +69,7 @@
     "prettier-plugin-multiline-arrays": "^4.0.3",
     "prettier-plugin-packagejson": "^2.5.15",
     "prettier-plugin-sort-json": "^4.1.1",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "simple-git-hooks": "^2.13.0",
     "typescript": "^5",
     "vitest": "^3.2.4"

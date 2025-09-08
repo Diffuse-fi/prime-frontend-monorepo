@@ -43,5 +43,14 @@
       "depositErrorToast": "An error occurred.",
       "depositSuccessToast": "Deposit successful!"
     }
+  },
+  "myPositions": {
+    "averageAPR": "Average APR",
+    "interestEarned": "Interest earned",
+    "noPositions": {
+      "description": "You have no lending positions yet. Start exploring strategies to earn yield on your assets.",
+      "title": "No Lending Positions"
+    },
+    "totalSupplied": "Total supplied"
   }
 }

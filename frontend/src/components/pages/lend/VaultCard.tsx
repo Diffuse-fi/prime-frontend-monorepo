@@ -1,3 +1,5 @@
+"use client";
+
 import { TokenImage } from "../../shared/TokenImage";
 import { VaultFullInfo } from "../../../lib/core/types";
 import { formatDate } from "@/lib/formatters/date";
@@ -43,7 +45,7 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
   return (
     <Card
       header={
-        <div className="flex justify-start items-center gap-1">
+        <div className="flex items-center justify-start gap-1">
           <Badge variant="dot" color="primary" />
           <Heading level={4} className="font-bold">
             {headerText}

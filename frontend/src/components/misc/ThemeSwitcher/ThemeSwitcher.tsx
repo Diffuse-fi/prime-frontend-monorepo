@@ -8,10 +8,13 @@ export default function ThemeSwitcher() {
 
   return (
     <IconButton
-      aria-label="Toggle site theme"
+      aria-label=""
       onClick={() => setTheme(current === "dark" ? "light" : "dark")}
       icon={current === "dark" ? <Sun /> : <Moon />}
       size="sm"
+      variant="solid"
+      aria-hidden
+      className="animate-in-fade"
     />
   );
 }

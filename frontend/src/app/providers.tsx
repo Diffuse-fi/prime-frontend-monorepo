@@ -9,6 +9,7 @@ import { ReactNode } from "react";
 import { queryClient } from "@/lib/query/client";
 import { useRainbowTheme } from "@/lib/theme/rainbowTheme";
 import { getInitialChain } from "@/lib/chains";
+import Image from "next/image";
 
 type ProvidersProps = PropsWithLocale<{
   children: ReactNode;
@@ -24,7 +25,11 @@ export function Providers({ children, locale }: ProvidersProps) {
           theme={theme}
           locale={locale as Locale}
           initialChain={getInitialChain()}
-          showRecentTransactions
+          appInfo={{
+            appName: "Diffuse Prime",
+          }}
+          avatar={() => <Image src="/logo.png" alt="Avatar" width={64} height={64} />}
+          modalSize="compact"
         >
           {children}
         </RainbowKitProvider>

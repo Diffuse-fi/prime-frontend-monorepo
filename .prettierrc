@@ -8,11 +8,13 @@
   "plugins": [
     "prettier-plugin-sort-json",
     "prettier-plugin-packagejson",
-    "prettier-plugin-multiline-arrays"
+    "prettier-plugin-multiline-arrays",
+    "prettier-plugin-tailwindcss"
   ],
   "printWidth": 90,
   "semi": true,
   "singleQuote": false,
+  "tailwindFunctions": ["cn"],
   "trailingComma": "es5",
   "$schema": "http://json.schemastore.org/prettierrc"
 }

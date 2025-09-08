@@ -83,19 +83,19 @@ export default function ToastProvider({
       <Portal node={document.body}>
         <ul
           className={cn(
-            "fixed flex flex-col list-none pointer-events-none w-fit",
-            defaultPosition === "top-left" && "items-start top-4 left-4",
-            defaultPosition === "top-right" && "items-end top-4 right-4",
-            defaultPosition === "bottom-left" && "items-start bottom-4 left-4",
-            defaultPosition === "bottom-right" && "items-end bottom-4 right-4",
-            "gap-2 px-4 py-2 z-50"
+            "pointer-events-none fixed flex w-fit list-none flex-col",
+            defaultPosition === "top-left" && "top-4 left-4 items-start",
+            defaultPosition === "top-right" && "top-4 right-4 items-end",
+            defaultPosition === "bottom-left" && "bottom-4 left-4 items-start",
+            defaultPosition === "bottom-right" && "right-4 bottom-4 items-end",
+            "z-50 gap-2 px-4 py-2"
           )}
           role="region"
           aria-label="Notifications"
         >
           {queue.map(toast => (
             <Toast
-              className="pointer-events-auto"
+              className="animate-in-zoom-fade pointer-events-auto transition-transform hover:-translate-y-1 hover:scale-[1.02]"
               key={toast.id}
               closeable={toast.closeable ?? closeable}
               duration={toast.duration ?? duration}

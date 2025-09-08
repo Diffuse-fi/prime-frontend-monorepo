@@ -1,6 +1,16 @@
 import { Chain } from "@rainbow-me/rainbowkit";
-import { berachain } from "./berachain";
-import { ethMainnet } from "./mainnet";
+import { berachain as beraDefault, mainnet } from "viem/chains";
+import { getStableChainMeta } from "./meta";
+
+export const berachain = {
+  ...beraDefault,
+  ...getStableChainMeta(beraDefault.id),
+};
+
+export const ethMainnet = {
+  ...mainnet,
+  ...getStableChainMeta(mainnet.id),
+};
 
 const testnetsEnabled = process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true";
 const mainnetsEnabled = process.env.NEXT_PUBLIC_ENABLE_MAINNETS === "true";

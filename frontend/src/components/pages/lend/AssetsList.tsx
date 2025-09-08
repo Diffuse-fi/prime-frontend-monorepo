@@ -39,7 +39,11 @@ export function AssetsList({
             <Skeleton key={i} className="h-12" />
           ))
         : options.map(option => (
-            <RadioGroupItem key={option.address} value={option.address}>
+            <RadioGroupItem
+              key={option.address}
+              value={option.address}
+              className="animate-in-fade"
+            >
               <TokenCard
                 symbol={option.symbol}
                 renderImage={({ alt, className }) => (
@@ -50,7 +54,7 @@ export function AssetsList({
                     address={option.address}
                   />
                 )}
-                className={`cursor-pointer h-12 px-0 ${
+                className={`h-12 cursor-pointer px-0 ${
                   selectedAsset?.address === option.address && "border-orange-500"
                 }`}
                 onClick={() => onSelectAsset?.(option)}
