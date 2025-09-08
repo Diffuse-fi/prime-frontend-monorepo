@@ -320,7 +320,7 @@ export default async function LendPage() {
   return (
     <div className="grid gap-6">
       <Card>
-        <div className="text-xs text-muted-foreground">Protocol Deposits</div>
+        <div className="text-muted-foreground text-xs">Protocol Deposits</div>
         <div className="text-2xl font-semibold">
           {Number(formatUnits(totalDeposits, 18)).toLocaleString()}
         </div>

@@ -17,7 +17,7 @@ export type UseVaultsResult = {
   vaults: VaultFullInfo[];
   invalidate: () => void;
   isPending: boolean;
-  isPendingLimits: boolean;
+  isLoading: boolean;
   vaultsAssetsList: TokenInfo[];
 };
 
@@ -268,13 +268,13 @@ export function useVaults(): UseVaultsResult {
   };
 
   const isPending = strategiesQueries.isPending || rawAssetsQueries.isPending;
-  const isPendingLimits = limitsQueries.isPending;
+  const isLoading = strategiesQueries.isLoading || rawAssetsQueries.isLoading;
 
   return {
     vaults,
     invalidate,
     isPending,
-    isPendingLimits,
+    isLoading,
     vaultsAssetsList,
   };
 }

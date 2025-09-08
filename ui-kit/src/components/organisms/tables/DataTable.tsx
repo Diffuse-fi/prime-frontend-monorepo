@@ -75,9 +75,9 @@ function DataTableInner<TData extends object>(
                       <ChevronUp
                         aria-hidden="true"
                         className={cn(
-                          "h-3.5 w-3.5 transition-transform opacity-60",
-                          sorted === "asc" && "rotate-0 opacity-100 text-primary",
-                          sorted === "desc" && "rotate-180 opacity-100 text-primary",
+                          "h-3.5 w-3.5 opacity-60 transition-transform",
+                          sorted === "asc" && "text-primary rotate-0 opacity-100",
+                          sorted === "desc" && "text-primary rotate-180 opacity-100",
                           sorted === false && "opacity-0"
                         )}
                       />

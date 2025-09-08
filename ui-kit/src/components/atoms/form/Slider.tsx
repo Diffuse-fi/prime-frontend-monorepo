@@ -17,25 +17,25 @@ export const Slider = React.forwardRef<HTMLSpanElement, SliderProps>(function Sl
     <SlidierPrimitive.Root
       ref={ref}
       className={cn(
-        "relative flex w-full touch-none select-none items-center",
+        "relative flex w-full touch-none items-center select-none",
         className
       )}
       {...props}
     >
       <SlidierPrimitive.Track
         className={cn(
-          "relative h-2 w-full grow overflow-hidden rounded-full bg-muted",
+          "bg-muted relative h-2 w-full grow overflow-hidden rounded-full",
           trackClassName
         )}
       >
         <SlidierPrimitive.Range
-          className={cn("absolute h-full bg-primary", rangeClassName)}
+          className={cn("bg-primary absolute h-full", rangeClassName)}
         />
       </SlidierPrimitive.Track>
       <SlidierPrimitive.Thumb
         className={cn(
-          "block h-5 w-5 rounded-[10px] border-2 border-primary bg-background shadow-sm",
-          "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+          "border-primary bg-background block h-5 w-5 rounded-[10px] border-2 shadow-sm",
+          "focus:ring-primary focus:ring-2 focus:ring-offset-2 focus:outline-none",
           "disabled:pointer-events-none disabled:opacity-50",
           "hover:border-primary/80",
           thumbClassName

@@ -60,7 +60,7 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
         onValueChange={onAmountChange}
         tokenSymbol="mUSDC"
         renderTokenImage={() => (
-          <TokenImage alt="" address={vault?.assets?.at(0)?.address ?? ""} />
+          <TokenImage alt="" address={vault?.assets?.at(0)!.address} />
         )}
       />
       <SimpleTable
@@ -72,7 +72,7 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
             <div key="d" className="flex items-center">
               <TokenImage
                 alt=""
-                address={vault?.assets?.at(0)?.address ?? ""}
+                address={vault?.assets?.at(0)!.address}
                 className="mr-1"
                 size={20}
               />

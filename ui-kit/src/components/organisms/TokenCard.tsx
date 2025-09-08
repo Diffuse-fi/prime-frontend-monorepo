@@ -19,7 +19,7 @@ export const TokenCard = React.forwardRef<HTMLDivElement, TokenCardProps>(
         cardBodyClassName="px-2 py-2"
         {...props}
       >
-        <div className="flex items-center gap-2 flex-nowrap">
+        <div className="flex flex-nowrap items-center gap-2">
           {renderImage({
             alt: symbol,
             className: "flex-shrink-0",

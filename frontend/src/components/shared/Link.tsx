@@ -24,7 +24,7 @@ export default function Link({
         aria-disabled="true"
         tabIndex={-1}
         inert
-        className={`${className} opacity-60 cursor-not-allowed`}
+        className={`${className} cursor-not-allowed opacity-60`}
         role="link"
       >
         {children}

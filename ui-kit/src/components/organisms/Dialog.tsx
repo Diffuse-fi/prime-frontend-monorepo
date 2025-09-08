@@ -40,7 +40,7 @@ export function Dialog({
         <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
       ) : null}
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-sm data-[state=open]:animate-in-fade data-[state=closed]:animate-out-fade" />
+        <DialogPrimitive.Overlay className="data-[state=open]:animate-in-fade data-[state=closed]:animate-out-fade fixed inset-0 bg-black/40 backdrop-blur-sm" />
         <DialogPrimitive.Content className={content({ size })}>
           <div className="flex items-start gap-3">
             <div className="min-w-0 flex-1">
@@ -50,13 +50,13 @@ export function Dialog({
                 </DialogPrimitive.Title>
               )}
               {description && (
-                <DialogPrimitive.Description className="mt-1 text-sm text-muted">
+                <DialogPrimitive.Description className="text-muted mt-1 text-sm">
                   {description}
                 </DialogPrimitive.Description>
               )}
             </div>
             <DialogPrimitive.Close
-              className="p-2 rounded-md hover:bg-muted/10 focus:outline-none"
+              className="hover:bg-muted/10 rounded-md p-2 focus:outline-none"
               aria-label="Close"
             >
               <X className="h-5 w-5" />

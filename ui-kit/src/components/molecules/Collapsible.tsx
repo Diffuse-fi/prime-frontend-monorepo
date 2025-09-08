@@ -21,7 +21,7 @@ type UncontrolledCollapsibleProps = Omit<
 
 const CollapsibleSummary = ({ summary, open }: { summary: string; open: boolean }) => {
   return (
-    <summary className="cursor-pointer select-none list-none underline decoration-dashed flex items-center">
+    <summary className="flex cursor-pointer list-none items-center underline decoration-dashed select-none">
       <Text weight="semibold" size="small">
         {summary}
       </Text>

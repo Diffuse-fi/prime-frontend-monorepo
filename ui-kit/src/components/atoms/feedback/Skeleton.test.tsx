@@ -37,7 +37,7 @@ describe("<Skeleton />", () => {
   });
 
   it("merges className with generated classes", () => {
-    render(<Skeleton className="h-4 w-8 custom" data-testid="sk" />);
+    render(<Skeleton className="custom h-4 w-8" data-testid="sk" />);
     const el = screen.getByTestId("sk");
 
     expect(el).toHaveClass("rounded-md");

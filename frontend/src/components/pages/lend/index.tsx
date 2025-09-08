@@ -2,7 +2,7 @@
 
 import { useVaults } from "../../../lib/core/useVaults";
 import { useLocalization } from "@/lib/localization/useLocalization";
-import { Button, Card, Heading } from "@diffuse/ui-kit";
+import { Button, Card, Heading, Text } from "@diffuse/ui-kit";
 import { VaultCard } from "./VaultCard";
 import { AssetsList } from "./AssetsList";
 import { useLocalStorage } from "@/lib/misc/useLocalStorage";
@@ -18,8 +18,8 @@ import { toast } from "@/lib/toast";
 import { useSelectedAsset } from "@/lib/core/useSelectedAsset";
 
 export default function LendPage() {
-  const { vaults, isPending, vaultsAssetsList } = useVaults();
-  const previousVaulsCount = usePreviousVaulsCount(vaults.length);
+  const { vaults, isLoading, vaultsAssetsList } = useVaults();
+  const previousVaultsCount = usePreviousVaulsCount(vaults.length);
   const { selectedVaults, setAmountForVault } = useSelectedVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const { dict, lang, dir } = useLocalization();
@@ -97,14 +97,14 @@ export default function LendPage() {
           <AssetsList
             onSelectAsset={setSelectedAsset}
             selectedAsset={selectedAsset}
-            isLoading={isPending}
+            isLoading={isLoading}
             options={vaultsAssetsList}
             direction={dir}
           />
         </Card>
-        {isPending ? (
-          showSkeletons(previousVaulsCount || 2, "h-50")
-        ) : (
+        {isLoading ? (
+          showSkeletons(previousVaultsCount || 2, "h-50")
+        ) : vaultsForSelectedAsset.length > 0 ? (
           <ul className="flex flex-col gap-2">
             {vaultsForSelectedAsset.map(vault => (
               <li key={vault.address} className="animate-in-fade">
@@ -120,6 +120,11 @@ export default function LendPage() {
               </li>
             ))}
           </ul>
+        ) : (
+          <>
+            <Text className="pt-2 font-semibold">{dict.lend.noVaults.title}</Text>
+            <Text className="">{dict.lend.noVaults.description}</Text>
+          </>
         )}
       </div>
       <div className="col-span-1 flex flex-col gap-4 sm:col-span-5">

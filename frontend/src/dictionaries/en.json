@@ -25,6 +25,10 @@
       "lend": "Lend",
       "myPositions": "My Positions"
     },
+    "noVaults": {
+      "description": "No strategies available for the selected asset. Please choose a different asset of change your wallet network.",
+      "title": "No Strategies Available"
+    },
     "rewards": "Reward",
     "rewardsType": "Rewards type",
     "risks": [

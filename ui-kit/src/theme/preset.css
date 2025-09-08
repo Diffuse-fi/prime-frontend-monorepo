@@ -32,9 +32,10 @@
 
 .dark {
   --color-bg: #0a0a0a;
+  --color-fg: #1e1e2e;
   --color-border: #26262e;
   --color-muted: #a1a1aa;
-  --color-text-primary: var(--color-fg);
+  --color-text-primary: #e4e4e7;
   --color-primary-fg: #f9fafb;
 }
 

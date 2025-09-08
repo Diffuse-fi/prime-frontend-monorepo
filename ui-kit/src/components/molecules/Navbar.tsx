@@ -17,7 +17,7 @@ export const Navbar = forwardRef<HTMLElement, NavbarProps>(
       {...props}
     >
       <Container className="flex h-16 items-center justify-between gap-4">
-        <div className="gap-4 flex">
+        <div className="flex gap-4">
           {logo}
           {navigation}
         </div>

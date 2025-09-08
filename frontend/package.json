@@ -12,6 +12,7 @@
     "start": "npm run lint:env && next start"
   },
   "dependencies": {
+    "@diffuse/sdk-js": "0.1.0",
     "@diffuse/ui-kit": "0.1.0",
     "@formatjs/intl-localematcher": "0.6.1",
     "@next/third-parties": "15.5.0",
@@ -26,7 +27,6 @@
     "negotiator": "1.0.0",
     "next": "15.5.2",
     "next-themes": "0.4.6",
-    "node-cache": "5.1.2",
     "p-limit": "7.1.1",
     "pino-pretty": "13.1.1",
     "qs": "6.14.0",

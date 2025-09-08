@@ -9,7 +9,7 @@ type RisksNoticeProps = {
 
 export function RisksNotice({ risks }: RisksNoticeProps) {
   return (
-    <ul className="list-none list-inside space-y-2">
+    <ul className="list-inside list-none space-y-2">
       {risks.map((risk, index) => (
         <li key={index}>
           <Heading level={4} className="inline font-semibold">
