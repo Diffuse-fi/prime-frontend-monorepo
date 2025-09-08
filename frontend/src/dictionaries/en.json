@@ -46,6 +46,11 @@
       "approveSuccessToast": "Approval successful!",
       "depositErrorToast": "An error occurred.",
       "depositSuccessToast": "Deposit successful!"
+    },
+    "tooltips": {
+      "switchNetwork": "Switch Network",
+      "toggleTheme": "Toggle Theme",
+      "walletNotConnected": "Wallet not connected"
     }
   },
   "myPositions": {

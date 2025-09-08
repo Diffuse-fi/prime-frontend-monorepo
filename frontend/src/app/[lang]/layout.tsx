@@ -28,6 +28,7 @@ import { Text } from "@diffuse/ui-kit/Text";
 import { Container } from "@diffuse/ui-kit/Container";
 import ToastProvider from "@/components/toast";
 import { ChainSwitcher } from "@/components/wagmi/ChainSwitcher";
+import { TooltipProvider } from "@diffuse/ui-kit/Tooltip";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
@@ -72,70 +73,72 @@ export default async function RootLayout({
         </>
       )}
       <body className={`${fonts.SFProText.variable} pb-4 antialiased`}>
-        <LocalizationProvider
-          value={{
-            lang,
-            dictionary,
-            dir,
-          }}
-        >
-          <ToastProvider
-            maxToastsToShow={3}
-            defaultPosition="bottom-right"
-            appearOnTop
-            duration={1000 * 5}
-          />
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-            nonce={nonce}
+        <TooltipProvider delayDuration={200}>
+          <LocalizationProvider
+            value={{
+              lang,
+              dictionary,
+              dir,
+            }}
           >
-            <Providers locale={lang}>
-              <Navbar
-                className="sticky top-0 z-50"
-                logo={
-                  <Link
-                    href="/"
-                    className="flex items-center gap-2 select-none"
-                    locale={lang}
-                  >
-                    <Image src="/logo.png" alt="Logo" width={32} height={32} />
-                    <Text weight="semibold" className="uppercase">
-                      {dictionary.common.navbar.title}
-                    </Text>
-                  </Link>
-                }
-                navigation={
-                  <ClientNavigation
-                    ariaLabel="Site navigation"
-                    locale={lang}
-                    config={[
-                      {
-                        href: "/lend",
-                        label: dictionary.common.navbar.navigation.lend,
-                      },
-                      {
-                        href: "/borrow",
-                        label: dictionary.common.navbar.navigation.borrow,
-                        disabled: true,
-                      },
-                    ]}
-                  />
-                }
-                wallet={
-                  <div className="flex gap-4">
-                    <ThemeSwitcher />
-                    <ChainSwitcher />
-                    <ConnectButton />
-                  </div>
-                }
-              />
-              <Container>{children}</Container>
-            </Providers>
-          </ThemeProvider>
-        </LocalizationProvider>
+            <ToastProvider
+              maxToastsToShow={3}
+              defaultPosition="bottom-right"
+              appearOnTop
+              duration={1000 * 5}
+            />
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+              nonce={nonce}
+            >
+              <Providers locale={lang}>
+                <Navbar
+                  className="sticky top-0 z-50"
+                  logo={
+                    <Link
+                      href="/"
+                      className="flex items-center gap-2 select-none"
+                      locale={lang}
+                    >
+                      <Image src="/logo.png" alt="Logo" width={32} height={32} />
+                      <Text weight="semibold" className="uppercase">
+                        {dictionary.common.navbar.title}
+                      </Text>
+                    </Link>
+                  }
+                  navigation={
+                    <ClientNavigation
+                      ariaLabel="Site navigation"
+                      locale={lang}
+                      config={[
+                        {
+                          href: "/lend",
+                          label: dictionary.common.navbar.navigation.lend,
+                        },
+                        {
+                          href: "/borrow",
+                          label: dictionary.common.navbar.navigation.borrow,
+                          disabled: true,
+                        },
+                      ]}
+                    />
+                  }
+                  wallet={
+                    <div className="flex gap-4">
+                      <ThemeSwitcher />
+                      <ChainSwitcher />
+                      <ConnectButton />
+                    </div>
+                  }
+                />
+                <Container>{children}</Container>
+              </Providers>
+            </ThemeProvider>
+          </LocalizationProvider>
+        </TooltipProvider>
       </body>
     </html>
   );

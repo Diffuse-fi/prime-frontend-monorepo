@@ -86,6 +86,28 @@
   }
 }
 
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @utility animate-in-zoom {
   animation: zoomIn 0.18s ease-out both;
 }
@@ -96,4 +118,12 @@
 
 @utility animate-in-zoom-fade {
   animation: zoomFadeIn 0.18s ease-out both;
+}
+
+@utility animate-in-slide-down {
+  animation: slideDown 0.18s ease-out both;
+}
+
+@utility animate-in-slide-up {
+  animation: slideUp 0.18s ease-out both;
 }

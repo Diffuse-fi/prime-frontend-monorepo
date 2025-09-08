@@ -3,13 +3,13 @@ import { http } from "wagmi";
 import {
   metaMaskWallet,
   trustWallet,
-  // walletConnectWallet,
+  walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { getAvailableChains } from "../chains";
 
 export const config = getDefaultConfig({
   appName: process.env.NEXT_PUBLIC_APP_NAME!,
-  projectId: process.env.NEXT_PUBLIC_PROJECT_ID!,
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
   chains: getAvailableChains(),
   transports: {
     ...getAvailableChains().reduce(
@@ -27,7 +27,7 @@ export const config = getDefaultConfig({
       wallets: [
         metaMaskWallet,
         trustWallet,
-        // walletConnectWallet,
+        walletConnectWallet,
       ],
     },
   ],

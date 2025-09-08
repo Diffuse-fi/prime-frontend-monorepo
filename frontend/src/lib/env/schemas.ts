@@ -28,7 +28,7 @@ export const envServerSchema = z.object({
 
 export const envClientSchema = z.object({
   NEXT_PUBLIC_APP_NAME: z.string().min(1),
-  NEXT_PUBLIC_PROJECT_ID: z.string().min(1),
+  NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().min(1),
 
   NEXT_PUBLIC_ENABLE_TESTNETS: zBool,
   NEXT_PUBLIC_ENABLE_MAINNETS: zBool,

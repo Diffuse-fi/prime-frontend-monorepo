@@ -17,7 +17,7 @@ export const defaultMetadata = {
   keywords: [
     "",
   ],
-  applicationName: "Diffuse Prime",
+  applicationName: process.env.NEXT_PUBLIC_APP_NAME,
   authors: [{ name: "ukorvl", url: "https://github.com/ukorvl" }],
   metadataBase: new URL(origin),
   alternates: {
