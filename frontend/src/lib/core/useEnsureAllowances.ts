@@ -200,14 +200,14 @@ export function useEnsureAllowances(
 
       try {
         const amount = opts?.mode === "infinite" ? maxUint256 : v.amount;
-        const tokenAddr = getAddress(v.assetAddress);
+        const assetAddr = getAddress(v.assetAddress);
         const spender = getAddress(v.address);
         const owner = getAddress(ownerAddr);
 
         try {
           await publicClient!.simulateContract({
             abi: erc20Abi,
-            address: tokenAddr,
+            address: assetAddr,
             functionName: "approve",
             args: [spender, amount],
             account: owner,

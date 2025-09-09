@@ -7,7 +7,7 @@ import { getAddress, Address } from "viem";
 
 const Jazzicon = dynamic(() => import("react-jazzicon"), { ssr: false });
 
-type TokenImageProps = {
+type AssetImageProps = {
   className?: string;
   size?: number;
   imgURI?: string;
@@ -15,13 +15,13 @@ type TokenImageProps = {
   alt: string;
 };
 
-export function TokenImage({
+export function AssetImage({
   address,
   size = 32,
   imgURI,
   className,
   alt,
-}: TokenImageProps) {
+}: AssetImageProps) {
   const [broken, setBroken] = useState(false);
   const seed = stableSeedForAddress(getAddress(address));
   const showImg = !!imgURI && !broken;

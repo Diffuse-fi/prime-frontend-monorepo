@@ -1,13 +1,13 @@
-import { TokenImage } from "../../shared/TokenImage";
-import { TokenInfo } from "@/lib/tokens/validations";
-import { Skeleton, TokenCard, RadioGroup, RadioGroupItem } from "@diffuse/ui-kit";
+import { AssetImage } from "../../shared/AssetImage";
+import { AssetInfo } from "@/lib/assets/validations";
+import { Skeleton, AssetCard, RadioGroup, RadioGroupItem } from "@diffuse/ui-kit";
 import { RadioGroupProps } from "@diffuse/ui-kit/RadioGroup";
 
-type Option = TokenInfo;
+type Option = AssetInfo;
 
 interface AssetsListProps {
-  selectedAsset?: TokenInfo | null;
-  onSelectAsset?: (asset: TokenInfo) => void;
+  selectedAsset?: AssetInfo | null;
+  onSelectAsset?: (asset: AssetInfo) => void;
   options: Option[];
   isLoading?: boolean;
   skeletonsToShow?: number;
@@ -44,10 +44,10 @@ export function AssetsList({
               value={option.address}
               className="animate-in-fade"
             >
-              <TokenCard
+              <AssetCard
                 symbol={option.symbol}
                 renderImage={({ alt, className }) => (
-                  <TokenImage
+                  <AssetImage
                     imgURI={option.logoURI}
                     alt={alt}
                     className={className}

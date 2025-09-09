@@ -25,16 +25,16 @@ const nextConfig: NextConfig = {
   },
   headers: () => getHeaders(enableHSTS && isProd),
   images: {
-    // We use nextjs <Image> component to display token images from external sources.
+    // We use nextjs <Image> component to display asset images from external sources.
     // This option enables to fetch those images on the server side and optimize them for
     // better performance.
     remotePatterns: [
-      // Load token images from smold.app (Bera, etc)
+      // Load asset images from smold.app (Bera, etc)
       {
         protocol: "https",
         hostname: "assets.smold.app",
       },
-      // Load token images from raw.githubusercontent.com (Trustwallet tokenlist or other)
+      // Load asset images from raw.githubusercontent.com (Trustwallet tokenlist or other)
       {
         protocol: "https",
         hostname: "raw.githubusercontent.com",

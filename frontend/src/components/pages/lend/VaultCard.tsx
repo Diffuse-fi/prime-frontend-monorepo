@@ -1,6 +1,6 @@
 "use client";
 
-import { TokenImage } from "../../shared/TokenImage";
+import { AssetImage } from "../../shared/AssetImage";
 import { VaultFullInfo } from "../../../lib/core/types";
 import { formatDate } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
@@ -11,18 +11,18 @@ import {
   Heading,
   SimpleTable,
   Text,
-  TokenInput,
+  AssetInput,
   TokenInputProps,
   UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
-import { TokenInfo } from "@/lib/tokens/validations";
+import { AssetInfo } from "@/lib/assets/validations";
 import { calcAprInterest } from "@/lib/formulas";
-import { formatUnits } from "@/lib/formatters/token";
+import { formatUnits } from "@/lib/formatters/asset";
 import { RisksNotice } from "./RisksNotice";
 
 type VaultProps = {
   vault: VaultFullInfo;
-  selectedAsset: TokenInfo;
+  selectedAsset: AssetInfo;
   amount?: bigint;
   onAmountChange?: TokenInputProps["onValueChange"];
 };
@@ -54,13 +54,13 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
       }
     >
       <Text className="font-bold">{dict.lend.deposit}</Text>
-      <TokenInput
+      <AssetInput
         placeholder="0.0"
         value={amount ? formatUnits(amount, selectedAsset.decimals).text : ""}
         onValueChange={onAmountChange}
-        tokenSymbol="mUSDC"
-        renderTokenImage={() => (
-          <TokenImage alt="" address={vault?.assets?.at(0)!.address} />
+        assetSymbol="mUSDC"
+        renderAssetImage={() => (
+          <AssetImage alt="" address={vault?.assets?.at(0)!.address} />
         )}
       />
       <SimpleTable
@@ -70,7 +70,7 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
         rows={[
           [
             <div key="d" className="flex items-center">
-              <TokenImage
+              <AssetImage
                 alt=""
                 address={vault?.assets?.at(0)!.address}
                 className="mr-1"

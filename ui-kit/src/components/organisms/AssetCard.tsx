@@ -5,12 +5,12 @@ import { Text } from "../atoms";
 
 type RenderImage = (props: { alt: string; className: string }) => React.ReactNode;
 
-export interface TokenCardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface AssetCardProps extends React.HTMLAttributes<HTMLDivElement> {
   symbol: string;
   renderImage: RenderImage;
 }
 
-export const TokenCard = React.forwardRef<HTMLDivElement, TokenCardProps>(
+export const AssetCard = React.forwardRef<HTMLDivElement, AssetCardProps>(
   ({ symbol, className, renderImage, ...props }, ref) => {
     return (
       <Card
@@ -31,4 +31,4 @@ export const TokenCard = React.forwardRef<HTMLDivElement, TokenCardProps>(
   }
 );
 
-TokenCard.displayName = "TokenCard";
+AssetCard.displayName = "AssetCard";

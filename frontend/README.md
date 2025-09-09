@@ -29,12 +29,12 @@ This will listen only for changes in the `frontend` directory. If you want to ru
 
 Chains configuration is stored in `src/lib/chains/index.ts` file. To add a new chain/remove an existing chain, use native wagmi approach and predefined chains from `wagmi/chains` package or define a custom chain using `defineChain` function from `wagmi`.
 
-## Tokens
+## Assets
 
-Tokens metadata (e.g. logoURIs) is stored in `src/lib/tokens/meta.json` file. The file should follow the [Token List Schema](https://tokenlists.org) format.
-We don't have many tokens, so it is much easier (and secure) to maintain a local token metadata list instead of fetching it from a remote source.
+Assets metadata (e.g. logoURIs) is stored in `src/lib/assets/meta.json` file. The file should follow the [Token List Schema](https://tokenlists.org) format.
+We don't have many assets, so it is much easier (and secure) to maintain a local asset metadata list instead of fetching it from a remote source.
 
-To add a new token or change metadata of an existing token, just update the `meta.json` file.
+To add a new asset or change metadata of an existing asset, just update the `meta.json` file.
 
 ## Internalization and Localization
 

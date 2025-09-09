@@ -5,20 +5,20 @@ import { Vault } from "@diffuse/sdk-js";
 import { VaultFullInfo } from "./types";
 import { QV } from "../query/versions";
 import { opt, qk } from "../query/helpers";
-import { useTokensMeta } from "../tokens/useTokensMeta";
-import { populateTokenListWithMeta } from "../tokens/tokensMeta";
+import { useAssetsMeta } from "../assets/useAssetsMeta";
+import { populateAssetListWithMeta } from "../assets/assetsMeta";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import pLimit from "p-limit";
 import { Address, getAddress } from "viem";
 import uniqBy from "lodash/uniqBy";
-import { TokenInfo } from "../tokens/validations";
+import { AssetInfo } from "../assets/validations";
 
 export type UseVaultsResult = {
   vaults: VaultFullInfo[];
   invalidate: () => void;
   isPending: boolean;
   isLoading: boolean;
-  vaultsAssetsList: TokenInfo[];
+  vaultsAssetsList: AssetInfo[];
 };
 
 const STRATEGY_LIMIT = pLimit(6);
@@ -47,7 +47,7 @@ export function useVaults(): UseVaultsResult {
   const { chainId, publicClient, walletClient, address: owner } = useClients();
   const { allVaults } = useVaultRegistry();
   const qc = useQueryClient();
-  const { meta } = useTokensMeta(chainId);
+  const { meta, isLoading: assetsMetaLoading } = useAssetsMeta(chainId);
 
   const addressKey = useMemo(() => {
     if (!allVaults?.length) return null;
@@ -101,7 +101,7 @@ export function useVaults(): UseVaultsResult {
         strategies.map(s => ({
           apr: s.apr,
           endDate: s.endDate,
-          tokenAllocation: s.tokenAllocation,
+          balance: s.balance,
           vaultAddress,
         }))
       );
@@ -190,7 +190,7 @@ export function useVaults(): UseVaultsResult {
   const assets = useMemo(() => {
     if (!rawAssetsQueries.data || !meta) return [];
 
-    return populateTokenListWithMeta({
+    return populateAssetListWithMeta({
       list: rawAssetsQueries.data,
       meta,
     });
@@ -212,7 +212,7 @@ export function useVaults(): UseVaultsResult {
   }, [strategiesQueries]);
 
   const assetsByVault = useMemo(() => {
-    const m = new Map<Address, ReturnType<typeof populateTokenListWithMeta>>();
+    const m = new Map<Address, ReturnType<typeof populateAssetListWithMeta>>();
 
     assets.forEach(a => {
       const k = a.vaultAddress;
@@ -232,19 +232,25 @@ export function useVaults(): UseVaultsResult {
     return m;
   }, [limits]);
 
-  const vaults: VaultFullInfo[] = useMemo(
-    () =>
-      vaultContracts.map(v => ({
-        ...v,
-        strategies: strategiesByVault.get(v.address) ?? [],
-        assets: assetsByVault.get(v.address) ?? [],
-        limits: {
-          maxDeposit: limitsByVault.get(v.address)?.maxDeposit,
-          maxWithdraw: limitsByVault.get(v.address)?.maxWithdraw,
-        },
-      })),
-    [vaultContracts, strategiesByVault, assetsByVault, limitsByVault]
-  );
+  const vaults: VaultFullInfo[] = useMemo(() => {
+    if (assetsMetaLoading) return [];
+
+    return vaultContracts.map(v => ({
+      ...v,
+      strategies: strategiesByVault.get(v.address) ?? [],
+      assets: assetsByVault.get(v.address) ?? [],
+      limits: {
+        maxDeposit: limitsByVault.get(v.address)?.maxDeposit,
+        maxWithdraw: limitsByVault.get(v.address)?.maxWithdraw,
+      },
+    }));
+  }, [
+    vaultContracts,
+    strategiesByVault,
+    assetsByVault,
+    limitsByVault,
+    assetsMetaLoading,
+  ]);
 
   const vaultsAssetsList = useMemo(
     () =>

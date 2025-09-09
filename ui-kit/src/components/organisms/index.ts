@@ -1,6 +1,6 @@
 export * from "./Dialog";
 export * from "./Nav";
-export * from "./TokenCard";
+export * from "./AssetCard";
 export * from "./RadioGroup";
 export * from "./Toast";
 

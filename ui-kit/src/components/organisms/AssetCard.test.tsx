@@ -1,26 +1,26 @@
 import { describe, it, expect, vi } from "vitest";
 import * as React from "react";
 import { render, screen } from "@testing-library/react";
-import { TokenCard, type TokenCardProps } from "./TokenCard";
+import { AssetCard, type AssetCardProps } from "./AssetCard";
 
 vi.mock("../atoms", () => ({
   Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
 }));
 
-describe("<TokenCard />", () => {
-  const renderImage: TokenCardProps["renderImage"] = ({ alt, className }) => (
+describe("<AssetCard />", () => {
+  const renderImage: AssetCardProps["renderImage"] = ({ alt, className }) => (
     <img data-testid="token-img" alt={alt} className={className} />
   );
 
   it("renders the symbol text", () => {
-    render(<TokenCard symbol="USDC" renderImage={renderImage} />);
+    render(<AssetCard symbol="USDC" renderImage={renderImage} />);
 
     expect(screen.getByText("USDC")).toBeInTheDocument();
   });
 
   it("calls renderImage with alt and className props", () => {
     render(
-      <TokenCard
+      <AssetCard
         symbol="BTC"
         renderImage={() => renderImage({ className: "x-class", alt: "BTC" })}
       />
@@ -33,7 +33,7 @@ describe("<TokenCard />", () => {
 
   it("merges custom className into Card", () => {
     render(
-      <TokenCard
+      <AssetCard
         symbol="ETH"
         renderImage={renderImage}
         className="custom-class"
@@ -48,7 +48,7 @@ describe("<TokenCard />", () => {
   it("forwards ref to underlying Card element", () => {
     const ref = React.createRef<HTMLDivElement>();
     render(
-      <TokenCard symbol="USDT" renderImage={renderImage} ref={ref} data-testid="card" />
+      <AssetCard symbol="USDT" renderImage={renderImage} ref={ref} data-testid="card" />
     );
 
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
@@ -57,7 +57,7 @@ describe("<TokenCard />", () => {
 
   it("passes through arbitrary props", () => {
     render(
-      <TokenCard
+      <AssetCard
         symbol="WETH"
         renderImage={renderImage}
         data-testid="custom"

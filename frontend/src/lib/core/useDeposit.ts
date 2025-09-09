@@ -8,7 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { opt, qk } from "../query/helpers";
 import { QV } from "../query/versions";
 import { produce } from "immer";
-import { formatUnits } from "../formatters/token";
+import { formatUnits } from "../formatters/asset";
 
 export type UseLendParams = {
   txConcurrency?: number;

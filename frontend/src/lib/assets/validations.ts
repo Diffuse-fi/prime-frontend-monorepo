@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { isAddress } from "viem";
 
-export const TokenInfoSchema = z.object({
+export const AssetInfoSchema = z.object({
   chainId: z.number().int().nonnegative(),
   address: z.string().refine(s => isAddress(s), {
     message: "Invalid EVM address",
@@ -14,6 +14,6 @@ export const TokenInfoSchema = z.object({
   legacyAllowance: z.boolean().optional(),
 });
 
-export type TokenInfo = z.infer<typeof TokenInfoSchema>;
+export type AssetInfo = z.infer<typeof AssetInfoSchema>;
 
-export const TokenInfoArraySchema = z.array(TokenInfoSchema).min(1);
+export const AssetInfoArraySchema = z.array(AssetInfoSchema).min(1);

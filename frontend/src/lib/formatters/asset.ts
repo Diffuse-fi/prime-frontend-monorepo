@@ -2,7 +2,7 @@ import type { FormatResult } from "./types";
 import { formatUnits as formatUnitsViem } from "viem";
 import { formatThousandsSpace } from "./number";
 
-export function formatToken(
+export function formatAsset(
   amount: bigint,
   decimals: number,
   symbol: string

@@ -361,7 +361,7 @@ export const vaultAbi = [
           },
           { name: "apr", type: "uint256", internalType: "uint256" },
           { name: "endDate", type: "uint256", internalType: "uint256" },
-          { name: "tokenAllocation", type: "uint256", internalType: "uint256" },
+          { name: "balance", type: "uint256", internalType: "uint256" },
           { name: "pool", type: "address", internalType: "address" },
         ],
       },

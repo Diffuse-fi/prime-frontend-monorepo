@@ -1,16 +1,16 @@
 import type { Vault } from "@diffuse/sdk-js";
 import { Address, Hash } from "viem";
-import { TokenInfo } from "../tokens/validations";
+import { AssetInfo } from "../assets/validations";
 
 export type VaultFullInfo = {
-  assets: TokenInfo[];
+  assets: AssetInfo[];
   name: string;
   address: Address;
   targetApr: bigint;
   strategies: Array<{
     apr: bigint;
     endDate: bigint;
-    tokenAllocation: bigint;
+    balance: bigint;
   }>;
   contract: Vault;
   limits: {

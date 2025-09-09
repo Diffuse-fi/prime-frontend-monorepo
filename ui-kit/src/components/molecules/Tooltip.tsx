@@ -35,10 +35,11 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
         <TooltipPrimitive.Content
           ref={ref}
+          hideWhenDetached
           side={side}
           align="center"
           className={cn(
-            "rounded-md bg-gray-900 px-3 py-1.5 text-sm text-white shadow-md",
+            "bg-fg text-text-primary rounded-md px-3 py-1.5 text-sm shadow-md",
             "data-[side=top]:animate-in-slide-down data-[side=bottom]:animate-in-slide-up",
             className
           )}

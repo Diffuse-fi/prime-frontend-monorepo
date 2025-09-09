@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTokenMetaList } from "@/lib/tokens/tokensMeta";
+import { getTokenMetaList } from "@/lib/assets/assetsMeta";
 import { QuerySchema } from "./validations";
 
 export const runtime = "edge";
@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(list, {
         headers: {
           "Cache-Control": "public, max-age=300, stale-while-revalidate=600",
-          "X-Token-Count": String(list.length),
+          "X-Asset-Count": String(list.length),
         },
       });
     }
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(filteredList, {
       headers: {
         "Cache-Control": "public, max-age=300",
-        "X-Token-Count": String(filteredList.length),
+        "X-Asset-Count": String(filteredList.length),
       },
     });
   } catch (err) {

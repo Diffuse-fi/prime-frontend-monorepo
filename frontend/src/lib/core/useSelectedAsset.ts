@@ -2,17 +2,17 @@
 
 import { useEffect } from "react";
 import { useLocalStorage } from "../misc/useLocalStorage";
-import { TokenInfo, TokenInfoSchema } from "../tokens/validations";
+import { AssetInfo, AssetInfoSchema } from "../assets/validations";
 
-const validateTokenInfo = (value: TokenInfo | null) => {
-  return TokenInfoSchema.safeParse(value).success;
+const validateAssetInfo = (value: AssetInfo | null) => {
+  return AssetInfoSchema.safeParse(value).success;
 };
 
-export function useSelectedAsset(allowedTokens: TokenInfo[]) {
-  const [selectedAsset, setSelectedAsset] = useLocalStorage<TokenInfo | null>(
-    "lend-selected-token",
+export function useSelectedAsset(allowedTokens: AssetInfo[]) {
+  const [selectedAsset, setSelectedAsset] = useLocalStorage<AssetInfo | null>(
+    "lend-selected-asset",
     null,
-    validateTokenInfo
+    validateAssetInfo
   );
 
   useEffect(() => {
