@@ -3,10 +3,10 @@ import { apiUrl } from "../api";
 import { QV } from "../query/versions";
 import { AssetInfo } from "./validations";
 
-const ROOT = "meta" as const;
+const ROOT = "assetsMeta" as const;
 const version = QV.assetsMeta;
 const qk = {
-  assetsMeta: (chainId: number) => [ROOT, version, "assetsMeta", chainId] as const,
+  assetsMeta: (chainId: number) => [ROOT, version, chainId] as const,
 };
 
 export function useAssetsMeta(chainId: number) {
@@ -17,7 +17,6 @@ export function useAssetsMeta(chainId: number) {
       return await (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`)));
     },
     staleTime: 1000 * 60 * 60 * 24,
-    refetchOnWindowFocus: false,
     gcTime: 1000 * 60 * 60 * 24 * 2,
   });
 

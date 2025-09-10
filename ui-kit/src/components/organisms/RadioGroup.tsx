@@ -34,9 +34,15 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
 RadioGroup.displayName = "RadioCards";
 
 export const RadioGroupItem = React.forwardRef<HTMLButtonElement, RadioGroupItemProps>(
-  ({ value, children, disabled, ...rest }, ref) => {
+  ({ value, children, disabled, className, ...rest }, ref) => {
     return (
-      <RadioGroupPrimitive.Item value={value!} disabled={disabled} ref={ref} {...rest}>
+      <RadioGroupPrimitive.Item
+        value={value!}
+        disabled={disabled}
+        ref={ref}
+        className={cn("disabled:cursor-not-allowed disabled:opacity-50", className)}
+        {...rest}
+      >
         {children}
       </RadioGroupPrimitive.Item>
     );

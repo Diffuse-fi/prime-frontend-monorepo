@@ -11,15 +11,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import pLimit from "p-limit";
 import { Address, getAddress } from "viem";
 import uniqBy from "lodash/uniqBy";
-import { AssetInfo } from "../assets/validations";
-
-export type UseVaultsResult = {
-  vaults: VaultFullInfo[];
-  invalidate: () => void;
-  isPending: boolean;
-  isLoading: boolean;
-  vaultsAssetsList: AssetInfo[];
-};
 
 const STRATEGY_LIMIT = pLimit(6);
 const ASSET_LIMIT = pLimit(6);
@@ -43,7 +34,7 @@ const qKeys = {
     ]),
 };
 
-export function useVaults(): UseVaultsResult {
+export function useVaults() {
   const { chainId, publicClient, walletClient, address: owner } = useClients();
   const { allVaults } = useVaultRegistry();
   const qc = useQueryClient();
@@ -82,7 +73,6 @@ export function useVaults(): UseVaultsResult {
   const strategiesQueries = useQuery({
     enabled,
     queryKey: qKeys.strategies(addressKey, chainId),
-    refetchOnWindowFocus: false,
     queryFn: async ({ signal }) => {
       if (!vaultContracts.length) return [];
 
@@ -112,7 +102,6 @@ export function useVaults(): UseVaultsResult {
   const limitsQueries = useQuery({
     enabled: enabled && !!owner,
     queryKey: qKeys.limits(addressKey, chainId, owner),
-    refetchOnWindowFocus: false,
     queryFn: async ({ signal }) => {
       if (!vaultContracts.length) return [];
 
@@ -156,7 +145,6 @@ export function useVaults(): UseVaultsResult {
   const rawAssetsQueries = useQuery({
     enabled,
     queryKey: qKeys.assets(addressKey, chainId),
-    refetchOnWindowFocus: false,
     queryFn: async ({ signal }) => {
       if (!vaultContracts.length) return [];
 
@@ -275,12 +263,14 @@ export function useVaults(): UseVaultsResult {
 
   const isPending = strategiesQueries.isPending || rawAssetsQueries.isPending;
   const isLoading = strategiesQueries.isLoading || rawAssetsQueries.isLoading;
+  const isRefetching = strategiesQueries.isRefetching || rawAssetsQueries.isRefetching;
 
   return {
     vaults,
     invalidate,
     isPending,
     isLoading,
+    isRefetching,
     vaultsAssetsList,
   };
 }

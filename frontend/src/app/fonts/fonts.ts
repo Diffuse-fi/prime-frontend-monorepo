@@ -37,5 +37,3 @@ const SFProText = localFont({
 export const fonts = {
   SFProText,
 };
-
-export type Fonts = typeof fonts;

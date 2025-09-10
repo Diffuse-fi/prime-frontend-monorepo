@@ -95,7 +95,6 @@ export function useEnsureAllowances(
   } = useQuery({
     queryKey: qKeys.allowances(chainId, ownerAddr, pairsKey),
     enabled,
-    refetchOnWindowFocus: false,
     gcTime: 1000 * 60 * 10,
     queryFn: async ({ signal }): Promise<Map<AddressPair, bigint | null>> => {
       const calls = pairs.map(p => ({

@@ -39,7 +39,7 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
           side={side}
           align="center"
           className={cn(
-            "bg-fg text-text-primary rounded-md px-3 py-1.5 text-sm shadow-md",
+            "bg-fg text-text-primary shadow-soft rounded-md px-3 py-1.5 text-sm",
             "data-[side=top]:animate-in-slide-down data-[side=bottom]:animate-in-slide-up",
             className
           )}

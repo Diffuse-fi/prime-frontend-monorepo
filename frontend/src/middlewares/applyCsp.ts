@@ -50,10 +50,11 @@ export const applyCsp: Finalizer = (_req, _ev, ctx, res) => {
 
   const extra = isProd
     ? normalizeTemplateString(
+        // TODO - add nonce to stlye-src when rainbow-kit allows nonce passing
         `
           default-src 'self';
           script-src 'nonce-${nonce}' 'strict-dynamic' ${allowedTrirdPartyScripts};
-          style-src 'self' 'nonce-${nonce}';
+          style-src 'self' 'unsafe-inline';
           connect-src ${allowedSources};
           img-src 'self' blob: data:;
           font-src 'self';

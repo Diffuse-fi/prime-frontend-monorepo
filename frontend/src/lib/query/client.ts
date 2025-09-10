@@ -4,6 +4,7 @@ import { defaultMutationRetry, defaultRetry } from "./defaults";
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      refetchOnReconnect: true,
       refetchOnWindowFocus: true,
       retry: defaultRetry,
       staleTime: 1000 * 60,

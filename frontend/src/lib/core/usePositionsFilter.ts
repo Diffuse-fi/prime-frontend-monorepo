@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useLocalStorage } from "../misc/useLocalStorage";
 import { z } from "zod";
+import { produce } from "immer";
+import { LenderPosition } from "./types";
 
 export type PositionStatus = "active" | "closed" | "all";
 
@@ -16,8 +18,8 @@ const validateFilter = (data: unknown) => {
   return FilterSchema.safeParse(data).success;
 };
 
-export function usePositionsFilter() {
-  const [filter, setFilterState] = useLocalStorage<PositionsFilter>(
+export function usePositionsFilter(allPositions: LenderPosition[]) {
+  const [filter, setFilter] = useLocalStorage<PositionsFilter>(
     "positions-filter",
     {
       status: "all",
@@ -25,7 +27,21 @@ export function usePositionsFilter() {
     validateFilter
   );
 
-  const setFilter = (newFilter: Partial<PositionsFilter>) => {};
+  const filteredPositions = useMemo(() => {
+    return allPositions.filter(() => {
+      if (filter.status === "all") return true;
 
-  return { filter };
+      return true;
+    });
+  }, [allPositions, filter]);
+
+  const setStatus = (status: PositionStatus) => {
+    setFilter(
+      produce(draft => {
+        draft.status = status;
+      })
+    );
+  };
+
+  return { filter, filteredPositions, setStatus };
 }

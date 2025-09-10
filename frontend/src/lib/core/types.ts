@@ -17,6 +17,7 @@ export type VaultFullInfo = {
     maxDeposit?: bigint;
     maxWithdraw?: bigint;
   };
+  totalAssets?: bigint;
 };
 
 export type SelectedVault = {
@@ -46,3 +47,15 @@ export type TxInfo = {
 };
 
 export type TxState = Record<Address, TxInfo>;
+
+export type LenderPosition = {
+  vaultAddress: Address;
+  asset: AssetInfo;
+  balance: bigint;
+  aquiredYield: bigint;
+};
+
+export type BatchResult = {
+  hashes: Record<Address, Hash>;
+  errors: Record<Address, Error>;
+};

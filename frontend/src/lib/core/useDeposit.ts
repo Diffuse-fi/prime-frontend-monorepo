@@ -38,7 +38,7 @@ const ROOT = "deposit" as const;
 const version = QV.deposit;
 const qKeys = {
   deposit: (chainId: number, addresses: string | null) =>
-    qk([ROOT, version, opt(chainId), opt(addresses), "deposit"]),
+    qk([ROOT, version, opt(chainId), opt(addresses)]),
 };
 
 function makeIdemKey(chainId: number, vault: Address, amount: bigint, receiver: Address) {

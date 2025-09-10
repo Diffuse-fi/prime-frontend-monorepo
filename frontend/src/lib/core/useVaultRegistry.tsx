@@ -16,7 +16,7 @@ const version = QV.vaultsList;
 
 const queryKeys = {
   allVaults: (contractAddress: Address | null, chainId: number) =>
-    qk([ROOT, version, opt(contractAddress), chainId, "allVaults"]),
+    qk([ROOT, version, opt(contractAddress), chainId]),
 };
 
 export function useVaultRegistry({ addressOverride }: UseVaultRegistryParams = {}) {
@@ -24,16 +24,20 @@ export function useVaultRegistry({ addressOverride }: UseVaultRegistryParams = {
   const normalizedAddr = addressOverride ? getAddress(addressOverride) : undefined;
   const registry = useVaultRegistryContract(normalizedAddr);
 
-  const data = useQuery({
+  const vaultsQuery = useQuery({
     enabled: !!registry && !!chainId,
     queryKey: queryKeys.allVaults(addressOverride || null, chainId),
     queryFn: ({ signal }) => registry!.getVaults({ signal }),
-    staleTime: 30_000,
+    staleTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 60 * 24,
+    retry: 1,
   });
 
   return {
-    allVaults: data.data,
-    isPending: data.isPending,
-    error: data.error,
+    allVaults: vaultsQuery.data,
+    isPending: vaultsQuery.isPending,
+    isLoading: vaultsQuery.isLoading,
+    error: vaultsQuery.error,
+    refetch: () => vaultsQuery.refetch(),
   };
 }

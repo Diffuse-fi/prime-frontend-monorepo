@@ -11,9 +11,11 @@
   },
   "lend": {
     "approveButtonText": "Approve",
+    "approving": "Approvals Pending...",
     "assetsToLend": "Assets to lend",
     "deposit": "Deposit",
     "depositButtonText": "Deposit",
+    "depositing": "Depositing...",
     "description": "Access the high-yield strategies used by institutions",
     "enterAmountButtonText": "Enter amount to lend",
     "listOfStrategies": "List of Strategies",
@@ -59,6 +61,10 @@
     "noPositions": {
       "description": "You have no lending positions yet. Start exploring strategies to earn yield on your assets.",
       "title": "No Lending Positions"
+    },
+    "toasts": {
+      "withdrawErrorToast": "An error occurred.",
+      "withdrawSuccessToast": "Withdrawal successful!"
     },
     "totalSupplied": "Total supplied"
   }

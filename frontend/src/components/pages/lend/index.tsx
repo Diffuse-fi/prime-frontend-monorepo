@@ -18,7 +18,7 @@ import { toast } from "@/lib/toast";
 import { useSelectedAsset } from "@/lib/core/useSelectedAsset";
 
 export default function LendPage() {
-  const { vaults, isLoading, vaultsAssetsList } = useVaults();
+  const { vaults, isLoading, vaultsAssetsList, isRefetching } = useVaults();
   const previousVaultsCount = usePreviousVaulsCount(vaults.length);
   const { selectedVaults, setAmountForVault } = useSelectedVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
@@ -27,8 +27,13 @@ export default function LendPage() {
   const onSuccessAllowance = useCallback(() => {
     toast(dict.lend.toasts.approveSuccessToast);
   }, [dict.lend.toasts.approveSuccessToast]);
-  const { allAllowed, approveMissing, ableToRequest, refetchAllowances } =
-    useEnsureAllowances(selectedVaults, { onSuccess: onSuccessAllowance });
+  const {
+    allAllowed,
+    approveMissing,
+    ableToRequest,
+    refetchAllowances,
+    isPendingApprovals,
+  } = useEnsureAllowances(selectedVaults, { onSuccess: onSuccessAllowance });
   const onDepositSuccessFn = () => {
     router.push(localizePath("/lend/my-positions", lang));
   };
@@ -41,7 +46,7 @@ export default function LendPage() {
     });
   };
 
-  const { reset, deposit } = useDeposit(selectedVaults, vaults, {
+  const { reset, deposit, isPendingBatch, txState } = useDeposit(selectedVaults, vaults, {
     onDepositBatchAllSuccess: () => {
       onDepositSuccessFn();
       toast(dict.lend.toasts.depositSuccessToast);
@@ -65,8 +70,8 @@ export default function LendPage() {
   const actionButtonMeta = (() => {
     if (allAllowed) {
       return {
-        text: dict.lend.depositButtonText,
-        disabled: false,
+        text: isPendingBatch ? dict.lend.depositing : dict.lend.depositButtonText,
+        disabled: isPendingBatch,
         onClick: () => deposit(),
         className: "bg-orange-500 hover:bg-orange-600 text-white",
       };
@@ -74,8 +79,8 @@ export default function LendPage() {
 
     if (ableToRequest) {
       return {
-        text: dict.lend.approveButtonText,
-        disabled: false,
+        text: isPendingApprovals ? dict.lend.approving : dict.lend.approveButtonText,
+        disabled: isPendingApprovals,
         onClick: () => approveMissing({ mode: "exact" }),
         className: "bg-blue-500 hover:bg-blue-600 text-white",
       };
@@ -97,12 +102,12 @@ export default function LendPage() {
           <AssetsList
             onSelectAsset={setSelectedAsset}
             selectedAsset={selectedAsset}
-            isLoading={isLoading}
+            isLoading={isLoading || isRefetching}
             options={vaultsAssetsList}
             direction={dir}
           />
         </Card>
-        {isLoading ? (
+        {isLoading || isRefetching ? (
           showSkeletons(previousVaultsCount || 2, "h-50")
         ) : vaultsForSelectedAsset.length > 0 ? (
           <ul className="flex flex-col gap-2">
@@ -136,6 +141,28 @@ export default function LendPage() {
           >
             {actionButtonMeta.text}
           </Button>
+          <div>
+            <Heading level={3} className="mt-4 mb-2">
+              Deposit logs (temporary mock before design finalization)
+            </Heading>
+            {txState && Object.keys(txState).length === 0 && (
+              <Text>No deposit transactions yet</Text>
+            )}
+            <ul className="flex flex-col gap-2">
+              {Object.entries(txState).map(([addr, info]) => (
+                <li key={addr} className="border-primary rounded-sm border p-2">
+                  <Text>
+                    Vault: <span className="font-mono">{addr}</span>
+                  </Text>
+                  {info.phase && (
+                    <Text>
+                      Phase: <span className="font-mono">{info.phase}</span>
+                    </Text>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
         </Card>
       </div>
     </div>

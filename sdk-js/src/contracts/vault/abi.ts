@@ -9,7 +9,10 @@ export const vaultAbi = [
       { name: "strategyIds", type: "uint256[]", internalType: "uint256[]" },
       { name: "lender", type: "address", internalType: "address" },
     ],
-    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+    outputs: [
+      { name: "totalYield", type: "uint256", internalType: "uint256" },
+      { name: "maxToWithdraw", type: "uint256", internalType: "uint256" },
+    ],
     stateMutability: "view",
   },
   {
@@ -129,8 +132,13 @@ export const vaultAbi = [
     name: "borrowRequest",
     inputs: [
       { name: "strategyId", type: "uint256", internalType: "uint256" },
+      {
+        name: "collateralType",
+        type: "uint8",
+        internalType: "enum TypeLib.CollateralType",
+      },
       { name: "collateralAmount", type: "uint256", internalType: "uint256" },
-      { name: "leverage", type: "uint256", internalType: "uint256" },
+      { name: "assetsToBorrow", type: "uint256", internalType: "uint256" },
       { name: "liquidationPrice", type: "uint256", internalType: "uint256" },
       { name: "minStrategyToReceive", type: "uint256", internalType: "uint256" },
       { name: "deadline", type: "uint256", internalType: "uint256" },
@@ -171,6 +179,13 @@ export const vaultAbi = [
   },
   {
     type: "function",
+    name: "fillBaseAssetDeficit",
+    inputs: [{ name: "deficitToFill", type: "uint256", internalType: "uint256" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "getActiveBorrowerPositionIds",
     inputs: [{ name: "user", type: "address", internalType: "address" }],
     outputs: [{ name: "", type: "uint256[]", internalType: "uint256[]" }],
@@ -187,7 +202,14 @@ export const vaultAbi = [
         internalType: "struct TypeLib.BorrowerPosition[]",
         components: [
           { name: "user", type: "address", internalType: "address" },
+          {
+            name: "collateralType",
+            type: "uint8",
+            internalType: "enum TypeLib.CollateralType",
+          },
+          { name: "subjectToLiquidation", type: "bool", internalType: "bool" },
           { name: "strategyId", type: "uint256", internalType: "uint256" },
+          { name: "assetsBorrowed", type: "uint256", internalType: "uint256" },
           { name: "collateralGiven", type: "uint256", internalType: "uint256" },
           { name: "leverage", type: "uint256", internalType: "uint256" },
           { name: "strategyBalance", type: "uint256", internalType: "uint256" },
@@ -229,6 +251,13 @@ export const vaultAbi = [
   },
   {
     type: "function",
+    name: "getBaseAssetDeficit",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "getBorrowAPR",
     inputs: [{ name: "strategyId", type: "uint256", internalType: "uint256" }],
     outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
@@ -245,7 +274,14 @@ export const vaultAbi = [
         internalType: "struct TypeLib.BorrowerPosition",
         components: [
           { name: "user", type: "address", internalType: "address" },
+          {
+            name: "collateralType",
+            type: "uint8",
+            internalType: "enum TypeLib.CollateralType",
+          },
+          { name: "subjectToLiquidation", type: "bool", internalType: "bool" },
           { name: "strategyId", type: "uint256", internalType: "uint256" },
+          { name: "assetsBorrowed", type: "uint256", internalType: "uint256" },
           { name: "collateralGiven", type: "uint256", internalType: "uint256" },
           { name: "leverage", type: "uint256", internalType: "uint256" },
           { name: "strategyBalance", type: "uint256", internalType: "uint256" },
@@ -312,6 +348,13 @@ export const vaultAbi = [
     name: "getMrEnclaveExpected",
     inputs: [],
     outputs: [{ name: "", type: "bytes32", internalType: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getOracle",
+    inputs: [],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
     stateMutability: "view",
   },
   {
@@ -401,6 +444,20 @@ export const vaultAbi = [
   },
   {
     type: "function",
+    name: "getVaultRegistry",
+    inputs: [],
+    outputs: [{ name: "", type: "address", internalType: "contract IVaultRegistry" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getWeightedAPR",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "getWhitelistedBorrowers",
     inputs: [],
     outputs: [{ name: "", type: "address[]", internalType: "address[]" }],
@@ -429,6 +486,13 @@ export const vaultAbi = [
       { name: "liquidationCount", type: "uint256", internalType: "uint256" },
       { name: "assetsReceived", type: "uint256[]", internalType: "uint256[]" },
     ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "liquidationRequest",
+    inputs: [{ name: "positions", type: "uint256[]", internalType: "uint256[]" }],
+    outputs: [],
     stateMutability: "nonpayable",
   },
   {
@@ -495,8 +559,13 @@ export const vaultAbi = [
     name: "previewBorrow",
     inputs: [
       { name: "strategyId", type: "uint256", internalType: "uint256" },
+      {
+        name: "collateralType",
+        type: "uint8",
+        internalType: "enum TypeLib.CollateralType",
+      },
       { name: "collateralAmount", type: "uint256", internalType: "uint256" },
-      { name: "leverage", type: "uint256", internalType: "uint256" },
+      { name: "assetsToBorrow", type: "uint256", internalType: "uint256" },
     ],
     outputs: [{ name: "strategyAmount", type: "uint256", internalType: "uint256" }],
     stateMutability: "nonpayable",
@@ -681,6 +750,13 @@ export const vaultAbi = [
   },
   {
     type: "function",
+    name: "setOracle",
+    inputs: [{ name: "oracle", type: "address", internalType: "address" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "setPoolType",
     inputs: [
       { name: "pool", type: "address", internalType: "address" },
@@ -750,13 +826,6 @@ export const vaultAbi = [
   {
     type: "function",
     name: "totalAssetsUtilized",
-    inputs: [],
-    outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "totalCollateralProvided",
     inputs: [],
     outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
     stateMutability: "view",

@@ -10,17 +10,31 @@ import { useSelectedAsset } from "@/lib/core/useSelectedAsset";
 import { Card, Text } from "@diffuse/ui-kit";
 import { PositionsFilter } from "./PositionsFilter";
 import { usePositionsFilter } from "@/lib/core/usePositionsFilter";
+import { useLenderPositions } from "@/lib/core/useLenderPositions";
+import { toast } from "@/lib/toast";
 
 export default function MyPositions() {
-  const { vaults, vaultsAssetsList, isLoading } = useVaults();
+  const { vaults, vaultsAssetsList, isLoading: isLoadingVaults } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const router = useRouter();
   const { dict, lang, dir } = useLocalization();
   const onAddMoreLiquidity = () => router.push(localizePath("/lend/deposit", lang));
+  const onWithDrawSuccess = () => {
+    toast(dict.myPositions.toasts.withdrawSuccessToast);
+  };
+  const onWithDrawError = () => {
+    toast(dict.myPositions.toasts.withdrawErrorToast);
+  };
   const vaultsForSelectedAsset = selectedAsset
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
     : vaults;
-  const {} = usePositionsFilter();
+  const {
+    positions,
+    isLoading: isLoadingPositions,
+    error,
+  } = useLenderPositions(vaultsForSelectedAsset);
+  const { filteredPositions } = usePositionsFilter(positions);
+  const isLoading = isLoadingVaults || isLoadingPositions;
 
   return (
     <div className="mt-4 flex flex-col gap-6">
@@ -61,7 +75,7 @@ export default function MyPositions() {
         onSelectAsset={setSelectedAsset}
         isLoading={isLoading}
       />
-      <PositionsFilter isLoading={isLoading} />
+      <PositionsFilter isLoading={isLoading} className="sm:w-1/3" />
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4"></div>
     </div>
   );

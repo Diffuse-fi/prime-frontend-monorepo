@@ -148,4 +148,49 @@ export class Vault extends ContractBase {
       });
     }
   }
+
+  async totalAssets({ signal }: SdkRequestOptions = {}) {
+    try {
+      return abortable(this.getContract().read.totalAssets(), signal);
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "totalAssets",
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
+
+  async accruedLenderYield(
+    strategiesIds: bigint[],
+    owner: Address,
+    { signal }: SdkRequestOptions = {}
+  ) {
+    try {
+      return abortable(
+        this.getContract().read.accruedLenderYield([strategiesIds, owner]),
+        signal
+      );
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "accruedLenderYield",
+        args: [strategiesIds, owner],
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
+
+  async getLenderBalance(owner: Address, { signal }: SdkRequestOptions = {}) {
+    try {
+      return abortable(this.getContract().read.balanceOf([owner]), signal);
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "getLenderBalance",
+        args: [owner],
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
 }
