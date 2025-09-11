@@ -1,10 +1,11 @@
 import { nonceHeader, randomNonce } from "@/lib/nonce";
 import { type Finalizer } from "./utils";
 import { chains } from "@/lib/chains";
+import { env } from "@/env";
 
 const isProd = process.env.NODE_ENV === "production";
-const testnetsEnabled = process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true";
-const mainnetsEnabled = process.env.NEXT_PUBLIC_ENABLE_MAINNETS === "true";
+const testnetsEnabled = !!env.NEXT_PUBLIC_ENABLE_TESTNETS;
+const mainnetsEnabled = !!env.NEXT_PUBLIC_ENABLE_MAINNETS;
 
 // Allowed sources to connect to, e.g. for fetch, WebSocket, etc.
 const allowedSourcesRaw = [

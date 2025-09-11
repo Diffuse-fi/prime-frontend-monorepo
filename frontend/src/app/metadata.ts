@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import localizationSettings from "../localization.json" with { type: "json" };
 import { apiUrl } from "@/lib/api";
+import { env } from "@/env";
 
 interface PageMetadataOptions {
   title: string;
@@ -9,7 +10,7 @@ interface PageMetadataOptions {
 }
 
 const SUPPORTED_LOCALES = localizationSettings.supported;
-const origin = process.env.ORIGIN ?? "";
+const origin = env.ORIGIN ?? "";
 
 export const defaultMetadata = {
   title: "Diffuse Prime",
@@ -17,7 +18,7 @@ export const defaultMetadata = {
   keywords: [
     "",
   ],
-  applicationName: process.env.NEXT_PUBLIC_APP_NAME,
+  applicationName: env.NEXT_PUBLIC_APP_NAME,
   authors: [{ name: "ukorvl", url: "https://github.com/ukorvl" }],
   metadataBase: new URL(origin),
   alternates: {

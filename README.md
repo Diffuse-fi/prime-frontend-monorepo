@@ -14,7 +14,7 @@ Each package has its own `README.md` file with more details about the specific p
 
 #### Prerequisites
 
-- Nodejs v18+ (24+ recommended)
+- Nodejs v18+ (22+ recommended)
 - npm v9+ (workspaces support)
 
 ## Workspaces

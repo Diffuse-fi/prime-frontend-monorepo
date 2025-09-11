@@ -1,6 +1,7 @@
 import type { NextRequest, ImageResponseOptions } from "next/server";
 import { ImageResponse } from "next/og";
 import { CacheLifetimeSchema, OgSizeSchema, QuerySchema } from "./validations";
+import { env } from "@/env";
 
 export const runtime = "edge";
 
@@ -33,7 +34,7 @@ const loadFontSemiBold = memoLoadRetryOnUndefined(fontSemiBoldURL);
 
 const standardOgSize = OgSizeSchema.parse({ width: 1200, height: 630 });
 const cacheLifeTime = CacheLifetimeSchema.parse(60 * 60 * 24 * 7);
-const BRAND = process.env.NEXT_PUBLIC_APP_NAME;
+const BRAND = env.NEXT_PUBLIC_APP_NAME;
 
 export async function GET(req: NextRequest) {
   try {

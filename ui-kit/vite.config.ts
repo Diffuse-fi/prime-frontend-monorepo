@@ -126,6 +126,13 @@ export default defineConfig(() => {
         external: [
           ...Object.keys(packageJson.peerDependencies || {}),
         ],
+        onwarn(warning, warn) {
+          if (warning.code === "MODULE_LEVEL_DIRECTIVE") {
+            return;
+          }
+
+          warn(warning);
+        },
       },
     },
   };

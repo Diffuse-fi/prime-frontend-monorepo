@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Input, type InputProps, type InputSize } from "@/atoms";
+import { Input, type InputProps } from "@/atoms";
 import { NumericFormat, NumericFormatProps } from "react-number-format";
 
 export interface TokenInputProps
   extends Omit<InputProps, "right" | "type" | "onChange" | "value" | "defaultValue"> {
-  renderAssetImage?: (ctx: { size: InputSize }) => React.ReactNode;
+  renderAssetImage?: (ctx: { size: "sm" | "md" | "lg" }) => React.ReactNode;
   assetSymbol: string;
   value?: string | number;
   onValueChange?: NumericFormatProps["onValueChange"];

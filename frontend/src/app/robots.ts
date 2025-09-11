@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
@@ -7,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: "/private/",
     },
-    sitemap: `${process.env.ORIGIN}/sitemap.xml`,
+    sitemap: `${env.ORIGIN ?? ""}/sitemap.xml`,
   };
 }

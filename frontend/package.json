@@ -8,16 +8,17 @@
   "scripts": {
     "build": "npm run lint:env && next build",
     "dev": "next dev --turbopack",
-    "lint:env": "tsx ./src/lib/env/validate.ts",
+    "lint:env": "tsx ./scripts/validateEnv",
     "start": "npm run lint:env && next start"
   },
   "dependencies": {
     "@diffuse/sdk-js": "0.1.2",
     "@diffuse/ui-kit": "0.1.0",
     "@formatjs/intl-localematcher": "0.6.1",
-    "@next/third-parties": "15.5.0",
+    "@next/third-parties": "15.5.3",
     "@rainbow-me/rainbowkit": "2.2.8",
     "@sentry/nextjs": "10.5.0",
+    "@t3-oss/env-nextjs": "0.13.8",
     "@tailwindcss/postcss": "4.1.12",
     "@tanstack/react-query": "5.85.3",
     "dayjs": "1.11.13",
@@ -42,7 +43,7 @@
     "use-is-mounted-ref": "1.5.0",
     "viem": "2.33.3",
     "wagmi": "2.16.3",
-    "zod": "3.22.4"
+    "zod": "4.1.8"
   },
   "devDependencies": {
     "@next/env": "15.5.2",

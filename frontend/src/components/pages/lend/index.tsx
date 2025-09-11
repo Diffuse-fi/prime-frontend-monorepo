@@ -5,8 +5,7 @@ import { useLocalization } from "@/lib/localization/useLocalization";
 import { Button, Card, Heading, SimpleTable } from "@diffuse/ui-kit";
 import { VaultCard } from "./VaultCard";
 import { AssetsList } from "./AssetsList";
-import { useLocalStorage } from "@/lib/misc/useLocalStorage";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { useSelectedVaults } from "@/lib/core/hooks/useSelectVaults";
 import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
 import { showSkeletons } from "@/lib/misc/showSkeletons";
@@ -19,11 +18,16 @@ import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
 import { useWalletConnection } from "@/lib/wagmi/useWalletConnection";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { formatUnits } from "@/lib/formatters/asset";
+import { usePrevValueLocalStorage } from "@/lib/misc/usePrevValueLocalStorage";
 
 export default function LendPage() {
   const { vaults, isLoading, vaultsAssetsList, isPending, refetchTotalAssets } =
     useVaults();
-  const previousVaultsCount = usePreviousVaulsCount(vaults.length);
+  const previousVaultsCount = usePrevValueLocalStorage(
+    vaults.length,
+    0,
+    "lend-vaults-count"
+  );
   const { selectedVaults, setAmountForVault } = useSelectedVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const { dict, lang, dir } = useLocalization();
@@ -214,16 +218,4 @@ export default function LendPage() {
       )}
     </div>
   );
-}
-
-function usePreviousVaulsCount(vaultsLenght: number) {
-  const [count, setCount] = useLocalStorage("lend-prev-vaults-count", 0);
-
-  useEffect(() => {
-    if (vaultsLenght !== count) {
-      setCount(vaultsLenght);
-    }
-  }, [vaultsLenght, count, setCount]);
-
-  return count;
 }

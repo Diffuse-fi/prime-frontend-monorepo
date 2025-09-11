@@ -1,4 +1,3 @@
-import "@/lib/env/server";
 import type { Metadata, Viewport } from "next";
 import { Providers } from "../providers";
 import { fonts } from "../fonts/fonts";
@@ -28,6 +27,7 @@ import { Container } from "@diffuse/ui-kit/Container";
 import ToastProvider from "@/components/toast";
 import { ChainSwitcher } from "@/components/wagmi/ChainSwitcher";
 import { TooltipProvider } from "@diffuse/ui-kit/Tooltip";
+import { env } from "@/env";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
@@ -60,8 +60,8 @@ export default async function RootLayout({
   const dir = isLocaleRtl(lang) ? "rtl" : "ltr";
   const dictionary = await getDictionary(lang);
   const nonce = (await headers()).get(nonceHeader) ?? undefined;
-  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || "";
-  const gtagEnabled = process.env.NEXT_PUBLIC_ENABLE_GTAG === "true";
+  const gtmId = env.NEXT_PUBLIC_GTM_ID ?? "";
+  const gtagEnabled = !!env.NEXT_PUBLIC_ENABLE_GTAG;
 
   return (
     <html

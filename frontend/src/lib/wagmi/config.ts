@@ -6,10 +6,11 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { getAvailableChains } from "../chains";
+import { env } from "@/env";
 
 export const config = getDefaultConfig({
-  appName: process.env.NEXT_PUBLIC_APP_NAME!,
-  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+  appName: env.NEXT_PUBLIC_APP_NAME,
+  projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
   chains: getAvailableChains(),
   transports: {
     ...getAvailableChains().reduce(

@@ -1,16 +1,20 @@
 import { z } from "zod";
-import { isAddress } from "viem";
+import { Address, getAddress, isAddress } from "viem";
+
+export const AddressSchema = z
+  .string()
+  .trim()
+  .refine(s => isAddress(s), { message: "Invalid EVM address" })
+  .transform(s => getAddress(s as Address));
 
 export const AssetInfoSchema = z.object({
   chainId: z.number().int().nonnegative(),
-  address: z.string().refine(s => isAddress(s), {
-    message: "Invalid EVM address",
-  }),
+  address: AddressSchema,
   name: z.string().min(1),
   symbol: z.string().min(1),
   decimals: z.number().int().min(0).max(255),
-  logoURI: z.string().url().optional(),
-  extensions: z.record(z.any()).optional(),
+  logoURI: z.url().optional(),
+  extensions: z.record(z.string(), z.any()).optional(),
   legacyAllowance: z.boolean().optional(),
 });
 
