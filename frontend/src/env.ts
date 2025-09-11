@@ -17,7 +17,7 @@ const GTM_OR_GA_ID = /^(GTM-[A-Z0-9]+|G-[A-Z0-9]+)$/i;
 export const env = createEnv({
   emptyStringAsUndefined: true,
   server: {
-    ORIGIN: z.url().optional(),
+    ORIGIN: z.url(),
 
     SENTRY_AUTH_TOKEN: z.string().min(1).optional(),
     SENTRY_ORGANIZATION: z.string().min(1).optional(),

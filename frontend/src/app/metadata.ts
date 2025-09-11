@@ -10,7 +10,7 @@ interface PageMetadataOptions {
 }
 
 const SUPPORTED_LOCALES = localizationSettings.supported;
-const origin = env.ORIGIN ?? "";
+const origin = env.ORIGIN;
 
 export const defaultMetadata = {
   title: "Diffuse Prime",

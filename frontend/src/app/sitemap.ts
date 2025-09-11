@@ -5,7 +5,7 @@ import { readdirSync } from "node:fs";
 import slashes from "remove-trailing-slash";
 import { env } from "@/env";
 
-const origin = env.ORIGIN ?? "";
+const origin = env.ORIGIN;
 
 const SUPPORTED_LOCALES = localizatiionSettings.supported;
 const DEFAULT_LOCALE = localizatiionSettings.default;
