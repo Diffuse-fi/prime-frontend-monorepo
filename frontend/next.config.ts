@@ -78,6 +78,7 @@ const sentryBuildOptions = {
   reactComponentAnnotation: {
     enabled: true,
   },
+  telemetry: false,
 } satisfies SentryBuildOptions;
 
 export default isProd ? withSentryConfig(nextConfig, sentryBuildOptions) : nextConfig;
