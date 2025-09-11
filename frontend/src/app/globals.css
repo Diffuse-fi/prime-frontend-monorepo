@@ -7,7 +7,21 @@
 
 @config "../../tailwind.config.ts";
 
-@theme inline {
-  --font-sans: var(--font-sf);
-  --font-mono: var(--font-geist-mono);
+@theme {
+  --font-mono: var(--font-dm-mono), monospace;
+}
+
+@layer base {
+  code,
+  kbd,
+  samp,
+  pre {
+    @apply font-mono;
+  }
+
+  html,
+  body {
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+  }
 }

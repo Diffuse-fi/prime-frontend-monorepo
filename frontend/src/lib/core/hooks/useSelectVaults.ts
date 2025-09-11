@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SelectedVault, VaultFullInfo } from "./types";
+import { SelectedVault, VaultFullInfo } from "../types";
 import { produce } from "immer";
 
 export function useSelectedVaults() {

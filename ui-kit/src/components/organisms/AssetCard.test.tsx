@@ -1,11 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import { AssetCard, type AssetCardProps } from "./AssetCard";
-
-vi.mock("../atoms", () => ({
-  Text: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
-}));
 
 describe("<AssetCard />", () => {
   const renderImage: AssetCardProps["renderImage"] = ({ alt, className }) => (

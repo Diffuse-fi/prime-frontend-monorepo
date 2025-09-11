@@ -13,14 +13,12 @@ export const Navbar = forwardRef<HTMLElement, NavbarProps>(
   ({ className, logo, navigation, wallet, ...props }, ref) => (
     <nav
       ref={ref}
-      className={cn("w-full border-b bg-white/50 backdrop-blur-sm", className)}
+      className={cn("bg-fg border-border w-full border-b", className)}
       {...props}
     >
       <Container className="flex h-16 items-center justify-between gap-4">
-        <div className="flex gap-4">
-          {logo}
-          {navigation}
-        </div>
+        {logo}
+        {navigation}
         <div>{wallet}</div>
       </Container>
     </nav>

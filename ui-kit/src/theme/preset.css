@@ -1,50 +1,50 @@
 @theme {
-  --color-bg: #f9fafb;
-  --color-fg: #e7e7ec;
-  --color-border: #4b5563;
-  --color-muted: #9aa0a6;
-  --color-primary: #6d5efc;
-  --color-primary-fg: #0b0b12;
+  --color-bg: #ecf0ef;
+  --color-fg: #fcfcfc;
+  --color-border: #dce3e1;
+  --color-muted: #a0adba;
+  --color-primary: #41ca00;
+  --color-secondary: #319700;
+  --color-primary-fg: #f4ffef;
   --color-text-primary: #111827;
-  --color-accent: #f5f3ff;
+  --color-accent: #1c1127;
+  --color-text-dimmed: #4b5563;
+  --color-err: #ff4800;
+  --color-err-light: #fff5f2;
+  --color-warn: #ffe83f;
+  --color-success: #41ca00;
 
-  --radius-sm: 8px;
-  --radius: 10px;
-  --radius-md: 12px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
+  --radius-xs: 8px;
+  --radius-sm: 16px;
+  --radius-md: 24px;
+  --radius-lg: 36px;
+  --radius-xl: 48px;
 
-  --text-h1: 2.25rem / 2.75rem;
+  --text-h1: 42px;
   --text-h2: 1.875rem / 2.25rem;
   --text-h3: 1.5rem / 2rem;
-  --text-h4: 1.25rem / 1.75rem;
-  --text-h5: 1.125rem / 1.75rem;
+  --text-h4: 18px;
+  --text-h5: 18px;
   --text-h6: 1rem / 1.5rem;
 
-  --text-body: 0.9375rem / 1.5rem;
-  --text-small: 0.875rem / 1.25rem;
-  --text-subtle: 0.875rem / 1.25rem;
-  --text-xs: 0.75rem / 1rem;
+  --text-lg: 24px;
+  --text-body: 16px;
+  --text-small: 14px;
+  --text-subtle: 12px;
+  --text-xs: 10px;
 
   --shadow-soft: 0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.12);
   --shadow-strong: 0 25px 40px -12px rgb(0 0 0 / 0.25);
 }
 
 .dark {
-  --color-bg: #0a0a0a;
-  --color-fg: #1e1e2e;
-  --color-border: #26262e;
+  --color-bg: #1e1e2e;
+  --color-fg: #222235;
+  --color-border: #36363e;
   --color-muted: #a1a1aa;
   --color-text-primary: #e4e4e7;
   --color-primary-fg: #f9fafb;
-}
-
-@layer base {
-  html,
-  body {
-    background: var(--color-bg);
-    color: var(--color-fg);
-  }
+  --color-text-dimmed: #9ca3af;
 }
 
 @utility shadow-soft {
@@ -126,4 +126,8 @@
 
 @utility animate-in-slide-up {
   animation: slideUp 0.18s ease-out both;
+}
+
+@utility standard-focus-ring {
+  @apply focus-visible:ring-primary/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
 }

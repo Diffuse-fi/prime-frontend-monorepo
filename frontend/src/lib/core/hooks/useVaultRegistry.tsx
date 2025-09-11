@@ -1,8 +1,8 @@
 "use client";
 
-import { QV } from "../query/versions";
+import { QV } from "../../query/versions";
 import { useQuery } from "@tanstack/react-query";
-import { opt, qk } from "../query/helpers";
+import { opt, qk } from "../../query/helpers";
 import { useVaultRegistryContract } from "./useVaultRegistryContract";
 import { Address, getAddress } from "viem";
 import { useChainId } from "wagmi";

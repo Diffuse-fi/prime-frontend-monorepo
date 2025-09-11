@@ -1,8 +1,9 @@
 import * as React from "react";
 import { tv } from "@/lib";
+import { Button } from "./Button";
 
 const iconButton = tv({
-  base: "inline-flex items-center justify-center rounded-md cursor-pointer",
+  base: "p-0 text-text-dimmed border-none",
   variants: {
     size: {
       sm: "h-8 w-8",
@@ -10,8 +11,8 @@ const iconButton = tv({
       lg: "h-12 w-12",
     },
     variant: {
-      solid: "bg-primary text-primary-fg hover:opacity-90",
-      ghost: "bg-transparent hover:bg-muted/10 text-fg",
+      solid: "",
+      ghost: "",
     },
   },
   defaultVariants: { size: "md", variant: "ghost" },
@@ -33,12 +34,13 @@ export function IconButton({
   ...rest
 }: Props) {
   return (
-    <button
+    <Button
       className={iconButton({ size, variant, className })}
       aria-label={ariaLabel}
+      variant={variant}
       {...rest}
     >
       {icon}
-    </button>
+    </Button>
   );
 }

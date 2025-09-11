@@ -1,4 +1,4 @@
-import { Heading, Text } from "@diffuse/ui-kit";
+import { Heading } from "@diffuse/ui-kit";
 
 type RisksNoticeProps = {
   risks: Array<{
@@ -9,13 +9,13 @@ type RisksNoticeProps = {
 
 export function RisksNotice({ risks }: RisksNoticeProps) {
   return (
-    <ul className="list-inside list-none space-y-2">
+    <ul className="bg-err-light list-inside list-none space-y-2 rounded-sm p-4">
       {risks.map((risk, index) => (
         <li key={index}>
-          <Heading level={4} className="inline font-semibold">
+          <Heading level="4" className="text-err font-semibold">
             {risk.title}
           </Heading>
-          <Text className="inline"> - {risk.description}</Text>
+          <p className="inline">{risk.description}</p>
         </li>
       ))}
     </ul>

@@ -1,20 +1,51 @@
 import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib";
-
-export type InputSize = "sm" | "md" | "lg";
+import { tv } from "@/lib";
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
-  size?: InputSize;
+  size?: "sm" | "md" | "lg";
   error?: boolean;
   success?: boolean;
   left?: React.ReactNode;
   right?: React.ReactNode;
-  asChild?: boolean;
   className?: string;
   wrapperClassName?: string;
 }
+
+const inputRoot = tv({
+  base: "relative flex items-center rounded-xs border border-border bg-transparent standard-focus-ring",
+  variants: {
+    size: {
+      sm: "h-12 px-2",
+      md: "h-13 px-3",
+      lg: "h-14 px-4",
+    },
+    state: {
+      default: "",
+      error: "",
+      success: "",
+    },
+  },
+  defaultVariants: { size: "md", state: "default" },
+});
+
+const inputField = tv({
+  base:
+    "w-full flex-1 outline-none bg-transparent " +
+    "placeholder:text-border " +
+    "disabled:opacity-50 disabled:cursor-not-allowed",
+  variants: {
+    size: {
+      sm: "text-lg",
+      md: "text-lg",
+      lg: "text-lg",
+    },
+    withLeft: { true: "pl-1" },
+    withRight: { true: "pr-1" },
+  },
+  defaultVariants: { size: "md" },
+});
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
@@ -24,7 +55,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       success,
       left,
       right,
-      asChild,
       className,
       wrapperClassName,
       type = "text",
@@ -32,38 +62,25 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
-    const Comp = asChild ? Slot : "input";
-    const sizeCls =
-      size === "sm"
-        ? "h-8 px-2 text-sm"
-        : size === "lg"
-          ? "h-12 px-4 text-base"
-          : "h-10 px-3 text-sm";
-    const base =
-      "w-full outline-none bg-transparent disabled:opacity-50 disabled:cursor-not-allowed placeholder:text-[color:var(--ui-muted)]";
-    const stateCls = error
-      ? "border-[color:var(--ui-danger)] focus-visible:ring-[color:var(--ui-danger)]"
-      : success
-        ? "border-[color:var(--ui-success)] focus-visible:ring-[color:var(--ui-success)]"
-        : "";
+    const state = error ? "error" : success ? "success" : "default";
 
     return (
-      <div className={cn("relative flex items-center", stateCls, wrapperClassName)}>
+      <div className={cn(inputRoot({ size, state }), wrapperClassName)}>
         {left ? (
           <span className="ml-2 inline-flex items-center text-[color:var(--ui-muted)]">
             {left}
           </span>
         ) : null}
 
-        <Comp
+        <input
           ref={ref}
           type={type}
           className={cn(
-            base,
-            sizeCls,
-            Boolean(left) && "pl-1",
-            Boolean(right) && "pr-1",
-            "flex-1",
+            inputField({
+              size,
+              withLeft: Boolean(left),
+              withRight: Boolean(right),
+            }),
             className
           )}
           {...props}

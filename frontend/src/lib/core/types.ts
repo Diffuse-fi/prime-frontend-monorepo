@@ -18,6 +18,7 @@ export type VaultFullInfo = {
     maxWithdraw?: bigint;
   };
   totalAssets?: bigint;
+  RiskLevel: VaultRiskLevel;
 };
 
 export type SelectedVault = {
@@ -59,3 +60,9 @@ export type BatchResult = {
   hashes: Record<Address, Hash>;
   errors: Record<Address, Error>;
 };
+
+export type VaultRiskLevel =
+  | 0 // none
+  | 1 // low
+  | 2 // medium
+  | 3; // high

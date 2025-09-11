@@ -1,6 +1,5 @@
 import * as React from "react";
 import { cn, tv } from "@/lib";
-import { Text } from "../atoms";
 
 export type NavVariant = "default" | "tabs";
 
@@ -37,8 +36,8 @@ const list = tv({
   base: "flex items-center gap-2",
   variants: {
     variant: {
-      default: "",
-      tabs: "border-b [border-color:var(--ui-border)]",
+      default: "text-subtle",
+      tabs: "text-body",
     },
   },
   defaultVariants: {
@@ -47,13 +46,11 @@ const list = tv({
 });
 
 const linkBase =
-  "inline-flex items-center gap-2 px-3 py-2 text-sm font-medium " +
-  "transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 " +
-  "focus-visible:ring-primary/60 focus-visible:ring-offset-transparent";
+  "inline-flex items-center gap-2 px-3 py-2 font-medium transition-colors standard-focus-ring";
 
 const linkVariants: Record<NavVariant, string> = {
   default: "rounded-md text-foreground/80 hover:text-primary",
-  tabs: "rounded-none -mb-px border-b-2 border-transparent text-foreground/80 hover:text-primary",
+  tabs: "rounded-none -mb-px border-b-2 border-transparent text-text-dimmed hover:text-primary",
 };
 
 const activeVariants: Record<NavVariant, string> = {
@@ -103,10 +100,10 @@ export const Nav = React.forwardRef<HTMLElement, NavProps>(function Nav(
             itemClassName
           );
 
-          const children = <Text>{item.label}</Text>;
+          const children = <p>{item.label}</p>;
 
           return (
-            <li key={item.href}>
+            <li key={item.href} className={cn(disabled && "cursor-not-allowed")}>
               {renderLink ? (
                 renderLink({
                   href: item.href,

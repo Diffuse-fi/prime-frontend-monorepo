@@ -13,7 +13,7 @@ describe("Card", () => {
   });
 
   it("renders with ReactNode header", () => {
-    render(<Card header={<Heading level={2}>Custom Header</Heading>}>Another body</Card>);
+    render(<Card header={<Heading level="2">Custom Header</Heading>}>Another body</Card>);
 
     expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent("Custom Header");
     expect(screen.getByText("Another body")).toBeInTheDocument();

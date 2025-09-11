@@ -3,7 +3,6 @@ import { buildMetadataForPage } from "@/app/metadata";
 import { getDictionary } from "@/lib/localization/dictionaries";
 import MyPositions from "@/components/pages/lend/my-positions";
 import { Heading } from "@diffuse/ui-kit/Heading";
-import { Text } from "@diffuse/ui-kit/Text";
 
 export const metadata = buildMetadataForPage({
   title: "My positions",
@@ -22,8 +21,8 @@ export default async function MyPosition({
   return (
     <main>
       <section>
-        <Heading level={1}>{dict.lend.myPositions.title}</Heading>
-        <Text>{dict.lend.myPositions.description}</Text>
+        <Heading level="1">{dict.lend.myPositions.title}</Heading>
+        <p>{dict.lend.myPositions.description}</p>
         <MyPositions />
       </section>
     </main>

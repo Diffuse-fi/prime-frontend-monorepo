@@ -12,7 +12,7 @@
     "start": "npm run lint:env && next start"
   },
   "dependencies": {
-    "@diffuse/sdk-js": "0.1.1",
+    "@diffuse/sdk-js": "0.1.2",
     "@diffuse/ui-kit": "0.1.0",
     "@formatjs/intl-localematcher": "0.6.1",
     "@next/third-parties": "15.5.0",
@@ -52,6 +52,6 @@
     "tsx": "^4.20.5"
   },
   "engines": {
-    "node": "24.x"
+    "node": "22.x"
   }
 }

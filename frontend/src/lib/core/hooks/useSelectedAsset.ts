@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { useLocalStorage } from "../misc/useLocalStorage";
-import { AssetInfo, AssetInfoSchema } from "../assets/validations";
+import { useLocalStorage } from "../../misc/useLocalStorage";
+import { AssetInfo, AssetInfoSchema } from "../../assets/validations";
 
 const validateAssetInfo = (value: AssetInfo | null) => {
   return AssetInfoSchema.safeParse(value).success;

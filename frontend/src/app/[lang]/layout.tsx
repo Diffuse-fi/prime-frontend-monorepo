@@ -24,7 +24,6 @@ import ThemeSwitcher from "@/components/misc/ThemeSwitcher/index";
 import Image from "next/image";
 import { ClientNavigation } from "@/components/shared/ClientNavigation";
 import { Navbar } from "@diffuse/ui-kit/Navbar";
-import { Text } from "@diffuse/ui-kit/Text";
 import { Container } from "@diffuse/ui-kit/Container";
 import ToastProvider from "@/components/toast";
 import { ChainSwitcher } from "@/components/wagmi/ChainSwitcher";
@@ -65,14 +64,19 @@ export default async function RootLayout({
   const gtagEnabled = process.env.NEXT_PUBLIC_ENABLE_GTAG === "true";
 
   return (
-    <html lang={lang} dir={dir} suppressHydrationWarning>
+    <html
+      lang={lang}
+      dir={dir}
+      suppressHydrationWarning
+      className={`${fonts.DM_Sans.className} ${fonts.DM_mono.variable} pb-4 antialiased`}
+    >
       {gtagEnabled && (
         <>
           <GoogleTagManager gtmId={gtmId} nonce={nonce} />
           <WebVitals />
         </>
       )}
-      <body className={`${fonts.SFProText.variable} pb-4 antialiased`}>
+      <body>
         <TooltipProvider delayDuration={200}>
           <LocalizationProvider
             value={{
@@ -100,13 +104,13 @@ export default async function RootLayout({
                   logo={
                     <Link
                       href="/"
-                      className="flex items-center gap-2 select-none"
+                      className="standard-focus-ring flex items-center gap-2 rounded-md p-1 select-none"
                       locale={lang}
                     >
-                      <Image src="/logo.png" alt="Logo" width={32} height={32} />
-                      <Text weight="semibold" className="uppercase">
+                      <Image src="/logo.svg" alt="Logo" width={32} height={32} />
+                      <p className="text-secondary text-lg font-bold">
                         {dictionary.common.navbar.title}
-                      </Text>
+                      </p>
                     </Link>
                   }
                   navigation={

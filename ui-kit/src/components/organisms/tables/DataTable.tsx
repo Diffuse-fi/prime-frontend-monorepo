@@ -11,7 +11,6 @@ import {
 import { ChevronUp } from "lucide-react";
 import { VariantProps } from "@/lib";
 import { table, td, th, tr } from "./styles";
-import { Text } from "@/atoms";
 
 export type DataTableProps<TData extends object> =
   React.TableHTMLAttributes<HTMLTableElement> &
@@ -69,7 +68,7 @@ function DataTableInner<TData extends object>(
                   }
                   scope="col"
                 >
-                  <Text className="inline-flex items-center gap-1">
+                  <p className="inline-flex items-center gap-1">
                     {flexRender(header.column.columnDef.header, header.getContext())}
                     {canSort ? (
                       <ChevronUp
@@ -82,7 +81,7 @@ function DataTableInner<TData extends object>(
                         )}
                       />
                     ) : null}
-                  </Text>
+                  </p>
                 </th>
               );
             })}

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IconButton, Text } from "../atoms/index";
+import { IconButton } from "../atoms/index";
 import { X } from "lucide-react";
 import { cn } from "@/lib";
 
@@ -59,15 +59,9 @@ export const Toast = React.forwardRef<HTMLLIElement, ToastProps>(
       >
         <div className="bg-foreground/10 flex flex-1 items-center rounded-md">
           <div className="flex flex-1 flex-col">
-            {title && (
-              <Text size="small" weight="semibold" className="mb-1">
-                {title}
-              </Text>
-            )}
+            {title && <p className="mb-1 font-semibold">{title}</p>}
             {typeof message === "string" ? (
-              <Text size="small" className="whitespace-pre-wrap">
-                {message}
-              </Text>
+              <p className="whitespace-pre-wrap">{message}</p>
             ) : (
               message
             )}

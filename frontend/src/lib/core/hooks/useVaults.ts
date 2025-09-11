@@ -1,12 +1,12 @@
 import { useMemo } from "react";
-import { useClients } from "../wagmi/useClients";
+import { useClients } from "../../wagmi/useClients";
 import { useVaultRegistry } from "./useVaultRegistry";
 import { Vault } from "@diffuse/sdk-js";
-import { VaultFullInfo } from "./types";
-import { QV } from "../query/versions";
-import { opt, qk } from "../query/helpers";
-import { useAssetsMeta } from "../assets/useAssetsMeta";
-import { populateAssetListWithMeta } from "../assets/assetsMeta";
+import { VaultFullInfo, VaultRiskLevel } from "../types";
+import { QV } from "../../query/versions";
+import { opt, qk } from "../../query/helpers";
+import { useAssetsMeta } from "../../assets/useAssetsMeta";
+import { populateAssetListWithMeta } from "../../assets/assetsMeta";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import pLimit from "p-limit";
 import { Address, getAddress } from "viem";
@@ -51,13 +51,14 @@ export function useVaults() {
   const vaultContracts = useMemo(() => {
     if (!publicClient || !allVaults?.length || !chainId) return [];
 
-    return allVaults.map(({ vault: vaultAddress, name, targetApr }) => {
+    return allVaults.map(({ vault: vaultAddress, name, targetApr, RiskLevel }) => {
       const address = getAddress(vaultAddress);
 
       return {
         name,
         address,
         targetApr,
+        RiskLevel,
         contract: new Vault({
           address,
           chainId,
@@ -227,6 +228,7 @@ export function useVaults() {
       ...v,
       strategies: strategiesByVault.get(v.address) ?? [],
       assets: assetsByVault.get(v.address) ?? [],
+      RiskLevel: v.RiskLevel as VaultRiskLevel,
       limits: {
         maxDeposit: limitsByVault.get(v.address)?.maxDeposit,
         maxWithdraw: limitsByVault.get(v.address)?.maxWithdraw,

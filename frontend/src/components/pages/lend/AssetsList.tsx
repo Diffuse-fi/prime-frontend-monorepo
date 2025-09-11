@@ -1,6 +1,6 @@
 import { AssetImage } from "../../shared/AssetImage";
 import { AssetInfo } from "@/lib/assets/validations";
-import { Skeleton, AssetCard, RadioGroup, RadioGroupItem } from "@diffuse/ui-kit";
+import { Skeleton, AssetCard, RadioGroup, RadioGroupItem, cn } from "@diffuse/ui-kit";
 import { RadioGroupProps } from "@diffuse/ui-kit/RadioGroup";
 
 type Option = AssetInfo;
@@ -12,6 +12,7 @@ interface AssetsListProps {
   isLoading?: boolean;
   skeletonsToShow?: number;
   direction?: RadioGroupProps["dir"];
+  className?: string;
 }
 
 export function AssetsList({
@@ -21,10 +22,11 @@ export function AssetsList({
   isLoading,
   skeletonsToShow = 4,
   direction,
+  className,
 }: AssetsListProps) {
   return (
     <RadioGroup
-      className="grid-cols-4"
+      className={cn("grid-cols-4", className)}
       dir={direction}
       value={selectedAsset?.address}
       onValueChange={value => {
@@ -36,13 +38,13 @@ export function AssetsList({
     >
       {isLoading
         ? Array.from({ length: skeletonsToShow }).map((_, i) => (
-            <Skeleton key={i} className="h-12" />
+            <Skeleton key={i} className="h-13" />
           ))
         : options.map(option => (
             <RadioGroupItem
               key={option.address}
               value={option.address}
-              className="animate-in-fade"
+              className="rounded-xl"
             >
               <AssetCard
                 symbol={option.symbol}
@@ -52,11 +54,13 @@ export function AssetsList({
                     alt={alt}
                     className={className}
                     address={option.address}
+                    size={24}
                   />
                 )}
-                className={`h-12 cursor-pointer px-0 ${
-                  selectedAsset?.address === option.address && "border-orange-500"
-                }`}
+                variant={
+                  selectedAsset?.address === option.address ? "accented" : "default"
+                }
+                className="h-13 px-2"
                 onClick={() => onSelectAsset?.(option)}
               />
             </RadioGroupItem>

@@ -1,14 +1,13 @@
 import { useMemo, useState } from "react";
 import pLimit from "p-limit";
 import { getAddress, type Address, type Hash } from "viem";
-import { useClients } from "../wagmi/useClients";
-import type { SelectedVault, TxInfo, TxState } from "./types";
-import type { VaultFullInfo } from "./types";
+import { useClients } from "../../wagmi/useClients";
+import type { SelectedVault, TxInfo, TxState, VaultFullInfo } from "../types";
 import { useMutation } from "@tanstack/react-query";
-import { opt, qk } from "../query/helpers";
-import { QV } from "../query/versions";
+import { opt, qk } from "../../query/helpers";
+import { QV } from "../../query/versions";
 import { produce } from "immer";
-import { formatUnits } from "../formatters/asset";
+import { formatUnits } from "../../formatters/asset";
 
 export type UseLendParams = {
   txConcurrency?: number;

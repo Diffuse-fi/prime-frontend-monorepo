@@ -3,15 +3,15 @@ import { tv } from "@/lib";
 import { Heading } from "@/atoms";
 
 const card = tv({
-  base: "rounded-lg border border-border bg-bg overflow-hidden",
+  base: "rounded-lg bg-fg overflow-hidden flex flex-col",
 });
 
 const cardHeader = tv({
-  base: "px-4 py-3 border-b border-border bg-bg",
+  base: "px-4 py-4",
 });
 
 const cardBody = tv({
-  base: "px-4 py-3 text-body text-text-primary",
+  base: "px-4 py-3 text-body grow flex flex-col",
 });
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -26,7 +26,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div ref={ref} className={card({ className })} {...rest}>
         {header ? (
           <div className={cardHeader()}>
-            {typeof header === "string" ? <Heading level={3}>{header}</Heading> : header}
+            {typeof header === "string" ? <Heading level="3">{header}</Heading> : header}
           </div>
         ) : null}
         <div className={cardBody({ className: cardBodyClassName })}>{children}</div>

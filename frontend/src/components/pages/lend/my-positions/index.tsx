@@ -1,16 +1,14 @@
 "use client";
 
-import { useVaults } from "@/lib/core/useVaults";
+import { useVaults } from "@/lib/core/hooks/useVaults";
 import { useRouter } from "next/navigation";
 import { localizePath } from "@/lib/localization/locale";
 import { useLocalization } from "@/lib/localization/useLocalization";
-import { ExternalLink, DollarSign, ArrowUpRight, Percent } from "lucide-react";
+import { DollarSign, ArrowUpRight, Percent } from "lucide-react";
 import { AssetsList } from "../AssetsList";
-import { useSelectedAsset } from "@/lib/core/useSelectedAsset";
-import { Card, Text } from "@diffuse/ui-kit";
-import { PositionsFilter } from "./PositionsFilter";
-import { usePositionsFilter } from "@/lib/core/usePositionsFilter";
-import { useLenderPositions } from "@/lib/core/useLenderPositions";
+import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
+import { Card } from "@diffuse/ui-kit";
+import { useLenderPositions } from "@/lib/core/hooks/useLenderPositions";
 import { toast } from "@/lib/toast";
 
 export default function MyPositions() {
@@ -28,41 +26,34 @@ export default function MyPositions() {
   const vaultsForSelectedAsset = selectedAsset
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
     : vaults;
-  const {
-    positions,
-    isLoading: isLoadingPositions,
-    error,
-  } = useLenderPositions(vaultsForSelectedAsset);
-  const { filteredPositions } = usePositionsFilter(positions);
-  const isLoading = isLoadingVaults || isLoadingPositions;
+  const { positions, isLoading: isLoadingPositions } =
+    useLenderPositions(vaultsForSelectedAsset);
 
   return (
     <div className="mt-4 flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row">
         <Card cardBodyClassName="flex flex-row items-center justify-between gap-2">
           <div>
-            <Text className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm">
               {dict.myPositions.totalSupplied}
-            </Text>
-            <Text className="text-2xl font-bold">--</Text>
+            </p>
+            <p className="text-2xl font-bold">--</p>
           </div>
           <DollarSign />
         </Card>
         <Card cardBodyClassName="flex flex-row items-center justify-between gap-2">
           <div>
-            <Text className="text-muted-foreground text-sm">
-              {dict.myPositions.averageAPR}
-            </Text>
-            <Text className="text-2xl font-bold">--</Text>
+            <p className="text-muted-foreground text-sm">{dict.myPositions.averageAPR}</p>
+            <p className="text-2xl font-bold">--</p>
           </div>
           <ArrowUpRight />
         </Card>
         <Card cardBodyClassName="flex flex-row items-center justify-between gap-2">
           <div>
-            <Text className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm">
               {dict.myPositions.interestEarned}
-            </Text>
-            <Text className="text-2xl font-bold">--</Text>
+            </p>
+            <p className="text-2xl font-bold">--</p>
           </div>
           <Percent />
         </Card>
@@ -73,9 +64,9 @@ export default function MyPositions() {
         direction={dir}
         selectedAsset={selectedAsset}
         onSelectAsset={setSelectedAsset}
-        isLoading={isLoading}
+        isLoading={isLoadingVaults}
+        className="w-1/2"
       />
-      <PositionsFilter isLoading={isLoading} className="sm:w-1/3" />
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4"></div>
     </div>
   );

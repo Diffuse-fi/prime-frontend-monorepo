@@ -4,12 +4,12 @@ import { CacheLifetimeSchema, OgSizeSchema, QuerySchema } from "./validations";
 
 export const runtime = "edge";
 
-const sfProRegularURL = new URL(
-  "../../fonts/sf-pro-text/sf-pro-text-regular.woff",
+const fontRegularURL = new URL(
+  "../../fonts/dm-sans/DMSans-Regular.woff2",
   import.meta.url
 );
-const sfProSemiBoldURL = new URL(
-  "../../fonts/sf-pro-text/sf-pro-text-semibold.woff",
+const fontSemiBoldURL = new URL(
+  "../../fonts/dm-sans/DMSans-SemiBold.woff2",
   import.meta.url
 );
 
@@ -28,12 +28,12 @@ const memoLoadRetryOnUndefined = (url: URL) => {
   };
 };
 
-const loadSfProRegular = memoLoadRetryOnUndefined(sfProRegularURL);
-const loadSfProSemiBold = memoLoadRetryOnUndefined(sfProSemiBoldURL);
+const loadFontRegular = memoLoadRetryOnUndefined(fontRegularURL);
+const loadFontSemiBold = memoLoadRetryOnUndefined(fontSemiBoldURL);
 
 const standardOgSize = OgSizeSchema.parse({ width: 1200, height: 630 });
 const cacheLifeTime = CacheLifetimeSchema.parse(60 * 60 * 24 * 7);
-const BRAND = "Your dApp";
+const BRAND = process.env.NEXT_PUBLIC_APP_NAME;
 
 export async function GET(req: NextRequest) {
   try {
@@ -45,19 +45,19 @@ export async function GET(req: NextRequest) {
     });
 
     const [regular, semibold] = await Promise.all([
-      loadSfProRegular(),
-      loadSfProSemiBold(),
+      loadFontRegular(),
+      loadFontSemiBold(),
     ]);
 
     const fonts = [
       regular && {
-        name: "SF Pro Text",
+        name: "DM Sans",
         data: regular,
         weight: 400,
         style: "normal" as const,
       },
       semibold && {
-        name: "SF Pro Text",
+        name: "DM Sans",
         data: semibold,
         weight: 600,
         style: "normal" as const,
@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
             width: standardOgSize.width,
             height: standardOgSize.height,
             display: "flex",
-            fontFamily: "'SF Pro Text', sans-serif",
+            fontFamily: "DM Sans, sans-serif",
           }}
         >
           <div

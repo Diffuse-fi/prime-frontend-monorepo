@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Text } from "@/atoms";
 import { ChevronDown } from "lucide-react";
 
 type ControlledCollapsibleProps = Omit<
@@ -22,9 +21,7 @@ type UncontrolledCollapsibleProps = Omit<
 const CollapsibleSummary = ({ summary, open }: { summary: string; open: boolean }) => {
   return (
     <summary className="flex cursor-pointer list-none items-center underline decoration-dashed select-none">
-      <Text weight="semibold" size="small">
-        {summary}
-      </Text>
+      <p className="font-semibold">{summary}</p>
       <ChevronDown
         className={`ml-1 transition-transform ${open ? "rotate-180" : "rotate-0"}`}
         size={16}

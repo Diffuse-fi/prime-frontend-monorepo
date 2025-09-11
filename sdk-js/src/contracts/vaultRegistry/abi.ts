@@ -78,6 +78,7 @@ export const vaultRegistryAbi = [
           { internalType: "address", name: "vault", type: "address" },
           { internalType: "string", name: "name", type: "string" },
           { internalType: "uint256", name: "targetApr", type: "uint256" },
+          { internalType: "uint8", name: "RiskLevel", type: "uint8" },
         ],
         internalType: "struct TypeLib.VaultViewData[]",
         name: "",

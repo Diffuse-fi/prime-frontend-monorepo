@@ -3,6 +3,7 @@
 import { useLocalization } from "@/lib/localization/useLocalization";
 import { Button } from "@diffuse/ui-kit";
 import { ConnectButton as ConnectButtonComponent } from "@rainbow-me/rainbowkit";
+import { Wallet } from "lucide-react";
 
 export default function ConnectButton() {
   const { dict } = useLocalization();
@@ -15,7 +16,6 @@ export default function ConnectButton() {
 
         return (
           <div
-            className="animate-in-fade"
             {...(!ready && {
               "aria-hidden": true,
               style: {
@@ -30,6 +30,7 @@ export default function ConnectButton() {
               onClick={!connected ? openConnectModal : openAccountModal}
               type="button"
             >
+              <Wallet className="mr-2 h-4 w-4" />
               {!connected ? dict.common.navbar.walletConect : account.displayName}
             </Button>
           </div>

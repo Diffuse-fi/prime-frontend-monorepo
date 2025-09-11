@@ -14,9 +14,8 @@ export default async function LendLayout({
   const dict = await getDictionary(lang);
 
   return (
-    <main>
+    <main className="flex flex-col gap-12 py-5">
       <ClientNavigation
-        className="mb-6"
         locale={lang}
         ariaLabel="Lend page navigation"
         config={[

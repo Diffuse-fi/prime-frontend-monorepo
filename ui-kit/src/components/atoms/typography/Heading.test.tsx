@@ -22,7 +22,7 @@ describe("<Heading />", () => {
 
   it("applies level variants", () => {
     render(
-      <Heading level={4} align="center" tone="muted" className="extra">
+      <Heading level="4" align="center" tone="muted" className="extra">
         Hello
       </Heading>
     );

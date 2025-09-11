@@ -3,7 +3,6 @@ import { buildMetadataForPage } from "@/app/metadata";
 import { Heading } from "@diffuse/ui-kit/Heading";
 import { getDictionary } from "@/lib/localization/dictionaries";
 import LendPage from "@/components/pages/lend";
-import { Text } from "@diffuse/ui-kit/Text";
 
 export const metadata = buildMetadataForPage({
   title: "Lend",
@@ -17,8 +16,8 @@ export default async function Lend({ params }: { params: Promise<{ lang: Locale 
 
   return (
     <section>
-      <Heading level={1}>{dict.lend.title}</Heading>
-      <Text>{dict.lend.description}</Text>
+      <Heading level="1">{dict.lend.title}</Heading>
+      <p>{dict.lend.description}</p>
       <LendPage />
     </section>
   );

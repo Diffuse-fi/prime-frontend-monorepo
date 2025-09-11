@@ -1,7 +1,7 @@
 "use client";
 
 import { getAddress, type Address } from "viem";
-import { useClients } from "../wagmi/useClients";
+import { useClients } from "../../wagmi/useClients";
 import { VaultRegistry } from "@diffuse/sdk-js";
 import { useMemo } from "react";
 

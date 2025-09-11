@@ -33,7 +33,7 @@ export function ChainSwitcher() {
       aria-label="Switch between supported networks"
       onClick={openChainModal}
       disabled={!isConnected || isPendingConnection || isSwitchChainPending}
-      variant="solid"
+      variant="ghost"
       className="animate-in-fade"
       size="sm"
       icon={match({

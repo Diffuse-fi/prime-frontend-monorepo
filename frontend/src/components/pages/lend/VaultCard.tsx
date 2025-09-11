@@ -10,15 +10,17 @@ import {
   Card,
   Heading,
   SimpleTable,
-  Text,
   AssetInput,
   TokenInputProps,
   UncontrolledCollapsible,
+  FormField,
+  Select,
 } from "@diffuse/ui-kit";
 import { AssetInfo } from "@/lib/assets/validations";
 import { calcAprInterest } from "@/lib/formulas";
 import { formatUnits } from "@/lib/formatters/asset";
 import { RisksNotice } from "./RisksNotice";
+import { getVaultRiskLevelColor } from "@/lib/core/utils/vault";
 
 type VaultProps = {
   vault: VaultFullInfo;
@@ -31,7 +33,6 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
   const { dict } = useLocalization();
   const vaultAprFormatted = formatAprToPercent(vault.targetApr);
   const defaultLockupPerdiod = 90; // TODO - get real value from the vault data when ready
-  const headerText = `${vault.name}. ${vaultAprFormatted.text} (${defaultLockupPerdiod}-day lockup)`;
   const reward = amount
     ? formatUnits(
         calcAprInterest(vault.targetApr, amount, {
@@ -44,32 +45,56 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
 
   return (
     <Card
+      cardBodyClassName="gap-4"
       header={
-        <div className="flex items-center justify-start gap-1">
-          <Badge variant="dot" color="primary" />
-          <Heading level={4} className="font-bold">
-            {headerText}
-          </Heading>
+        <div className="flex items-center justify-start gap-4">
+          <Badge color={getVaultRiskLevelColor(vault.RiskLevel)} />
+          <div className="flex items-center gap-4">
+            <Heading level="4" className="font-semibold">
+              {vault.name}&#65343;
+            </Heading>
+            <span className="text-secondary text-lg">{vaultAprFormatted.text}</span>
+          </div>
         </div>
       }
     >
-      <Text className="font-bold">{dict.lend.deposit}</Text>
-      <AssetInput
-        placeholder="0.0"
-        value={amount ? formatUnits(amount, selectedAsset.decimals).text : ""}
-        onValueChange={onAmountChange}
-        assetSymbol="mUSDC"
-        renderAssetImage={() => (
-          <AssetImage alt="" address={vault?.assets?.at(0)!.address} />
-        )}
-      />
+      <div className="flex gap-4">
+        <FormField label={dict.lend.deposit} className="grow">
+          <AssetInput
+            placeholder="0.0"
+            value={amount ? formatUnits(amount, selectedAsset.decimals).text : ""}
+            onValueChange={onAmountChange}
+            assetSymbol="mUSDC"
+            renderAssetImage={() => (
+              <AssetImage alt="" address={vault?.assets?.at(0)!.address} size={24} />
+            )}
+          />
+        </FormField>
+        <FormField label={dict.lend.lockUpPeriod} className="basis-[160px]">
+          <Select
+            options={[
+              { value: "3 months", label: "3 months" },
+            ]}
+            disabled
+            defaultValue="3 months"
+          />
+        </FormField>
+      </div>
       <SimpleTable
         aria-label="Vault rewards based on input amount and target APR"
         density="compact"
-        columns={["Rewards type", "APR", "Reward"]}
+        columns={[
+          "Rewards type",
+          <div key="key" className="text-right font-mono text-xs">
+            ARP
+          </div>,
+          <div key="key" className="text-right font-mono text-xs">
+            Reward
+          </div>,
+        ]}
         rows={[
           [
-            <div key="d" className="flex items-center">
+            <div key="1" className="flex items-center">
               <AssetImage
                 alt=""
                 address={vault?.assets?.at(0)!.address}
@@ -78,8 +103,12 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
               />
               Target APY
             </div>,
-            vaultAprFormatted.text,
-            rewardDisplay,
+            <div key="2" className="text-right">
+              {vaultAprFormatted.text}
+            </div>,
+            <div key="3" className="text-right">
+              {rewardDisplay}
+            </div>,
           ],
         ]}
       />

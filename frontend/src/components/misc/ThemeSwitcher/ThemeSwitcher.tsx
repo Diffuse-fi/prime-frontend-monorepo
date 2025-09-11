@@ -12,7 +12,7 @@ export default function ThemeSwitcher() {
       onClick={() => setTheme(current === "dark" ? "light" : "dark")}
       icon={current === "dark" ? <Sun /> : <Moon />}
       size="sm"
-      variant="solid"
+      variant="ghost"
       aria-hidden
       className="animate-in-fade"
     />

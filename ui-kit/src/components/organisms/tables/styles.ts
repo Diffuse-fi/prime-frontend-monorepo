@@ -12,11 +12,11 @@ export const table = tv({
 });
 
 export const td = tv({
-  base: "px-3 py-2 border-b border-border text-foreground/90",
+  base: "px-3 py-2 border-b border-dashed border-border text-text-dimmed",
 });
 
 export const th = tv({
-  base: "px-3 py-2 text-left font-medium text-muted border-b border-border bg-muted/10",
+  base: "px-3 py-2 text-left font-medium border-b border-border",
 });
 
 export const tr = tv({ base: "hover:bg-muted/10" });

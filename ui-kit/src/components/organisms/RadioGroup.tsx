@@ -22,7 +22,7 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
         value={value}
         defaultValue={defaultValue}
         onValueChange={onValueChange}
-        className={cn("grid gap-2", className)}
+        className={cn("grid gap-6", className)}
         name={name}
         {...rest}
       >
@@ -40,7 +40,10 @@ export const RadioGroupItem = React.forwardRef<HTMLButtonElement, RadioGroupItem
         value={value!}
         disabled={disabled}
         ref={ref}
-        className={cn("disabled:cursor-not-allowed disabled:opacity-50", className)}
+        className={cn(
+          "standard-focus-ring cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
+          className
+        )}
         {...rest}
       >
         {children}

@@ -1,9 +1,9 @@
 import pLimit from "p-limit";
-import { LenderPosition, VaultFullInfo } from "./types";
-import { QV } from "../query/versions";
-import { opt, qk } from "../query/helpers";
+import { LenderPosition, VaultFullInfo } from "../types";
+import { QV } from "../../query/versions";
+import { opt, qk } from "../../query/helpers";
 import { useMemo } from "react";
-import { useClients } from "../wagmi/useClients";
+import { useClients } from "../../wagmi/useClients";
 import { useQuery } from "@tanstack/react-query";
 
 export type UseLenderPositionsResult = {
