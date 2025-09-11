@@ -50,10 +50,10 @@ export type TxInfo = {
 export type TxState = Record<Address, TxInfo>;
 
 export type LenderPosition = {
-  vaultAddress: Address;
+  vault: VaultFullInfo;
   asset: AssetInfo;
   balance: bigint;
-  aquiredYield: bigint;
+  accruedYield: bigint;
 };
 
 export type BatchResult = {

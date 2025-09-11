@@ -14,7 +14,6 @@ export default function ThemeSwitcher() {
       size="sm"
       variant="ghost"
       aria-hidden
-      className="animate-in-fade"
     />
   );
 }

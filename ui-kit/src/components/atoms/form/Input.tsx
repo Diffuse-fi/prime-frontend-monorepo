@@ -14,7 +14,9 @@ export interface InputProps
 }
 
 const inputRoot = tv({
-  base: "relative flex items-center rounded-xs border border-border bg-transparent standard-focus-ring",
+  base:
+    "relative flex items-center rounded-xs border border-border bg-transparent focus-within:border-text-primary " +
+    "transition-colors duration-200",
   variants: {
     size: {
       sm: "h-12 px-2",

@@ -49,7 +49,7 @@ export const Toast = React.forwardRef<HTMLLIElement, ToastProps>(
     return (
       <li
         ref={ref}
-        className={cn("shadow-strong flex gap-2 rounded-b-lg p-4", className)}
+        className={cn("shadow-strong bg-fg flex gap-2 rounded-md p-4", className)}
         role={role}
         aria-live="polite"
         aria-atomic="true"
@@ -57,7 +57,7 @@ export const Toast = React.forwardRef<HTMLLIElement, ToastProps>(
         onMouseLeave={resume}
         data-state={open ? "open" : "closed"}
       >
-        <div className="bg-foreground/10 flex flex-1 items-center rounded-md">
+        <div className="flex flex-1 items-center rounded-md">
           <div className="flex flex-1 flex-col">
             {title && <p className="mb-1 font-semibold">{title}</p>}
             {typeof message === "string" ? (

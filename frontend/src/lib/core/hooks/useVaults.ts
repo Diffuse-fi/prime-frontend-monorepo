@@ -23,6 +23,8 @@ const qKeys = {
     qk([ROOT, version, opt(address), chainId, "strategies"]),
   assets: (address: string | null, chainId: number) =>
     qk([ROOT, version, opt(address), chainId, "assets"]),
+  totalAssets: (address: string | null, chainId: number) =>
+    qk([ROOT, version, opt(address), chainId, "totalAssets"]),
   limits: (addresses: string | null, chainId: number, owner: Address | undefined) =>
     qk([
       ROOT,
@@ -176,6 +178,40 @@ export function useVaults() {
     staleTime: 60 * 1000 * 5,
   });
 
+  const rawTotalAssetQueries = useQuery({
+    enabled,
+    queryKey: qKeys.totalAssets(addressKey, chainId),
+    queryFn: async ({ signal }) => {
+      if (!vaultContracts.length) return [];
+
+      const results = await Promise.all(
+        vaultContracts.map(vault =>
+          ASSET_LIMIT(() =>
+            vault.contract.totalAssets({ signal }).then(totalAssets => ({
+              vaultAddress: vault.address,
+              totalAssets,
+            }))
+          )
+        )
+      );
+
+      if (signal.aborted) throw new DOMException("Aborted", "AbortError");
+
+      return results;
+    },
+    staleTime: 60 * 1000 * 5,
+  });
+
+  const totalAssetsByVault = useMemo(() => {
+    const m = new Map<Address, bigint>();
+
+    rawTotalAssetQueries.data?.forEach(({ vaultAddress, totalAssets }) => {
+      m.set(vaultAddress, totalAssets);
+    });
+
+    return m;
+  }, [rawTotalAssetQueries.data]);
+
   const assets = useMemo(() => {
     if (!rawAssetsQueries.data || !meta) return [];
 
@@ -222,7 +258,13 @@ export function useVaults() {
   }, [limits]);
 
   const vaults: VaultFullInfo[] = useMemo(() => {
+    if (!vaultContracts.length) return [];
+
     if (assetsMetaLoading) return [];
+
+    if (rawAssetsQueries.isPending) return [];
+
+    if (rawTotalAssetQueries.isPending) return [];
 
     return vaultContracts.map(v => ({
       ...v,
@@ -233,6 +275,7 @@ export function useVaults() {
         maxDeposit: limitsByVault.get(v.address)?.maxDeposit,
         maxWithdraw: limitsByVault.get(v.address)?.maxWithdraw,
       },
+      totalAssets: totalAssetsByVault.get(v.address),
     }));
   }, [
     vaultContracts,
@@ -240,6 +283,9 @@ export function useVaults() {
     assetsByVault,
     limitsByVault,
     assetsMetaLoading,
+    rawAssetsQueries.isPending,
+    totalAssetsByVault,
+    rawTotalAssetQueries.isPending,
   ]);
 
   const vaultsAssetsList = useMemo(
@@ -274,5 +320,7 @@ export function useVaults() {
     isLoading,
     isRefetching,
     vaultsAssetsList,
+    refetchTotalAssets: () =>
+      qc.refetchQueries({ queryKey: qKeys.totalAssets(addressKey, chainId) }),
   };
 }

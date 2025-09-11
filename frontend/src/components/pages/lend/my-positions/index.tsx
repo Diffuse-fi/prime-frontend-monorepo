@@ -4,15 +4,24 @@ import { useVaults } from "@/lib/core/hooks/useVaults";
 import { useRouter } from "next/navigation";
 import { localizePath } from "@/lib/localization/locale";
 import { useLocalization } from "@/lib/localization/useLocalization";
-import { DollarSign, ArrowUpRight, Percent } from "lucide-react";
+import { DollarSign, Percent, TrendingUp } from "lucide-react";
 import { AssetsList } from "../AssetsList";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
-import { Card } from "@diffuse/ui-kit";
+import { Card, Heading } from "@diffuse/ui-kit";
 import { useLenderPositions } from "@/lib/core/hooks/useLenderPositions";
 import { toast } from "@/lib/toast";
+import { InfoCard, InfoCardProps } from "./InfoCard";
+import { showSkeletons } from "@/lib/misc/showSkeletons";
+import { PositionCard } from "./PositionCard";
+import { formatAsset, formatUnits } from "@/lib/formatters/asset";
 
 export default function MyPositions() {
-  const { vaults, vaultsAssetsList, isLoading: isLoadingVaults } = useVaults();
+  const {
+    vaults,
+    vaultsAssetsList,
+    isLoading: isLoadingVaults,
+    isPending: isPendingVaults,
+  } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const router = useRouter();
   const { dict, lang, dir } = useLocalization();
@@ -28,35 +37,54 @@ export default function MyPositions() {
     : vaults;
   const { positions, isLoading: isLoadingPositions } =
     useLenderPositions(vaultsForSelectedAsset);
+  const totalSupplied =
+    vaults.length > 0
+      ? vaults.reduce((acc, v) => {
+          const totalInVault = v.totalAssets ?? 0n;
+          return acc + totalInVault;
+        }, 0n)
+      : 0n;
 
   return (
     <div className="mt-4 flex flex-col gap-6">
       <div className="flex flex-col gap-4 sm:flex-row">
-        <Card cardBodyClassName="flex flex-row items-center justify-between gap-2">
-          <div>
-            <p className="text-muted-foreground text-sm">
-              {dict.myPositions.totalSupplied}
-            </p>
-            <p className="text-2xl font-bold">--</p>
-          </div>
-          <DollarSign />
-        </Card>
-        <Card cardBodyClassName="flex flex-row items-center justify-between gap-2">
-          <div>
-            <p className="text-muted-foreground text-sm">{dict.myPositions.averageAPR}</p>
-            <p className="text-2xl font-bold">--</p>
-          </div>
-          <ArrowUpRight />
-        </Card>
-        <Card cardBodyClassName="flex flex-row items-center justify-between gap-2">
-          <div>
-            <p className="text-muted-foreground text-sm">
-              {dict.myPositions.interestEarned}
-            </p>
-            <p className="text-2xl font-bold">--</p>
-          </div>
-          <Percent />
-        </Card>
+        {(
+          [
+            {
+              header: dict.myPositions.totalSupplied,
+              icon: <DollarSign className="text-primary" />,
+              info:
+                totalSupplied && selectedAsset
+                  ? formatAsset(
+                      totalSupplied,
+                      selectedAsset.decimals,
+                      selectedAsset.symbol
+                    ).text
+                  : "--",
+              iconBgClassName: "bg-primary/20",
+            },
+            {
+              header: dict.myPositions.averageAPY,
+              icon: <TrendingUp className="text-blue-500" />,
+              info: "--",
+              iconBgClassName: "bg-blue-100",
+            },
+            {
+              header: dict.myPositions.interestEarned,
+              icon: <Percent className="text-purple-500" />,
+              info: "--",
+              iconBgClassName: "bg-purple-100",
+            },
+          ] satisfies InfoCardProps[]
+        ).map(i => (
+          <InfoCard
+            key={i.header}
+            header={i.header}
+            icon={i.icon}
+            info={i.info}
+            iconBgClassName={i.iconBgClassName}
+          />
+        ))}
       </div>
       <AssetsList
         skeletonsToShow={1}
@@ -67,7 +95,27 @@ export default function MyPositions() {
         isLoading={isLoadingVaults}
         className="w-1/2"
       />
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4"></div>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4">
+        {isLoadingPositions || isPendingVaults ? (
+          showSkeletons(3, "h-40 sm:h-50")
+        ) : positions.length > 0 ? (
+          positions.map(position => (
+            <PositionCard
+              position={position}
+              key={position.vault.address}
+              onWithDrawSuccess={onWithDrawSuccess}
+              onWithDrawError={onWithDrawError}
+            />
+          ))
+        ) : (
+          <div className="sm:col-span-3">
+            <Heading level="5" className="pt-2 font-semibold">
+              {dict.myPositions.noPositions.title}
+            </Heading>
+            <p className="">{dict.myPositions.noPositions.description}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

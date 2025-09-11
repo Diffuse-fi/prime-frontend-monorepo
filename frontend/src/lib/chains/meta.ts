@@ -1,3 +1,4 @@
+import { getAddress } from "viem";
 import { berachain, mainnet } from "viem/chains";
 
 export const chainLogos: Record<
@@ -24,4 +25,23 @@ export function getStableChainMeta(chainId: number) {
       iconBackground: undefined,
     }
   );
+}
+
+export function getContractExplorerUrl(chainId: number, contractAddress: string) {
+  const normalized = getAddress(contractAddress);
+
+  let rpcUrl: string | undefined;
+
+  switch (chainId) {
+    case mainnet.id:
+      rpcUrl = mainnet.blockExplorers?.default.url;
+      break;
+    case berachain.id:
+      rpcUrl = berachain.blockExplorers?.default.url;
+      break;
+  }
+
+  if (!rpcUrl) return null;
+
+  return `${rpcUrl.replace(/\/$/, "")}/address/${normalized}`;
 }

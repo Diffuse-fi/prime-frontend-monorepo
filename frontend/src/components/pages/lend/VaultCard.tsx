@@ -82,11 +82,11 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
       </div>
       <SimpleTable
         aria-label="Vault rewards based on input amount and target APR"
-        density="compact"
+        density="comfy"
         columns={[
           "Rewards type",
           <div key="key" className="text-right font-mono text-xs">
-            ARP
+            APR
           </div>,
           <div key="key" className="text-right font-mono text-xs">
             Reward

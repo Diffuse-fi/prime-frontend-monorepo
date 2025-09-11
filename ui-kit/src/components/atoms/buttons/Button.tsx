@@ -6,18 +6,19 @@ const button = tv({
     "inline-flex items-center justify-center",
     "cursor-pointer disabled:cursor-not-allowed",
     "transition-colors transition-duration-200",
-    "standard-focus-ring",
+    "standard-focus-ring whitespace-nowrap",
   ],
   variants: {
     variant: {
       solid:
-        "border bg-fg border-border text-fg hover:bg-btn-hover hover:text-primary-fg",
+        "border bg-primary/80 border-primary text-fg hover:bg-primary active:bg-secondary " +
+        "disabled:bg-muted disabled:border-muted",
       ghost: "bg-transparent hover:bg-muted/10 text-primary",
     },
     size: {
       sm: "text-sm px-3 py-1.5 rounded-sm",
       md: "rounded-md text-body px-4 py-2",
-      lg: "rounded-lg text-lg px-5 py-2.5",
+      lg: "rounded-lg text-lg px-5 py-2.5 h-13",
     },
   },
   defaultVariants: { size: "md" },

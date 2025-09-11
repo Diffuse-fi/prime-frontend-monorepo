@@ -9,6 +9,7 @@ export interface TooltipProps
   children: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
+  offset?: number;
   onOpenChange?: (open: boolean) => void;
 }
 
@@ -22,6 +23,7 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
       defaultOpen,
       className,
       onOpenChange,
+      offset = 4,
       ...props
     },
     ref
@@ -34,6 +36,7 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
       >
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
         <TooltipPrimitive.Content
+          sideOffset={offset}
           ref={ref}
           hideWhenDetached
           side={side}
@@ -46,7 +49,7 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
           {...props}
         >
           {content}
-          <TooltipPrimitive.Arrow width={11} height={5} />
+          <TooltipPrimitive.Arrow width={11} height={5} className="bg-fg" />
         </TooltipPrimitive.Content>
       </TooltipPrimitive.Root>
     );

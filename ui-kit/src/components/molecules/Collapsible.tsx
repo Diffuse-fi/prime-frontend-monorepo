@@ -20,7 +20,7 @@ type UncontrolledCollapsibleProps = Omit<
 
 const CollapsibleSummary = ({ summary, open }: { summary: string; open: boolean }) => {
   return (
-    <summary className="flex cursor-pointer list-none items-center underline decoration-dashed select-none">
+    <summary className="standard-focus-ring flex cursor-pointer list-none items-center underline decoration-dashed select-none">
       <p className="font-semibold">{summary}</p>
       <ChevronDown
         className={`ml-1 transition-transform ${open ? "rotate-180" : "rotate-0"}`}

@@ -5,7 +5,9 @@
         "borrow": "Borrow",
         "lend": "Lend"
       },
+      "needToConnect": "Please connect your wallet",
       "title": "Diffuse Prime",
+      "unknownChain": "Unknown Chain",
       "walletConect": "Connect Wallet"
     }
   },
@@ -57,7 +59,7 @@
     }
   },
   "myPositions": {
-    "averageAPR": "Average APR",
+    "averageAPY": "Average APY",
     "interestEarned": "Interest earned",
     "noPositions": {
       "description": "You have no lending positions yet. Start exploring strategies to earn yield on your assets.",

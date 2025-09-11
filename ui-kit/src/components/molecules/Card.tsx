@@ -26,7 +26,7 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
       <div ref={ref} className={card({ className })} {...rest}>
         {header ? (
           <div className={cardHeader()}>
-            {typeof header === "string" ? <Heading level="3">{header}</Heading> : header}
+            {typeof header === "string" ? <Heading level="4">{header}</Heading> : header}
           </div>
         ) : null}
         <div className={cardBody({ className: cardBodyClassName })}>{children}</div>

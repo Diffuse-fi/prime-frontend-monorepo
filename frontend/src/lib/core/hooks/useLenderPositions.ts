@@ -62,7 +62,7 @@ export function useLenderPositions(allVaults: VaultFullInfo[]) {
             //     vaultAddress: vault.address,
             //     asset: vault.assets[0],
             //     balance,
-            //     aquiredYield: 0n as const,
+            //     accruedYield: 0n as const,
             //   };
             // }
 
@@ -72,10 +72,10 @@ export function useLenderPositions(allVaults: VaultFullInfo[]) {
             ]);
 
             return {
-              vaultAddress: vault.address,
+              vault: vault,
               asset: vault.assets[0],
               balance,
-              aquiredYield: accruedYieldData[0],
+              accruedYield: accruedYieldData[0],
             };
           } catch (e) {
             throw e;

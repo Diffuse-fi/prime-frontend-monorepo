@@ -3,7 +3,7 @@ import { tv } from "@/lib";
 import { Button } from "./Button";
 
 const iconButton = tv({
-  base: "p-0 text-text-dimmed border-none",
+  base: "text-text-dimmed border-none",
   variants: {
     size: {
       sm: "h-8 w-8",
@@ -11,8 +11,8 @@ const iconButton = tv({
       lg: "h-12 w-12",
     },
     variant: {
-      solid: "",
-      ghost: "",
+      solid: "p-0!",
+      ghost: "p-0!",
     },
   },
   defaultVariants: { size: "md", variant: "ghost" },
