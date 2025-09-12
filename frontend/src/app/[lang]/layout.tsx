@@ -10,8 +10,6 @@ import {
   SUPPORTED_LOCALES,
 } from "@/lib/localization/locale";
 import { defaultMetadata } from "../metadata";
-import { getDictionary } from "@/lib/localization/dictionaries";
-import { LocalizationProvider } from "@/components/localization/LocalizationProvider";
 import { ThemeProvider } from "next-themes";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { headers } from "next/headers";
@@ -28,6 +26,9 @@ import ToastProvider from "@/components/toast";
 import { ChainSwitcher } from "@/components/wagmi/ChainSwitcher";
 import { TooltipProvider } from "@diffuse/ui-kit/Tooltip";
 import { env } from "@/env";
+import { NextIntlClientProvider } from "next-intl";
+import { ConnectionStatusTracker } from "@/components/misc/ConnectionStatusTracker";
+import { getMessages, getTranslations } from "next-intl/server";
 
 export const metadata: Metadata = {
   ...defaultMetadata,
@@ -58,10 +59,11 @@ export default async function RootLayout({
 }>) {
   const { lang = DEFAULT_LOCALE } = await params;
   const dir = isLocaleRtl(lang) ? "rtl" : "ltr";
-  const dictionary = await getDictionary(lang);
   const nonce = (await headers()).get(nonceHeader) ?? undefined;
   const gtmId = env.NEXT_PUBLIC_GTM_ID ?? "";
   const gtagEnabled = !!env.NEXT_PUBLIC_ENABLE_GTAG;
+  const messages = getMessages({ locale: lang });
+  const tCommon = await getTranslations({ locale: lang, namespace: "common" });
 
   return (
     <html
@@ -78,13 +80,8 @@ export default async function RootLayout({
       )}
       <body>
         <TooltipProvider delayDuration={200}>
-          <LocalizationProvider
-            value={{
-              lang,
-              dictionary,
-              dir,
-            }}
-          >
+          <NextIntlClientProvider messages={messages} locale={lang}>
+            <ConnectionStatusTracker />
             <ToastProvider
               maxToastsToShow={3}
               defaultPosition="bottom-right"
@@ -109,7 +106,7 @@ export default async function RootLayout({
                     >
                       <Image src="/logo.svg" alt="Logo" width={32} height={32} />
                       <p className="text-secondary text-lg font-bold">
-                        {dictionary.common.navbar.title}
+                        {tCommon("title")}
                       </p>
                     </Link>
                   }
@@ -120,11 +117,11 @@ export default async function RootLayout({
                       config={[
                         {
                           href: "/lend",
-                          label: dictionary.common.navbar.navigation.lend,
+                          label: tCommon("navbar.navigation.lend"),
                         },
                         {
                           href: "/borrow",
-                          label: dictionary.common.navbar.navigation.borrow,
+                          label: tCommon("navbar.navigation.borrow"),
                           disabled: true,
                         },
                       ]}
@@ -141,7 +138,7 @@ export default async function RootLayout({
                 <Container>{children}</Container>
               </Providers>
             </ThemeProvider>
-          </LocalizationProvider>
+          </NextIntlClientProvider>
         </TooltipProvider>
       </body>
     </html>

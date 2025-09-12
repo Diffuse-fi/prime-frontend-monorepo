@@ -1,13 +1,11 @@
 "use client";
 
-import { useContext } from "react";
-import { LocalizationContext } from "./LocalizationContext";
+import { useLocale } from "next-intl";
+import { isLocaleRtl } from "./locale";
 
 export function useLocalization() {
-  const ctx = useContext(LocalizationContext);
+  const locale = useLocale();
+  const dir = isLocaleRtl(locale) ? "rtl" : "ltr";
 
-  if (!ctx)
-    throw new Error("useLocalization must be used within <LocalizationProvider/>");
-
-  return { lang: ctx.lang, dict: ctx.dictionary, dir: ctx.dir };
+  return { locale, dir };
 }
