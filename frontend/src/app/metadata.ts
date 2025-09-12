@@ -13,7 +13,7 @@ const SUPPORTED_LOCALES = localizationSettings.supported;
 const origin = env.ORIGIN;
 
 export const defaultMetadata = {
-  title: "Diffuse Prime",
+  title: env.NEXT_PUBLIC_APP_NAME,
   description: "",
   keywords: [
     "",

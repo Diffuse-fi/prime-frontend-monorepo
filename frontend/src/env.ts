@@ -1,5 +1,6 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
+import { AddressSchema } from "./lib/misc/validations";
 
 const zBool = z.preprocess(v => {
   if (typeof v === "boolean") return v;
@@ -37,6 +38,8 @@ export const env = createEnv({
 
     NEXT_PUBLIC_SENTRY_DSN: z.url().optional(),
     NEXT_PUBLIC_ENABLE_SENTRY: zBool.optional(),
+
+    NEXT_PUBLIC_VAULT_REGISTRY_ADDRESS: AddressSchema.optional(),
   },
   // Due to how Next.js loads environment variables, we must reflect here client variables
   // to be available at build time.
@@ -50,5 +53,6 @@ export const env = createEnv({
     NEXT_PUBLIC_ENABLE_GTAG: process.env.NEXT_PUBLIC_ENABLE_GTAG,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_ENABLE_SENTRY: process.env.NEXT_PUBLIC_ENABLE_SENTRY,
+    NEXT_PUBLIC_VAULT_REGISTRY_ADDRESS: process.env.NEXT_PUBLIC_VAULT_REGISTRY_ADDRESS,
   },
 });

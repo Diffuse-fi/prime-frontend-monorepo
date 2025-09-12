@@ -1,11 +1,5 @@
 import { z } from "zod";
-import { Address, getAddress, isAddress } from "viem";
-
-export const AddressSchema = z
-  .string()
-  .trim()
-  .refine(s => isAddress(s), { message: "Invalid EVM address" })
-  .transform(s => getAddress(s as Address));
+import { AddressSchema } from "../misc/validations";
 
 export const AssetInfoSchema = z.object({
   chainId: z.number().int().nonnegative(),
