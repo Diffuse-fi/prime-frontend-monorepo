@@ -1,10 +1,10 @@
-import { ensureLocaleCookie, localizationRewrite } from "./middlewares/localization";
-import { applyCsp } from "./middlewares/applyCsp";
+import { localizationMiddleware } from "./middlewares/localization";
+import { cspMiddleware } from "./middlewares/csp";
 import { compose } from "./middlewares/utils";
 
 export default compose({
-  stack: [localizationRewrite],
-  always: [applyCsp, ensureLocaleCookie],
+  stack: [localizationMiddleware],
+  always: [cspMiddleware],
 });
 
 export const config = {

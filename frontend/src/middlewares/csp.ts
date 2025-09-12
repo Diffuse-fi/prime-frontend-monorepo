@@ -44,7 +44,7 @@ function normalizeTemplateString(str: string) {
   return str.replace(/\s+/g, " ").trim();
 }
 
-export const applyCsp: Finalizer = (_req, _ev, ctx, res) => {
+export const cspMiddleware: Finalizer = (_req, _ev, ctx, res) => {
   const nonce = (ctx.nonce as string) || randomNonce();
   ctx.nonce = nonce;
   res.headers.set(nonceHeader, nonce);

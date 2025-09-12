@@ -1,6 +1,6 @@
 import { Locale } from "@/lib/localization/locale";
-import { getDictionary } from "../../../lib/localization/dictionaries";
 import { buildMetadataForPage } from "@/app/metadata";
+import { useTranslations } from "next-intl";
 
 export const metadata = buildMetadataForPage({
   title: "Borrow",
@@ -8,9 +8,8 @@ export const metadata = buildMetadataForPage({
   path: "borrow",
 });
 
-export default async function Home({ params }: { params: Promise<{ lang: Locale }> }) {
-  const { lang } = await params;
-  const dict = await getDictionary(lang);
+export default function Borrow() {
+  const t = useTranslations("borrow");
 
   return <></>;
 }

@@ -1,6 +1,6 @@
 import { ClientNavigation } from "@/components/shared/ClientNavigation";
-import { getDictionary } from "@/lib/localization/dictionaries";
 import { DEFAULT_LOCALE, Locale } from "@/lib/localization/locale";
+import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 
 export default async function LendLayout({
@@ -11,7 +11,7 @@ export default async function LendLayout({
   params: Promise<{ lang: Locale }>;
 }>) {
   const { lang = DEFAULT_LOCALE } = await params;
-  const dict = await getDictionary(lang);
+  const tLend = await getTranslations({ locale: lang, namespace: "lend" });
 
   return (
     <main className="flex flex-col gap-12 py-5">
@@ -19,8 +19,8 @@ export default async function LendLayout({
         locale={lang}
         ariaLabel="Lend page navigation"
         config={[
-          { href: "/lend", label: dict.lend.navigation.lend, exact: true },
-          { href: "/lend/my-positions", label: dict.lend.navigation.myPositions },
+          { href: "/lend", label: tLend("navigation.lend"), exact: true },
+          { href: "/lend/my-positions", label: tLend("navigation.myPositions") },
         ]}
         variant="tabs"
       />

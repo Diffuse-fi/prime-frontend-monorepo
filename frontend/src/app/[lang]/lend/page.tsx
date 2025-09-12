@@ -1,8 +1,7 @@
-import { Locale } from "@/lib/localization/locale";
 import { buildMetadataForPage } from "@/app/metadata";
 import { Heading } from "@diffuse/ui-kit/Heading";
-import { getDictionary } from "@/lib/localization/dictionaries";
 import LendPage from "@/components/pages/lend";
+import { useTranslations } from "next-intl";
 
 export const metadata = buildMetadataForPage({
   title: "Lend",
@@ -10,14 +9,13 @@ export const metadata = buildMetadataForPage({
   path: "lend",
 });
 
-export default async function Lend({ params }: { params: Promise<{ lang: Locale }> }) {
-  const { lang } = await params;
-  const dict = await getDictionary(lang);
+export default function Lend() {
+  const t = useTranslations("lend");
 
   return (
     <section>
-      <Heading level="1">{dict.lend.title}</Heading>
-      <p>{dict.lend.description}</p>
+      <Heading level="1">{t("title")}</Heading>
+      <p>{t("description")}</p>
       <LendPage />
     </section>
   );

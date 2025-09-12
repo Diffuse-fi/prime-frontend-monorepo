@@ -1,8 +1,7 @@
-import { Locale } from "@/lib/localization/locale";
 import { buildMetadataForPage } from "@/app/metadata";
-import { getDictionary } from "@/lib/localization/dictionaries";
 import MyPositions from "@/components/pages/lend/my-positions";
 import { Heading } from "@diffuse/ui-kit/Heading";
+import { useTranslations } from "next-intl";
 
 export const metadata = buildMetadataForPage({
   title: "My positions",
@@ -10,19 +9,14 @@ export const metadata = buildMetadataForPage({
   path: "lend/my-positions",
 });
 
-export default async function MyPosition({
-  params,
-}: {
-  params: Promise<{ lang: Locale }>;
-}) {
-  const { lang } = await params;
-  const dict = await getDictionary(lang);
+export default function MyPosition() {
+  const t = useTranslations("lend.myPositions");
 
   return (
     <main>
       <section>
-        <Heading level="1">{dict.lend.myPositions.title}</Heading>
-        <p>{dict.lend.myPositions.description}</p>
+        <Heading level="1">{t("title")}</Heading>
+        <p>{t("desciption")}</p>
         <MyPositions />
       </section>
     </main>

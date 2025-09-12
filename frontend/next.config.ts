@@ -1,8 +1,10 @@
 import { SentryBuildOptions, withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 import { getHeaders } from "./headers";
+import createNextIntlPlugin from "next-intl/plugin";
 import localizatiionSettings from "./src/localization.json" with { type: "json" };
 
+const withNextIntl = createNextIntlPlugin("./src/lib/localization/request.ts");
 const isProd = process.env.NODE_ENV === "production";
 const enableHSTS = process.env.ENABLE_HSTS === "true";
 const sentryOrg = process.env.SENTRY_ORGANIZATION;
@@ -81,4 +83,6 @@ const sentryBuildOptions = {
   telemetry: false,
 } satisfies SentryBuildOptions;
 
-export default isProd ? withSentryConfig(nextConfig, sentryBuildOptions) : nextConfig;
+export default withNextIntl(
+  isProd ? withSentryConfig(nextConfig, sentryBuildOptions) : nextConfig
+);
