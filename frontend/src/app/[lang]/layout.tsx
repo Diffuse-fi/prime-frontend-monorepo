@@ -8,7 +8,7 @@ import {
   isLocaleRtl,
   SUPPORTED_LOCALES,
 } from "@/lib/localization/locale";
-import { defaultMetadata } from "../metadata";
+import { buildRootMetadata } from "../metadata";
 import { ThemeProvider } from "next-themes";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { headers } from "next/headers";
@@ -29,9 +29,20 @@ import { Locale, NextIntlClientProvider } from "next-intl";
 import { ConnectionStatusTracker } from "@/components/misc/ConnectionStatusTracker";
 import { getMessages, getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  ...defaultMetadata,
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang: locale = DEFAULT_LOCALE } = await params;
+  const t = await getTranslations({ locale, namespace: "common.metadata" });
+
+  return buildRootMetadata({
+    locale,
+    description: t("description"),
+    keywords: t("keywords"),
+  });
+}
 
 export async function generateStaticParams() {
   return SUPPORTED_LOCALES.map(lang => ({ lang }));

@@ -36,7 +36,7 @@ We don't have many assets, so it is much easier (and secure) to maintain a local
 
 To add a new asset or change metadata of an existing asset, just update the `meta.json` file.
 
-## Internalization and Localization
+## Localization
 
 The frontend supports multiple languages through a localization system. The localization files are stored in the `src/dictionaries` directory, and the available languages are defined in `src/localization.json`. Default language is set to English (`en`) and also can be configured in `src/localization.json`.
 
