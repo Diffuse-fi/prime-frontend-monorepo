@@ -12,5 +12,3 @@ export function defaultRetry(failureCount: number, e: unknown) {
   }
   return failureCount < 3;
 }
-
-export const defaultMutationRetry = defaultRetry;

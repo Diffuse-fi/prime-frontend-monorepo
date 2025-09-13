@@ -3,7 +3,7 @@ import { Locale } from "next-intl";
 
 export const SUPPORTED_LOCALES = localizationSettings.supported;
 export const DEFAULT_LOCALE: Locale = localizationSettings.default;
-export const RTL = new Set(localizationSettings.rtl);
+const RTL = new Set(localizationSettings.rtl);
 
 export function isLocaleRtl(locale: Locale): boolean {
   return RTL.has(locale);

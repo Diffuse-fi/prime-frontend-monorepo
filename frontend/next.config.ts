@@ -9,7 +9,7 @@ const withNextIntl = createNextIntlPlugin({
 });
 
 const isProd = process.env.NODE_ENV === "production";
-const enableHSTS = process.env.ENABLE_HSTS === "true";
+const enableHSTS = process.env.ENABLE_HTTPS_SECURITY_HEADERS === "true";
 const sentryOrg = process.env.SENTRY_ORGANIZATION;
 const sentryProject = process.env.SENTRY_PROJECT;
 const sentryAuthToken = process.env.SENTRY_AUTH_TOKEN;
@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
     // Memory usage optimization
     serverSourceMaps: false,
   },
-  headers: () => getHeaders(enableHSTS && isProd),
+  headers: () => getHeaders(enableHSTS),
   images: {
     // We use nextjs <Image> component to display asset images from external sources.
     // This option enables to fetch those images on the server side and optimize them for

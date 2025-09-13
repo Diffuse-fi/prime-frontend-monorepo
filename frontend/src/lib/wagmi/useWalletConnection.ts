@@ -1,19 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Chain } from "viem";
 import { useAccount, useConnect, useSwitchChain } from "wagmi";
 
 export type UseWalletConnectionParams = {
-  onChainSwitch?: (args: { from: number | null; to: number }) => void;
+  onChainSwitch?: (args: { from: Chain | null; to: Chain }) => void;
 };
 
 export function useWalletConnection({ onChainSwitch }: UseWalletConnectionParams = {}) {
-  const { address, isConnected, isConnecting, chainId, chain } = useAccount();
+  const { address, isConnected, isConnecting, chain } = useAccount();
   const { connectors, isPending: isPendingConnection } = useConnect();
   const { isPending: isSwitchChainPending, variables: switchVars } = useSwitchChain();
   const [hasAttemptedConnection, setHasAttemptedConnection] = useState(false);
 
-  const prevChainRef = useRef<number | null>(null);
+  const prevChainRef = useRef<Chain | null>(null);
 
   useEffect(() => {
     if (isConnected || isConnecting) {
@@ -23,19 +24,19 @@ export function useWalletConnection({ onChainSwitch }: UseWalletConnectionParams
 
   useEffect(() => {
     if (prevChainRef.current === null) {
-      prevChainRef.current = chainId ?? null;
+      prevChainRef.current = chain ?? null;
       return;
     }
 
-    if (chainId === undefined || chainId === prevChainRef.current) return;
+    if (chain === undefined || chain?.id === prevChainRef.current.id) return;
 
     const from = prevChainRef.current;
-    const to = chainId!;
+    const to = chain;
 
     onChainSwitch?.({ from, to });
 
-    prevChainRef.current = chainId ?? null;
-  }, [chainId, onChainSwitch]);
+    prevChainRef.current = chain ?? null;
+  }, [chain, onChainSwitch]);
 
   return {
     address,

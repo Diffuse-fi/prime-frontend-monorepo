@@ -112,7 +112,6 @@ export default async function RootLayout({
                     <Link
                       href="/"
                       className="standard-focus-ring flex items-center gap-2 rounded-md p-1 select-none"
-                      locale={lang}
                     >
                       <Image src="/logo.svg" alt="Logo" width={32} height={32} />
                       <p className="text-secondary text-lg font-bold">
@@ -123,7 +122,6 @@ export default async function RootLayout({
                   navigation={
                     <ClientNavigation
                       ariaLabel="Site navigation"
-                      locale={lang}
                       config={[
                         {
                           href: "/lend",

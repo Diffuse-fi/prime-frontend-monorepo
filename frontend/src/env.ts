@@ -24,7 +24,7 @@ export const env = createEnv({
     SENTRY_ORGANIZATION: z.string().min(1).optional(),
     SENTRY_PROJECT: z.string().min(1).optional(),
 
-    ENABLE_HSTS: zBool.optional(),
+    ENABLE_HTTPS_SECURITY_HEADERS: zBool.optional(),
 
     ORG_TWITTER_ACCOUNT: z.string().min(1).optional(),
   },

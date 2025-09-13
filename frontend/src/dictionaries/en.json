@@ -11,6 +11,9 @@
       },
       "needToConnect": "Please connect your wallet",
       "title": "Diffuse Prime",
+      "toasts": {
+        "chainSwitch": "Successfully switched to {chainName}"
+      },
       "unknownChain": "Unknown Chain",
       "walletConect": "Connect Wallet"
     }
