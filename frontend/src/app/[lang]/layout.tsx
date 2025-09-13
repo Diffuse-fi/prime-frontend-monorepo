@@ -11,30 +11,27 @@ import {
 import { buildRootMetadata } from "../metadata";
 import { ThemeProvider } from "next-themes";
 import { GoogleTagManager } from "@next/third-parties/google";
-import { headers } from "next/headers";
-import { nonceHeader } from "@/lib/nonce";
 import { WebVitals } from "@/components/misc/WebVitals";
 import Link from "@/components/shared/Link";
-import ConnectButton from "@/components/wagmi/ConnectButton";
-import ThemeSwitcher from "@/components/misc/ThemeSwitcher/index";
+import ThemeSwitcher from "@/components/misc/ThemeSwitcher";
 import Image from "next/image";
 import { ClientNavigation } from "@/components/shared/ClientNavigation";
 import { Navbar } from "@diffuse/ui-kit/Navbar";
 import { Container } from "@diffuse/ui-kit/Container";
 import ToastProvider from "@/components/toast";
-import { ChainSwitcher } from "@/components/wagmi/ChainSwitcher";
 import { TooltipProvider } from "@diffuse/ui-kit/Tooltip";
 import { env } from "@/env";
 import { Locale, NextIntlClientProvider } from "next-intl";
 import { ConnectionStatusTracker } from "@/components/misc/ConnectionStatusTracker";
 import { getMessages, getTranslations } from "next-intl/server";
+import WalletBar from "@/components/wagmi/WalletBar";
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ lang: string }>;
+  params: { lang: string };
 }): Promise<Metadata> {
-  const { lang: locale = DEFAULT_LOCALE } = await params;
+  const { lang: locale = DEFAULT_LOCALE } = params;
   const t = await getTranslations({ locale, namespace: "common.metadata" });
 
   return buildRootMetadata({
@@ -43,6 +40,9 @@ export async function generateMetadata({
     keywords: t("keywords"),
   });
 }
+
+export const dynamic = "force-static";
+export const revalidate = 600;
 
 export async function generateStaticParams() {
   return SUPPORTED_LOCALES.map(lang => ({ lang }));
@@ -65,11 +65,10 @@ export default async function RootLayout({
   params,
 }: Readonly<{
   children: React.ReactNode;
-  params: Promise<{ lang: Locale }>;
+  params: { lang: Locale };
 }>) {
-  const { lang = DEFAULT_LOCALE } = await params;
+  const { lang = DEFAULT_LOCALE } = params;
   const dir = isLocaleRtl(lang) ? "rtl" : "ltr";
-  const nonce = (await headers()).get(nonceHeader) ?? undefined;
   const gtmId = env.NEXT_PUBLIC_GTM_ID ?? "";
   const gtagEnabled = !!env.NEXT_PUBLIC_ENABLE_GTAG;
   const messages = await getMessages({ locale: lang });
@@ -84,7 +83,7 @@ export default async function RootLayout({
     >
       {gtagEnabled && (
         <>
-          <GoogleTagManager gtmId={gtmId} nonce={nonce} />
+          <GoogleTagManager gtmId={gtmId} />
           <WebVitals />
         </>
       )}
@@ -103,7 +102,6 @@ export default async function RootLayout({
               defaultTheme="system"
               enableSystem
               disableTransitionOnChange
-              nonce={nonce}
             >
               <Providers locale={lang}>
                 <Navbar
@@ -138,8 +136,7 @@ export default async function RootLayout({
                   wallet={
                     <div className="flex gap-4">
                       <ThemeSwitcher />
-                      <ChainSwitcher />
-                      <ConnectButton />
+                      <WalletBar />
                     </div>
                   }
                 />

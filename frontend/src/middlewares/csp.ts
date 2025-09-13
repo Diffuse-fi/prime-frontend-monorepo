@@ -1,4 +1,3 @@
-import { nonceHeader, randomNonce } from "@/lib/nonce";
 import { type Finalizer } from "./utils";
 import { chains } from "@/lib/chains";
 import { env } from "@/env";
@@ -31,13 +30,6 @@ if (testnetsEnabled) {
 
 const allowedSources = allowedSourcesRaw.filter(Boolean).join(" ");
 
-const allowedTrirdPartyScripts = [
-  "https://www.googletagmanager.com",
-  // Add any other third-party scripts that are allowed in production
-]
-  .filter(Boolean)
-  .join(" ");
-
 const allowedFrameAncestors = [
   // Specify here if a website needs to be embedded in an iframe on a specific domain
 ]
@@ -46,7 +38,7 @@ const allowedFrameAncestors = [
 
 const allowedFrameSources = [
   // Domains allowed to be inside iframes on our site
-  "https://verify.walletconnect.org/", // WalletConnect session verification iframe
+  "https://verify.walletconnect.org", // WalletConnect session verification iframe
 ]
   .filter(Boolean)
   .join(" ");
@@ -65,22 +57,17 @@ function normalizeTemplateString(str: string) {
   return str.replace(/\s+/g, " ").trim();
 }
 
-export const cspMiddleware: Finalizer = (_req, _ev, ctx, res) => {
-  const nonce = (ctx.nonce as string) || randomNonce();
-  ctx.nonce = nonce;
-  res.headers.set(nonceHeader, nonce);
-
+export const cspMiddleware: Finalizer = (_req, _ev, _ctx, res) => {
   const extra = isProd
     ? normalizeTemplateString(
-        // TODO - add nonce to style-src when rainbow-kit allows nonce passing
         `
           default-src 'self';
-          script-src 'nonce-${nonce}' 'strict-dynamic' ${allowedTrirdPartyScripts};
+          script-src 'self' 'unsafe-inline';
           style-src 'self' 'unsafe-inline';
           connect-src ${allowedSources};
-          img-src 'self' blob: data: ${allowedImageSources || ""};
+          img-src 'self' blob: data: ${allowedImageSources};
           font-src 'self';
-          frame-src 'self' ${allowedFrameSources || ""};
+          frame-src 'self' ${allowedFrameSources};
           frame-ancestors ${allowedFrameAncestors || "'none'"};
           object-src 'none';
           base-uri 'self';

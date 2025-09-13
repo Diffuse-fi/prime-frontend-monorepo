@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname } from "@/lib/localization/navigation";
 import Link from "./Link";
 import { Nav, NavItem, NavProps } from "@diffuse/ui-kit";
 
