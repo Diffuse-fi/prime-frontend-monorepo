@@ -28,7 +28,11 @@ export function useWalletConnection({ onChainSwitch }: UseWalletConnectionParams
       return;
     }
 
-    if (chain === undefined || chain?.id === prevChainRef.current.id) return;
+    if (
+      chain === undefined ||
+      (prevChainRef.current !== null && chain?.id === prevChainRef.current.id)
+    )
+      return;
 
     const from = prevChainRef.current;
     const to = chain;
