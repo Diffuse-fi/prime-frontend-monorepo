@@ -9,11 +9,13 @@ import { Heading } from "@diffuse/ui-kit";
 import { useLenderPositions } from "@/lib/core/hooks/useLenderPositions";
 import { toast } from "@/lib/toast";
 import { InfoCard, InfoCardProps } from "./InfoCard";
-import { showSkeletons } from "@/lib/misc/showSkeletons";
 import { PositionCard } from "./PositionCard";
 import { formatAsset } from "@/lib/formatters/asset";
 import { useRouter } from "@/lib/localization/navigation";
 import { useTranslations } from "next-intl";
+import { formatAprToPercent } from "@/lib/formatters/finance";
+import { calcAverageApr } from "@/lib/formulas";
+import { showSkeletons } from "@/lib/misc/ui";
 
 export default function MyPositions() {
   const {
@@ -45,6 +47,13 @@ export default function MyPositions() {
           return acc + totalInVault;
         }, 0n)
       : 0n;
+  const totalAccrued =
+    positions.length > 0
+      ? positions.reduce((acc, p) => {
+          const accrued = p.accruedYield;
+          return acc + accrued;
+        }, 0n)
+      : 0n;
 
   return (
     <div className="mt-4 flex flex-col gap-6">
@@ -67,13 +76,24 @@ export default function MyPositions() {
             {
               header: t("averageAPY"),
               icon: <TrendingUp className="text-blue-500" />,
-              info: "--",
+              info: vaults.length
+                ? formatAprToPercent(calcAverageApr(vaults.map(v => v.targetApr))).text
+                : "--",
               iconBgClassName: "bg-blue-100",
             },
             {
               header: t("interestEarned"),
               icon: <Percent className="text-purple-500" />,
-              info: "--",
+              info:
+                totalAccrued !== undefined && selectedAsset
+                  ? `${
+                      formatAsset(
+                        totalAccrued,
+                        selectedAsset.decimals,
+                        selectedAsset.symbol
+                      ).text
+                    }`
+                  : "--",
               iconBgClassName: "bg-purple-100",
             },
           ] satisfies InfoCardProps[]

@@ -8,7 +8,6 @@ import { AssetsList } from "./AssetsList";
 import { useCallback } from "react";
 import { useSelectedVaults } from "@/lib/core/hooks/useSelectVaults";
 import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
-import { showSkeletons } from "@/lib/misc/showSkeletons";
 import { parseUnits } from "viem";
 import { useDeposit } from "@/lib/core/hooks/useDeposit";
 import { toast } from "@/lib/toast";
@@ -20,6 +19,7 @@ import { usePrevValueLocalStorage } from "@/lib/misc/usePrevValueLocalStorage";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/localization/navigation";
 import { env } from "@/env";
+import { showSkeletons } from "@/lib/misc/ui";
 
 export default function LendPage() {
   const { vaults, isLoading, vaultsAssetsList, isPending, refetchTotalAssets } =
@@ -153,6 +153,7 @@ export default function LendPage() {
             <SimpleTable
               aria-label="Selected assets summary"
               density="comfy"
+              className={selectedVaults.length === 0 ? "mb-10" : undefined}
               columns={[
                 <div key="key1" className="text-left font-mono text-xs">
                   Asset
@@ -201,20 +202,6 @@ export default function LendPage() {
             {txState && Object.keys(txState).length === 0 && (
               <p>No deposit transactions yet</p>
             )}
-            <ul className="flex flex-col gap-2">
-              {Object.entries(txState).map(([addr, info]) => (
-                <li key={addr} className="border-primary rounded-sm border p-2">
-                  <p>
-                    Vault: <span className="font-mono">{addr}</span>
-                  </p>
-                  {info.phase && (
-                    <p>
-                      Phase: <span className="font-mono">{info.phase}</span>
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ul>
           </Card>
         </div>
       )}
