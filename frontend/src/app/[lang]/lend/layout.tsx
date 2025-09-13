@@ -17,7 +17,6 @@ export default async function LendLayout({
   return (
     <main className="flex flex-col gap-12 py-5">
       <ClientNavigation
-        locale={lang}
         ariaLabel="Lend page navigation"
         config={[
           { href: "/lend", label: tLend("navigation.lend"), exact: true },

@@ -13,6 +13,7 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { match, P } from "ts-pattern";
 import { useTranslations } from "next-intl";
+import { Chain } from "viem";
 
 const Jazzicon = dynamic(() => import("react-jazzicon"), { ssr: false });
 
@@ -21,10 +22,10 @@ export function ChainSwitcher() {
   const t = useTranslations("common");
   const { openChainModal } = useChainModal();
   const onChainSwitch = useCallback(
-    ({ from, to }: { from: number | null; to: number }) => {
-      toast(`Network: ${from ?? "?"} → ${to}`);
+    ({ to }: { to: Chain }) => {
+      toast(t("navbar.toasts.chainSwitch", { chainName: to.name }));
     },
-    []
+    [t]
   );
   const { isSwitchChainPending, isPendingConnection, isConnected, chain } =
     useWalletConnection({

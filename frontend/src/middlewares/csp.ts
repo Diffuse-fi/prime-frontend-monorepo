@@ -6,6 +6,7 @@ import { env } from "@/env";
 const isProd = process.env.NODE_ENV === "production";
 const testnetsEnabled = !!env.NEXT_PUBLIC_ENABLE_TESTNETS;
 const mainnetsEnabled = !!env.NEXT_PUBLIC_ENABLE_MAINNETS;
+const httpsSecurityEnabled = !!env.ENABLE_HTTPS_SECURITY_HEADERS;
 
 // Allowed sources to connect to, e.g. for fetch, WebSocket, etc.
 const allowedSourcesRaw = [
@@ -51,7 +52,7 @@ export const cspMiddleware: Finalizer = (_req, _ev, ctx, res) => {
 
   const extra = isProd
     ? normalizeTemplateString(
-        // TODO - add nonce to stlye-src when rainbow-kit allows nonce passing
+        // TODO - add nonce to style-src when rainbow-kit allows nonce passing
         `
           default-src 'self';
           script-src 'nonce-${nonce}' 'strict-dynamic' ${allowedTrirdPartyScripts};
@@ -64,7 +65,7 @@ export const cspMiddleware: Finalizer = (_req, _ev, ctx, res) => {
           object-src 'none';
           base-uri 'self';
           form-action 'self';
-          upgrade-insecure-requests;
+          ${httpsSecurityEnabled ? "upgrade-insecure-requests;" : ""}
         `
       )
     : "";

@@ -23,9 +23,7 @@ export default function LocaleSwitcher() {
         {SUPPORTED_LOCALES.map(locale => {
           return (
             <li key={locale}>
-              <Link href={getPathnameWithoutLocale(locale)} locale={locale}>
-                {locale}
-              </Link>
+              <Link href={getPathnameWithoutLocale(locale)}>{locale}</Link>
             </li>
           );
         })}

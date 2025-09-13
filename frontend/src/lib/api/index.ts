@@ -1,6 +1,6 @@
 import qs from "qs";
 
-export const apiRoutes = {
+const apiRoutes = {
   assetMetaList: "/api/tokens-meta-list",
   og: "/api/og",
 } as const satisfies Record<string, `/${string}`>;

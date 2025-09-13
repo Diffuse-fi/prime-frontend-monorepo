@@ -41,8 +41,7 @@
     "react-dom": "19.1.0",
     "tailwindcss": "4.1.12",
     "viem": "2.33.3",
-    "wagmi": "2.16.3",
-    "zod": "4.1.8"
+    "wagmi": "2.16.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
@@ -63,7 +62,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
     "jsdom": "^26.1.0",
-    "knip": "^5.62.0",
+    "knip": "^5.63.1",
     "lint-staged": "^16.1.5",
     "playwright": "^1.54.2",
     "prettier": "^3.6.2",
