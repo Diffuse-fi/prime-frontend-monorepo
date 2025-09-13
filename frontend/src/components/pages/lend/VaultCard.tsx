@@ -4,7 +4,6 @@ import { AssetImage } from "../../shared/AssetImage";
 import { VaultFullInfo } from "../../../lib/core/types";
 import { formatDate } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
-import { useLocalization } from "@/lib/localization/useLocalization";
 import {
   Badge,
   Card,
@@ -21,6 +20,7 @@ import { calcAprInterest } from "@/lib/formulas";
 import { formatUnits } from "@/lib/formatters/asset";
 import { RisksNotice } from "./RisksNotice";
 import { getVaultRiskLevelColor } from "@/lib/core/utils/vault";
+import { useTranslations } from "next-intl";
 
 type VaultProps = {
   vault: VaultFullInfo;
@@ -30,7 +30,7 @@ type VaultProps = {
 };
 
 export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: VaultProps) {
-  const { dict } = useLocalization();
+  const t = useTranslations("lend");
   const vaultAprFormatted = formatAprToPercent(vault.targetApr);
   const defaultLockupPerdiod = 90; // TODO - get real value from the vault data when ready
   const reward = amount
@@ -59,7 +59,7 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
       }
     >
       <div className="flex gap-4">
-        <FormField label={dict.lend.deposit} className="grow">
+        <FormField label={t("deposit")} className="grow">
           <AssetInput
             placeholder="0.0"
             value={amount ? formatUnits(amount, selectedAsset.decimals).text : ""}
@@ -70,7 +70,7 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
             )}
           />
         </FormField>
-        <FormField label={dict.lend.lockUpPeriod} className="basis-[160px]">
+        <FormField label={t("lockUpPeriod")} className="basis-[160px]">
           <Select
             options={[
               { value: "3 months", label: "3 months" },
@@ -121,7 +121,7 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
         ))}
       </UncontrolledCollapsible>
       <UncontrolledCollapsible summary="Risks" defaultOpen={false}>
-        <RisksNotice risks={dict.lend.risks} />
+        <RisksNotice />
       </UncontrolledCollapsible>
     </Card>
   );

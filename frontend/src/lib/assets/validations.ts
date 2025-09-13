@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AddressSchema } from "../misc/validations";
+import { AddressSchema } from "../wagmi/validations";
 
 export const AssetInfoSchema = z.object({
   chainId: z.number().int().nonnegative(),

@@ -1,12 +1,12 @@
 "use client";
 
-import { useLocalization } from "@/lib/localization/useLocalization";
 import { Button } from "@diffuse/ui-kit";
 import { ConnectButton as ConnectButtonComponent } from "@rainbow-me/rainbowkit";
 import { Wallet } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function ConnectButton() {
-  const { dict } = useLocalization();
+  const t = useTranslations("common");
 
   return (
     <ConnectButtonComponent.Custom>
@@ -31,7 +31,7 @@ export default function ConnectButton() {
               type="button"
             >
               <Wallet className="mr-2 h-4 w-4" />
-              {!connected ? dict.common.navbar.walletConect : account.displayName}
+              {!connected ? t("navbar.walletConect") : account.displayName}
             </Button>
           </div>
         );

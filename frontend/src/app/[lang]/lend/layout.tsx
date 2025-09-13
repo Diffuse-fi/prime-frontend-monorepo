@@ -1,5 +1,6 @@
 import { ClientNavigation } from "@/components/shared/ClientNavigation";
-import { DEFAULT_LOCALE, Locale } from "@/lib/localization/locale";
+import { DEFAULT_LOCALE } from "@/lib/localization/locale";
+import { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 

@@ -5,7 +5,7 @@ import { isLocaleRtl } from "./locale";
 
 export function useLocalization() {
   const locale = useLocale();
-  const dir = isLocaleRtl(locale) ? "rtl" : "ltr";
+  const dir: "ltr" | "rtl" = isLocaleRtl(locale) ? "rtl" : "ltr";
 
   return { locale, dir };
 }

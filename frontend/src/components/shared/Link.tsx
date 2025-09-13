@@ -1,17 +1,13 @@
-import { localizePath, PropsWithLocale } from "@/lib/localization/locale";
-import NextLink, { LinkProps } from "next/link";
-import { AnchorHTMLAttributes, ReactNode } from "react";
+import { AnchorHTMLAttributes, ComponentProps, ReactNode } from "react";
+import { Link as IntlLink } from "@/lib/localization/navigation";
 
-type LinkPropsExtended = PropsWithLocale<
-  LinkProps & AnchorHTMLAttributes<HTMLAnchorElement>
-> & {
-  disabled?: boolean;
-  className?: string;
-  children: ReactNode;
-};
+type LinkPropsExtended = ComponentProps<typeof IntlLink> &
+  AnchorHTMLAttributes<HTMLAnchorElement> & {
+    disabled?: boolean;
+    children: ReactNode;
+  };
 
 export default function Link({
-  locale,
   href,
   disabled,
   children,
@@ -33,8 +29,8 @@ export default function Link({
   }
 
   return (
-    <NextLink href={localizePath(String(href), locale)} className={className} {...p}>
+    <IntlLink href={href} className={className} {...p}>
       {children}
-    </NextLink>
+    </IntlLink>
   );
 }

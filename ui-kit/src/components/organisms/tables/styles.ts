@@ -16,7 +16,7 @@ export const td = tv({
 });
 
 export const th = tv({
-  base: "px-3 py-2 text-left font-medium border-b border-border",
+  base: "px-3 py-2 text-left font-medium border-b border-border text-preset-gray-200",
 });
 
 export const tr = tv({ base: "hover:bg-muted/10" });

@@ -1,5 +1,6 @@
 import localizationSettings from "@/localization.json" with { type: "json" };
 import { defineRouting } from "next-intl/routing";
+import messages from "../../dictionaries/en.json";
 
 export const localizationRouting = defineRouting({
   locales: localizationSettings.supported,
@@ -14,3 +15,10 @@ export const localizationRouting = defineRouting({
     secure: process.env.NODE_ENV === "production",
   },
 });
+
+declare module "next-intl" {
+  interface AppConfig {
+    Locale: (typeof localizationRouting.locales)[number];
+    Messages: typeof messages;
+  }
+}

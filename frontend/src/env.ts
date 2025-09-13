@@ -1,6 +1,6 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
-import { AddressSchema } from "./lib/misc/validations";
+import { AddressSchema } from "./lib/wagmi/validations";
 
 const zBool = z.preprocess(v => {
   if (typeof v === "boolean") return v;

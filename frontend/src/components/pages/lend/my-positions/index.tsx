@@ -1,19 +1,19 @@
 "use client";
 
 import { useVaults } from "@/lib/core/hooks/useVaults";
-import { useRouter } from "next/navigation";
-import { localizePath } from "@/lib/localization/locale";
 import { useLocalization } from "@/lib/localization/useLocalization";
 import { DollarSign, Percent, TrendingUp } from "lucide-react";
 import { AssetsList } from "../AssetsList";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
-import { Card, Heading } from "@diffuse/ui-kit";
+import { Heading } from "@diffuse/ui-kit";
 import { useLenderPositions } from "@/lib/core/hooks/useLenderPositions";
 import { toast } from "@/lib/toast";
 import { InfoCard, InfoCardProps } from "./InfoCard";
 import { showSkeletons } from "@/lib/misc/showSkeletons";
 import { PositionCard } from "./PositionCard";
-import { formatAsset, formatUnits } from "@/lib/formatters/asset";
+import { formatAsset } from "@/lib/formatters/asset";
+import { useRouter } from "@/lib/localization/navigation";
+import { useTranslations } from "next-intl";
 
 export default function MyPositions() {
   const {
@@ -24,13 +24,14 @@ export default function MyPositions() {
   } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const router = useRouter();
-  const { dict, lang, dir } = useLocalization();
-  const onAddMoreLiquidity = () => router.push(localizePath("/lend/deposit", lang));
+  const { dir } = useLocalization();
+  const t = useTranslations("myPositions");
+  const onAddMoreLiquidity = () => router.push("/lend/deposit");
   const onWithDrawSuccess = () => {
-    toast(dict.myPositions.toasts.withdrawSuccessToast);
+    toast(t("toasts.withdrawSuccessToast"));
   };
   const onWithDrawError = () => {
-    toast(dict.myPositions.toasts.withdrawErrorToast);
+    toast(t("toasts.withdrawErrorToast"));
   };
   const vaultsForSelectedAsset = selectedAsset
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
@@ -51,7 +52,7 @@ export default function MyPositions() {
         {(
           [
             {
-              header: dict.myPositions.totalSupplied,
+              header: t("totalSupplied"),
               icon: <DollarSign className="text-primary" />,
               info:
                 totalSupplied && selectedAsset
@@ -64,13 +65,13 @@ export default function MyPositions() {
               iconBgClassName: "bg-primary/20",
             },
             {
-              header: dict.myPositions.averageAPY,
+              header: t("averageAPY"),
               icon: <TrendingUp className="text-blue-500" />,
               info: "--",
               iconBgClassName: "bg-blue-100",
             },
             {
-              header: dict.myPositions.interestEarned,
+              header: t("interestEarned"),
               icon: <Percent className="text-purple-500" />,
               info: "--",
               iconBgClassName: "bg-purple-100",
@@ -110,9 +111,9 @@ export default function MyPositions() {
         ) : (
           <div className="sm:col-span-3">
             <Heading level="5" className="pt-2 font-semibold">
-              {dict.myPositions.noPositions.title}
+              {t("noPositions.title")}
             </Heading>
-            <p className="">{dict.myPositions.noPositions.description}</p>
+            <p className="">{t("noPositions.description")}</p>
           </div>
         )}
       </div>

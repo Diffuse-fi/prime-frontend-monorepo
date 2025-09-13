@@ -10,13 +10,13 @@ export const metadata = buildMetadataForPage({
 });
 
 export default function MyPosition() {
-  const t = useTranslations("lend.myPositions");
+  const t = useTranslations("myPositions");
 
   return (
     <main>
       <section>
         <Heading level="1">{t("title")}</Heading>
-        <p>{t("desciption")}</p>
+        <p>{t("description")}</p>
         <MyPositions />
       </section>
     </main>

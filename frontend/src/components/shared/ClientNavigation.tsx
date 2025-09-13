@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "./Link";
 import { Nav, NavItem, NavProps } from "@diffuse/ui-kit";
-import { Locale } from "@/lib/localization/locale";
+import { Locale } from "next-intl";
 
 type NavigationConfig = NavItem[];
 

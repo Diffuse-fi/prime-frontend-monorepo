@@ -13,6 +13,7 @@
   --color-err-light: #fff5f2;
   --color-warn: #ffe83f;
   --color-success: #41ca00;
+  --color-preset-gray-200: #49454f;
 
   --radius-xs: 8px;
   --radius-sm: 16px;
@@ -45,6 +46,7 @@
   --color-text-primary: #e4e4e7;
   --color-primary-fg: #f9fafb;
   --color-text-dimmed: #9ca3af;
+  --color-preset-gray-200: #a3a3a3;
 }
 
 @utility shadow-soft {
