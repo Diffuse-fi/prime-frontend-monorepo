@@ -6,7 +6,6 @@ import "../globals.css";
 import {
   DEFAULT_LOCALE,
   isLocaleRtl,
-  Locale,
   SUPPORTED_LOCALES,
 } from "@/lib/localization/locale";
 import { defaultMetadata } from "../metadata";
@@ -26,7 +25,7 @@ import ToastProvider from "@/components/toast";
 import { ChainSwitcher } from "@/components/wagmi/ChainSwitcher";
 import { TooltipProvider } from "@diffuse/ui-kit/Tooltip";
 import { env } from "@/env";
-import { NextIntlClientProvider } from "next-intl";
+import { Locale, NextIntlClientProvider } from "next-intl";
 import { ConnectionStatusTracker } from "@/components/misc/ConnectionStatusTracker";
 import { getMessages, getTranslations } from "next-intl/server";
 
@@ -62,7 +61,7 @@ export default async function RootLayout({
   const nonce = (await headers()).get(nonceHeader) ?? undefined;
   const gtmId = env.NEXT_PUBLIC_GTM_ID ?? "";
   const gtagEnabled = !!env.NEXT_PUBLIC_ENABLE_GTAG;
-  const messages = getMessages({ locale: lang });
+  const messages = await getMessages({ locale: lang });
   const tCommon = await getTranslations({ locale: lang, namespace: "common" });
 
   return (
@@ -106,7 +105,7 @@ export default async function RootLayout({
                     >
                       <Image src="/logo.svg" alt="Logo" width={32} height={32} />
                       <p className="text-secondary text-lg font-bold">
-                        {tCommon("title")}
+                        {tCommon("navbar.title")}
                       </p>
                     </Link>
                   }

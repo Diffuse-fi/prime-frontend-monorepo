@@ -1,6 +1,5 @@
 "use client";
 
-import { useLocalization } from "@/lib/localization/useLocalization";
 import { getStableChainMeta } from "../../lib/chains/meta";
 import { stableSeedForChain } from "@/lib/misc/jazzIcons";
 import { toast } from "@/lib/toast";
@@ -13,12 +12,13 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 import { match, P } from "ts-pattern";
+import { useTranslations } from "next-intl";
 
 const Jazzicon = dynamic(() => import("react-jazzicon"), { ssr: false });
 
 export function ChainSwitcher() {
   const [broken, setBroken] = useState(false);
-  const { dict } = useLocalization();
+  const t = useTranslations("common");
   const { openChainModal } = useChainModal();
   const onChainSwitch = useCallback(
     ({ from, to }: { from: number | null; to: number }) => {
@@ -45,14 +45,14 @@ export function ChainSwitcher() {
         chain,
       })
         .with({ isConnected: false }, () => (
-          <Tooltip content={dict.common.navbar.needToConnect}>
+          <Tooltip content={t("navbar.needToConnect")}>
             <Ban />
           </Tooltip>
         ))
         .with({ isPendingConnection: true }, () => <Skeleton className="h-8 w-8" />)
         .with({ isSwitchChainPending: true }, () => <Skeleton className="h-8 w-8" />)
         .with({ isConnected: true, chain: P.select() }, chain => {
-          const chainName = chain?.name ?? dict.common.navbar.unknownChain;
+          const chainName = chain?.name ?? t("navbar.unknownChain");
           const chainId = chain?.id;
           const { iconUrl, iconBackground } = getStableChainMeta(chainId!);
           const chainHasNormalIcon = !!iconUrl && typeof iconUrl === "string" && !broken;

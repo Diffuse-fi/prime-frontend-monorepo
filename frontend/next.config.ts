@@ -4,7 +4,10 @@ import { getHeaders } from "./headers";
 import createNextIntlPlugin from "next-intl/plugin";
 import localizatiionSettings from "./src/localization.json" with { type: "json" };
 
-const withNextIntl = createNextIntlPlugin("./src/lib/localization/request.ts");
+const withNextIntl = createNextIntlPlugin({
+  requestConfig: "./src/lib/localization/request.ts",
+});
+
 const isProd = process.env.NODE_ENV === "production";
 const enableHSTS = process.env.ENABLE_HSTS === "true";
 const sentryOrg = process.env.SENTRY_ORGANIZATION;

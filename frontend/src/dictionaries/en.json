@@ -1,5 +1,10 @@
 {
   "common": {
+    "metadata": {
+      "description": "Description",
+      "keywords": "x, y, z",
+      "title": "Diffuse Prime"
+    },
     "navbar": {
       "navigation": {
         "borrow": "Borrow",
@@ -22,9 +27,9 @@
     "enterAmountButtonText": "Enter amount to lend",
     "listOfStrategies": "List of Strategies",
     "lockUpPeriod": "Lock-up period",
-    "myPositions": {
-      "description": "Track your lending positions and earnings across all pools",
-      "title": "My Lending Positions"
+    "metadata": {
+      "description": "Lend description",
+      "title": "Lend"
     },
     "navigation": {
       "lend": "Lend",
@@ -56,15 +61,22 @@
       "switchNetwork": "Switch Network",
       "toggleTheme": "Toggle Theme",
       "walletNotConnected": "Wallet not connected"
-    }
+    },
+    "vault": "Vault"
   },
   "myPositions": {
     "averageAPY": "Average APY",
+    "description": "Track your lending positions and earnings across all pools",
     "interestEarned": "Interest earned",
+    "metadata": {
+      "description": "My positions description",
+      "title": "My positions"
+    },
     "noPositions": {
       "description": "You have no lending positions yet. Start exploring strategies to earn yield on your assets.",
       "title": "No Lending Positions"
     },
+    "title": "My Lending Positions",
     "toasts": {
       "withdrawErrorToast": "An error occurred.",
       "withdrawSuccessToast": "Withdrawal successful!"

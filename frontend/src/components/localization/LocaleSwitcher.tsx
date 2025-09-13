@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Locale } from "@/lib/localization/locale";
 import localizationSettings from "../../localization.json" with { type: "json" };
 import Link from "../shared/Link";
+import { Locale } from "next-intl";
 
 const SUPPORTED_LOCALES = localizationSettings.supported;
 

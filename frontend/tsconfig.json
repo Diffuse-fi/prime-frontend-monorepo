@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "allowArbitraryExtensions": true,
     "composite": true,
     "jsx": "preserve",
     "lib": [
@@ -26,7 +27,6 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "src/lib/env/validate.ts"
+    ".next/types/**/*.ts"
   ]
 }

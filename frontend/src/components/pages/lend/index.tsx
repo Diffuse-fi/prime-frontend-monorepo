@@ -10,8 +10,6 @@ import { useSelectedVaults } from "@/lib/core/hooks/useSelectVaults";
 import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
 import { showSkeletons } from "@/lib/misc/showSkeletons";
 import { parseUnits } from "viem";
-import { useRouter } from "next/navigation";
-import { localizePath } from "@/lib/localization/locale";
 import { useDeposit } from "@/lib/core/hooks/useDeposit";
 import { toast } from "@/lib/toast";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
@@ -19,6 +17,9 @@ import { useWalletConnection } from "@/lib/wagmi/useWalletConnection";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { formatUnits } from "@/lib/formatters/asset";
 import { usePrevValueLocalStorage } from "@/lib/misc/usePrevValueLocalStorage";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/localization/navigation";
+import { env } from "@/env";
 
 export default function LendPage() {
   const { vaults, isLoading, vaultsAssetsList, isPending, refetchTotalAssets } =
@@ -30,11 +31,12 @@ export default function LendPage() {
   );
   const { selectedVaults, setAmountForVault } = useSelectedVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
-  const { dict, lang, dir } = useLocalization();
+  const { dir } = useLocalization();
+  const t = useTranslations("lend");
   const router = useRouter();
   const onSuccessAllowance = useCallback(() => {
-    toast(dict.lend.toasts.approveSuccessToast);
-  }, [dict.lend.toasts.approveSuccessToast]);
+    toast(t("toasts.approveSuccessToast"));
+  }, [t]);
   const {
     allAllowed,
     approveMissing,
@@ -54,8 +56,8 @@ export default function LendPage() {
 
   const { reset, deposit, isPendingBatch, txState } = useDeposit(selectedVaults, vaults, {
     onDepositBatchAllSuccess: () => {
-      router.push(localizePath("/lend/my-positions", lang));
-      toast(dict.lend.toasts.depositSuccessToast);
+      router.push("/lend/my-positions");
+      toast(t("toasts.depositSuccessToast"));
       setTimeout(() => {
         resetForms();
         reset();
@@ -63,7 +65,7 @@ export default function LendPage() {
       }, 0);
     },
     onDepositBatchSomeError: () => {
-      toast(dict.lend.toasts.depositErrorToast);
+      toast(t("toasts.depositErrorToast"));
     },
     onDepositBatchComplete: () => {
       refetchAllowances();
@@ -77,7 +79,7 @@ export default function LendPage() {
   const actionButtonMeta = (() => {
     if (allAllowed) {
       return {
-        text: isPendingBatch ? dict.lend.depositing : dict.lend.depositButtonText,
+        text: isPendingBatch ? t("depositing") : t("depositButtonText"),
         disabled: isPendingBatch,
         onClick: () => deposit(),
       };
@@ -85,14 +87,14 @@ export default function LendPage() {
 
     if (ableToRequest) {
       return {
-        text: isPendingApprovals ? dict.lend.approving : dict.lend.approveButtonText,
+        text: isPendingApprovals ? t("approving") : t("approveButtonText"),
         disabled: isPendingApprovals,
         onClick: () => approveMissing({ mode: "exact" }),
       };
     }
 
     return {
-      text: dict.lend.enterAmountButtonText,
+      text: t("enterAmountButtonText"),
       disabled: true,
       onClick: undefined,
     };
@@ -103,7 +105,7 @@ export default function LendPage() {
   return (
     <div className="mt-9 grid grid-cols-1 gap-x-2 gap-y-4 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-9">
       <div className="col-span-1 row-start-1 flex flex-col gap-3">
-        <Heading level="5">{dict.lend.assetsToLend}</Heading>
+        <Heading level="5">{t("assetsToLend")}</Heading>
         <AssetsList
           onSelectAsset={setSelectedAsset}
           selectedAsset={selectedAsset}
@@ -133,8 +135,8 @@ export default function LendPage() {
           </ul>
         ) : (
           <>
-            <p className="pt-2 font-semibold">{dict.lend.noVaults.title}</p>
-            <p className="">{dict.lend.noVaults.description}</p>
+            <p className="pt-2 font-semibold">{t("noVaults.title")}</p>
+            <p className="">{t("noVaults.description")}</p>
           </>
         )}
       </div>
@@ -143,7 +145,7 @@ export default function LendPage() {
           <Card
             header={
               selectedAsset?.symbol && !isPending
-                ? `Diffuse Prime ${selectedAsset?.symbol} vault`
+                ? `${env.NEXT_PUBLIC_APP_NAME} ${selectedAsset?.symbol} ${t("vault")}`
                 : undefined
             }
             cardBodyClassName="items-center gap-4"
