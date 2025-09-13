@@ -9,9 +9,9 @@ export default async function LendLayout({
   params,
 }: Readonly<{
   children: ReactNode;
-  params: Promise<{ lang: Locale }>;
+  params: { lang: Locale };
 }>) {
-  const { lang = DEFAULT_LOCALE } = await params;
+  const { lang = DEFAULT_LOCALE } = params;
   const tLend = await getTranslations({ locale: lang, namespace: "lend" });
 
   return (
