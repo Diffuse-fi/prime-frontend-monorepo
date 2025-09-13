@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "@/lib/localization/navigation";
-import Link from "./Link";
+import Link from "../shared/Link";
 import { Nav, NavItem, NavProps } from "@diffuse/ui-kit";
 
 type NavigationConfig = NavItem[];

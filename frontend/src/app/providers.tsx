@@ -28,7 +28,7 @@ export function Providers({ children, locale }: ProvidersProps) {
           appInfo={{
             appName: "Diffuse Prime",
           }}
-          avatar={() => <Image src="/logo.svg" alt="Avatar" width={64} height={64} />}
+          avatar={() => <Image src="/logo.svg?v=1" alt="Avatar" width={64} height={64} />}
           modalSize="compact"
         >
           {children}

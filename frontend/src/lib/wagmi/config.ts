@@ -10,6 +10,8 @@ import { env } from "@/env";
 
 export const config = getDefaultConfig({
   appName: env.NEXT_PUBLIC_APP_NAME,
+  appIcon: "/logo.svg?v=1",
+  appDescription: env.NEXT_PUBLIC_APP_DESCRIPTION,
   projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
   chains: getAvailableChains(),
   transports: {

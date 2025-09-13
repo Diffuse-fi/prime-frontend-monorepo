@@ -1,6 +1,10 @@
 import { Header } from "next/dist/lib/load-custom-routes";
 
-export async function getHeaders(enableHSTS = false): Promise<Header[]> {
+export async function getHeaders(enableHSTS = false) {
+  return [...(await getSecurityHeaders(enableHSTS)), ...(await getCacheHeaders())];
+}
+
+async function getSecurityHeaders(enableHSTS = false): Promise<Header[]> {
   return [
     {
       source: "/(.*)",
@@ -55,6 +59,48 @@ export async function getHeaders(enableHSTS = false): Promise<Header[]> {
     {
       source: "/api/og/:path*",
       headers: [{ key: "Cross-Origin-Resource-Policy", value: "cross-origin" }],
+    },
+  ];
+}
+
+async function getCacheHeaders() {
+  const longCache = [
+    { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+  ];
+
+  return [
+    // Cache static assets for 1 year in the browser and CDN.
+    { source: "/:path*.svg", headers: longCache },
+    { source: "/:path*.png", headers: longCache },
+    { source: "/:path*.jpg", headers: longCache },
+    { source: "/:path*.jpeg", headers: longCache },
+    {
+      source: "/favicon.ico",
+      headers: [
+        ...longCache,
+        { key: "Content-Type", value: "image/x-icon" },
+      ],
+    },
+    // Cache API responses for 5 minutes in the browser and CDN.
+    {
+      source: "/api/(.*)",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=300, s-maxage=300, stale-while-revalidate=60",
+        },
+      ],
+    },
+    // Cache manifest for 1 hour in the browser and 1 day in CDN.
+    {
+      source: "/manifest.webmanifest",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=3600, stale-while-revalidate=86400",
+        },
+        { key: "Content-Type", value: "application/manifest+json" },
+      ],
     },
   ];
 }

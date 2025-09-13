@@ -15,7 +15,7 @@ import { WebVitals } from "@/components/misc/WebVitals";
 import Link from "@/components/shared/Link";
 import ThemeSwitcher from "@/components/misc/ThemeSwitcher";
 import Image from "next/image";
-import { ClientNavigation } from "@/components/shared/ClientNavigation";
+import { ClientNavigation } from "@/components/misc/ClientNavigation";
 import { Navbar } from "@diffuse/ui-kit/Navbar";
 import { Container } from "@diffuse/ui-kit/Container";
 import ToastProvider from "@/components/toast";
@@ -29,9 +29,9 @@ import WalletBar from "@/components/wagmi/WalletBar";
 export async function generateMetadata({
   params,
 }: {
-  params: { lang: string };
+  params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
-  const { lang: locale = DEFAULT_LOCALE } = params;
+  const { lang: locale = DEFAULT_LOCALE } = await params;
   const t = await getTranslations({ locale, namespace: "common.metadata" });
 
   return buildRootMetadata({
@@ -65,9 +65,9 @@ export default async function RootLayout({
   params,
 }: Readonly<{
   children: React.ReactNode;
-  params: { lang: Locale };
+  params: Promise<{ lang: Locale }>;
 }>) {
-  const { lang = DEFAULT_LOCALE } = params;
+  const { lang = DEFAULT_LOCALE } = await params;
   const dir = isLocaleRtl(lang) ? "rtl" : "ltr";
   const gtmId = env.NEXT_PUBLIC_GTM_ID ?? "";
   const gtagEnabled = !!env.NEXT_PUBLIC_ENABLE_GTAG;
@@ -111,8 +111,8 @@ export default async function RootLayout({
                       href="/"
                       className="standard-focus-ring flex items-center gap-2 rounded-md p-1 select-none"
                     >
-                      <Image src="/logo.svg" alt="Logo" width={32} height={32} />
-                      <p className="text-secondary text-lg font-bold">
+                      <Image src="/logo.svg?v=1" alt="Logo" width={32} height={32} />
+                      <p className="text-secondary text-lg font-bold whitespace-nowrap">
                         {tCommon("navbar.title")}
                       </p>
                     </Link>
