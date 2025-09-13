@@ -54,14 +54,26 @@ CPS is implemented in the app to mitigate cross-site scripting (XSS) attacks and
 
 `productionBrowserSourceMaps` is set to `false` in `next.config.ts` to prevent exposing source maps in production. Source maps can reveal the original source code, which may contain sensitive information or make it easier for attackers to find vulnerabilities.
 
-## Observability and error tracking
+## Error tracking
 
-TDB
+**Sentry** is used for error tracking and monitoring in the frontend application. It helps to capture and report errors that occur in the application, providing insights into issues that users may encounter.
 
-## Testing
-
-TBD
+Sentry is configured with several environment variables that need to be set for it to work properly, take a look at `.env` file for reference.
 
 ## Deployment
 
-TBD
+For deployment, you can use platforms like Vercel, which is optimized for Next.js applications. Ensure that all required environment variables are set in your deployment platform.
+
+To create a production build of the frontend, you need to prepare its dependencies from the other packages in the monorepo. You can do this by running the following command from the root of the monorepo:
+
+```bash
+npm run build # builds everything
+```
+
+or if `/frontend` is considered a root directory on deployment platform, you can run from the `frontend` directory:
+
+```bash
+npm run build:deps
+```
+
+This will build the `sdk-js` and `ui-kit` packages and prepare them for production without leaving frontend directory.

@@ -9,11 +9,11 @@ export const chainLogos: Record<
   }
 > = {
   [mainnet.id]: {
-    iconUrl: "/ethereum-logo.svg",
+    iconUrl: "/ethereum-logo.svg?v=1",
     iconBackground: "transparent",
   },
   [berachain.id]: {
-    iconUrl: "/berachain-logo.svg",
+    iconUrl: "/berachain-logo.svg?v=1",
     iconBackground: "#814626",
   },
 };

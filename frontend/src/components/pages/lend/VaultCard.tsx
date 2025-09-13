@@ -1,6 +1,6 @@
 "use client";
 
-import { AssetImage } from "../../shared/AssetImage";
+import { AssetImage } from "@/components/misc/images/AssetImage";
 import { VaultFullInfo } from "../../../lib/core/types";
 import { formatDate } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";

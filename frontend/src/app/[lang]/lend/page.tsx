@@ -8,9 +8,9 @@ import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 export async function generateMetadata({
   params,
 }: {
-  params: { lang: string };
+  params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
-  const { lang: locale = DEFAULT_LOCALE } = params;
+  const { lang: locale = DEFAULT_LOCALE } = await params;
   const t = await getTranslations({ locale, namespace: "lend.metadata" });
 
   return buildMetadataForPage({

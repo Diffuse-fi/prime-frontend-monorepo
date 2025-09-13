@@ -1,6 +1,6 @@
 "use client";
 
-import { AssetImage } from "@/components/shared/AssetImage";
+import { AssetImage } from "@/components/misc/images/AssetImage";
 import { getContractExplorerUrl } from "@/lib/chains/meta";
 import { LenderPosition } from "@/lib/core/types";
 import { formatAsset } from "@/lib/formatters/asset";

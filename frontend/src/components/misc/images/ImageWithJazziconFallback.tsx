@@ -7,7 +7,8 @@ const Jazzicon = dynamic(() => import("react-jazzicon"), { ssr: false });
 type ImageWithJazziconFallbackProps = {
   size?: number;
   jazziconSeed?: number;
-} & Omit<ImageProps, "width" | "height">;
+  src?: string;
+} & Omit<ImageProps, "width" | "height" | "src">;
 
 export function ImageWithJazziconFallback({
   jazziconSeed,

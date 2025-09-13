@@ -1,4 +1,4 @@
-import { ClientNavigation } from "@/components/shared/ClientNavigation";
+import { ClientNavigation } from "@/components/misc/ClientNavigation";
 import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 import { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
@@ -9,9 +9,9 @@ export default async function LendLayout({
   params,
 }: Readonly<{
   children: ReactNode;
-  params: { lang: Locale };
+  params: Promise<{ lang: Locale }>;
 }>) {
-  const { lang = DEFAULT_LOCALE } = params;
+  const { lang = DEFAULT_LOCALE } = await params;
   const tLend = await getTranslations({ locale: lang, namespace: "lend" });
 
   return (

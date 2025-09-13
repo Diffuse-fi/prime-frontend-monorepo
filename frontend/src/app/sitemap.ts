@@ -74,7 +74,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${origin}${normalizeSlashes(url)}`,
       lastModified: new Date().toISOString(),
       changeFrequency: "daily",
-      priority: url === "/" ? 1 : 0.7,
+      priority: url === "/lend" ? 1 : 0.7,
     }));
   }
 
@@ -82,7 +82,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${origin}${normalizeSlashes(url)}`,
     lastModified: new Date().toISOString(),
     changeFrequency: "daily",
-    priority: url === "/" ? 1 : 0.7,
+    priority: url === "/lend" ? 1 : 0.7,
 
     alternates: {
       languages: {
