@@ -1,16 +1,29 @@
 import { buildMetadataForPage } from "@/app/metadata";
 import MyPositions from "@/components/pages/lend/my-positions";
 import { Heading } from "@diffuse/ui-kit/Heading";
-import { useTranslations } from "next-intl";
+import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 
-export const metadata = buildMetadataForPage({
-  title: "My positions",
-  description: "Page description",
-  path: "lend/my-positions",
-});
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang: locale = DEFAULT_LOCALE } = await params;
+  const t = await getTranslations({ locale, namespace: "myPositions.metadata" });
 
-export default function MyPosition() {
-  const t = useTranslations("myPositions");
+  return buildMetadataForPage({
+    title: t("title"),
+    description: t("description"),
+    keywords: t("keywords"),
+    path: "lend/my-positions",
+    locale,
+  });
+}
+
+export default async function MyPosition() {
+  const t = await getTranslations("myPositions");
 
   return (
     <main>

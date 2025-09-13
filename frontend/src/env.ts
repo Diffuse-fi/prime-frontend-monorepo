@@ -25,6 +25,8 @@ export const env = createEnv({
     SENTRY_PROJECT: z.string().min(1).optional(),
 
     ENABLE_HSTS: zBool.optional(),
+
+    ORG_TWITTER_ACCOUNT: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_APP_NAME: z.string().min(1),

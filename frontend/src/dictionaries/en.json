@@ -2,8 +2,7 @@
   "common": {
     "metadata": {
       "description": "Description",
-      "keywords": "x, y, z",
-      "title": "Diffuse Prime"
+      "keywords": "x, y, z"
     },
     "navbar": {
       "navigation": {
@@ -29,6 +28,7 @@
     "lockUpPeriod": "Lock-up period",
     "metadata": {
       "description": "Lend description",
+      "keywords": "x, y, z",
       "title": "Lend"
     },
     "navigation": {
@@ -41,16 +41,16 @@
     },
     "rewards": "Reward",
     "rewardsType": "Rewards type",
-    "risks": [
-      {
-        "description": "If borrower demand is high, your funds may be fully utilized in active strategies. This limits the ability to withdraw early or rebalance.",
-        "title": "Utilization & Liquidity Risk"
-      },
-      {
+    "risks": {
+      "protocol": {
         "description": "Strategies may interact with external protocols such as Aave, Pendle, Spectra, Ethena, Resolv, etc. Smart contract bugs, economic design flaws, governance failures, or insolvency in any of these protocols could lead to partial or total loss of deposited funds.",
         "title": "Underlying Protocol Risk"
+      },
+      "utilization": {
+        "description": "If borrower demand is high, your funds may be fully utilized in active strategies. This limits the ability to withdraw early or rebalance.",
+        "title": "Utilization & Liquidity Risk"
       }
-    ],
+    },
     "title": "Explore Prime Broker",
     "toasts": {
       "approveSuccessToast": "Approval successful!",
@@ -70,6 +70,7 @@
     "interestEarned": "Interest earned",
     "metadata": {
       "description": "My positions description",
+      "keywords": "x, y, z",
       "title": "My positions"
     },
     "noPositions": {
