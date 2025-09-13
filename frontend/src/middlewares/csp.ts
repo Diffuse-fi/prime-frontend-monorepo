@@ -12,6 +12,13 @@ const httpsSecurityEnabled = !!env.ENABLE_HTTPS_SECURITY_HEADERS;
 const allowedSourcesRaw = [
   "'self'",
   "https://www.google-analytics.com",
+  // Web3Modal API (used by WalletConnect V2)
+  "https://api.web3modal.org",
+  // WalletConnect V2 relay server
+  "wss://relay.walletconnect.org",
+  "https://relay.walletconnect.org",
+  // EUC domain for ENS avatar images
+  "https://euc.li",
 ];
 
 if (mainnetsEnabled) {
@@ -37,6 +44,19 @@ const allowedFrameAncestors = [
   .filter(Boolean)
   .join(" ");
 
+const allowedFrameSources = [
+  // Domains allowed to be inside iframes on our site
+  "https://verify.walletconnect.org/", // WalletConnect session verification iframe
+]
+  .filter(Boolean)
+  .join(" ");
+
+const allowedImageSources = [
+  "https://euc.li", // EUC domain for ENS avatar images
+]
+  .filter(Boolean)
+  .join(" ");
+
 function mergeCsp(existing: string | null, extra: string) {
   return existing && existing.length ? `${existing}; ${extra}` : extra;
 }
@@ -58,9 +78,9 @@ export const cspMiddleware: Finalizer = (_req, _ev, ctx, res) => {
           script-src 'nonce-${nonce}' 'strict-dynamic' ${allowedTrirdPartyScripts};
           style-src 'self' 'unsafe-inline';
           connect-src ${allowedSources};
-          img-src 'self' blob: data:;
+          img-src 'self' blob: data: ${allowedImageSources || ""};
           font-src 'self';
-          frame-src 'self';
+          frame-src 'self' ${allowedFrameSources || ""};
           frame-ancestors ${allowedFrameAncestors || "'none'"};
           object-src 'none';
           base-uri 'self';
