@@ -84,16 +84,6 @@ async function getCacheHeaders() {
         { key: "Content-Type", value: "image/x-icon" },
       ],
     },
-    // Cache API responses for 5 minutes in the browser and CDN.
-    {
-      source: "/api/(.*)",
-      headers: [
-        {
-          key: "Cache-Control",
-          value: "public, max-age=300, s-maxage=300, stale-while-revalidate=60",
-        },
-      ],
-    },
     // Cache manifest for 1 hour in the browser and 1 day in CDN.
     {
       source: "/manifest.webmanifest",

@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     if (chains?.length === 0) {
       return NextResponse.json(list, {
         headers: {
-          "Cache-Control": "public, max-age=300, stale-while-revalidate=600",
+          "Cache-Control": "public, max-age=3600, stale-while-revalidate=600",
           "X-Asset-Count": String(list.length),
         },
       });
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(filteredList, {
       headers: {
-        "Cache-Control": "public, max-age=300",
+        "Cache-Control": "public, max-age=3600, stale-while-revalidate=600",
         "X-Asset-Count": String(filteredList.length),
       },
     });

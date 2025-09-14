@@ -1,18 +1,18 @@
 import type { NextRequest, ImageResponseOptions } from "next/server";
 import { ImageResponse } from "next/og";
-import { CacheLifetimeSchema, OgSizeSchema, QuerySchema } from "./validations";
+import { QuerySchema } from "./validations";
 import { env } from "@/env";
+import qs from "qs";
 
 export const runtime = "edge";
 
-const fontRegularURL = new URL(
-  "../../fonts/dm-sans/DMSans-Regular.woff2",
-  import.meta.url
-);
+const fontRegularURL = new URL("../../fonts/dm-sans/DMSans-Regular.ttf", import.meta.url);
 const fontSemiBoldURL = new URL(
-  "../../fonts/dm-sans/DMSans-SemiBold.woff2",
+  "../../fonts/dm-sans/DMSans-SemiBold.ttf",
   import.meta.url
 );
+
+const dev = process.env.NODE_ENV !== "production";
 
 const memoLoadRetryOnUndefined = (url: URL) => {
   let p: Promise<ArrayBuffer | undefined> | undefined;
@@ -23,8 +23,10 @@ const memoLoadRetryOnUndefined = (url: URL) => {
         .then(r => (r.ok ? r.arrayBuffer() : Promise.reject(r.status)))
         .catch(() => undefined);
     }
+
     const result = await p;
     if (result === undefined) p = undefined;
+
     return result;
   };
 };
@@ -32,18 +34,13 @@ const memoLoadRetryOnUndefined = (url: URL) => {
 const loadFontRegular = memoLoadRetryOnUndefined(fontRegularURL);
 const loadFontSemiBold = memoLoadRetryOnUndefined(fontSemiBoldURL);
 
-const standardOgSize = OgSizeSchema.parse({ width: 1200, height: 630 });
-const cacheLifeTime = CacheLifetimeSchema.parse(60 * 60 * 24 * 7);
+const standardOgSize = { width: 1200, height: 630 };
 const BRAND = env.NEXT_PUBLIC_APP_NAME;
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const preset = QuerySchema.parse({
-      title: searchParams.get("title") ?? undefined,
-      description: searchParams.get("description") ?? undefined,
-      path: searchParams.get("path") ?? undefined,
-    });
+    const preset = QuerySchema.parse(qs.parse(searchParams.toString()));
 
     const [regular, semibold] = await Promise.all([
       loadFontRegular(),
@@ -80,6 +77,7 @@ export async function GET(req: NextRequest) {
               fontSize: 28,
               opacity: 0.9,
               fontWeight: 600,
+              display: "flex",
             }}
           >
             {BRAND}
@@ -90,9 +88,14 @@ export async function GET(req: NextRequest) {
       ),
       {
         ...standardOgSize,
-        fonts: fonts,
+        ...(fonts?.length ? { fonts } : {}),
         headers: {
-          "Cache-Control": `public, max-age=${cacheLifeTime}, stale-while-revalidate=${cacheLifeTime}`,
+          "Content-Type": "image/png",
+          "Cache-Control": dev
+            ? "no-store"
+            : "public, max-age=31536000, s-maxage=31536000, immutable",
+          "Cross-Origin-Resource-Policy": "cross-origin",
+          "X-OG-Version": preset.version,
         },
       }
     );

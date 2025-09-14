@@ -15,6 +15,7 @@ interface PageMetadataOptions {
 const SUPPORTED_LOCALES = localizationSettings.supported;
 const origin = env.ORIGIN;
 const twitterAccount = env.ORG_TWITTER_ACCOUNT;
+const ogVersion = env.NEXT_PUBLIC_OG_VERSION || "1";
 
 export const defaultMetadata = {
   title: env.NEXT_PUBLIC_APP_NAME,
@@ -40,7 +41,7 @@ export const defaultMetadata = {
     url: "/",
     images: [
       {
-        url: apiUrl("og", { title: env.NEXT_PUBLIC_APP_NAME }),
+        url: apiUrl("og", { title: env.NEXT_PUBLIC_APP_NAME, v: ogVersion }),
         width: 1200,
         height: 630,
         alt: env.NEXT_PUBLIC_APP_NAME,
@@ -54,7 +55,7 @@ export const defaultMetadata = {
     site: twitterAccount,
     creator: twitterAccount,
     images: [
-      apiUrl("og", { title: env.NEXT_PUBLIC_APP_NAME }),
+      apiUrl("og", { title: env.NEXT_PUBLIC_APP_NAME, v: ogVersion }),
     ],
   },
 } satisfies Metadata;
@@ -127,6 +128,7 @@ export function buildMetadataForPage({
             title: title || env.NEXT_PUBLIC_APP_NAME,
             path,
             description,
+            v: ogVersion,
           }),
           width: 1200,
           height: 630,
@@ -139,7 +141,12 @@ export function buildMetadataForPage({
       title: `${title} | ${env.NEXT_PUBLIC_APP_NAME}`,
       description,
       images: [
-        apiUrl("og", { title: title || env.NEXT_PUBLIC_APP_NAME, path, description }),
+        apiUrl("og", {
+          title: title || env.NEXT_PUBLIC_APP_NAME,
+          path,
+          description,
+          v: ogVersion,
+        }),
       ],
     },
   };
