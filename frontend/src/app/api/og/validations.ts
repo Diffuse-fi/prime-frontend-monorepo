@@ -14,15 +14,16 @@ export const QuerySchema = z.object({
     .default("")
     .optional()
     .transform(v => (typeof v === "string" ? v.slice(0, 200) : v)),
+  version: z
+    .string()
+    .trim()
+    .regex(/^\d+$/, "version must be a positive integer")
+    .default("1")
+    .optional()
+    .transform(v => (typeof v === "string" ? v : "1")),
+  path: z
+    .string()
+    .trim()
+    .optional()
+    .transform(v => (typeof v === "string" ? v.slice(0, 100) : v)),
 });
-
-export const OgSizeSchema = z.object({
-  width: z.number().int().positive(),
-  height: z.number().int().positive(),
-});
-
-export const CacheLifetimeSchema = z
-  .number()
-  .int()
-  .positive()
-  .max(60 * 60 * 24 * 30, "cacheLifeTime cannot exceed 30 days");

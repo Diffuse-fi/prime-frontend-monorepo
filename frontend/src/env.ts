@@ -44,6 +44,7 @@ export const env = createEnv({
     NEXT_PUBLIC_VAULT_REGISTRY_ADDRESS: AddressSchema.optional(),
 
     NEXT_PUBLIC_APP_DESCRIPTION: z.string().min(1),
+    NEXT_PUBLIC_OG_VERSION: z.string().min(1).optional(),
   },
   // Due to how Next.js loads environment variables, we must reflect here client variables
   // to be available at build time.
@@ -59,5 +60,6 @@ export const env = createEnv({
     NEXT_PUBLIC_ENABLE_SENTRY: process.env.NEXT_PUBLIC_ENABLE_SENTRY,
     NEXT_PUBLIC_VAULT_REGISTRY_ADDRESS: process.env.NEXT_PUBLIC_VAULT_REGISTRY_ADDRESS,
     NEXT_PUBLIC_APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION,
+    NEXT_PUBLIC_OG_VERSION: process.env.NEXT_PUBLIC_OG_VERSION,
   },
 });
