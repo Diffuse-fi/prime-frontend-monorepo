@@ -64,20 +64,23 @@ async function getSecurityHeaders(enableHSTS = false): Promise<Header[]> {
 }
 
 async function getCacheHeaders() {
-  const longCache = [
+  const staticResourceHeaders = [
+    // Cache static assets for 1 year in the browser and CDN.
     { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+    // Allow extensions to load images from the site.
+    { key: "Cross-Origin-Resource-Policy", value: "cross-origin" },
+    { key: "Access-Control-Allow-Origin", value: "*" },
   ];
 
   return [
-    // Cache static assets for 1 year in the browser and CDN.
-    { source: "/:path*.svg", headers: longCache },
-    { source: "/:path*.png", headers: longCache },
-    { source: "/:path*.jpg", headers: longCache },
-    { source: "/:path*.jpeg", headers: longCache },
+    { source: "/:path*.svg", headers: staticResourceHeaders },
+    { source: "/:path*.png", headers: staticResourceHeaders },
+    { source: "/:path*.jpg", headers: staticResourceHeaders },
+    { source: "/:path*.jpeg", headers: staticResourceHeaders },
     {
       source: "/favicon.ico",
       headers: [
-        ...longCache,
+        ...staticResourceHeaders,
         { key: "Content-Type", value: "image/x-icon" },
       ],
     },
