@@ -12,7 +12,6 @@ import { buildRootMetadata } from "../metadata";
 import { ThemeProvider } from "next-themes";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { WebVitals } from "@/components/misc/WebVitals";
-import Link from "@/components/shared/Link";
 import ThemeSwitcher from "@/components/misc/ThemeSwitcher";
 import Image from "next/image";
 import { ClientNavigation } from "@/components/misc/ClientNavigation";
@@ -25,6 +24,7 @@ import { Locale, NextIntlClientProvider } from "next-intl";
 import { ConnectionStatusTracker } from "@/components/misc/ConnectionStatusTracker";
 import { getMessages, getTranslations } from "next-intl/server";
 import WalletBar from "@/components/wagmi/WalletBar";
+import { AppLink } from "@/components/misc/AppLink";
 
 export async function generateMetadata({
   params,
@@ -107,7 +107,7 @@ export default async function RootLayout({
                 <Navbar
                   className="sticky top-0 z-50"
                   logo={
-                    <Link
+                    <AppLink
                       href="/"
                       className="standard-focus-ring flex items-center gap-2 rounded-md p-1 select-none"
                     >
@@ -115,7 +115,7 @@ export default async function RootLayout({
                       <p className="text-secondary text-lg font-bold whitespace-nowrap">
                         {tCommon("navbar.title")}
                       </p>
-                    </Link>
+                    </AppLink>
                   }
                   navigation={
                     <ClientNavigation

@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "@/lib/localization/navigation";
-import Link from "../shared/Link";
 import { Nav, NavItem, NavProps } from "@diffuse/ui-kit";
+import { AppLink } from "./AppLink";
 
 type NavigationConfig = NavItem[];
 
@@ -28,7 +28,7 @@ export function ClientNavigation({
       pathname={pathname}
       aria-label={ariaLabel}
       items={config}
-      renderLink={({ href, ...props }) => <Link href={href} {...props} />}
+      renderLink={({ href, ...props }) => <AppLink href={href} {...props} />}
     />
   );
 }
