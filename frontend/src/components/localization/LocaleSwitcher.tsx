@@ -2,8 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import localizationSettings from "../../localization.json" with { type: "json" };
-import Link from "../shared/Link";
 import { Locale } from "next-intl";
+import { AppLink } from "../misc/AppLink";
 
 const SUPPORTED_LOCALES = localizationSettings.supported;
 
@@ -23,7 +23,7 @@ export default function LocaleSwitcher() {
         {SUPPORTED_LOCALES.map(locale => {
           return (
             <li key={locale}>
-              <Link href={getPathnameWithoutLocale(locale)}>{locale}</Link>
+              <AppLink href={getPathnameWithoutLocale(locale)}>{locale}</AppLink>
             </li>
           );
         })}

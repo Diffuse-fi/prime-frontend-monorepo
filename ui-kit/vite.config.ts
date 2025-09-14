@@ -46,7 +46,7 @@ function presetCssAsset(): Plugin {
 }
 
 const discoverComponentEntries = () => {
-  const files = fg.sync(["src/components/**/*.tsx"], {
+  const components = fg.sync(["src/components/**/*.tsx"], {
     absolute: true,
     onlyFiles: true,
     ignore: [
@@ -59,13 +59,19 @@ const discoverComponentEntries = () => {
     ],
   });
 
+  const helpers = fg.sync(["src/lib/**/*.ts"], {
+    absolute: true,
+    onlyFiles: true,
+    ignore: ["**/*.test.*", "**/*.spec.*", "**/index.ts"],
+  });
+
+  const files = [...components, ...helpers];
+
   const entries: Record<string, string> = {};
   const dupes: Record<string, string[]> = {};
 
   for (const abs of files) {
     const base = basename(abs, extname(abs));
-
-    if (!/^[A-Z]/.test(base)) continue;
 
     if (entries[base]) {
       dupes[base] = dupes[base] ? [...dupes[base], abs] : [entries[base], abs];

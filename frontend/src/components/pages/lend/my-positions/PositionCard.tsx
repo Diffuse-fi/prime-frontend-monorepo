@@ -1,5 +1,6 @@
 "use client";
 
+import { AppLink } from "@/components/misc/AppLink";
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { getContractExplorerUrl } from "@/lib/chains/meta";
 import { LenderPosition } from "@/lib/core/types";
@@ -120,11 +121,7 @@ export function PositionCard({ className, position }: PositionCardProps) {
       <div className="flex justify-between">
         <Button disabled>Withdraw</Button>
         <Tooltip side="top" content="Open in explorer">
-          <a
-            href={explorerUrl ? explorerUrl : ""}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <AppLink href={explorerUrl ? explorerUrl : ""}>
             <IconButton
               aria-label="Open in explorer"
               size="lg"
@@ -133,7 +130,7 @@ export function PositionCard({ className, position }: PositionCardProps) {
               icon={<ExternalLink size={24} />}
               disabled={!explorerUrl}
             />
-          </a>
+          </AppLink>
         </Tooltip>
       </div>
     </Card>
