@@ -49,15 +49,16 @@ export async function generateStaticParams() {
 }
 
 export const viewport: Viewport = {
+  // Makes mobile browser scale to fit screen width instead of making the page 980px wide
   width: "device-width",
+  // Don't scale initially
   initialScale: 1,
-  maximumScale: 1,
+  // Good for accessiblity scaling limit
+  maximumScale: 5,
+  // makes sure the viewport covers the entire screen on iOS, safe area is needed, make sure to add padding where appropriate
   viewportFit: "cover",
-  userScalable: false,
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-  ],
+  // Makes sure the viewport resizes correctly when virtual keyboard appears
+  interactiveWidget: "resizes-content",
 };
 
 export default async function RootLayout({
@@ -105,7 +106,7 @@ export default async function RootLayout({
             >
               <Providers locale={lang}>
                 <Navbar
-                  className="sticky top-0 z-50"
+                  className="pt-safe sticky top-0 z-50"
                   logo={
                     <AppLink
                       href="/"
@@ -140,7 +141,7 @@ export default async function RootLayout({
                     </div>
                   }
                 />
-                <Container>{children}</Container>
+                <Container className="px-safe pb-safe">{children}</Container>
               </Providers>
             </ThemeProvider>
           </NextIntlClientProvider>

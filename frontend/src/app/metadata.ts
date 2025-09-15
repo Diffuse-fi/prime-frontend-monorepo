@@ -3,6 +3,7 @@ import localizationSettings from "../localization.json" with { type: "json" };
 import { apiUrl } from "@/lib/api";
 import { env } from "@/env";
 import { Locale } from "next-intl";
+import { toOgLocale } from "@/lib/misc/og";
 
 interface PageMetadataOptions {
   title: string;
@@ -13,6 +14,7 @@ interface PageMetadataOptions {
 }
 
 const SUPPORTED_LOCALES = localizationSettings.supported;
+const SUPPORTED_AS_OG_LOCALES = localizationSettings.supported.map(toOgLocale);
 const origin = env.ORIGIN;
 const twitterAccount = env.ORG_TWITTER_ACCOUNT;
 const ogVersion = env.NEXT_PUBLIC_OG_VERSION || "1";
@@ -101,6 +103,8 @@ export function buildMetadataForPage({
   keywords,
   locale,
 }: PageMetadataOptions): Metadata {
+  const ogLocale = toOgLocale(locale);
+
   return {
     ...defaultMetadata,
     title: `${title} | ${env.NEXT_PUBLIC_APP_NAME}`,
@@ -108,7 +112,7 @@ export function buildMetadataForPage({
     description,
     alternates: {
       canonical: `${origin}/${path}`,
-      languages: SUPPORTED_LOCALES.reduce(
+      languages: SUPPORTED_AS_OG_LOCALES.reduce(
         (acc, lang) => {
           acc[lang] = `${origin}/${lang}/${path}`;
           return acc;
@@ -121,7 +125,7 @@ export function buildMetadataForPage({
       title: `${title} | ${env.NEXT_PUBLIC_APP_NAME}`,
       description,
       url: `/${path}`,
-      locale: locale,
+      locale: ogLocale,
       images: [
         {
           url: apiUrl("og", {
