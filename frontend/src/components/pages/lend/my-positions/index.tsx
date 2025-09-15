@@ -5,17 +5,17 @@ import { useLocalization } from "@/lib/localization/useLocalization";
 import { DollarSign, Percent, TrendingUp } from "lucide-react";
 import { AssetsList } from "../AssetsList";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
-import { Heading } from "@diffuse/ui-kit";
+import { Button, Heading } from "@diffuse/ui-kit";
 import { useLenderPositions } from "@/lib/core/hooks/useLenderPositions";
 import { toast } from "@/lib/toast";
 import { InfoCard, InfoCardProps } from "./InfoCard";
 import { PositionCard } from "./PositionCard";
 import { formatAsset } from "@/lib/formatters/asset";
-import { useRouter } from "@/lib/localization/navigation";
 import { useTranslations } from "next-intl";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { calcAverageApr } from "@/lib/formulas";
 import { showSkeletons } from "@/lib/misc/ui";
+import { useWithdraw } from "@/lib/core/hooks/useWithdraw";
 
 export default function MyPositions() {
   const {
@@ -23,23 +23,20 @@ export default function MyPositions() {
     vaultsAssetsList,
     isLoading: isLoadingVaults,
     isPending: isPendingVaults,
+    refetchTotalAssets,
   } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
-  const router = useRouter();
   const { dir } = useLocalization();
   const t = useTranslations("myPositions");
-  const onAddMoreLiquidity = () => router.push("/lend/deposit");
-  const onWithDrawSuccess = () => {
-    toast(t("toasts.withdrawSuccessToast"));
-  };
-  const onWithDrawError = () => {
-    toast(t("toasts.withdrawErrorToast"));
-  };
+
   const vaultsForSelectedAsset = selectedAsset
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
     : vaults;
-  const { positions, isLoading: isLoadingPositions } =
-    useLenderPositions(vaultsForSelectedAsset);
+  const {
+    positions,
+    isLoading: isLoadingPositions,
+    refetch,
+  } = useLenderPositions(vaultsForSelectedAsset);
   const totalSupplied =
     vaults.length > 0
       ? vaults.reduce((acc, v) => {
@@ -54,6 +51,19 @@ export default function MyPositions() {
           return acc + accrued;
         }, 0n)
       : 0n;
+
+  const onWithdrawSuccess = () => {
+    toast(t("toasts.withdrawSuccessToast"));
+    refetch();
+    refetchTotalAssets();
+  };
+  const onWithdrawError = () => {
+    toast(t("toasts.withdrawErrorToast"));
+  };
+  const { withdraw, isPendingSingle } = useWithdraw(vaults, {
+    onWithdrawSuccess,
+    onWithdrawError,
+  });
 
   return (
     <div className="mt-4 flex flex-col gap-6">
@@ -124,8 +134,20 @@ export default function MyPositions() {
             <PositionCard
               position={position}
               key={position.vault.address}
-              onWithDrawSuccess={onWithDrawSuccess}
-              onWithDrawError={onWithDrawError}
+              withdrawButton={
+                <Button
+                  className="w-40"
+                  onClick={() =>
+                    withdraw({
+                      vaultAddress: position.vault.address,
+                      amount: position.balance,
+                    })
+                  }
+                  disabled={isPendingSingle || position.balance === 0n}
+                >
+                  {isPendingSingle ? t("withdrawing") : t("withdraw")}
+                </Button>
+              }
             />
           ))
         ) : (

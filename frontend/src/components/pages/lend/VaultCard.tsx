@@ -64,19 +64,10 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
             placeholder="0.0"
             value={amount ? formatUnits(amount, selectedAsset.decimals).text : ""}
             onValueChange={onAmountChange}
-            assetSymbol="mUSDC"
+            assetSymbol={selectedAsset?.symbol}
             renderAssetImage={() => (
               <AssetImage alt="" address={vault?.assets?.at(0)!.address} size={24} />
             )}
-          />
-        </FormField>
-        <FormField label={t("lockUpPeriod")} className="basis-[160px]">
-          <Select
-            options={[
-              { value: "3 months", label: "3 months" },
-            ]}
-            disabled
-            defaultValue="3 months"
           />
         </FormField>
       </div>
@@ -112,21 +103,23 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
           ],
         ]}
       />
-      <UncontrolledCollapsible summary="List of strategies" defaultOpen={false}>
-        {vault?.strategies?.map(s => (
-          <div key={s.apr}>
-            {formatAprToPercent(s.apr).text} APR, until&nbsp;
-            {formatDate(s.endDate).text}
-          </div>
-        ))}
-      </UncontrolledCollapsible>
-      <UncontrolledCollapsible
-        summary="Risks"
-        defaultOpen={false}
-        summaryClassName="text-err"
-      >
-        <RisksNotice />
-      </UncontrolledCollapsible>
+      <div className="flex flex-col gap-2">
+        <UncontrolledCollapsible summary="List of strategies" defaultOpen={false}>
+          {vault?.strategies?.map(s => (
+            <div key={s.apr}>
+              {formatAprToPercent(s.apr).text} APR, until&nbsp;
+              {formatDate(s.endDate).text}
+            </div>
+          ))}
+        </UncontrolledCollapsible>
+        <UncontrolledCollapsible
+          summary="Risks"
+          defaultOpen={false}
+          summaryClassName="text-err"
+        >
+          <RisksNotice />
+        </UncontrolledCollapsible>
+      </div>
     </Card>
   );
 }
