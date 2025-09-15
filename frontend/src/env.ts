@@ -1,6 +1,5 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
-import { AddressSchema } from "./lib/wagmi/validations";
 
 const zBool = z.preprocess(v => {
   if (typeof v === "boolean") return v;
@@ -41,8 +40,6 @@ export const env = createEnv({
     NEXT_PUBLIC_SENTRY_DSN: z.url().optional(),
     NEXT_PUBLIC_ENABLE_SENTRY: zBool.optional(),
 
-    NEXT_PUBLIC_VAULT_REGISTRY_ADDRESS: AddressSchema.optional(),
-
     NEXT_PUBLIC_APP_DESCRIPTION: z.string().min(1),
     NEXT_PUBLIC_OG_VERSION: z.string().min(1).optional(),
   },
@@ -58,7 +55,6 @@ export const env = createEnv({
     NEXT_PUBLIC_ENABLE_GTAG: process.env.NEXT_PUBLIC_ENABLE_GTAG,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_ENABLE_SENTRY: process.env.NEXT_PUBLIC_ENABLE_SENTRY,
-    NEXT_PUBLIC_VAULT_REGISTRY_ADDRESS: process.env.NEXT_PUBLIC_VAULT_REGISTRY_ADDRESS,
     NEXT_PUBLIC_APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION,
     NEXT_PUBLIC_OG_VERSION: process.env.NEXT_PUBLIC_OG_VERSION,
   },

@@ -1,5 +1,5 @@
 import { Chain } from "@rainbow-me/rainbowkit";
-import { berachain as beraDefault, mainnet } from "viem/chains";
+import { berachain as beraDefault, mainnet, arbitrum } from "viem/chains";
 import { getStableChainMeta } from "./meta";
 import { env } from "@/env";
 
@@ -13,6 +13,11 @@ export const ethMainnet = {
   ...getStableChainMeta(mainnet.id),
 };
 
+export const arbitrumOne = {
+  ...arbitrum,
+  ...getStableChainMeta(arbitrum.id),
+};
+
 const testnetsEnabled = !!env.NEXT_PUBLIC_ENABLE_TESTNETS;
 const mainnetsEnabled = !!env.NEXT_PUBLIC_ENABLE_MAINNETS;
 
@@ -22,7 +27,7 @@ if (!testnetsEnabled && !mainnetsEnabled) {
 
 export const chains = {
   testnets: [] as Chain[],
-  mainnets: mainnetsEnabled ? ([ethMainnet, berachain] as const) : [],
+  mainnets: mainnetsEnabled ? ([ethMainnet, berachain, arbitrumOne] as const) : [],
 } as const satisfies Record<"testnets" | "mainnets", readonly Chain[]>;
 
 export function getAvailableChains(): readonly [Chain, ...Chain[]] {

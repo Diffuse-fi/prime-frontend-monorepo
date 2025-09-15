@@ -3,7 +3,7 @@ import { tv } from "@/lib";
 import { Heading } from "@/atoms";
 
 const card = tv({
-  base: "rounded-lg bg-fg overflow-hidden flex flex-col",
+  base: "rounded-lg bg-fg overflow-hidden flex flex-col py-2 border border-border",
 });
 
 const cardHeader = tv({

@@ -5,10 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 import { opt, qk } from "../../query/helpers";
 import { useVaultRegistryContract } from "./useVaultRegistryContract";
 import { Address, getAddress } from "viem";
-import { useChainId } from "wagmi";
 
 type UseVaultRegistryParams = {
   addressOverride?: Address;
+  chainId: number;
 };
 
 const ROOT = "vaultRegistry" as const;
@@ -19,8 +19,7 @@ const queryKeys = {
     qk([ROOT, version, opt(contractAddress), chainId]),
 };
 
-export function useVaultRegistry({ addressOverride }: UseVaultRegistryParams = {}) {
-  const chainId = useChainId();
+export function useVaultRegistry({ addressOverride, chainId }: UseVaultRegistryParams) {
   const normalizedAddr = addressOverride ? getAddress(addressOverride) : undefined;
   const registry = useVaultRegistryContract(normalizedAddr);
 
