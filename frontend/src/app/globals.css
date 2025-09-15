@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Adds safe-area utility classes like `pt-safe`, etc. */
+@import "tailwindcss-safe-area";
 
 /* Import ui-kit tailwind classes so compiler includes them into final tailwind bundle */
 @source "../../../node_modules/@diffuse/ui-kit/dist";

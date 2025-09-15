@@ -2,7 +2,6 @@ import type { NextRequest, ImageResponseOptions } from "next/server";
 import { ImageResponse } from "next/og";
 import { QuerySchema } from "./validations";
 import { env } from "@/env";
-import qs from "qs";
 
 export const runtime = "edge";
 
@@ -40,7 +39,7 @@ const BRAND = env.NEXT_PUBLIC_APP_NAME;
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const preset = QuerySchema.parse(qs.parse(searchParams.toString()));
+    const preset = QuerySchema.parse(Object.fromEntries(searchParams));
 
     const [regular, semibold] = await Promise.all([
       loadFontRegular(),
