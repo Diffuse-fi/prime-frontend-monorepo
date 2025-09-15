@@ -23,6 +23,7 @@ export default async function LendLayout({
           { href: "/lend/my-positions", label: tLend("navigation.myPositions") },
         ]}
         variant="tabs"
+        className="sticky top-0"
       />
       {children}
     </main>

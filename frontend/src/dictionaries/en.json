@@ -28,7 +28,6 @@
     "description": "Access the high-yield strategies used by institutions",
     "enterAmountButtonText": "Enter amount to lend",
     "listOfStrategies": "List of Strategies",
-    "lockUpPeriod": "Lock-up period",
     "metadata": {
       "description": "Lend description",
       "keywords": "x, y, z",
@@ -85,6 +84,8 @@
       "withdrawErrorToast": "An error occurred.",
       "withdrawSuccessToast": "Withdrawal successful!"
     },
-    "totalSupplied": "Total supplied"
+    "totalSupplied": "Total supplied",
+    "withdraw": "Withdraw",
+    "withdrawing": "Withdrawing..."
   }
 }

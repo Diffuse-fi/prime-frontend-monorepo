@@ -9,6 +9,7 @@ import { queryClient } from "@/lib/query/client";
 import { useRainbowTheme } from "@/lib/theme/rainbowTheme";
 import { getInitialChain } from "@/lib/chains";
 import Image from "next/image";
+import { env } from "@/env";
 
 type ProvidersProps = {
   children: ReactNode;
@@ -26,7 +27,7 @@ export function Providers({ children, locale }: ProvidersProps) {
           locale={locale as Locale}
           initialChain={getInitialChain()}
           appInfo={{
-            appName: "Diffuse Prime",
+            appName: env.NEXT_PUBLIC_APP_NAME,
           }}
           avatar={() => <Image src="/logo.svg?v=1" alt="Avatar" width={64} height={64} />}
           modalSize="compact"

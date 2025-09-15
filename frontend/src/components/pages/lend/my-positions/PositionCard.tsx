@@ -2,7 +2,7 @@
 
 import { AppLink } from "@/components/misc/AppLink";
 import { AssetImage } from "@/components/misc/images/AssetImage";
-import { getContractExplorerUrl } from "@/lib/chains/meta";
+import { getContractExplorerUrl } from "@/lib/chains/rpc";
 import { LenderPosition } from "@/lib/core/types";
 import { formatAsset } from "@/lib/formatters/asset";
 import { formatDate } from "@/lib/formatters/date";
@@ -18,16 +18,16 @@ import {
   UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
 import { ExternalLink } from "lucide-react";
+import { ReactNode } from "react";
 import { useChainId } from "wagmi";
 
 export interface PositionCardProps {
   position: LenderPosition;
   className?: string;
-  onWithDrawSuccess?: () => void;
-  onWithDrawError?: () => void;
+  withdrawButton?: ReactNode;
 }
 
-export function PositionCard({ className, position }: PositionCardProps) {
+export function PositionCard({ className, position, withdrawButton }: PositionCardProps) {
   const { vault, asset, balance, accruedYield } = position;
   const chainId = useChainId();
   const explorerUrl = getContractExplorerUrl(chainId, vault.address);
@@ -119,7 +119,7 @@ export function PositionCard({ className, position }: PositionCardProps) {
         ))}
       </UncontrolledCollapsible>
       <div className="flex justify-between">
-        <Button disabled>Withdraw</Button>
+        {withdrawButton}
         <Tooltip side="top" content="Open in explorer">
           <AppLink href={explorerUrl ? explorerUrl : ""}>
             <IconButton

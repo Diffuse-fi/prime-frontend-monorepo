@@ -164,9 +164,6 @@ export default function LendPage() {
                 <div key="key3" className="text-right font-mono text-xs">
                   Target APY
                 </div>,
-                <div key="key4" className="text-right font-mono text-xs">
-                  Lock-Up period
-                </div>,
               ]}
               rows={selectedVaults.map(v => {
                 const vault = vaults.find(va => va.address === v.address);
@@ -183,7 +180,6 @@ export default function LendPage() {
                   <div key="3" className="text-right">
                     {vault ? formatAprToPercent(vault.targetApr).text : "-"}
                   </div>,
-                  <div key="4" className="text-right">{`3 months`}</div>,
                 ].flat();
               })}
             />
