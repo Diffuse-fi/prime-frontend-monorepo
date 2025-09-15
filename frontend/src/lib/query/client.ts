@@ -12,8 +12,7 @@ export const queryClient = new QueryClient({
       retryDelay: attempt => Math.min(1000 * 2 ** attempt, 10_000),
     },
     mutations: {
-      retry: defaultRetry,
-      retryDelay: attempt => Math.min(1000 * 2 ** attempt, 10_000),
+      retry: 0,
     },
   },
 });
