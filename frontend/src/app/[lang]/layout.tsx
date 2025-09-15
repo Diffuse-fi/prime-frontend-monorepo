@@ -53,7 +53,7 @@ export const viewport: Viewport = {
   width: "device-width",
   // Don't scale initially
   initialScale: 1,
-  // Good for accessiblity scaling limit
+  // Good for accessibility scaling limit
   maximumScale: 5,
   // makes sure the viewport covers the entire screen on iOS, safe area is needed, make sure to add padding where appropriate
   viewportFit: "cover",
