@@ -1,5 +1,5 @@
 import { getAddress } from "viem";
-import { berachain, mainnet } from "viem/chains";
+import { berachain, mainnet, arbitrum } from "viem/chains";
 
 export const chainLogos: Record<
   number,
@@ -15,6 +15,10 @@ export const chainLogos: Record<
   [berachain.id]: {
     iconUrl: "/berachain-logo.svg?v=1",
     iconBackground: "#814626",
+  },
+  [arbitrum.id]: {
+    iconUrl: "/arbitrum-logo.svg?v=1",
+    iconBackground: "#28a0f0",
   },
 };
 

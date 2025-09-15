@@ -48,7 +48,7 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
       cardBodyClassName="gap-4"
       header={
         <div className="flex items-center justify-start gap-4">
-          <Badge color={getVaultRiskLevelColor(vault.RiskLevel)} />
+          <Badge color={getVaultRiskLevelColor(vault.RiskLevel)} className="ml-2" />
           <div className="flex items-center gap-4">
             <Heading level="4" className="font-semibold">
               {vault.name}&#65343;
@@ -120,7 +120,11 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
           </div>
         ))}
       </UncontrolledCollapsible>
-      <UncontrolledCollapsible summary="Risks" defaultOpen={false}>
+      <UncontrolledCollapsible
+        summary="Risks"
+        defaultOpen={false}
+        summaryClassName="text-err"
+      >
         <RisksNotice />
       </UncontrolledCollapsible>
     </Card>

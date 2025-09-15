@@ -39,9 +39,7 @@ const qKeys = {
 
 export function useVaults() {
   const { chainId, publicClient, walletClient, address: owner } = useClients();
-  const { allVaults } = useVaultRegistry({
-    addressOverride: env.NEXT_PUBLIC_VAULT_REGISTRY_ADDRESS,
-  });
+  const { allVaults } = useVaultRegistry({ chainId });
   const qc = useQueryClient();
   const { meta, isLoading: assetsMetaLoading } = useAssetsMeta(chainId);
 

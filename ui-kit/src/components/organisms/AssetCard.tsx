@@ -13,7 +13,7 @@ export interface AssetCardProps
 }
 
 const assetCard = tv({
-  base: "border rounded-xl",
+  base: "border rounded-xl py-0",
   variants: {
     variant: {
       default: "bf-fg text-muted border-border",

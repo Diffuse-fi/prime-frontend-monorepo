@@ -8,6 +8,14 @@
       },
       "name": "Mainnet"
     },
+    "42161": {
+      "contracts": {
+        "VaultRegistry": {
+          "current": "0x3f187baC1e70174ffBc8678CC4d321994c60c36d"
+        }
+      },
+      "name": "Arbitrum One"
+    },
     "80094": {
       "contracts": {
         "VaultRegistry": {

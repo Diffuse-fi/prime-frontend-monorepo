@@ -6,7 +6,7 @@ function RisksNoticeComponent() {
   const t = useTranslations("lend.risks");
 
   return (
-    <ul className="bg-err-light list-inside list-none space-y-2 rounded-sm p-4">
+    <ul className="bg-err-light list-inside list-none space-y-2 rounded-sm p-4 text-sm">
       <li>
         <Heading level="4" className="text-err font-semibold">
           {t("utilization.title")}
