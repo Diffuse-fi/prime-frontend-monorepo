@@ -29,8 +29,8 @@
     "enterAmountButtonText": "Enter amount to lend",
     "listOfStrategies": "List of Strategies",
     "metadata": {
-      "description": "Lend description",
-      "keywords": "x, y, z",
+      "description": "Explore Diffuse Prime and access high-yield strategies used by institutions",
+      "keywords": "Diffuse, Prime, Lend, Borrow, Vaults, Strategies",
       "title": "Lend"
     },
     "navigation": {
@@ -71,8 +71,8 @@
     "description": "Track your lending positions and earnings across all pools",
     "interestEarned": "Interest earned",
     "metadata": {
-      "description": "My positions description",
-      "keywords": "x, y, z",
+      "description": "Check out the state of your active positions on Diffuse Prime",
+      "keywords": "Diffuse, Prime, Lending, Positions, Dashboard",
       "title": "My positions"
     },
     "noPositions": {
