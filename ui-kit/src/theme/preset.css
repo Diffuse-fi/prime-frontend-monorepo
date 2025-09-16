@@ -38,6 +38,7 @@
   --shadow-strong: 0 25px 40px -12px rgb(0 0 0 / 0.25);
 }
 
+/* Dark theme overrides */
 .dark {
   --color-bg: #1e1e2e;
   --color-fg: #222235;
@@ -47,6 +48,13 @@
   --color-primary-fg: #f9fafb;
   --color-text-dimmed: #9ca3af;
   --color-preset-gray-200: #a3a3a3;
+}
+
+/* Responsive rendering overrides */
+@media (max-width: 640px) {
+  :root {
+    --text-h1: 32px;
+  }
 }
 
 @utility shadow-soft {

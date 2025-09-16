@@ -1,9 +1,29 @@
 "use client";
 
-import { Button } from "@diffuse/ui-kit";
+import { Button, IconButton } from "@diffuse/ui-kit";
 import { ConnectButton as ConnectButtonComponent } from "@rainbow-me/rainbowkit";
 import { Wallet } from "lucide-react";
 import { useTranslations } from "next-intl";
+
+function DesktopConnectButton({ onClick, text }: { onClick: () => void; text: string }) {
+  return (
+    <Button size="sm" onClick={onClick} type="button">
+      <Wallet className="mr-2 h-4 w-4" />
+      {text}
+    </Button>
+  );
+}
+
+function MobileConnectButton({ onClick }: { onClick: () => void }) {
+  return (
+    <IconButton
+      size="sm"
+      onClick={onClick}
+      icon={<Wallet size={20} />}
+      aria-label="Connect wallet"
+    />
+  );
+}
 
 export default function ConnectButton() {
   const t = useTranslations("common");
@@ -25,14 +45,17 @@ export default function ConnectButton() {
               },
             })}
           >
-            <Button
-              size="sm"
-              onClick={!connected ? openConnectModal : openAccountModal}
-              type="button"
-            >
-              <Wallet className="mr-2 h-4 w-4" />
-              {!connected ? t("navbar.walletConect") : account.displayName}
-            </Button>
+            <div className="hidden md:block">
+              <DesktopConnectButton
+                onClick={!connected ? openConnectModal : openAccountModal}
+                text={!connected ? t("navbar.walletConect") : account.displayName}
+              />
+            </div>
+            <div className="md:hidden">
+              <MobileConnectButton
+                onClick={!connected ? openConnectModal : openAccountModal}
+              />
+            </div>
           </div>
         );
       }}
