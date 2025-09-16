@@ -7,7 +7,7 @@ import { LenderPosition } from "@/lib/core/types";
 import { formatAsset } from "@/lib/formatters/asset";
 import { formatDate } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
-import { calcAprInterest } from "@/lib/formulas";
+import { calcAprInterest } from "@/lib/formulas/apr";
 import {
   Button,
   Card,
