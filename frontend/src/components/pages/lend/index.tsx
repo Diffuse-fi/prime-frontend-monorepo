@@ -22,8 +22,14 @@ import { env } from "@/env";
 import { showSkeletons } from "@/lib/misc/ui";
 
 export default function LendPage() {
-  const { vaults, isLoading, vaultsAssetsList, isPending, refetchTotalAssets } =
-    useVaults();
+  const {
+    vaults,
+    isLoading,
+    vaultsAssetsList,
+    isPending,
+    refetchTotalAssets,
+    refetchLimits,
+  } = useVaults();
   const previousVaultsCount = usePrevValueLocalStorage(
     vaults.length,
     0,
@@ -62,6 +68,7 @@ export default function LendPage() {
         resetForms();
         reset();
         refetchTotalAssets();
+        refetchLimits();
       }, 0);
     },
     onDepositBatchSomeError: () => {

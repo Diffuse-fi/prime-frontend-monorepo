@@ -39,7 +39,17 @@ const BRAND = env.NEXT_PUBLIC_APP_NAME;
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const preset = QuerySchema.parse(Object.fromEntries(searchParams));
+
+    const expectedParams = ["title", "version", "description", "path"];
+    const filteredParams: Record<string, string> = {};
+    for (const key of expectedParams) {
+      const value = searchParams.get(key);
+      if (value !== null) {
+        filteredParams[key] = value;
+      }
+    }
+
+    const preset = QuerySchema.parse(filteredParams);
 
     const [regular, semibold] = await Promise.all([
       loadFontRegular(),

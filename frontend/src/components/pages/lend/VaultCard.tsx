@@ -13,7 +13,6 @@ import {
   TokenInputProps,
   UncontrolledCollapsible,
   FormField,
-  Select,
 } from "@diffuse/ui-kit";
 import { AssetInfo } from "@/lib/assets/validations";
 import { calcAprInterest } from "@/lib/formulas";

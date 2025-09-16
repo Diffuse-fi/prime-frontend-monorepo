@@ -1,13 +1,8 @@
 import { z } from "zod";
 
 export const QuerySchema = z.object({
-  title: z.string().trim().max(100, "title must be ≤ 100 characters").optional(),
-  description: z
-    .string()
-    .trim()
-    .max(200, "description must be ≤ 200 characters")
-    .default("")
-    .optional(),
+  title: z.string().trim().default("").optional(),
+  description: z.string().trim().default("").optional(),
   version: z
     .string()
     .trim()

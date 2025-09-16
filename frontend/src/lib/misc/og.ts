@@ -1,5 +1,3 @@
-const fallback = "en_US";
-
 export function toOgLocale(input: string): string {
   try {
     const loc = new Intl.Locale(input).maximize();
@@ -7,8 +5,8 @@ export function toOgLocale(input: string): string {
     const lang = loc.language;
     const region = loc.region;
 
-    return region ? `${lang}_${region}` : fallback;
+    return region ? `${lang}_${region}` : lang;
   } catch {
-    return fallback;
+    return input;
   }
 }
