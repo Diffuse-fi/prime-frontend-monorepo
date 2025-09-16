@@ -113,7 +113,7 @@ export default async function RootLayout({
                       className="standard-focus-ring flex items-center gap-2 rounded-md p-1 select-none"
                     >
                       <Image src="/logo.svg?v=1" alt="Logo" width={32} height={32} />
-                      <p className="text-secondary text-lg font-bold whitespace-nowrap">
+                      <p className="text-secondary hidden text-lg font-bold whitespace-nowrap sm:block">
                         {tCommon("navbar.title")}
                       </p>
                     </AppLink>
@@ -135,7 +135,7 @@ export default async function RootLayout({
                     />
                   }
                   wallet={
-                    <div className="flex gap-4">
+                    <div className="flex gap-2 sm:gap-4">
                       <ThemeSwitcher />
                       <WalletBar />
                     </div>

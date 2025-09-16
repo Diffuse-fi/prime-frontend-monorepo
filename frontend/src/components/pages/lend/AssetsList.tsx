@@ -44,7 +44,7 @@ export function AssetsList({
             <RadioGroupItem
               key={option.address}
               value={option.address}
-              className="rounded-xl"
+              className="w-fit rounded-xl"
             >
               <AssetCard
                 symbol={option.symbol}

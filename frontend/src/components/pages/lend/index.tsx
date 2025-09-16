@@ -110,8 +110,8 @@ export default function LendPage() {
   const stepText = !allAllowed ? "1/2" : "2/2";
 
   return (
-    <div className="mt-9 grid grid-cols-1 gap-x-2 gap-y-4 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-9">
-      <div className="col-span-1 row-start-1 flex flex-col gap-3">
+    <div className="mt-9 grid grid-cols-1 gap-x-2 gap-y-4 md:grid-cols-2 md:gap-x-4 md:gap-y-9">
+      <div className="row-start-1 flex flex-col gap-3">
         <Heading level="5">{t("assetsToLend")}</Heading>
         <AssetsList
           onSelectAsset={setSelectedAsset}
@@ -119,9 +119,10 @@ export default function LendPage() {
           isLoading={isLoading}
           options={vaultsAssetsList}
           direction={dir}
+          className="w-fit"
         />
       </div>
-      <div className="col-span-1 row-start-2 flex flex-col gap-6 sm:col-span-1">
+      <div className="col-span-1 flex flex-col gap-6 sm:col-span-1 md:row-start-2">
         {isLoading ? (
           showSkeletons(previousVaultsCount || 2, "h-50")
         ) : vaultsForSelectedAsset.length > 0 ? (
@@ -194,7 +195,7 @@ export default function LendPage() {
               onClick={actionButtonMeta.onClick}
               disabled={actionButtonMeta.disabled}
               size="lg"
-              className="w-1/2"
+              className="lg:w-1/2"
             >
               {actionButtonMeta.text}
             </Button>
