@@ -10,7 +10,9 @@
     "build:deps": "npm run build -w ../ui-kit && npm run build -w ../sdk-js",
     "dev": "next dev --turbopack",
     "lint:env": "tsx ./scripts/validateEnv",
-    "start": "npm run lint:env && next start"
+    "start": "npm run lint:env && next start",
+    "test:all": "npm run test:unit -- --run",
+    "test:unit": "vitest"
   },
   "dependencies": {
     "@diffuse/sdk-js": "0.1.2",

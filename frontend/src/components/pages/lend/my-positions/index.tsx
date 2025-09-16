@@ -13,7 +13,7 @@ import { PositionCard } from "./PositionCard";
 import { formatAsset } from "@/lib/formatters/asset";
 import { useTranslations } from "next-intl";
 import { formatAprToPercent } from "@/lib/formatters/finance";
-import { calcAverageApr } from "@/lib/formulas";
+import { calcAprByInterestEarned } from "@/lib/formulas/apr";
 import { showSkeletons } from "@/lib/misc/ui";
 import { useWithdraw } from "@/lib/core/hooks/useWithdraw";
 
@@ -38,9 +38,9 @@ export default function MyPositions() {
     refetch,
   } = useLenderPositions(vaultsForSelectedAsset);
   const totalSupplied =
-    vaults.length > 0
-      ? vaults.reduce((acc, v) => {
-          const totalInVault = v.totalAssets ?? 0n;
+    positions.length > 0
+      ? positions.reduce((acc, p) => {
+          const totalInVault = p.balance ?? 0n;
           return acc + totalInVault;
         }, 0n)
       : 0n;
@@ -87,7 +87,8 @@ export default function MyPositions() {
               header: t("averageAPY"),
               icon: <TrendingUp className="text-blue-500" />,
               info: vaults.length
-                ? formatAprToPercent(calcAverageApr(vaults.map(v => v.targetApr))).text
+                ? formatAprToPercent(calcAprByInterestEarned(totalAccrued, totalSupplied))
+                    .text
                 : "--",
               iconBgClassName: "bg-blue-100",
             },

@@ -15,7 +15,7 @@ import {
   FormField,
 } from "@diffuse/ui-kit";
 import { AssetInfo } from "@/lib/assets/validations";
-import { calcAprInterest } from "@/lib/formulas";
+import { calcAprInterest } from "@/lib/formulas/apr";
 import { formatUnits } from "@/lib/formatters/asset";
 import { RisksNotice } from "./RisksNotice";
 import { getVaultRiskLevelColor } from "@/lib/core/utils/vault";
