@@ -1,4 +1,4 @@
-import { SCALES } from "../formatters/config.js";
+import { SCALES } from "../formatters/config";
 
 export type CalculateAprOpts = {
   durationInDays?: number;
