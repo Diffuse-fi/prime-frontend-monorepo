@@ -122,7 +122,7 @@ export default function LendPage() {
           className="w-fit"
         />
       </div>
-      <div className="col-span-1 flex flex-col gap-6 sm:col-span-1 md:row-start-2">
+      <div className="col-span-1 flex flex-col gap-6 md:row-start-2">
         {isLoading ? (
           showSkeletons(previousVaultsCount || 2, "h-50")
         ) : vaultsForSelectedAsset.length > 0 ? (

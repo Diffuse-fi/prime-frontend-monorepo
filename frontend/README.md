@@ -77,3 +77,7 @@ npm run build:deps
 ```
 
 This will build the `sdk-js` and `ui-kit` packages and prepare them for production without leaving frontend directory.
+
+`vercel.json` file contains configuration for deploying the frontend on Vercel platform. It specifies the build command, install command, and other settings required for deployment.
+
+This app can be deployed on any platform that supports nodejs applications, not only on Vercel.
