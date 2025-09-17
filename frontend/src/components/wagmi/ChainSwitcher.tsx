@@ -8,17 +8,13 @@ import { IconButton, Tooltip } from "@diffuse/ui-kit";
 import { Skeleton } from "@diffuse/ui-kit/Skeleton";
 import { useChainModal } from "@rainbow-me/rainbowkit";
 import { Ban } from "lucide-react";
-import dynamic from "next/dynamic";
-import Image from "next/image";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { match, P } from "ts-pattern";
 import { useTranslations } from "next-intl";
 import { Chain } from "viem";
-
-const Jazzicon = dynamic(() => import("react-jazzicon"), { ssr: false });
+import { ImageWithJazziconFallback } from "../misc/images/ImageWithJazziconFallback";
 
 export function ChainSwitcher() {
-  const [broken, setBroken] = useState(false);
   const t = useTranslations("common");
   const { openChainModal } = useChainModal();
   const onChainSwitch = useCallback(
@@ -34,7 +30,11 @@ export function ChainSwitcher() {
 
   return (
     <IconButton
-      aria-label="Switch between supported networks"
+      aria-label={`Switch between supported networks. Currently ${
+        chain ? chain.name : "Not connected"
+      }`}
+      aria-busy={isPendingConnection || isSwitchChainPending || undefined}
+      aria-haspopup="menu"
       onClick={openChainModal}
       disabled={!isConnected || isPendingConnection || isSwitchChainPending}
       variant="ghost"
@@ -56,26 +56,19 @@ export function ChainSwitcher() {
           const chainName = chain?.name ?? t("navbar.unknownChain");
           const chainId = chain?.id;
           const { iconUrl, iconBackground } = getStableChainMeta(chainId!);
-          const chainHasNormalIcon = !!iconUrl && typeof iconUrl === "string" && !broken;
-
-          if (!chainHasNormalIcon) {
-            const seed = stableSeedForChain(chainId!);
-            return <Jazzicon diameter={20} seed={seed} />;
-          }
 
           return (
-            <Image
+            <ImageWithJazziconFallback
               src={iconUrl}
               alt={chainName}
-              width={20}
-              height={20}
+              size={20}
+              className="rounded-full object-cover"
               style={{
                 background: iconBackground || "transparent",
               }}
               fetchPriority="low"
               decoding="async"
-              className="rounded-full object-cover"
-              onError={() => setBroken(true)}
+              jazziconSeed={stableSeedForChain(chainId!)}
             />
           );
         })

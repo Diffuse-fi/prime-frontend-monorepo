@@ -9,7 +9,6 @@ import { formatDate } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { calcAprInterest } from "@/lib/formulas/apr";
 import {
-  Button,
   Card,
   Heading,
   IconButton,
@@ -121,7 +120,10 @@ export function PositionCard({ className, position, withdrawButton }: PositionCa
       <div className="flex justify-between">
         {withdrawButton}
         <Tooltip side="top" content="Open in explorer">
-          <AppLink href={explorerUrl ? explorerUrl : ""}>
+          <AppLink
+            href={explorerUrl ? explorerUrl : ""}
+            aria-label="Open vault contract in explorer"
+          >
             <IconButton
               aria-label="Open in explorer"
               size="lg"
@@ -129,6 +131,8 @@ export function PositionCard({ className, position, withdrawButton }: PositionCa
               className="text-secondary"
               icon={<ExternalLink size={24} />}
               disabled={!explorerUrl}
+              aria-hidden="true"
+              tabIndex={-1}
             />
           </AppLink>
         </Tooltip>

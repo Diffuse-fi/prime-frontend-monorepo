@@ -27,6 +27,7 @@ export function AssetsList({
   return (
     <RadioGroup
       className={cn("grid-cols-4", className)}
+      aria-label="Select an asset"
       dir={direction}
       value={selectedAsset?.address}
       onValueChange={value => {

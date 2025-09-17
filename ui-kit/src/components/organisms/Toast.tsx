@@ -71,7 +71,7 @@ export const Toast = React.forwardRef<HTMLLIElement, ToastProps>(
           <IconButton
             type="button"
             className="ml-2"
-            aria-label="Close notification"
+            aria-label="Close toast notification"
             icon={<X />}
             onClick={onClose}
             variant="ghost"
