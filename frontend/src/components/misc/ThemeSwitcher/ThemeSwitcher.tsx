@@ -8,12 +8,12 @@ export default function ThemeSwitcher() {
 
   return (
     <IconButton
-      aria-label=""
+      aria-label={current === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+      aria-pressed={current === "dark"}
       onClick={() => setTheme(current === "dark" ? "light" : "dark")}
       icon={current === "dark" ? <Sun /> : <Moon />}
       size="sm"
       variant="ghost"
-      aria-hidden
     />
   );
 }

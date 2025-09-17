@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { stringifyJsonBigint, parseJsonBigint } from "./bigint";
+import { JSONParse, JSONStringify } from "json-with-bigint";
 
 export function useLocalStorage<T>(
   key: string,
@@ -19,7 +19,7 @@ export function useLocalStorage<T>(
       try {
         const raw = window.localStorage.getItem(k);
         if (raw != null) {
-          const parsed = parseJsonBigint(raw) as T;
+          const parsed = JSONParse(raw) as T;
           if (!validate || validate(parsed)) return parsed;
         }
       } catch (e) {
@@ -53,7 +53,7 @@ export function useLocalStorage<T>(
     try {
       const valueToStore =
         !validate || validate(storedValue) ? storedValue : initialRef.current;
-      window.localStorage.setItem(key, stringifyJsonBigint(valueToStore));
+      window.localStorage.setItem(key, JSONStringify(valueToStore));
     } catch (e) {
       console.error(e);
     }

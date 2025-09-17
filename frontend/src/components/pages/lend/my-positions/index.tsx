@@ -72,7 +72,7 @@ export default function MyPositions() {
           [
             {
               header: t("totalSupplied"),
-              icon: <DollarSign className="text-primary" />,
+              icon: <DollarSign aria-hidden />,
               info:
                 totalSupplied && selectedAsset
                   ? formatAsset(
@@ -85,7 +85,7 @@ export default function MyPositions() {
             },
             {
               header: t("averageAPY"),
-              icon: <TrendingUp className="text-blue-500" />,
+              icon: <TrendingUp className="text-blue-500" aria-hidden />,
               info: vaults.length
                 ? formatAprToPercent(calcAprByInterestEarned(totalAccrued, totalSupplied))
                     .text
@@ -94,7 +94,7 @@ export default function MyPositions() {
             },
             {
               header: t("interestEarned"),
-              icon: <Percent className="text-purple-500" />,
+              icon: <Percent className="text-purple-500" aria-hidden />,
               info:
                 totalAccrued !== undefined && selectedAsset
                   ? `${

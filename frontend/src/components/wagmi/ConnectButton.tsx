@@ -31,6 +31,11 @@ export default function ConnectButton() {
                 size="sm"
                 onClick={!connected ? openConnectModal : openAccountModal}
                 type="button"
+                aria-label={
+                  !connected
+                    ? t("navbar.walletConect")
+                    : `Account settings for ${account.displayName}`
+                }
               >
                 <Wallet className="mr-2 h-4 w-4" />
                 {!connected ? t("navbar.walletConect") : account.displayName}
@@ -41,7 +46,11 @@ export default function ConnectButton() {
                 size="sm"
                 onClick={!connected ? openConnectModal : openAccountModal}
                 icon={<Wallet size={20} />}
-                aria-label="Connect wallet"
+                aria-label={
+                  !connected
+                    ? t("navbar.walletConect")
+                    : `Account settings for ${account.displayName}`
+                }
               />
             </MobileOnly>
           </div>
