@@ -16,7 +16,6 @@ import ThemeSwitcher from "@/components/misc/ThemeSwitcher";
 import Image from "next/image";
 import { ClientNavigation } from "@/components/misc/ClientNavigation";
 import { Navbar } from "@diffuse/ui-kit/Navbar";
-import { Container } from "@diffuse/ui-kit/Container";
 import ToastProvider from "@/components/toast";
 import { TooltipProvider } from "@diffuse/ui-kit/Tooltip";
 import { env } from "@/env";
@@ -147,9 +146,7 @@ export default async function RootLayout({
                     </div>
                   }
                 />
-                <Container as="main" className="h-full">
-                  {children}
-                </Container>
+                {children}
               </Providers>
             </ThemeProvider>
           </NextIntlClientProvider>
