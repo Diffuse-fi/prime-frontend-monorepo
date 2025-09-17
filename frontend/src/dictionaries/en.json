@@ -15,7 +15,7 @@
         "chainSwitch": "Successfully switched to {chainName}"
       },
       "unknownChain": "Unknown Chain",
-      "walletConect": "Connect Wallet"
+      "walletConnect": "Connect Wallet"
     }
   },
   "lend": {

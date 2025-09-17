@@ -1,41 +1,31 @@
 import * as React from "react";
-import { tv } from "@/lib";
+import { tv, VariantProps } from "@/lib";
 import { Button } from "./Button";
+import { button } from "./styles";
 
-const iconButton = tv({
-  base: "text-text-dimmed border-none",
-  variants: {
-    size: {
-      sm: "h-8 w-8",
-      md: "h-10 w-10",
-      lg: "h-12 w-12",
-    },
-    variant: {
-      solid: "p-0!",
-      ghost: "p-0!",
-    },
-  },
-  defaultVariants: { size: "md", variant: "ghost" },
+export const iconButton = tv({
+  extend: button,
+  defaultVariants: { variant: "ghost", size: "md", icon: true },
 });
 
-type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  icon: React.ReactNode;
-  size?: "sm" | "md" | "lg";
-  variant?: "solid" | "ghost";
+export interface IconButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    Omit<VariantProps<typeof iconButton>, "icon"> {
   "aria-label": string;
-};
+  icon: React.ReactNode;
+}
 
 export function IconButton({
-  icon,
   size,
   variant,
   className,
+  icon,
   "aria-label": ariaLabel,
   ...rest
-}: Props) {
+}: IconButtonProps) {
   return (
     <Button
-      className={iconButton({ size, variant, className })}
+      className={iconButton({ size, variant, className, icon: true })}
       aria-label={ariaLabel}
       variant={variant}
       {...rest}
