@@ -27,3 +27,8 @@
     color: var(--color-text-primary);
   }
 }
+
+/* Rainbow-kit injected element styles fix */
+div[data-rk] {
+  height: 100%;
+}

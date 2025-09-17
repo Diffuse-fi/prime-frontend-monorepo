@@ -7,7 +7,7 @@ describe("<Navbar />", () => {
   it("renders logo, navigation, wallet and merges classes", () => {
     render(
       <Navbar
-        data-testid="nav"
+        data-testid="header"
         className="custom-class"
         logo={<span>Logo</span>}
         navigation={
@@ -19,7 +19,7 @@ describe("<Navbar />", () => {
       />
     );
 
-    const nav = screen.getByTestId("nav");
+    const nav = screen.getByTestId("header");
 
     expect(nav).toHaveClass("custom-class");
     expect(screen.getByText("Logo")).toBeInTheDocument();
@@ -33,7 +33,7 @@ describe("<Navbar />", () => {
     render(<Navbar ref={ref} aria-label="main" />);
 
     expect(ref.current).toBeInstanceOf(HTMLElement);
-    expect(ref.current?.tagName).toBe("NAV");
+    expect(ref.current?.tagName).toBe("HEADER");
     expect(ref.current).toHaveAttribute("aria-label", "main");
   });
 });
