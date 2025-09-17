@@ -80,7 +80,7 @@ export default async function RootLayout({
       lang={lang}
       dir={dir}
       suppressHydrationWarning
-      className={`${fonts.DM_Sans.className} ${fonts.DM_mono.variable} pb-4 antialiased`}
+      className={`${fonts.DM_Sans.className} ${fonts.DM_mono.variable} h-screen antialiased supports-[height:100dvh]:h-dvh`}
     >
       {gtagEnabled && (
         <>
@@ -88,7 +88,7 @@ export default async function RootLayout({
           <WebVitals />
         </>
       )}
-      <body>
+      <body className="px-safe pb-safe h-full">
         <TooltipProvider delayDuration={200}>
           <NextIntlClientProvider messages={messages} locale={lang}>
             <ConnectionStatusTracker />
@@ -112,7 +112,13 @@ export default async function RootLayout({
                       href="/"
                       className="standard-focus-ring flex items-center gap-2 rounded-md p-1 select-none"
                     >
-                      <Image src="/logo.svg?v=1" alt="Logo" width={32} height={32} />
+                      <Image
+                        src="/logo.svg?v=1"
+                        alt={env.NEXT_PUBLIC_APP_NAME}
+                        width={32}
+                        height={32}
+                        priority
+                      />
                       <p className="text-secondary hidden text-lg font-bold whitespace-nowrap sm:block">
                         {tCommon("navbar.title")}
                       </p>
@@ -141,7 +147,9 @@ export default async function RootLayout({
                     </div>
                   }
                 />
-                <Container className="px-safe pb-safe">{children}</Container>
+                <Container as="main" className="h-full">
+                  {children}
+                </Container>
               </Providers>
             </ThemeProvider>
           </NextIntlClientProvider>

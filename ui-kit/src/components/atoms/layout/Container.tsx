@@ -14,10 +14,18 @@ const container = tv({
   },
 });
 
-export interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface ContainerProps<T extends React.ElementType>
+  extends React.HTMLAttributes<T> {
   fluid?: boolean;
+  as?: React.ElementType;
 }
 
-export function Container({ fluid = false, className, ...rest }: ContainerProps) {
-  return <div className={container({ fluid, className })} {...rest} />;
+export function Container<T extends React.ElementType>({
+  fluid = false,
+  className,
+  as,
+  ...rest
+}: ContainerProps<T>) {
+  const Element = as ?? "div";
+  return <Element className={container({ fluid, className })} {...rest} />;
 }

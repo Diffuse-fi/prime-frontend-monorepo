@@ -26,12 +26,10 @@ export default async function MyPosition() {
   const t = await getTranslations("myPositions");
 
   return (
-    <main>
-      <section>
-        <Heading level="1">{t("title")}</Heading>
-        <p>{t("description")}</p>
-        <MyPositions />
-      </section>
-    </main>
+    <section>
+      <Heading level="1">{t("title")}</Heading>
+      <p>{t("description")}</p>
+      <MyPositions />
+    </section>
   );
 }

@@ -15,7 +15,7 @@ export default async function LendLayout({
   const tLend = await getTranslations({ locale: lang, namespace: "lend" });
 
   return (
-    <main className="flex flex-col gap-12 py-5">
+    <div className="flex h-full flex-col gap-12 py-5">
       <ClientNavigation
         ariaLabel="Lend page navigation"
         config={[
@@ -25,6 +25,6 @@ export default async function LendLayout({
         variant="tabs"
       />
       {children}
-    </main>
+    </div>
   );
 }

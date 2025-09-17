@@ -11,7 +11,7 @@ export interface NavbarProps extends HTMLAttributes<HTMLElement> {
 
 export const Navbar = forwardRef<HTMLElement, NavbarProps>(
   ({ className, logo, navigation, wallet, ...props }, ref) => (
-    <nav
+    <header
       ref={ref}
       className={cn("bg-fg border-border w-full border-b", className)}
       {...props}
@@ -21,7 +21,7 @@ export const Navbar = forwardRef<HTMLElement, NavbarProps>(
         {navigation}
         <div>{wallet}</div>
       </Container>
-    </nav>
+    </header>
   )
 );
 
