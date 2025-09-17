@@ -25,10 +25,13 @@
   body {
     background: var(--color-bg);
     color: var(--color-text-primary);
+    position: relative;
   }
 }
 
-/* Rainbow-kit injected element styles fix */
-div[data-rk] {
+/* Rainbow-kit injected root element styles fix */
+body > div[data-rk] {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
