@@ -9,9 +9,9 @@ import { formatDate } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { calcAprInterest } from "@/lib/formulas/apr";
 import {
+  ButtonLike,
   Card,
   Heading,
-  IconButton,
   SimpleTable,
   Tooltip,
   UncontrolledCollapsible,
@@ -120,21 +120,18 @@ export function PositionCard({ className, position, withdrawButton }: PositionCa
       <div className="flex justify-between">
         {withdrawButton}
         <Tooltip side="top" content="Open in explorer">
-          <AppLink
-            href={explorerUrl ? explorerUrl : ""}
-            aria-label="Open vault contract in explorer"
+          <ButtonLike
+            href={explorerUrl || ""}
+            component={AppLink}
+            aria-label="Open vault smart contract in explorer"
+            variant="ghost"
+            size="lg"
+            className="text-secondary"
+            disabled={!explorerUrl}
+            icon
           >
-            <IconButton
-              aria-label="Open in explorer"
-              size="lg"
-              variant="ghost"
-              className="text-secondary"
-              icon={<ExternalLink size={24} />}
-              disabled={!explorerUrl}
-              aria-hidden="true"
-              tabIndex={-1}
-            />
-          </AppLink>
+            <ExternalLink aria-hidden={true} size={24} />
+          </ButtonLike>
         </Tooltip>
       </div>
     </Card>
