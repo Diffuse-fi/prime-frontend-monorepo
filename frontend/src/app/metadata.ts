@@ -3,7 +3,7 @@ import localizationSettings from "../localization.json" with { type: "json" };
 import { apiUrl } from "@/lib/api";
 import { env } from "@/env";
 import { Locale } from "next-intl";
-import { toOgLocale } from "@/lib/misc/og";
+import { normalizeTwitterHandle, toOgLocale } from "@/lib/misc/metadata";
 
 interface PageMetadataOptions {
   title: string;
@@ -14,87 +14,50 @@ interface PageMetadataOptions {
 }
 
 const SUPPORTED_LOCALES = localizationSettings.supported;
-const SUPPORTED_AS_OG_LOCALES = localizationSettings.supported.map(toOgLocale);
+const DEFAULT_LOCALE = localizationSettings.default;
+const needAlternates = SUPPORTED_LOCALES.length > 1;
 const origin = env.ORIGIN;
+const appName = env.NEXT_PUBLIC_APP_NAME;
 const twitterAccount = env.ORG_TWITTER_ACCOUNT;
 const ogVersion = env.NEXT_PUBLIC_OG_VERSION || "1";
 
+function generateAlternates(path: string, locale: string) {
+  if (!needAlternates) {
+    return undefined;
+  }
+
+  const languages = SUPPORTED_LOCALES.reduce(
+    (acc, lang) => {
+      acc[lang] = lang === DEFAULT_LOCALE ? `/${path}` : `/${lang}/${path}`;
+      return acc;
+    },
+    { "x-default": path } as Record<string, string>
+  );
+
+  return {
+    canonical: locale === DEFAULT_LOCALE ? `/${path}` : `/${locale}/${path}`,
+    languages,
+  };
+}
+
 export const defaultMetadata = {
-  title: env.NEXT_PUBLIC_APP_NAME,
-  applicationName: env.NEXT_PUBLIC_APP_NAME,
+  title: appName,
+  applicationName: appName,
+  description: env.NEXT_PUBLIC_APP_DESCRIPTION,
   authors: [{ name: "ukorvl", url: "https://github.com/ukorvl" }],
   metadataBase: new URL(origin),
-  alternates: {
-    canonical: origin,
-    languages: SUPPORTED_LOCALES.reduce(
-      (acc, lang) => {
-        acc[lang] = `${origin}/${lang}`;
-        return acc;
-      },
-      {} as Record<string, string>
-    ),
-  },
   openGraph: {
-    title: env.NEXT_PUBLIC_APP_NAME,
-    description: "",
-    locale: "en_US",
+    title: appName,
     type: "website",
-    siteName: env.NEXT_PUBLIC_APP_NAME,
-    url: "/",
-    images: [
-      {
-        url: apiUrl("og", { title: env.NEXT_PUBLIC_APP_NAME, v: ogVersion }),
-        width: 1200,
-        height: 630,
-        alt: env.NEXT_PUBLIC_APP_NAME,
-      },
-    ],
+    siteName: appName,
   },
   twitter: {
     card: "summary_large_image",
-    title: env.NEXT_PUBLIC_APP_NAME,
-    description: "",
-    site: twitterAccount,
-    creator: twitterAccount,
-    images: [
-      apiUrl("og", { title: env.NEXT_PUBLIC_APP_NAME, v: ogVersion }),
-    ],
+    title: appName,
+    site: normalizeTwitterHandle(twitterAccount),
+    creator: normalizeTwitterHandle(twitterAccount),
   },
 } satisfies Metadata;
-
-export function buildRootMetadata(
-  params: Omit<PageMetadataOptions, "title" | "path">
-): Metadata {
-  return {
-    ...defaultMetadata,
-    title: env.NEXT_PUBLIC_APP_NAME,
-    description: params.description,
-    keywords: params.keywords,
-    alternates: {
-      ...defaultMetadata.alternates,
-      canonical: origin,
-      languages: SUPPORTED_LOCALES.reduce(
-        (acc, lang) => {
-          acc[lang] = `${origin}/${lang}`;
-          return acc;
-        },
-        {} as Record<string, string>
-      ),
-    },
-    openGraph: {
-      ...defaultMetadata.openGraph,
-      description: params.description,
-      title: env.NEXT_PUBLIC_APP_NAME,
-      locale: params.locale,
-      url: "/",
-    },
-    twitter: {
-      ...defaultMetadata.twitter,
-      description: params.description,
-      title: env.NEXT_PUBLIC_APP_NAME,
-    },
-  };
-}
 
 export function buildMetadataForPage({
   title,
@@ -104,49 +67,42 @@ export function buildMetadataForPage({
   locale,
 }: PageMetadataOptions): Metadata {
   const ogLocale = toOgLocale(locale);
+  const ogLocaleAlternate = SUPPORTED_LOCALES.map(toOgLocale).filter(l => l !== ogLocale);
 
   return {
     ...defaultMetadata,
-    title: `${title} | ${env.NEXT_PUBLIC_APP_NAME}`,
+    title: `${title} | ${appName}`,
     keywords: keywords,
     description,
-    alternates: {
-      canonical: `${origin}/${path}`,
-      languages: SUPPORTED_AS_OG_LOCALES.reduce(
-        (acc, lang) => {
-          acc[lang] = `${origin}/${lang}/${path}`;
-          return acc;
-        },
-        {} as Record<string, string>
-      ),
-    },
+    alternates: generateAlternates(path, locale),
     openGraph: {
       ...defaultMetadata.openGraph,
-      title: `${title} | ${env.NEXT_PUBLIC_APP_NAME}`,
+      title: `${title} | ${appName}`,
       description,
-      url: `/${path}`,
       locale: ogLocale,
+      alternateLocale: ogLocaleAlternate,
+      url: locale === DEFAULT_LOCALE ? path : `/${locale}/${path}`,
       images: [
         {
           url: apiUrl("og", {
-            title: title || env.NEXT_PUBLIC_APP_NAME,
+            title: title || appName,
             path,
             description,
             v: ogVersion,
           }),
           width: 1200,
           height: 630,
-          alt: `${title} | ${env.NEXT_PUBLIC_APP_NAME}`,
+          alt: `${title} | ${appName}`,
         },
       ],
     },
     twitter: {
       ...defaultMetadata.twitter,
-      title: `${title} | ${env.NEXT_PUBLIC_APP_NAME}`,
+      title: `${title} | ${appName}`,
       description,
       images: [
         apiUrl("og", {
-          title: title || env.NEXT_PUBLIC_APP_NAME,
+          title: title || appName,
           path,
           description,
           v: ogVersion,

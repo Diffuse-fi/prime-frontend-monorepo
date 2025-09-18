@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 import localizatiionSettings from "../localization.json" with { type: "json" };
 import path from "node:path";
 import { readdirSync } from "node:fs";
-import slashes from "remove-trailing-slash";
 import { env } from "@/env";
+import { normalizeTrailingSlashes } from "@/lib/misc/metadata";
 
 const origin = env.ORIGIN;
 
@@ -22,10 +22,6 @@ function isRouteGroup(name: string) {
 
 function isDynamicSegment(name: string) {
   return name.startsWith("[") && name.endsWith("]");
-}
-
-function normalizeSlashes(url: string) {
-  return url === "/" ? url : slashes(url);
 }
 
 function getPaths(rootDir: string = ROUTING_ROOT_DIR): string[] {
@@ -71,7 +67,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   if (!needAlternates) {
     return paths.map(url => ({
-      url: `${origin}${normalizeSlashes(url)}`,
+      url: `${origin}${normalizeTrailingSlashes(url)}`,
       lastModified: new Date().toISOString(),
       changeFrequency: "daily",
       priority: url === "/lend" ? 1 : 0.7,
@@ -79,7 +75,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }
 
   return paths.map(url => ({
-    url: `${origin}${normalizeSlashes(url)}`,
+    url: `${origin}${normalizeTrailingSlashes(url)}`,
     lastModified: new Date().toISOString(),
     changeFrequency: "daily",
     priority: url === "/lend" ? 1 : 0.7,
@@ -90,12 +86,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
           SUPPORTED_LOCALES.map(lang => {
             const finalUrl =
               lang === DEFAULT_LOCALE
-                ? `${origin}${normalizeSlashes(url)}`
-                : `${origin}/${lang}${normalizeSlashes(url)}`;
+                ? `${origin}${normalizeTrailingSlashes(url)}`
+                : `${origin}/${lang}${normalizeTrailingSlashes(url)}`;
             return [lang, finalUrl];
           })
         ),
-        "x-default": `${origin}${normalizeSlashes(url)}`,
+        "x-default": `${origin}${normalizeTrailingSlashes(url)}`,
       },
     },
   }));

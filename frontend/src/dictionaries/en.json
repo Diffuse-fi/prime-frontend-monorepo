@@ -1,9 +1,5 @@
 {
   "common": {
-    "metadata": {
-      "description": "Description",
-      "keywords": "x, y, z"
-    },
     "navbar": {
       "navigation": {
         "borrow": "Borrow",
