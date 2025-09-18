@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Viewport } from "next";
 import { Providers } from "../providers";
 import { fonts } from "../fonts/fonts";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -8,7 +8,6 @@ import {
   isLocaleRtl,
   SUPPORTED_LOCALES,
 } from "@/lib/localization/locale";
-import { buildRootMetadata } from "../metadata";
 import { ThemeProvider } from "next-themes";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { WebVitals } from "@/components/misc/WebVitals";
@@ -24,21 +23,6 @@ import { ConnectionStatusTracker } from "@/components/misc/ConnectionStatusTrack
 import { getMessages, getTranslations } from "next-intl/server";
 import WalletBar from "@/components/wagmi/WalletBar";
 import { AppLink } from "@/components/misc/AppLink";
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ lang: string }>;
-}): Promise<Metadata> {
-  const { lang: locale = DEFAULT_LOCALE } = await params;
-  const t = await getTranslations({ locale, namespace: "common.metadata" });
-
-  return buildRootMetadata({
-    locale,
-    description: t("description"),
-    keywords: t("keywords"),
-  });
-}
 
 export const dynamic = "force-static";
 export const revalidate = 600;
