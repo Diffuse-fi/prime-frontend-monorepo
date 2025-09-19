@@ -48,6 +48,8 @@
   --color-primary-fg: #f9fafb;
   --color-text-dimmed: #9ca3af;
   --color-preset-gray-200: #a3a3a3;
+
+  --color-err-light: #fff5f220;
 }
 
 /* Responsive rendering overrides */

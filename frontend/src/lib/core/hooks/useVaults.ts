@@ -37,7 +37,7 @@ const qKeys = {
 };
 
 export function useVaults() {
-  const { chainId, publicClient, walletClient, address: owner } = useClients();
+  const { chainId, publicClient, address: owner } = useClients();
   const { allVaults } = useVaultRegistry({ chainId });
   const qc = useQueryClient();
   const { meta, isLoading: assetsMetaLoading } = useAssetsMeta(chainId);
@@ -64,11 +64,11 @@ export function useVaults() {
         contract: new Vault({
           address,
           chainId,
-          client: { public: publicClient, wallet: walletClient },
+          client: { public: publicClient },
         }),
       };
     });
-  }, [publicClient, walletClient, chainId, allVaults]);
+  }, [publicClient, chainId, allVaults]);
 
   const enabled =
     !!chainId && !!publicClient && !!addressKey && vaultContracts.length > 0;
