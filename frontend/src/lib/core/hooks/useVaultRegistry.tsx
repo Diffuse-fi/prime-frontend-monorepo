@@ -11,7 +11,7 @@ type UseVaultRegistryParams = {
   chainId: number;
 };
 
-const ROOT = "vaultRegistry" as const;
+const ROOT = "vaultRegistry";
 const version = QV.vaultsList;
 
 const queryKeys = {
