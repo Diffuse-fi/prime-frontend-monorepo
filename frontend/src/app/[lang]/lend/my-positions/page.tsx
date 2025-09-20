@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 import { JsonLd } from "@/components/misc/JsonLd";
-import { getWebPageGrapth } from "@/app/jsonld";
+import { getWebPageGraph } from "@/app/jsonld";
 
 export async function generateMetadata({
   params,
@@ -35,7 +35,7 @@ export default async function MyPositionsPage({
   return (
     <section>
       <JsonLd
-        graph={getWebPageGrapth({
+        graph={getWebPageGraph({
           title: t("metadata.title"),
           description: t("metadata.description"),
           path: "lend/my-positions",

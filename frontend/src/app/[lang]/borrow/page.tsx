@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 import { JsonLd } from "@/components/misc/JsonLd";
-import { getWebPageGrapth } from "@/app/jsonld";
+import { getWebPageGraph } from "@/app/jsonld";
 
 export async function generateMetadata({
   params,
@@ -18,7 +18,7 @@ export async function generateMetadata({
     title: t("title"),
     description: t("description"),
     keywords: t("keywords"),
-    path: "lend",
+    path: "borrow",
     locale,
   });
 }
@@ -34,7 +34,7 @@ export default async function BorrowPage({
   return (
     <section>
       <JsonLd
-        graph={getWebPageGrapth({
+        graph={getWebPageGraph({
           title: t("metadata.title"),
           description: t("metadata.description"),
           path: "borrow",
