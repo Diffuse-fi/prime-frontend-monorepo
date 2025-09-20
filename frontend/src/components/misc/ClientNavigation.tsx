@@ -4,9 +4,9 @@ import { usePathname } from "@/lib/localization/navigation";
 import { Nav, NavItem, NavProps } from "@diffuse/ui-kit";
 import { AppLink } from "./AppLink";
 
-type NavigationConfig = NavItem[];
+export type NavigationConfig = NavItem[];
 
-type ClientNavigationProps = {
+export type ClientNavigationProps = {
   config?: NavigationConfig;
   ariaLabel: string;
   variant?: NavProps["variant"];

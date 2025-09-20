@@ -67,19 +67,19 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${fonts.DM_Sans.className} ${fonts.DM_mono.variable} h-screen antialiased supports-[height:100dvh]:h-dvh`}
     >
-      {gtagEnabled && (
-        <>
-          <GoogleTagManager gtmId={gtmId} />
-          <WebVitals />
-        </>
-      )}
-      <JsonLd
-        graph={{
-          "@context": "https://schema.org",
-          "@graph": [org, site],
-        }}
-      />
       <body className="px-safe pb-safe h-full">
+        {gtagEnabled && (
+          <>
+            <GoogleTagManager gtmId={gtmId} />
+            <WebVitals />
+          </>
+        )}
+        <JsonLd
+          graph={{
+            "@context": "https://schema.org",
+            "@graph": [org, site],
+          }}
+        />
         <TooltipProvider delayDuration={200}>
           <NextIntlClientProvider messages={messages} locale={lang}>
             <ConnectionStatusTracker />
@@ -126,7 +126,6 @@ export default async function RootLayout({
                         {
                           href: "/borrow",
                           label: tCommon("navbar.navigation.borrow"),
-                          disabled: true,
                         },
                       ]}
                     />

@@ -1,6 +1,5 @@
 import { buildMetadataForPage } from "@/app/metadata";
 import { Heading } from "@diffuse/ui-kit/Heading";
-import Lend from "@/components/pages/lend";
 import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import { DEFAULT_LOCALE } from "@/lib/localization/locale";
@@ -13,7 +12,7 @@ export async function generateMetadata({
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang: locale = DEFAULT_LOCALE } = await params;
-  const t = await getTranslations({ locale, namespace: "lend.metadata" });
+  const t = await getTranslations({ locale, namespace: "borrow.metadata" });
 
   return buildMetadataForPage({
     title: t("title"),
@@ -24,13 +23,13 @@ export async function generateMetadata({
   });
 }
 
-export default async function LendPage({
+export default async function BorrowPage({
   params,
 }: {
   params: Promise<{ lang: string }>;
 }) {
   const { lang = DEFAULT_LOCALE } = await params;
-  const t = await getTranslations("lend");
+  const t = await getTranslations("borrow");
 
   return (
     <section>
@@ -38,13 +37,13 @@ export default async function LendPage({
         graph={getWebPageGrapth({
           title: t("metadata.title"),
           description: t("metadata.description"),
-          path: "lend",
+          path: "borrow",
           lang,
         })}
       />
       <Heading level="1">{t("title")}</Heading>
       <p>{t("description")}</p>
-      <Lend />
+      Borrow
     </section>
   );
 }

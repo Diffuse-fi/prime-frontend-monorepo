@@ -4,7 +4,7 @@ import { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 
-export default async function LendLayout({
+export default async function BorrowLayout({
   children,
   params,
 }: Readonly<{
@@ -12,13 +12,16 @@ export default async function LendLayout({
   params: Promise<{ lang: Locale }>;
 }>) {
   const { lang = DEFAULT_LOCALE } = await params;
-  const tLend = await getTranslations({ locale: lang, namespace: "lend" });
+  const tBorrow = await getTranslations({ locale: lang, namespace: "borrow" });
 
   return (
     <LayoutWithTabsNav
       navConfig={[
-        { href: "/lend", label: tLend("navigation.lend"), exact: true },
-        { href: "/lend/my-positions", label: tLend("navigation.myPositions") },
+        { href: "/borrow", label: tBorrow("navigation.borrow"), exact: true },
+        {
+          href: "/borrow/borrow-positions",
+          label: tBorrow("navigation.borrowPositions"),
+        },
       ]}
     >
       {children}
