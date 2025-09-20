@@ -31,6 +31,7 @@ export default function ConnectButton() {
                 size="sm"
                 onClick={!connected ? openConnectModal : openAccountModal}
                 type="button"
+                aria-haspopup="dialog"
                 aria-label={
                   !connected
                     ? t("navbar.walletConnect")
@@ -44,6 +45,8 @@ export default function ConnectButton() {
             <MobileOnly>
               <IconButton
                 size="sm"
+                type="button"
+                aria-haspopup="dialog"
                 onClick={!connected ? openConnectModal : openAccountModal}
                 icon={<Wallet size={20} />}
                 aria-label={

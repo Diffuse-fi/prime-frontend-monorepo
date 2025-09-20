@@ -8,3 +8,10 @@ const RTL = new Set(localizationSettings.rtl);
 export function isLocaleRtl(locale: Locale): boolean {
   return RTL.has(locale);
 }
+
+export function localizedPath(lang: string, path: string) {
+  if (lang === DEFAULT_LOCALE) {
+    return path;
+  }
+  return `${lang}/${path}`;
+}

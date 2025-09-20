@@ -4,6 +4,8 @@ import { Heading } from "@diffuse/ui-kit/Heading";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { DEFAULT_LOCALE } from "@/lib/localization/locale";
+import { JsonLd } from "@/components/misc/JsonLd";
+import { getWebPageGrapth } from "@/app/jsonld";
 
 export async function generateMetadata({
   params,
@@ -22,11 +24,24 @@ export async function generateMetadata({
   });
 }
 
-export default async function MyPosition() {
+export default async function MyPosition({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang = DEFAULT_LOCALE } = await params;
   const t = await getTranslations("myPositions");
 
   return (
     <section>
+      <JsonLd
+        graph={getWebPageGrapth({
+          title: t("title"),
+          description: t("description"),
+          path: "lend/my-positions",
+          lang,
+        })}
+      />
       <Heading level="1">{t("title")}</Heading>
       <p>{t("description")}</p>
       <MyPositions />

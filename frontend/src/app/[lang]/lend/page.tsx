@@ -4,6 +4,8 @@ import LendPage from "@/components/pages/lend";
 import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
 import { DEFAULT_LOCALE } from "@/lib/localization/locale";
+import { JsonLd } from "@/components/misc/JsonLd";
+import { getWebPageGrapth } from "@/app/jsonld";
 
 export async function generateMetadata({
   params,
@@ -22,11 +24,20 @@ export async function generateMetadata({
   });
 }
 
-export default async function Lend() {
+export default async function Lend({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang = DEFAULT_LOCALE } = await params;
   const t = await getTranslations("lend");
 
   return (
     <section>
+      <JsonLd
+        graph={getWebPageGrapth({
+          title: t("title"),
+          description: t("description"),
+          path: "lend",
+          lang,
+        })}
+      />
       <Heading level="1">{t("title")}</Heading>
       <p>{t("description")}</p>
       <LendPage />
