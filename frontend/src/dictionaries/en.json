@@ -1,4 +1,17 @@
 {
+  "borrow": {
+    "description": "Access institutional borrowing strategies with flexible terms and competitive rates",
+    "metadata": {
+      "description": "Explore Diffuse Prime and access high-yield strategies used by institutions",
+      "keywords": "Diffuse, Prime, Lend, Borrow, Vaults, Strategies",
+      "title": "Borrow"
+    },
+    "navigation": {
+      "borrow": "Borrow",
+      "borrowPositions": "Borrow Positions"
+    },
+    "title": "Borrow"
+  },
   "common": {
     "navbar": {
       "navigation": {
@@ -83,5 +96,15 @@
     "totalSupplied": "Total supplied",
     "withdraw": "Withdraw",
     "withdrawing": "Withdrawing..."
+  },
+  "not-found": {
+    "cta": "Go to Lend page",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "metadata": {
+      "description": "The page you are looking for does not exist or has been moved.",
+      "keywords": "Diffuse, Prime, 404, Not Found, Error",
+      "title": "Page Not Found"
+    },
+    "title": "404 - Page Not Found"
   }
 }

@@ -24,7 +24,7 @@ export async function generateMetadata({
   });
 }
 
-export default async function MyPosition({
+export default async function MyPositionsPage({
   params,
 }: {
   params: Promise<{ lang: string }>;
@@ -36,8 +36,8 @@ export default async function MyPosition({
     <section>
       <JsonLd
         graph={getWebPageGrapth({
-          title: t("title"),
-          description: t("description"),
+          title: t("metadata.title"),
+          description: t("metadata.description"),
           path: "lend/my-positions",
           lang,
         })}

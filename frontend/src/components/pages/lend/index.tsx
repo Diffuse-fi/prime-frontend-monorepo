@@ -21,7 +21,7 @@ import { useRouter } from "@/lib/localization/navigation";
 import { env } from "@/env";
 import { showSkeletons } from "@/lib/misc/ui";
 
-export default function LendPage() {
+export default function Lend() {
   const {
     vaults,
     isLoading,
