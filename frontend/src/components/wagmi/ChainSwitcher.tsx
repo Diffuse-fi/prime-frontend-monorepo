@@ -34,7 +34,7 @@ export function ChainSwitcher() {
         chain ? chain.name : "Not connected"
       }`}
       aria-busy={isPendingConnection || isSwitchChainPending || undefined}
-      aria-haspopup="menu"
+      aria-haspopup="dialog"
       onClick={openChainModal}
       disabled={!isConnected || isPendingConnection || isSwitchChainPending}
       variant="ghost"

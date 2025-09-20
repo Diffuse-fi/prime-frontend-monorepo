@@ -23,6 +23,8 @@ import { ConnectionStatusTracker } from "@/components/misc/ConnectionStatusTrack
 import { getMessages, getTranslations } from "next-intl/server";
 import WalletBar from "@/components/wagmi/WalletBar";
 import { AppLink } from "@/components/misc/AppLink";
+import { JsonLd } from "@/components/misc/JsonLd";
+import { org, site } from "../jsonld";
 
 export const dynamic = "force-static";
 export const revalidate = 600;
@@ -71,6 +73,12 @@ export default async function RootLayout({
           <WebVitals />
         </>
       )}
+      <JsonLd
+        graph={{
+          "@context": "https://schema.org",
+          "@graph": [org, site],
+        }}
+      />
       <body className="px-safe pb-safe h-full">
         <TooltipProvider delayDuration={200}>
           <NextIntlClientProvider messages={messages} locale={lang}>

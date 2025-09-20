@@ -26,6 +26,7 @@ export const env = createEnv({
     ENABLE_HTTPS_SECURITY_HEADERS: zBool.optional(),
 
     ORG_TWITTER_ACCOUNT: z.string().min(1).optional(),
+    ORG_GITHUB_ACCOUNT: z.string().min(1).optional(),
   },
   client: {
     NEXT_PUBLIC_APP_NAME: z.string().min(1),
