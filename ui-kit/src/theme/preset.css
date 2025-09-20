@@ -22,8 +22,8 @@
   --radius-xl: 48px;
 
   --text-h1: 42px;
-  --text-h2: 1.875rem / 2.25rem;
-  --text-h3: 1.5rem / 2rem;
+  --text-h2: 32px;
+  --text-h3: 24px;
   --text-h4: 18px;
   --text-h5: 18px;
   --text-h6: 1rem / 1.5rem;
@@ -120,6 +120,15 @@
   }
 }
 
+@keyframes modalContentSlideIn {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 @utility animate-in-zoom {
   animation: zoomIn 0.18s ease-out both;
 }
@@ -142,4 +151,10 @@
 
 @utility standard-focus-ring {
   @apply focus-visible:ring-primary/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent;
+}
+
+@utility animate-modal-content-in {
+  animation:
+    modalContentSlideIn 0.35s cubic-bezier(0.15, 1.15, 0.6, 1),
+    fadeIn 0.15s;
 }

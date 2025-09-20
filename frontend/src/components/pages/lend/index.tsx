@@ -200,7 +200,7 @@ export default function Lend() {
               {actionButtonMeta.text}
             </Button>
             <p className="font-mono text-xs">{`Step ${stepText}`}</p>
-            <Heading level="3" className="mb-2">
+            <Heading level="6" className="mb-2">
               Deposit logs (temporary mock before design finalization)
             </Heading>
             {txState && Object.keys(txState).length === 0 && (

@@ -2,16 +2,17 @@ import { Dialog as DialogPrimitive } from "radix-ui";
 import { X } from "lucide-react";
 import * as React from "react";
 import { tv } from "@/lib";
+import { Heading, IconButton } from "../atoms";
 
 const content = tv({
   base: [
     "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-    "w-[92vw] max-w-xl p-5",
-    "bg-bg text-fg border border-border rounded-lg shadow-soft",
-    "data-[state=open]:animate-in-zoom data-[state=closed]:animate-out-zoom",
+    "w-[92vw] max-w-xl p-5 z-100",
+    "bg-fg border border-border rounded-lg shadow-strong",
+    "data-[state=open]:animate-modal-content-in",
     "focus:outline-none",
   ],
-  variants: { size: { sm: "max-w-md", md: "max-w-xl", lg: "max-w-2xl" } },
+  variants: { size: { sm: "max-w-[360px]", md: "max-w-[728px]", lg: "max-w-[1024px]" } },
   defaultVariants: { size: "md" },
 });
 
@@ -40,13 +41,13 @@ export function Dialog({
         <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
       ) : null}
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="data-[state=open]:animate-in-fade data-[state=closed]:animate-out-fade fixed inset-0 bg-black/40 backdrop-blur-sm" />
+        <DialogPrimitive.Overlay className="data-[state=open]:animate-in-fade data-[state=closed]:animate-out-fade fixed inset-0 z-60 bg-black/40 backdrop-blur-sm" />
         <DialogPrimitive.Content className={content({ size })}>
           <div className="flex items-start gap-3">
-            <div className="min-w-0 flex-1">
+            <div className="text-text-dimmed min-w-0 flex-1">
               {title && (
-                <DialogPrimitive.Title className="text-base font-semibold">
-                  {title}
+                <DialogPrimitive.Title asChild>
+                  <Heading level="3">{title}</Heading>
                 </DialogPrimitive.Title>
               )}
               {description && (
@@ -55,11 +56,8 @@ export function Dialog({
                 </DialogPrimitive.Description>
               )}
             </div>
-            <DialogPrimitive.Close
-              className="hover:bg-muted/10 rounded-md p-2 focus:outline-none"
-              aria-label="Close"
-            >
-              <X className="h-5 w-5" />
+            <DialogPrimitive.Close asChild>
+              <IconButton icon={<X />} variant="ghost" size="sm" aria-label="Close" />
             </DialogPrimitive.Close>
           </div>
           {children && <div className="mt-4">{children}</div>}

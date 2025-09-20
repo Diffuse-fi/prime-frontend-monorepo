@@ -45,7 +45,7 @@ type GetWebPageLdOptions = {
   lang: string;
 };
 
-export function getWebPageGrapth({
+export function getWebPageGraph({
   lang,
   description,
   title,

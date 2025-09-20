@@ -14,11 +14,13 @@
   },
   "common": {
     "navbar": {
+      "connected": "Connected",
       "navigation": {
         "borrow": "Borrow",
         "lend": "Lend"
       },
       "needToConnect": "Please connect your wallet",
+      "switchNetworkTitle": "Switch Network",
       "title": "Diffuse Prime",
       "toasts": {
         "chainSwitch": "Successfully switched to {chainName}"
