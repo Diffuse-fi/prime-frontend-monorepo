@@ -16,6 +16,7 @@ const customFonts: DeepPartial<Theme> = {
     profileForeground: "var(--color-fg)",
     profileAction: "var(--color-border)",
     profileActionHover: "var(--color-border)",
+    closeButtonBackground: "var(--color-muted)",
   },
   shadows: {
     dialog: "var(--shadow-strong)",

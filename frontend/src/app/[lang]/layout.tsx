@@ -25,6 +25,8 @@ import WalletBar from "@/components/wagmi/WalletBar";
 import { AppLink } from "@/components/misc/AppLink";
 import { JsonLd } from "@/components/misc/JsonLd";
 import { org, site } from "../jsonld";
+import { ReadonlyChainProvider } from "@/components/chains/ReadonlyChainProvider";
+import { ChainSyncEffects } from "@/components/chains/ChainSyncEffects";
 
 export const dynamic = "force-static";
 export const revalidate = 600;
@@ -95,50 +97,53 @@ export default async function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              <Providers locale={lang}>
-                <Navbar
-                  className="pt-safe sticky top-0 z-50"
-                  logo={
-                    <AppLink
-                      href="/"
-                      className="standard-focus-ring flex items-center gap-2 rounded-md p-1 select-none"
-                    >
-                      <Image
-                        src="/logo.svg?v=1"
-                        alt={env.NEXT_PUBLIC_APP_NAME}
-                        width={32}
-                        height={32}
-                        priority
+              <ReadonlyChainProvider>
+                <Providers locale={lang}>
+                  <ChainSyncEffects />
+                  <Navbar
+                    className="pt-safe sticky top-0 z-50"
+                    logo={
+                      <AppLink
+                        href="/"
+                        className="standard-focus-ring flex items-center gap-2 rounded-md p-1 select-none"
+                      >
+                        <Image
+                          src="/logo.svg?v=1"
+                          alt={env.NEXT_PUBLIC_APP_NAME}
+                          width={32}
+                          height={32}
+                          priority
+                        />
+                        <p className="text-secondary hidden text-lg font-bold whitespace-nowrap sm:block">
+                          {tCommon("navbar.title")}
+                        </p>
+                      </AppLink>
+                    }
+                    navigation={
+                      <ClientNavigation
+                        ariaLabel="Site navigation"
+                        config={[
+                          {
+                            href: "/lend",
+                            label: tCommon("navbar.navigation.lend"),
+                          },
+                          {
+                            href: "/borrow",
+                            label: tCommon("navbar.navigation.borrow"),
+                          },
+                        ]}
                       />
-                      <p className="text-secondary hidden text-lg font-bold whitespace-nowrap sm:block">
-                        {tCommon("navbar.title")}
-                      </p>
-                    </AppLink>
-                  }
-                  navigation={
-                    <ClientNavigation
-                      ariaLabel="Site navigation"
-                      config={[
-                        {
-                          href: "/lend",
-                          label: tCommon("navbar.navigation.lend"),
-                        },
-                        {
-                          href: "/borrow",
-                          label: tCommon("navbar.navigation.borrow"),
-                        },
-                      ]}
-                    />
-                  }
-                  wallet={
-                    <div className="flex gap-2 sm:gap-4">
-                      <ThemeSwitcher />
-                      <WalletBar />
-                    </div>
-                  }
-                />
-                {children}
-              </Providers>
+                    }
+                    wallet={
+                      <div className="flex gap-2 sm:gap-4">
+                        <ThemeSwitcher />
+                        <WalletBar />
+                      </div>
+                    }
+                  />
+                  {children}
+                </Providers>
+              </ReadonlyChainProvider>
             </ThemeProvider>
           </NextIntlClientProvider>
         </TooltipProvider>

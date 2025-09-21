@@ -7,9 +7,9 @@ import { config } from "@/lib/wagmi/config";
 import { ReactNode } from "react";
 import { queryClient } from "@/lib/query/client";
 import { useRainbowTheme } from "@/lib/theme/rainbowTheme";
-import { getInitialChain } from "@/lib/chains";
 import Image from "next/image";
 import { env } from "@/env";
+import { useReadonlyChainState } from "@/lib/chains/useReadonlyChain";
 
 type ProvidersProps = {
   children: ReactNode;
@@ -18,6 +18,7 @@ type ProvidersProps = {
 
 export function Providers({ children, locale }: ProvidersProps) {
   const theme = useRainbowTheme();
+  const { readonlyChainId } = useReadonlyChainState();
 
   return (
     <WagmiProvider config={config}>
@@ -25,7 +26,7 @@ export function Providers({ children, locale }: ProvidersProps) {
         <RainbowKitProvider
           theme={theme}
           locale={locale as Locale}
-          initialChain={getInitialChain()}
+          initialChain={readonlyChainId}
           appInfo={{
             appName: env.NEXT_PUBLIC_APP_NAME,
           }}

@@ -37,10 +37,21 @@ export function getAvailableChains(): readonly [Chain, ...Chain[]] {
   ] as [Chain, ...Chain[]];
 }
 
-export function getInitialChain(): Chain | undefined {
-  return testnetsEnabled ? undefined : berachain;
+export function getInitialChain(): Chain {
+  const foundChain = getAvailableChains().find(
+    c => c.id === env.NEXT_PUBLIC_INITIAL_CHAIN_ID
+  );
+  return foundChain ?? getAvailableChains()[0];
 }
 
 export function getAvailableChainsIds(): number[] {
   return getAvailableChains().map(c => c.id);
+}
+
+const chainsById: Record<number, Chain> = Object.fromEntries(
+  getAvailableChains().map(c => [c.id, c])
+);
+
+export function getChainById(chainId: number): Chain | undefined {
+  return chainsById[chainId];
 }

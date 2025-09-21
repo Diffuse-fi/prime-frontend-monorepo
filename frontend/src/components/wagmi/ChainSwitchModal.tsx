@@ -9,6 +9,9 @@ import { cn } from "@diffuse/ui-kit/cn";
 import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
 import { getStableChainMeta } from "@/lib/chains/meta";
 import { stableSeedForChain } from "@/lib/misc/jazzIcons";
+import { useTranslations } from "next-intl";
+import { useClients } from "@/lib/wagmi/useClients";
+import { useReadonlyChainActions } from "@/lib/chains/useReadonlyChain";
 
 type ChainSwitchModalProps = {
   open: boolean;
@@ -27,18 +30,32 @@ export function ChainSwitchModal({
   title = "Switch network",
 }: ChainSwitchModalProps) {
   const chains = useChains();
+  const { isConnected } = useClients();
   const { switchChainAsync, isPending, variables } = useSwitchChain();
+  const { setReadonlyChainId } = useReadonlyChainActions();
+  const t = useTranslations("common.navbar");
 
   const handleSwitch = async (target: Chain) => {
-    if (!currentChain || target.id !== currentChain.id) {
+    if (currentChain && target.id === currentChain.id) {
+      onOpenChange(false);
+      return;
+    }
+
+    if (isConnected) {
       try {
         await switchChainAsync({ chainId: target.id });
         onSwitched?.({ from: currentChain ?? null, to: target });
         onOpenChange(false);
-      } catch {}
-    } else {
-      onOpenChange(false);
+
+        return;
+      } catch {
+        return;
+      }
     }
+
+    setReadonlyChainId(target.id);
+    onSwitched?.({ from: currentChain ?? null, to: target });
+    onOpenChange(false);
   };
 
   return (
@@ -79,7 +96,7 @@ export function ChainSwitchModal({
                   <Loader2 className="h-4 w-4 animate-spin" aria-label="Switching…" />
                 ) : isActive ? (
                   <div className="flex items-center gap-1">
-                    <span className="text-sm">Connected</span>
+                    <span className="text-sm">{t("connected")}</span>
                     <div className="bg-success size-2 rounded-full" aria-hidden />
                   </div>
                 ) : null}

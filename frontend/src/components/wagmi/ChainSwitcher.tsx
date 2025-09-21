@@ -4,15 +4,15 @@ import { getStableChainMeta } from "../../lib/chains/meta";
 import { stableSeedForChain } from "@/lib/misc/jazzIcons";
 import { toast } from "@/lib/toast";
 import { useWalletConnection } from "@/lib/wagmi/useWalletConnection";
-import { IconButton, Tooltip } from "@diffuse/ui-kit";
+import { IconButton } from "@diffuse/ui-kit";
 import { Skeleton } from "@diffuse/ui-kit/Skeleton";
-import { Ban } from "lucide-react";
 import { useCallback, useState } from "react";
 import { match, P } from "ts-pattern";
 import { useTranslations } from "next-intl";
 import { Chain } from "viem";
 import { ImageWithJazziconFallback } from "../misc/images/ImageWithJazziconFallback";
 import { ChainSwitchModal } from "./ChainSwitchModal";
+import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
 
 export function ChainSwitcher() {
   const [open, setOpen] = useState(false);
@@ -23,10 +23,8 @@ export function ChainSwitcher() {
     },
     [t]
   );
-  const { isSwitchChainPending, isPendingConnection, isConnected, chain } =
-    useWalletConnection({
-      onChainSwitch,
-    });
+  const { isSwitchChainPending, isPendingConnection } = useWalletConnection();
+  const { chain } = useReadonlyChain();
 
   return (
     <>
@@ -37,23 +35,17 @@ export function ChainSwitcher() {
         aria-busy={isPendingConnection || isSwitchChainPending || undefined}
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
-        disabled={!isConnected || isPendingConnection || isSwitchChainPending}
+        disabled={isPendingConnection || isSwitchChainPending}
         variant="ghost"
         size="sm"
         icon={match({
-          isConnected,
           isPendingConnection,
           isSwitchChainPending,
           chain,
         })
-          .with({ isConnected: false }, () => (
-            <Tooltip content={t("navbar.needToConnect")}>
-              <Ban />
-            </Tooltip>
-          ))
           .with({ isPendingConnection: true }, () => <Skeleton className="h-8 w-8" />)
           .with({ isSwitchChainPending: true }, () => <Skeleton className="h-8 w-8" />)
-          .with({ isConnected: true, chain: P.select() }, chain => {
+          .with({ chain: P.select() }, chain => {
             const chainName = chain?.name ?? t("navbar.unknownChain");
             const chainId = chain?.id;
             const { iconUrl, iconBackground } = getStableChainMeta(chainId!);
