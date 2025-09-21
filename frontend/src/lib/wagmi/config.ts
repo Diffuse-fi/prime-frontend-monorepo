@@ -28,7 +28,7 @@ const transports = Object.fromEntries(
         : http(urls[0]),
     ];
   })
-) as Record<number, ReturnType<typeof http>>;
+);
 
 export const config = getDefaultConfig({
   appName: env.NEXT_PUBLIC_APP_NAME,

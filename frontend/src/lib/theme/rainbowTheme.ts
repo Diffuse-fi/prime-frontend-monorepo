@@ -16,7 +16,7 @@ const customFonts: DeepPartial<Theme> = {
     profileForeground: "var(--color-fg)",
     profileAction: "var(--color-border)",
     profileActionHover: "var(--color-border)",
-    closeButtonBackground: "var(--color-muted)",
+    closeButtonBackground: "color-mix(in oklab, var(--color-muted) 20%, transparent)",
   },
   shadows: {
     dialog: "var(--shadow-strong)",

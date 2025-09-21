@@ -41,7 +41,6 @@ const qKeys = {
 export function useVaults() {
   const { chainId } = useReadonlyChain();
   const publicClient = usePublicClient({ chainId });
-  console.log("useVaults chainId", chainId);
   const { address: owner } = useClients();
   const { allVaults } = useVaultRegistry({ chainId });
   const qc = useQueryClient();

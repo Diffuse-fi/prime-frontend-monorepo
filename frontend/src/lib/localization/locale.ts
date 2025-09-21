@@ -10,8 +10,11 @@ export function isLocaleRtl(locale: Locale): boolean {
 }
 
 export function localizedPath(lang: string, path: string) {
+  const normalizedPath = path.replace(/^\/+/, "");
+
   if (lang === DEFAULT_LOCALE) {
-    return path;
+    return normalizedPath;
   }
-  return `${lang}/${path}`;
+
+  return `${lang}/${normalizedPath}`;
 }
