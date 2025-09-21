@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 import { useAccount, useChainId } from "wagmi";
-import {
-  useReadonlyChainState,
-  useReadonlyChainActions,
-} from "@/lib/chains/useReadonlyChain";
 import { getAvailableChainsIds } from "@/lib/chains";
+import {
+  useReadonlyChainActions,
+  useReadonlyChainState,
+} from "@/lib/chains/ReadonlyChainContext";
 
 const SUPPORTED = new Set(getAvailableChainsIds());
 

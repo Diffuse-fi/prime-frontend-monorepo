@@ -16,10 +16,10 @@ import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
 
 export function ChainSwitcher() {
   const [open, setOpen] = useState(false);
-  const t = useTranslations("common");
+  const t = useTranslations("common.navbar");
   const onChainSwitch = useCallback(
     ({ to }: { to: Chain }) => {
-      toast(t("navbar.toasts.chainSwitch", { chainName: to.name }));
+      toast(t("toasts.chainSwitch", { chainName: to.name }));
     },
     [t]
   );
@@ -46,7 +46,7 @@ export function ChainSwitcher() {
           .with({ isPendingConnection: true }, () => <Skeleton className="h-8 w-8" />)
           .with({ isSwitchChainPending: true }, () => <Skeleton className="h-8 w-8" />)
           .with({ chain: P.select() }, chain => {
-            const chainName = chain?.name ?? t("navbar.unknownChain");
+            const chainName = chain?.name ?? t("unknownChain");
             const chainId = chain?.id;
             const { iconUrl, iconBackground } = getStableChainMeta(chainId!);
 
@@ -72,7 +72,7 @@ export function ChainSwitcher() {
         onOpenChange={setOpen}
         currentChain={chain ?? null}
         onSwitched={({ to }) => onChainSwitch({ to })}
-        title={t("navbar.switchNetworkTitle")}
+        title={t("switchNetworkTitle")}
       />
     </>
   );

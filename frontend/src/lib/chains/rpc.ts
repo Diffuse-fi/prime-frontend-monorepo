@@ -14,5 +14,6 @@ export function getContractExplorerUrl(chainId: number, contractAddress: string)
 }
 
 export const getChainRpcUrls = (chainId: number): string[] => {
-  return RPCs[chainId];
+  const urls = RPCs[chainId];
+  return urls ?? [];
 };

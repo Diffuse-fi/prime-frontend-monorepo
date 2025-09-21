@@ -9,7 +9,7 @@ import { queryClient } from "@/lib/query/client";
 import { useRainbowTheme } from "@/lib/theme/rainbowTheme";
 import Image from "next/image";
 import { env } from "@/env";
-import { useReadonlyChainState } from "@/lib/chains/useReadonlyChain";
+import { useReadonlyChainState } from "@/lib/chains/ReadonlyChainContext";
 
 type ProvidersProps = {
   children: ReactNode;

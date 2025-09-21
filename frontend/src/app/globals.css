@@ -26,6 +26,7 @@
     background: var(--color-bg);
     color: var(--color-text-primary);
     position: relative;
+    cursor: default;
   }
 }
 

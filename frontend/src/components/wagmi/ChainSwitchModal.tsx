@@ -11,7 +11,7 @@ import { getStableChainMeta } from "@/lib/chains/meta";
 import { stableSeedForChain } from "@/lib/misc/jazzIcons";
 import { useTranslations } from "next-intl";
 import { useClients } from "@/lib/wagmi/useClients";
-import { useReadonlyChainActions } from "@/lib/chains/useReadonlyChain";
+import { useReadonlyChainActions } from "@/lib/chains/ReadonlyChainContext";
 
 type ChainSwitchModalProps = {
   open: boolean;
@@ -46,11 +46,9 @@ export function ChainSwitchModal({
         await switchChainAsync({ chainId: target.id });
         onSwitched?.({ from: currentChain ?? null, to: target });
         onOpenChange(false);
+      } catch {}
 
-        return;
-      } catch {
-        return;
-      }
+      return;
     }
 
     setReadonlyChainId(target.id);
