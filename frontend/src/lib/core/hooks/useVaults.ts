@@ -11,6 +11,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import pLimit from "p-limit";
 import { Address, getAddress } from "viem";
 import uniqBy from "lodash/uniqBy";
+import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
+import { usePublicClient } from "wagmi";
 
 const STRATEGY_LIMIT = pLimit(6);
 const ASSET_LIMIT = pLimit(6);
@@ -37,7 +39,10 @@ const qKeys = {
 };
 
 export function useVaults() {
-  const { chainId, publicClient, address: owner } = useClients();
+  const { chainId } = useReadonlyChain();
+  const publicClient = usePublicClient({ chainId });
+  console.log("useVaults chainId", chainId);
+  const { address: owner } = useClients();
   const { allVaults } = useVaultRegistry({ chainId });
   const qc = useQueryClient();
   const { meta, isLoading: assetsMetaLoading } = useAssetsMeta(chainId);

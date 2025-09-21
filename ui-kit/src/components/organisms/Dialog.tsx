@@ -7,7 +7,7 @@ import { Heading, IconButton } from "../atoms";
 const content = tv({
   base: [
     "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-    "w-[92vw] max-w-xl p-5 z-100",
+    "w-[92vw] max-w-xl p-4 z-100",
     "bg-fg border border-border rounded-lg shadow-strong",
     "data-[state=open]:animate-modal-content-in",
     "focus:outline-none",
@@ -57,7 +57,13 @@ export function Dialog({
               )}
             </div>
             <DialogPrimitive.Close asChild>
-              <IconButton icon={<X />} variant="ghost" size="sm" aria-label="Close" />
+              <IconButton
+                icon={<X size={20} />}
+                variant="ghost"
+                size="sm"
+                aria-label="Close"
+                className="bg-muted/20 hover:bg-muted/20 transition-transform hover:scale-108"
+              />
             </DialogPrimitive.Close>
           </div>
           {children && <div className="mt-4">{children}</div>}
