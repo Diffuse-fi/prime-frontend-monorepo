@@ -12,7 +12,6 @@ import { parseUnits } from "viem";
 import { useDeposit } from "@/lib/core/hooks/useDeposit";
 import { toast } from "@/lib/toast";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
-import { useWalletConnection } from "@/lib/wagmi/useWalletConnection";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { formatUnits } from "@/lib/formatters/asset";
 import { usePrevValueLocalStorage } from "@/lib/misc/usePrevValueLocalStorage";
@@ -20,6 +19,9 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/localization/navigation";
 import { env } from "@/env";
 import { showSkeletons } from "@/lib/misc/ui";
+import { useAccount } from "wagmi";
+import { useERC20TokenBalance } from "@/lib/wagmi/useERC20TokenBalance";
+import { useOnChainSwitch } from "@/lib/wagmi/onChainSwitch";
 
 export default function Lend() {
   const {
@@ -35,7 +37,11 @@ export default function Lend() {
     0,
     "lend-vaults-count"
   );
-  const { selectedVaults, setAmountForVault } = useSelectedVaults();
+  const {
+    selectedVaults,
+    setAmountForVault,
+    reset: resetSelectedVaults,
+  } = useSelectedVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const { dir } = useLocalization();
   const t = useTranslations("lend");
@@ -58,9 +64,9 @@ export default function Lend() {
       }
     });
   };
-  const { isConnected } = useWalletConnection();
+  const { isConnected, address } = useAccount();
 
-  const { reset, deposit, isPendingBatch, txState } = useDeposit(selectedVaults, vaults, {
+  const { reset, deposit, isPendingBatch } = useDeposit(selectedVaults, vaults, {
     onDepositBatchAllSuccess: () => {
       router.push("/lend/my-positions");
       toast(t("toasts.depositSuccessToast"));
@@ -83,7 +89,19 @@ export default function Lend() {
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
     : vaults;
 
+  const { balance } = useERC20TokenBalance({ address, token: selectedAsset?.address });
+  const totalAmountToDeposit = selectedVaults.reduce((acc, v) => acc + v.amount, 0n);
+  const isAmountExceedsBalance = balance !== undefined && totalAmountToDeposit > balance;
+
   const actionButtonMeta = (() => {
+    if (isAmountExceedsBalance) {
+      return {
+        text: t("insufficientFundsButtonText"),
+        disabled: true,
+        onClick: undefined,
+      };
+    }
+
     if (allAllowed) {
       return {
         text: isPendingBatch ? t("depositing") : t("depositButtonText"),
@@ -108,6 +126,8 @@ export default function Lend() {
   })();
 
   const stepText = !allAllowed ? "1/2" : "2/2";
+
+  useOnChainSwitch(resetSelectedVaults);
 
   return (
     <div className="mt-9 grid grid-cols-1 gap-x-2 gap-y-4 md:grid-cols-2 md:gap-x-4 md:gap-y-9">
@@ -134,9 +154,12 @@ export default function Lend() {
                   vault={vault}
                   amount={selectedVaults.find(v => v.address === vault.address)?.amount}
                   onAmountChange={evt => {
+                    if (!selectedAsset) return;
+
                     const value = parseUnits(evt.value, selectedAsset!.decimals);
                     setAmountForVault(vault, value);
                   }}
+                  isConnected={isConnected}
                 />
               </li>
             ))}
@@ -200,12 +223,6 @@ export default function Lend() {
               {actionButtonMeta.text}
             </Button>
             <p className="font-mono text-xs">{`Step ${stepText}`}</p>
-            <Heading level="6" className="mb-2">
-              Deposit logs (temporary mock before design finalization)
-            </Heading>
-            {txState && Object.keys(txState).length === 0 && (
-              <p>No deposit transactions yet</p>
-            )}
           </Card>
         </div>
       )}

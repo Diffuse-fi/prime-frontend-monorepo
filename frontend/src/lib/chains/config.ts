@@ -25,6 +25,7 @@ export const chainLogos: Record<
 export const RPCs: Record<number, string[]> = {
   [mainnet.id]: [
     env.NEXT_PUBLIC_RPC_MAINNET,
+    "https://eth.merkle.io",
     "https://rpc.ankr.com/eth",
   ].filter(Boolean) as string[],
   [arbitrum.id]: [

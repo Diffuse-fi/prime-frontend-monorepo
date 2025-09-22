@@ -31,13 +31,15 @@
   },
   "lend": {
     "approveButtonText": "Approve",
-    "approving": "Approvals Pending...",
+    "approving": "Approval Pending...",
     "assetsToLend": "Assets to lend",
+    "connectWalletToDeposit": "Connect wallet to deposit",
     "deposit": "Deposit",
     "depositButtonText": "Deposit",
     "depositing": "Depositing...",
     "description": "Access the high-yield strategies used by institutions",
     "enterAmountButtonText": "Enter amount to lend",
+    "insufficientFundsButtonText": "Insufficient balance",
     "listOfStrategies": "List of Strategies",
     "metadata": {
       "description": "Explore Diffuse Prime and access high-yield strategies used by institutions",

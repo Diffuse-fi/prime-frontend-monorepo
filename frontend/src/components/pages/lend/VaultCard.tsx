@@ -26,9 +26,16 @@ type VaultProps = {
   selectedAsset: AssetInfo;
   amount?: bigint;
   onAmountChange?: TokenInputProps["onValueChange"];
+  isConnected?: boolean;
 };
 
-export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: VaultProps) {
+export function VaultCard({
+  vault,
+  amount,
+  onAmountChange,
+  selectedAsset,
+  isConnected,
+}: VaultProps) {
   const t = useTranslations("lend");
   const vaultAprFormatted = formatAprToPercent(vault.targetApr);
   const defaultLockupPerdiod = 90; // TODO - get real value from the vault data when ready
@@ -60,6 +67,7 @@ export function VaultCard({ vault, amount, onAmountChange, selectedAsset }: Vaul
       <div className="flex gap-4">
         <FormField label={t("deposit")} className="grow">
           <AssetInput
+            disabled={!isConnected}
             placeholder="0.0"
             value={amount ? formatUnits(amount, selectedAsset.decimals).text : ""}
             onValueChange={onAmountChange}

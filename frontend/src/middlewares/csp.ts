@@ -1,10 +1,9 @@
 import { type Finalizer } from "./utils";
-import { chains } from "@/lib/chains";
 import { env } from "@/env";
+import { RPCs } from "@/lib/chains/config";
+import z from "zod";
 
 const isProd = process.env.NODE_ENV === "production";
-const testnetsEnabled = !!env.NEXT_PUBLIC_ENABLE_TESTNETS;
-const mainnetsEnabled = !!env.NEXT_PUBLIC_ENABLE_MAINNETS;
 const httpsSecurityEnabled = !!env.ENABLE_HTTPS_SECURITY_HEADERS;
 
 // Allowed sources to connect to, e.g. for fetch, WebSocket, etc.
@@ -20,13 +19,17 @@ const allowedSourcesRaw = [
   "https://euc.li",
 ];
 
-if (mainnetsEnabled) {
-  allowedSourcesRaw.push(...chains.mainnets.map(c => c.rpcUrls.default.http).flat());
-}
+Object.values(RPCs).forEach(urls => {
+  urls.forEach(url => {
+    const isValidUrl = z.url().safeParse(url);
 
-if (testnetsEnabled) {
-  allowedSourcesRaw.push(...chains.testnets.map(c => c.rpcUrls.default.http).flat());
-}
+    if (isValidUrl.success) {
+      allowedSourcesRaw.push(url);
+    } else {
+      console.warn(`Invalid RPC URL skipped in CSP configuration: ${url}`);
+    }
+  });
+});
 
 const allowedSources = allowedSourcesRaw.filter(Boolean).join(" ");
 

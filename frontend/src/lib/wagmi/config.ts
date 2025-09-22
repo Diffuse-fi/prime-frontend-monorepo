@@ -20,12 +20,7 @@ const transports = Object.fromEntries(
 
     return [
       c.id,
-      urls.length > 1
-        ? fallback(
-            urls.map(u => http(u)),
-            { rank: true, retryCount: 1 }
-          )
-        : http(urls[0]),
+      urls.length > 1 ? fallback(urls.map(u => http(u))) : http(urls[0]),
     ];
   })
 );
