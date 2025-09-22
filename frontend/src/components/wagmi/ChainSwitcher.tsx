@@ -3,7 +3,6 @@
 import { getStableChainMeta } from "../../lib/chains/meta";
 import { stableSeedForChain } from "@/lib/misc/jazzIcons";
 import { toast } from "@/lib/toast";
-import { useWalletConnection } from "@/lib/wagmi/useWalletConnection";
 import { IconButton } from "@diffuse/ui-kit";
 import { Skeleton } from "@diffuse/ui-kit/Skeleton";
 import { useCallback, useState } from "react";
@@ -13,6 +12,7 @@ import { Chain } from "viem";
 import { ImageWithJazziconFallback } from "../misc/images/ImageWithJazziconFallback";
 import { ChainSwitchModal } from "./ChainSwitchModal";
 import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
+import { useConnect, useSwitchChain } from "wagmi";
 
 export function ChainSwitcher() {
   const [open, setOpen] = useState(false);
@@ -23,7 +23,8 @@ export function ChainSwitcher() {
     },
     [t]
   );
-  const { isSwitchChainPending, isPendingConnection } = useWalletConnection();
+  const { isPending } = useSwitchChain();
+  const { isPending: isPendingConnection } = useConnect();
   const { chain } = useReadonlyChain();
 
   return (
@@ -32,19 +33,19 @@ export function ChainSwitcher() {
         aria-label={`Switch between supported networks. Currently ${
           chain ? chain.name : "Not connected"
         }`}
-        aria-busy={isPendingConnection || isSwitchChainPending || undefined}
+        aria-busy={isPendingConnection || isPending || undefined}
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
-        disabled={isPendingConnection || isSwitchChainPending}
+        disabled={isPendingConnection || isPending}
         variant="ghost"
         size="sm"
         icon={match({
           isPendingConnection,
-          isSwitchChainPending,
+          isPending,
           chain,
         })
           .with({ isPendingConnection: true }, () => <Skeleton className="h-8 w-8" />)
-          .with({ isSwitchChainPending: true }, () => <Skeleton className="h-8 w-8" />)
+          .with({ isPending: true }, () => <Skeleton className="h-8 w-8" />)
           .with({ chain: P.select() }, chain => {
             const chainName = chain?.name ?? t("unknownChain");
             const chainId = chain?.id;

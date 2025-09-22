@@ -4,13 +4,12 @@ import * as React from "react";
 import { Button, Dialog } from "@diffuse/ui-kit";
 import { Loader2 } from "lucide-react";
 import { Chain } from "viem";
-import { useChains, useSwitchChain } from "wagmi";
+import { useAccount, useChains, useSwitchChain } from "wagmi";
 import { cn } from "@diffuse/ui-kit/cn";
 import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
 import { getStableChainMeta } from "@/lib/chains/meta";
 import { stableSeedForChain } from "@/lib/misc/jazzIcons";
 import { useTranslations } from "next-intl";
-import { useClients } from "@/lib/wagmi/useClients";
 import { useReadonlyChainActions } from "@/lib/chains/ReadonlyChainContext";
 
 type ChainSwitchModalProps = {
@@ -30,7 +29,7 @@ export function ChainSwitchModal({
   title = "Switch network",
 }: ChainSwitchModalProps) {
   const chains = useChains();
-  const { isConnected } = useClients();
+  const { isConnected } = useAccount();
   const { switchChainAsync, isPending, variables } = useSwitchChain();
   const { setReadonlyChainId } = useReadonlyChainActions();
   const t = useTranslations("common.navbar");
