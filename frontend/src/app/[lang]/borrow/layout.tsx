@@ -19,7 +19,7 @@ export default async function BorrowLayout({
       navConfig={[
         { href: "/borrow", label: tBorrow("navigation.borrow"), exact: true },
         {
-          href: "/borrow/borrow-positions",
+          href: "/borrow/my-positions",
           label: tBorrow("navigation.borrowPositions"),
         },
       ]}

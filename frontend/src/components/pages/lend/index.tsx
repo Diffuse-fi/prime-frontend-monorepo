@@ -156,7 +156,7 @@ export default function Lend() {
                   onAmountChange={evt => {
                     if (!selectedAsset) return;
 
-                    const value = parseUnits(evt.value, selectedAsset!.decimals);
+                    const value = parseUnits(evt.value, selectedAsset.decimals);
                     setAmountForVault(vault, value);
                   }}
                   isConnected={isConnected}

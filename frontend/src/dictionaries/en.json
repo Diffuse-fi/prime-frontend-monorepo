@@ -2,7 +2,7 @@
   "borrow": {
     "description": "Access institutional borrowing strategies with flexible terms and competitive rates",
     "metadata": {
-      "description": "Explore Diffuse Prime and access high-yield strategies used by institutions",
+      "description": "Explore Diffuse Prime and access institutional borrowing strategies with flexible terms and competitive rates",
       "keywords": "Diffuse, Prime, Lend, Borrow, Vaults, Strategies",
       "title": "Borrow"
     },
@@ -11,6 +11,15 @@
       "borrowPositions": "Borrow Positions"
     },
     "title": "Borrow"
+  },
+  "borrow-positions": {
+    "description": "Track your borrowing positions and costs across all pools",
+    "metadata": {
+      "description": "Check out the state of your active borrowing positions on Diffuse Prime",
+      "keywords": "Diffuse, Prime, Borrowing, Positions, Dashboard",
+      "title": "My Borrow Positions"
+    },
+    "title": "My Borrow Positions"
   },
   "common": {
     "navbar": {
