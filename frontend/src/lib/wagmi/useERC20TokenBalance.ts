@@ -35,9 +35,14 @@ export function useERC20TokenBalance({
     query: { enabled },
   });
 
+  const [balance, decimals, symbol] = (data ?? []) as [
+    bigint | undefined,
+    number | undefined,
+    string | undefined,
+  ];
   return {
-    balance: (data?.[0] as bigint | undefined) ?? undefined,
-    decimals: (data?.[1] as number | undefined) ?? undefined,
-    symbol: (data?.[2] as string | undefined) ?? undefined,
+    balance,
+    decimals,
+    symbol,
   };
 }

@@ -1,7 +1,6 @@
 import { type Finalizer } from "./utils";
 import { env } from "@/env";
 import { RPCs } from "@/lib/chains/config";
-import z from "zod";
 
 const isProd = process.env.NODE_ENV === "production";
 const httpsSecurityEnabled = !!env.ENABLE_HTTPS_SECURITY_HEADERS;
@@ -17,19 +16,9 @@ const allowedSourcesRaw = [
   "https://relay.walletconnect.org",
   // EUC domain for ENS avatar images
   "https://euc.li",
+  // Allowed chains RPC URLs
+  ...Object.values(RPCs).flat(),
 ];
-
-Object.values(RPCs).forEach(urls => {
-  urls.forEach(url => {
-    const isValidUrl = z.url().safeParse(url);
-
-    if (isValidUrl.success) {
-      allowedSourcesRaw.push(url);
-    } else {
-      console.warn(`Invalid RPC URL skipped in CSP configuration: ${url}`);
-    }
-  });
-});
 
 const allowedSources = allowedSourcesRaw.filter(Boolean).join(" ");
 

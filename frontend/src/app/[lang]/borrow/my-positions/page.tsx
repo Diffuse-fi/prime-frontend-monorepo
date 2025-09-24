@@ -12,24 +12,24 @@ export async function generateMetadata({
   params: Promise<{ lang: string }>;
 }): Promise<Metadata> {
   const { lang: locale = DEFAULT_LOCALE } = await params;
-  const t = await getTranslations({ locale, namespace: "borrow.metadata" });
+  const t = await getTranslations({ locale, namespace: "borrow-positions.metadata" });
 
   return buildMetadataForPage({
     title: t("title"),
     description: t("description"),
     keywords: t("keywords"),
-    path: "borrow",
+    path: "borrow/my-positions",
     locale,
   });
 }
 
-export default async function BorrowPage({
+export default async function BorrowPositionsPage({
   params,
 }: {
   params: Promise<{ lang: string }>;
 }) {
   const { lang = DEFAULT_LOCALE } = await params;
-  const t = await getTranslations("borrow");
+  const t = await getTranslations("borrow-positions");
 
   return (
     <section>
@@ -37,7 +37,7 @@ export default async function BorrowPage({
         graph={getWebPageGraph({
           title: t("metadata.title"),
           description: t("metadata.description"),
-          path: "borrow",
+          path: "borrow/my-positions",
           lang,
         })}
       />
