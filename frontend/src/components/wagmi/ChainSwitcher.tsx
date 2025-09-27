@@ -1,7 +1,7 @@
 "use client";
 
 import { getStableChainMeta } from "../../lib/chains/meta";
-import { stableSeedForChain } from "@/lib/misc/jazzIcons";
+import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
 import { toast } from "@/lib/toast";
 import { IconButton } from "@diffuse/ui-kit";
 import { Skeleton } from "@diffuse/ui-kit/Skeleton";
@@ -62,7 +62,7 @@ export function ChainSwitcher() {
                 }}
                 fetchPriority="low"
                 decoding="async"
-                jazziconSeed={stableSeedForChain(chainId!)}
+                jazziconSeed={stableSeedForChainId(chainId!)}
               />
             );
           })

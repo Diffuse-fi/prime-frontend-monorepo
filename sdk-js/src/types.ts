@@ -10,3 +10,9 @@ export type Init = {
   // TODO - later we can add a flag to skip simulateWrites
   simulateWrites?: boolean;
 };
+
+export type InitReadonly = Omit<Init, "client" | "simulateWrites"> & {
+  client: {
+    public: PublicClient;
+  };
+};

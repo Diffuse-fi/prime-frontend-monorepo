@@ -2,24 +2,32 @@
   "chains": {
     "1": {
       "contracts": {
-        "VaultRegistry": {
+        "Viewer": {
           "current": "FILL_ME"
         }
       },
       "name": "Mainnet"
     },
+    "146": {
+      "contracts": {
+        "Viewer": {
+          "current": "0x43EB5d4f599c4e0C491E7cd0998Eb5fa463B49b9"
+        }
+      },
+      "name": "Sonic"
+    },
     "42161": {
       "contracts": {
-        "VaultRegistry": {
-          "current": "0xa3c82022f2a86e4e85c2e298c14fe7f216c537d2"
+        "Viewer": {
+          "current": "FILL_ME"
         }
       },
       "name": "Arbitrum One"
     },
     "80094": {
       "contracts": {
-        "VaultRegistry": {
-          "current": "0x7f3b63828f228afc2c5822796799c27ed843f418"
+        "Viewer": {
+          "current": "FILL_ME"
         }
       },
       "name": "Berachain"

@@ -8,7 +8,7 @@ import { useAccount, useChains, useSwitchChain } from "wagmi";
 import { cn } from "@diffuse/ui-kit/cn";
 import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
 import { getStableChainMeta } from "@/lib/chains/meta";
-import { stableSeedForChain } from "@/lib/misc/jazzIcons";
+import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
 import { useTranslations } from "next-intl";
 import { useReadonlyChainActions } from "@/lib/chains/ReadonlyChainContext";
 
@@ -82,7 +82,7 @@ export function ChainSwitchModal({
                   size={20}
                   className="rounded-full object-cover"
                   style={{ background: iconBackground || "transparent" }}
-                  jazziconSeed={stableSeedForChain(c.id)}
+                  jazziconSeed={stableSeedForChainId(c.id)}
                   decoding="async"
                   fetchPriority="low"
                 />
