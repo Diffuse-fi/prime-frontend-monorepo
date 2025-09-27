@@ -15,7 +15,7 @@ export function stableSeedForAddress(address: Address) {
   return seedPerAddressMap.get(address)!;
 }
 
-export function stableSeedForChain(chainId: number) {
+export function stableSeedForChainId(chainId: number) {
   if (!seedPerChainMap.has(chainId)) {
     seedPerChainMap.set(
       chainId,

@@ -15,7 +15,7 @@
     "test:unit": "vitest"
   },
   "dependencies": {
-    "@diffuse/sdk-js": "0.1.2",
+    "@diffuse/sdk-js": "0.2.0",
     "@diffuse/ui-kit": "0.1.0",
     "@next/third-parties": "15.5.3",
     "@rainbow-me/rainbowkit": "2.2.8",
