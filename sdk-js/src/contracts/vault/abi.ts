@@ -46,86 +46,6 @@ export const vaultAbi = [
   },
   {
     type: "function",
-    name: "addReverseRouteStep",
-    inputs: [
-      {
-        name: "strategyId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "_reverseRouteStep",
-        type: "tuple",
-        internalType: "struct TypeLib.RouteStep",
-        components: [
-          {
-            name: "pool",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "tokenIn",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "tokenOut",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "data",
-            type: "bytes",
-            internalType: "bytes",
-          },
-        ],
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "addRouteStep",
-    inputs: [
-      {
-        name: "strategyId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "_routeStep",
-        type: "tuple",
-        internalType: "struct TypeLib.RouteStep",
-        components: [
-          {
-            name: "pool",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "tokenIn",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "tokenOut",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "data",
-            type: "bytes",
-            internalType: "bytes",
-          },
-        ],
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     name: "addStrategy",
     inputs: [
       {
@@ -136,12 +56,7 @@ export const vaultAbi = [
           {
             name: "addr",
             type: "address",
-            internalType: "address",
-          },
-          {
-            name: "isSetUp",
-            type: "bool",
-            internalType: "bool",
+            internalType: "contract IERC20",
           },
           {
             name: "strategyType",
@@ -187,6 +102,16 @@ export const vaultAbi = [
             name: "immutableData",
             type: "bytes32[]",
             internalType: "bytes32[]",
+          },
+          {
+            name: "route",
+            type: "address[]",
+            internalType: "address[]",
+          },
+          {
+            name: "reverseRoute",
+            type: "address[]",
+            internalType: "address[]",
           },
         ],
       },
@@ -419,6 +344,19 @@ export const vaultAbi = [
   },
   {
     type: "function",
+    name: "disableStrategy",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "fillBaseAssetDeficit",
     inputs: [
       {
@@ -524,36 +462,6 @@ export const vaultAbi = [
             name: "liquidationPrice",
             type: "uint256",
             internalType: "uint256",
-          },
-        ],
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    name: "getAssets",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "tuple[]",
-        internalType: "struct TypeLib.TokenViewData[]",
-        components: [
-          {
-            name: "asset",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "decimals",
-            type: "uint8",
-            internalType: "uint8",
-          },
-          {
-            name: "symbol",
-            type: "string",
-            internalType: "string",
           },
         ],
       },
@@ -746,19 +654,6 @@ export const vaultAbi = [
   },
   {
     type: "function",
-    name: "getEventEmitter",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "address",
-        internalType: "contract IEventEmitter",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "getFeeReceiver",
     inputs: [],
     outputs: [
@@ -892,68 +787,6 @@ export const vaultAbi = [
   },
   {
     type: "function",
-    name: "getStrategies",
-    inputs: [],
-    outputs: [
-      {
-        name: "",
-        type: "tuple[]",
-        internalType: "struct TypeLib.StrategyViewData[]",
-        components: [
-          {
-            name: "id",
-            type: "uint256",
-            internalType: "uint256",
-          },
-          {
-            name: "token",
-            type: "tuple",
-            internalType: "struct TypeLib.TokenViewData",
-            components: [
-              {
-                name: "asset",
-                type: "address",
-                internalType: "address",
-              },
-              {
-                name: "decimals",
-                type: "uint8",
-                internalType: "uint8",
-              },
-              {
-                name: "symbol",
-                type: "string",
-                internalType: "string",
-              },
-            ],
-          },
-          {
-            name: "apr",
-            type: "uint256",
-            internalType: "uint256",
-          },
-          {
-            name: "endDate",
-            type: "uint256",
-            internalType: "uint256",
-          },
-          {
-            name: "balance",
-            type: "uint256",
-            internalType: "uint256",
-          },
-          {
-            name: "pool",
-            type: "address",
-            internalType: "address",
-          },
-        ],
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "getStrategy",
     inputs: [
       {
@@ -971,12 +804,7 @@ export const vaultAbi = [
           {
             name: "addr",
             type: "address",
-            internalType: "address",
-          },
-          {
-            name: "isSetUp",
-            type: "bool",
-            internalType: "bool",
+            internalType: "contract IERC20",
           },
           {
             name: "strategyType",
@@ -1023,7 +851,30 @@ export const vaultAbi = [
             type: "bytes32[]",
             internalType: "bytes32[]",
           },
+          {
+            name: "route",
+            type: "address[]",
+            internalType: "address[]",
+          },
+          {
+            name: "reverseRoute",
+            type: "address[]",
+            internalType: "address[]",
+          },
         ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getStrategyLeftPointer",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "view",
@@ -1274,25 +1125,6 @@ export const vaultAbi = [
   },
   {
     type: "function",
-    name: "poolType",
-    inputs: [
-      {
-        name: "pool",
-        type: "address",
-        internalType: "address",
-      },
-    ],
-    outputs: [
-      {
-        name: "",
-        type: "uint8",
-        internalType: "enum TypeLib.PoolType",
-      },
-    ],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     name: "previewBorrow",
     inputs: [
       {
@@ -1521,30 +1353,8 @@ export const vaultAbi = [
     outputs: [
       {
         name: "",
-        type: "tuple[]",
-        internalType: "struct TypeLib.RouteStep[]",
-        components: [
-          {
-            name: "pool",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "tokenIn",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "tokenOut",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "data",
-            type: "bytes",
-            internalType: "bytes",
-          },
-        ],
+        type: "address[]",
+        internalType: "address[]",
       },
     ],
     stateMutability: "view",
@@ -1562,30 +1372,8 @@ export const vaultAbi = [
     outputs: [
       {
         name: "",
-        type: "tuple[]",
-        internalType: "struct TypeLib.RouteStep[]",
-        components: [
-          {
-            name: "pool",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "tokenIn",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "tokenOut",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "data",
-            type: "bytes",
-            internalType: "bytes",
-          },
-        ],
+        type: "address[]",
+        internalType: "address[]",
       },
     ],
     stateMutability: "view",
@@ -1637,19 +1425,6 @@ export const vaultAbi = [
         name: "earlyWithdrawalFee",
         type: "uint16",
         internalType: "uint16",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "setEventEmitter",
-    inputs: [
-      {
-        name: "eventEmitter",
-        type: "address",
-        internalType: "contract IEventEmitter",
       },
     ],
     outputs: [],
@@ -1735,43 +1510,12 @@ export const vaultAbi = [
   },
   {
     type: "function",
-    name: "setPoolType",
-    inputs: [
-      {
-        name: "pool",
-        type: "address",
-        internalType: "address",
-      },
-      {
-        name: "poolType",
-        type: "uint8",
-        internalType: "enum TypeLib.PoolType",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
     name: "setSpreadFee",
     inputs: [
       {
         name: "spreadFee",
         type: "uint16",
         internalType: "uint16",
-      },
-    ],
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    name: "setStrategySetup",
-    inputs: [
-      {
-        name: "strategyId",
-        type: "uint256",
-        internalType: "uint256",
       },
     ],
     outputs: [],
@@ -2199,6 +1943,31 @@ export const vaultAbi = [
   },
   {
     type: "event",
+    name: "BorrowRequestRemoved",
+    inputs: [
+      {
+        name: "id",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "user",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "collateralToReturn",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "BorrowerPositionActivated",
     inputs: [
       {
@@ -2568,50 +2337,13 @@ export const vaultAbi = [
   },
   {
     type: "event",
-    name: "RouteStepAdded",
-    inputs: [
-      {
-        name: "strategyId",
-        type: "uint256",
-        indexed: true,
-        internalType: "uint256",
-      },
-      {
-        name: "pool",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-      {
-        name: "tokenIn",
-        type: "address",
-        indexed: false,
-        internalType: "address",
-      },
-      {
-        name: "tokenOut",
-        type: "address",
-        indexed: false,
-        internalType: "address",
-      },
-      {
-        name: "data",
-        type: "bytes",
-        indexed: false,
-        internalType: "bytes",
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
     name: "SetAsset",
     inputs: [
       {
         name: "asset",
         type: "address",
         indexed: true,
-        internalType: "address",
+        internalType: "contract IERC20",
       },
     ],
     anonymous: false,
@@ -2676,19 +2408,6 @@ export const vaultAbi = [
   },
   {
     type: "event",
-    name: "SetEventEmitter",
-    inputs: [
-      {
-        name: "eventEmitter",
-        type: "address",
-        indexed: true,
-        internalType: "contract IEventEmitter",
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
     name: "SetFeeReceiver",
     inputs: [
       {
@@ -2741,38 +2460,6 @@ export const vaultAbi = [
   },
   {
     type: "event",
-    name: "SetPoolType",
-    inputs: [
-      {
-        name: "pool",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-      {
-        name: "poolType",
-        type: "uint8",
-        indexed: true,
-        internalType: "enum TypeLib.PoolType",
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "SetStrategy",
-    inputs: [
-      {
-        name: "strategy",
-        type: "address",
-        indexed: true,
-        internalType: "address",
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
     name: "SetVaultRegistry",
     inputs: [
       {
@@ -2811,7 +2498,7 @@ export const vaultAbi = [
         name: "addr",
         type: "address",
         indexed: true,
-        internalType: "address",
+        internalType: "contract IERC20",
       },
       {
         name: "name",
@@ -2830,13 +2517,44 @@ export const vaultAbi = [
   },
   {
     type: "event",
-    name: "StrategySetup",
+    name: "StrategyDisabled",
     inputs: [
       {
         name: "strategyId",
         type: "uint256",
         indexed: true,
         internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "StrategyShadowed",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "newStrategyId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "newApr",
+        type: "uint40",
+        indexed: false,
+        internalType: "uint40",
+      },
+      {
+        name: "newName",
+        type: "string",
+        indexed: false,
+        internalType: "string",
       },
     ],
     anonymous: false,
@@ -2862,6 +2580,56 @@ export const vaultAbi = [
         type: "uint256",
         indexed: false,
         internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "VaultDeployed",
+    inputs: [
+      {
+        name: "vault",
+        type: "address",
+        indexed: true,
+        internalType: "contract IVaultProxy",
+      },
+      {
+        name: "asset",
+        type: "address",
+        indexed: true,
+        internalType: "contract IERC20",
+      },
+      {
+        name: "name",
+        type: "string",
+        indexed: false,
+        internalType: "string",
+      },
+      {
+        name: "symbol",
+        type: "string",
+        indexed: false,
+        internalType: "string",
+      },
+      {
+        name: "riskLevel",
+        type: "uint8",
+        indexed: false,
+        internalType: "uint8",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "VaultRemoved",
+    inputs: [
+      {
+        name: "vault",
+        type: "address",
+        indexed: true,
+        internalType: "contract IVaultProxy",
       },
     ],
     anonymous: false,

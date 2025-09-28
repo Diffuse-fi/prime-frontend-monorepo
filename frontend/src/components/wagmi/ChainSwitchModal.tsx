@@ -18,7 +18,6 @@ type ChainSwitchModalProps = {
   currentChain?: Chain | null;
   onSwitched?: (args: { from?: Chain | null; to: Chain }) => void;
   title?: React.ReactNode;
-  description?: React.ReactNode;
 };
 
 export function ChainSwitchModal({

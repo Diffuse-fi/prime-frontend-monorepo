@@ -64,7 +64,7 @@ export class Viewer extends ContractBase {
 
   async getStrategies(vault: Address, { signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(this.getContract().read.getStrategies([vault]), signal);
+      return await abortable(this.getContract().read.getStrategies([vault]), signal);
     } catch (e) {
       throw normalizeError(e, {
         op: "getStrategies",

@@ -4,7 +4,7 @@ import { useVaults } from "../../../lib/core/hooks/useVaults";
 import { useLocalization } from "@/lib/localization/useLocalization";
 import { Button, Card, Heading, SimpleTable } from "@diffuse/ui-kit";
 import { VaultCard } from "./VaultCard";
-import { AssetsList } from "./AssetsList";
+import { AssetsList } from "../../AssetsList";
 import { useCallback } from "react";
 import { useSelectedVaults } from "@/lib/core/hooks/useSelectVaults";
 import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
@@ -91,7 +91,10 @@ export default function Lend() {
 
   const { balance } = useERC20TokenBalance({ address, token: selectedAsset?.address });
   const totalAmountToDeposit = selectedVaults.reduce((acc, v) => acc + v.amount, 0n);
-  const isAmountExceedsBalance = balance !== undefined && totalAmountToDeposit > balance;
+  const isAmountExceedsBalance =
+    selectedAsset !== undefined &&
+    balance !== undefined &&
+    totalAmountToDeposit > balance;
 
   const actionButtonMeta = (() => {
     if (isAmountExceedsBalance) {

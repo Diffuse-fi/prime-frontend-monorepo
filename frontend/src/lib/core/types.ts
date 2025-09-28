@@ -1,4 +1,4 @@
-import type { Vault } from "@diffuse/sdk-js";
+import { type Vault } from "@diffuse/sdk-js";
 import { Address, Hash } from "viem";
 import { AssetInfo } from "../assets/validations";
 
@@ -11,6 +11,7 @@ export type VaultFullInfo = {
     apr: bigint;
     endDate: bigint;
     balance: bigint;
+    id: bigint;
   }>;
   contract: Vault;
   limits: {
@@ -18,7 +19,7 @@ export type VaultFullInfo = {
     maxWithdraw?: bigint;
   };
   totalAssets?: bigint;
-  RiskLevel: VaultRiskLevel;
+  riskLevel: VaultRiskLevel;
 };
 
 export type SelectedVault = {

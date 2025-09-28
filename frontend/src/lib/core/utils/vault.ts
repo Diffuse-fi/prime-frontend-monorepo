@@ -1,6 +1,6 @@
 import { VaultRiskLevel } from "../types";
 
-const vaultRiskLevelColorMap: Record<
+const vaultriskLevelColorMap: Record<
   VaultRiskLevel,
   "success" | "warning" | "error" | "muted"
 > = {
@@ -11,5 +11,5 @@ const vaultRiskLevelColorMap: Record<
 };
 
 export function getVaultRiskLevelColor(riskLevel: VaultRiskLevel) {
-  return vaultRiskLevelColorMap[riskLevel] || "muted";
+  return vaultriskLevelColorMap[riskLevel] || "muted";
 }

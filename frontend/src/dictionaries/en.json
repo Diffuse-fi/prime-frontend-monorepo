@@ -1,6 +1,9 @@
 {
   "borrow": {
-    "description": "Access institutional borrowing strategies with flexible terms and competitive rates",
+    "borrowModal": {
+      "title": "Borrow ${assetSymbol}"
+    },
+    "description": "Borrow against collateral or multiply your exposure by looping",
     "metadata": {
       "description": "Explore Diffuse Prime and access institutional borrowing strategies with flexible terms and competitive rates",
       "keywords": "Diffuse, Prime, Lend, Borrow, Vaults, Strategies",
