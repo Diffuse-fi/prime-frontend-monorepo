@@ -25,18 +25,6 @@ export default function manifest(): MetadataRoute.Manifest {
       //   type: "image/png",
       //   purpose: "any",
       // },
-      // {
-      //   src: "/maskable-icon-512.png?v=1",
-      //   sizes: "512x512",
-      //   type: "image/png",
-      //   purpose: "maskable",
-      // },
-      // {
-      //   src: "/maskable-icon-192.png?v=1",
-      //   sizes: "192x192",
-      //   type: "image/png",
-      //   purpose: "maskable",
-      // },
     ],
   };
 }

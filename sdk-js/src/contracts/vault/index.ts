@@ -41,30 +41,6 @@ export class Vault extends ContractBase {
     return getVaultContract(this.init);
   }
 
-  async getStrategies({ signal }: SdkRequestOptions = {}) {
-    try {
-      return abortable(this.getContract().read.getStrategies(), signal);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "getStrategies",
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
-  async getAssets({ signal }: SdkRequestOptions = {}) {
-    try {
-      return abortable(this.getContract().read.getAssets(), signal);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "getAssets",
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
   async deposit(args: [bigint, Address], { signal }: SdkRequestOptions = {}) {
     if (!this.init.client.wallet) throw new WalletRequiredError("deposit");
 
@@ -187,6 +163,22 @@ export class Vault extends ContractBase {
     } catch (e) {
       throw normalizeError(e, {
         op: "getLenderBalance",
+        args: [owner],
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
+
+  async getActiveBorrowerPositions(owner: Address, { signal }: SdkRequestOptions = {}) {
+    try {
+      return abortable(
+        this.getContract().read.getActiveBorrowerPositions([owner]),
+        signal
+      );
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "getActiveBorrowerPositions",
         args: [owner],
         contract: contractName,
         chainId: this.chainId,

@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 import { JsonLd } from "@/components/misc/JsonLd";
 import { getWebPageGraph } from "@/app/jsonld";
+import Borrow from "@/components/pages/borrow";
 
 export async function generateMetadata({
   params,
@@ -43,6 +44,7 @@ export default async function BorrowPage({
       />
       <Heading level="1">{t("title")}</Heading>
       <p>{t("description")}</p>
+      <Borrow />
     </section>
   );
 }

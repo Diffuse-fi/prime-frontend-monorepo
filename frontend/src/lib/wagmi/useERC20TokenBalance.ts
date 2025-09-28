@@ -1,5 +1,6 @@
 import { Address, erc20Abi } from "viem";
 import { useReadContracts } from "wagmi";
+import { useReadonlyChain } from "../chains/useReadonlyChain";
 
 export function useERC20TokenBalance({
   address,
@@ -9,6 +10,7 @@ export function useERC20TokenBalance({
   token?: Address;
 }) {
   const enabled = !!address && !!token;
+  const { chainId } = useReadonlyChain();
 
   const { data } = useReadContracts({
     allowFailure: false,
@@ -19,16 +21,19 @@ export function useERC20TokenBalance({
             abi: erc20Abi,
             functionName: "balanceOf",
             args: [address],
+            chainId,
           },
           {
             address: token,
             abi: erc20Abi,
             functionName: "decimals",
+            chainId,
           },
           {
             address: token,
             abi: erc20Abi,
             functionName: "symbol",
+            chainId,
           },
         ]
       : [],
@@ -40,6 +45,7 @@ export function useERC20TokenBalance({
     number | undefined,
     string | undefined,
   ];
+
   return {
     balance,
     decimals,

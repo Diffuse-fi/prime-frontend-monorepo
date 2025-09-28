@@ -23,10 +23,7 @@ const transports = Object.fromEntries(
       urls.length > 1
         ? fallback(
             urls.map(u => http(u)),
-            {
-              rank: true,
-              retryCount: 1,
-            }
+            { rank: true, retryCount: 1 }
           )
         : http(urls[0]),
     ];
