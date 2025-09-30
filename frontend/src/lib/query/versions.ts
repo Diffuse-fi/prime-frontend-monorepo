@@ -10,6 +10,7 @@ const allowanceVersion = `v1-${lendVersion}`;
 const depositVersion = `v1-${lendVersion}`;
 const withdrawVersion = `v1-${lendVersion}`;
 const lenderPositionVersion = `v1-${lendVersion}`;
+const borrowVersion = `v1-${vaultVersion}`;
 
 export const QV = {
   lend: lendVersion,
@@ -20,4 +21,5 @@ export const QV = {
   deposit: depositVersion,
   withdraw: withdrawVersion,
   lenderPositions: lenderPositionVersion,
+  borrow: borrowVersion,
 } as const;

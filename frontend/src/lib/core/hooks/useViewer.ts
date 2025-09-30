@@ -38,40 +38,18 @@ export function viewerAllVaultsQuery(
       const vaults = await viewer.getVaults({ signal });
 
       const assetsPromises = vaults.map(v => viewer.getAssets(v.vault, { signal }));
+      const strategiesPromises = vaults.map(v =>
+        viewer.getStrategies(v.vault, { signal })
+      );
 
       const assets = await Promise.all(assetsPromises.map(p => limit(() => p)));
+      const strategies = await Promise.all(strategiesPromises.map(p => limit(() => p)));
 
-      const strategies = [
-        {
-          id: 1n,
-          token: {
-            asset: "0x1111111111111111111111111111111111111111",
-            decimals: 6,
-            symbol: "USDC",
-          },
-          apr: 850n,
-          endDate: 1767225600n,
-          balance: 2500000000n,
-          pool: "0x2222222222222222222222222222222222222222",
-        },
-        {
-          id: 2n,
-          token: {
-            asset: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
-            decimals: 18,
-            symbol: "WETH",
-          },
-          apr: 1200n,
-          endDate: 1754092800n,
-          balance: 12000000000000000000n,
-          pool: "0x3333333333333333333333333333333333333333",
-        },
-      ];
-
+      console.log(strategies);
       return vaults.map((v, i) => ({
         ...v,
         assets: assets[i],
-        strategies: strategies,
+        strategies: strategies[i],
       }));
     },
     staleTime: 60 * 60 * 1000,

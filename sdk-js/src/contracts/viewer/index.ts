@@ -74,3 +74,5 @@ export class Viewer extends ContractBase {
     }
   }
 }
+
+export { viewerAbi };

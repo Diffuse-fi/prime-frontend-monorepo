@@ -64,7 +64,7 @@ export default function Lend() {
       }
     });
   };
-  const { isConnected, address } = useAccount();
+  const { isConnected } = useAccount();
 
   const { reset, deposit, isPendingBatch } = useDeposit(selectedVaults, vaults, {
     onDepositBatchAllSuccess: () => {
@@ -89,7 +89,7 @@ export default function Lend() {
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
     : vaults;
 
-  const { balance } = useERC20TokenBalance({ address, token: selectedAsset?.address });
+  const { balance } = useERC20TokenBalance({ token: selectedAsset?.address });
   const totalAmountToDeposit = selectedVaults.reduce((acc, v) => acc + v.amount, 0n);
   const isAmountExceedsBalance =
     selectedAsset !== undefined &&

@@ -221,6 +221,7 @@ export function useEnsureAllowances(
             address: v.assetAddress,
             functionName: "approve",
             args: [v.address, 0n],
+            chainId,
           });
 
           await publicClient!.waitForTransactionReceipt({ hash: hash0 });
@@ -231,6 +232,7 @@ export function useEnsureAllowances(
           address: v.assetAddress,
           functionName: "approve",
           args: [v.address, amount],
+          chainId,
         });
 
         await publicClient!.waitForTransactionReceipt({ hash });
@@ -255,6 +257,7 @@ export function useEnsureAllowances(
       isMounted,
       allowanceByKey,
       onSuccess,
+      chainId,
     ]
   );
 

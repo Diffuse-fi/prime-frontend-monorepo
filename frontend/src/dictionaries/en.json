@@ -1,7 +1,7 @@
 {
   "borrow": {
     "borrowModal": {
-      "title": "Borrow ${assetSymbol}"
+      "title": "Borrow {assetSymbol}"
     },
     "description": "Borrow against collateral or multiply your exposure by looping",
     "metadata": {
