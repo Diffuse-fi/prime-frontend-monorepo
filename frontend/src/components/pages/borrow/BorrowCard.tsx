@@ -35,7 +35,7 @@ export function BorrowCard({
           <AssetImage alt="" address={selectedAsset.address} size={42} />
           <div className="flex items-center gap-4">
             <Heading level="4" className="font-semibold">
-              {strategy.id}
+              {strategy.token.symbol}
             </Heading>
           </div>
         </div>

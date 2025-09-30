@@ -45,7 +45,6 @@ export function viewerAllVaultsQuery(
       const assets = await Promise.all(assetsPromises.map(p => limit(() => p)));
       const strategies = await Promise.all(strategiesPromises.map(p => limit(() => p)));
 
-      console.log(strategies);
       return vaults.map((v, i) => ({
         ...v,
         assets: assets[i],

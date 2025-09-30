@@ -10,7 +10,11 @@ export function formatAsset(
   const formatted = formatUnitsViem(amount, decimals);
 
   return {
-    text: `${formatThousandsSpace(Number(formatted)).text} ${symbol}`,
+    text: `${
+      formatThousandsSpace(Number(formatted), {
+        maximumFractionDigits: 2,
+      }).text
+    } ${symbol}`,
     value: formatted,
     meta: { amount, decimals, symbol },
   };
@@ -22,7 +26,9 @@ export function formatUnits(
   const res = formatUnitsViem(...params);
 
   return {
-    text: formatThousandsSpace(Number(res)).text,
+    text: formatThousandsSpace(Number(res), {
+      maximumFractionDigits: params[1] ?? 2,
+    }).text,
     value: params[0],
     meta: { amount: params[0], decimals: params[1] },
   };

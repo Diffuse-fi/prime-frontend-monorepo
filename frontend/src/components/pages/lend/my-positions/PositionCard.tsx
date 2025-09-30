@@ -4,8 +4,7 @@ import { AppLink } from "@/components/misc/AppLink";
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { getContractExplorerUrl } from "@/lib/chains/rpc";
 import { LenderPosition } from "@/lib/core/types";
-import { formatAsset } from "@/lib/formatters/asset";
-import { formatDate } from "@/lib/formatters/date";
+import { formatAsset, formatUnits } from "@/lib/formatters/asset";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { calcAprInterest } from "@/lib/formulas/apr";
 import {
@@ -19,6 +18,7 @@ import {
 import { ExternalLink } from "lucide-react";
 import { ReactNode } from "react";
 import { useChainId } from "wagmi";
+import { StrategiesList } from "../StrategiesList";
 
 export interface PositionCardProps {
   position: LenderPosition;
@@ -32,14 +32,16 @@ export function PositionCard({ className, position, withdrawButton }: PositionCa
   const explorerUrl = getContractExplorerUrl(chainId, vault.address);
   const vaultAprFormatted = formatAprToPercent(vault.targetApr);
   const defaultLockupPerdiod = 90; // TODO - get real value from the vault data when ready
-  const reward = calcAprInterest(vault.targetApr, balance, {
-    durationInDays: defaultLockupPerdiod,
-  });
-  const rewardDisplay = reward
-    ? `${reward > 0n ? "≈ " : ""}${formatAprToPercent(reward).text} ${asset.symbol}`
-    : "-";
+  const reward = formatUnits(
+    calcAprInterest(vault.targetApr, balance, {
+      durationInDays: defaultLockupPerdiod,
+    }),
+    asset.decimals
+  ).text;
+  const rewardDisplay = reward ? `${reward} ${asset.symbol}` : "-";
+
   const profitDisplay = !!accruedYield
-    ? `${formatAprToPercent(accruedYield).text} ${asset.symbol}`
+    ? `${formatUnits(accruedYield, asset.decimals).text} ${asset.symbol}`
     : "-";
 
   return (
@@ -74,7 +76,7 @@ export function PositionCard({ className, position, withdrawButton }: PositionCa
         </div>
         <div>
           <span className="text-right font-mono text-xs">Profit</span>
-          <p className="text-lg">{profitDisplay}</p>
+          <p className="text-secondary text-lg">{profitDisplay}</p>
         </div>
       </div>
       <SimpleTable
@@ -110,12 +112,7 @@ export function PositionCard({ className, position, withdrawButton }: PositionCa
         ]}
       />
       <UncontrolledCollapsible summary="List of strategies" defaultOpen={false}>
-        {vault?.strategies?.map(s => (
-          <div key={s.apr}>
-            {formatAprToPercent(s.apr).text} APR, until&nbsp;
-            {formatDate(s.endDate).text}
-          </div>
-        ))}
+        <StrategiesList strategies={vault.strategies} />
       </UncontrolledCollapsible>
       <div className="flex justify-between">
         {withdrawButton}

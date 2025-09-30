@@ -13,6 +13,7 @@
   --color-err-light: #fff5f2;
   --color-warn: #ffe83f;
   --color-success: #41ca00;
+  --color-preset-gray-50: #f6f7f7;
   --color-preset-gray-200: #49454f;
 
   --radius-xs: 8px;
@@ -47,6 +48,7 @@
   --color-text-primary: #e4e4e7;
   --color-primary-fg: #f9fafb;
   --color-text-dimmed: #9ca3af;
+  --color-preset-gray-50: #3f3f46;
   --color-preset-gray-200: #a3a3a3;
 
   --color-err-light: #fff5f220;
