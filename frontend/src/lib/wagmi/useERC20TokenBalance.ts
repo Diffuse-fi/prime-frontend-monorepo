@@ -1,14 +1,9 @@
 import { Address, erc20Abi } from "viem";
-import { useReadContracts } from "wagmi";
+import { useAccount, useReadContracts } from "wagmi";
 import { useReadonlyChain } from "../chains/useReadonlyChain";
 
-export function useERC20TokenBalance({
-  address,
-  token,
-}: {
-  address?: Address;
-  token?: Address;
-}) {
+export function useERC20TokenBalance({ token }: { token?: Address }) {
+  const { address } = useAccount();
   const enabled = !!address && !!token;
   const { chainId } = useReadonlyChain();
 

@@ -10,6 +10,16 @@ import { raceSignal as abortable } from "race-signal";
 /** @internal */
 type VaultContract = GenericContractType<typeof vaultAbi>;
 
+type BorrowRequestParams = {
+  strategyId: bigint;
+  collateralType: number;
+  collateralAmount: bigint;
+  assetsToBorrow: bigint;
+  liquidationPrice: bigint;
+  minStrategyToReceive: bigint;
+  deadline: bigint;
+};
+
 const contractName = "Vault";
 
 /** @internal */
@@ -185,4 +195,61 @@ export class Vault extends ContractBase {
       });
     }
   }
+
+  async borrowRequest(
+    {
+      strategyId,
+      collateralType,
+      collateralAmount,
+      assetsToBorrow,
+      liquidationPrice,
+      minStrategyToReceive,
+      deadline,
+    }: BorrowRequestParams,
+    { signal }: SdkRequestOptions = {}
+  ) {
+    if (!this.init.client.wallet) throw new WalletRequiredError("borrowRequest");
+
+    const c = this.getContract();
+
+    try {
+      const sim = await abortable(
+        this.init.client.public.simulateContract({
+          address: c.address,
+          abi: vaultAbi,
+          functionName: "borrowRequest",
+          args: [
+            strategyId,
+            collateralType,
+            collateralAmount,
+            assetsToBorrow,
+            liquidationPrice,
+            minStrategyToReceive,
+            deadline,
+          ],
+          account: this.init.client.wallet.account!,
+        }),
+        signal
+      );
+
+      return await abortable(this.init.client.wallet.writeContract(sim.request), signal);
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "borrowRequest",
+        args: [
+          strategyId,
+          collateralType,
+          collateralAmount,
+          assetsToBorrow,
+          liquidationPrice,
+          minStrategyToReceive,
+          deadline,
+        ],
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
 }
+
+export { vaultAbi };

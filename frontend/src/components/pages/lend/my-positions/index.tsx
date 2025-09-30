@@ -3,7 +3,7 @@
 import { useVaults } from "@/lib/core/hooks/useVaults";
 import { useLocalization } from "@/lib/localization/useLocalization";
 import { DollarSign, Percent, TrendingUp } from "lucide-react";
-import { AssetsList } from "../../../AssetsList.js";
+import { AssetsList } from "../../../AssetsList";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
 import { Button, Heading } from "@diffuse/ui-kit";
 import { useLenderPositions } from "@/lib/core/hooks/useLenderPositions";
