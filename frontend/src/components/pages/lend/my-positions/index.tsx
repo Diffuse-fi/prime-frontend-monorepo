@@ -10,7 +10,7 @@ import { useLenderPositions } from "@/lib/core/hooks/useLenderPositions";
 import { toast } from "@/lib/toast";
 import { InfoCard, InfoCardProps } from "./InfoCard";
 import { PositionCard } from "./PositionCard";
-import { formatAsset } from "@/lib/formatters/asset";
+import { formatAsset, formatUnits } from "@/lib/formatters/asset";
 import { useTranslations } from "next-intl";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { calcAprByInterestEarned } from "@/lib/formulas/apr";
@@ -97,13 +97,7 @@ export default function MyPositions() {
               icon: <Percent className="text-purple-500" aria-hidden={true} />,
               info:
                 totalAccrued !== undefined && selectedAsset
-                  ? `${
-                      formatAsset(
-                        totalAccrued,
-                        selectedAsset.decimals,
-                        selectedAsset.symbol
-                      ).text
-                    }`
+                  ? `${formatUnits(totalAccrued, selectedAsset.decimals).text} ${selectedAsset.symbol}`
                   : "--",
               iconBgClassName: "bg-purple-100",
             },

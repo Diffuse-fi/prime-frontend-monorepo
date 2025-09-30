@@ -1,18 +1,15 @@
-import { type Vault } from "@diffuse/sdk-js";
+import { Viewer, type Vault } from "@diffuse/sdk-js";
 import { Address, Hash } from "viem";
 import { AssetInfo } from "../assets/validations";
+
+export type Strategy = Awaited<ReturnType<Viewer["getStrategies"]>>[number];
 
 export type VaultFullInfo = {
   assets: AssetInfo[];
   name: string;
   address: Address;
   targetApr: bigint;
-  strategies: Array<{
-    apr: bigint;
-    endDate: bigint;
-    balance: bigint;
-    id: bigint;
-  }>;
+  strategies: Strategy[];
   contract: Vault;
   limits: {
     maxDeposit?: bigint;

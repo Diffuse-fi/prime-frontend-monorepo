@@ -2,7 +2,6 @@
 
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { VaultFullInfo } from "../../../lib/core/types";
-import { formatDate } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import {
   Badge,
@@ -20,6 +19,7 @@ import { formatUnits } from "@/lib/formatters/asset";
 import { RisksNotice } from "./RisksNotice";
 import { getVaultRiskLevelColor } from "@/lib/core/utils/vault";
 import { useTranslations } from "next-intl";
+import { StrategiesList } from "./StrategiesList";
 
 type VaultProps = {
   vault: VaultFullInfo;
@@ -69,7 +69,7 @@ export function VaultCard({
           <AssetInput
             disabled={!isConnected}
             placeholder="0.0"
-            value={amount ? formatUnits(amount, selectedAsset.decimals).text : ""}
+            value={amount ? formatUnits(amount, selectedAsset?.decimals).text : ""}
             onValueChange={onAmountChange}
             assetSymbol={selectedAsset?.symbol}
             renderAssetImage={() => (
@@ -112,12 +112,7 @@ export function VaultCard({
       />
       <div className="flex flex-col gap-2">
         <UncontrolledCollapsible summary="List of strategies" defaultOpen={false}>
-          {vault?.strategies?.map(s => (
-            <div key={s.apr}>
-              {formatAprToPercent(s.apr).text} APR, until&nbsp;
-              {formatDate(s.endDate).text}
-            </div>
-          ))}
+          <StrategiesList strategies={vault.strategies} />
         </UncontrolledCollapsible>
         <UncontrolledCollapsible
           summary="Risks"

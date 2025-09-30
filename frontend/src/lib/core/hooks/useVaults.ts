@@ -34,7 +34,7 @@ const qKeys = {
 export function useVaults() {
   const { chainId } = useReadonlyChain();
   const publicClient = usePublicClient({ chainId });
-  const { address: owner } = useClients();
+  const { address: owner, walletClient } = useClients();
   const { allVaults, isLoading, isPending } = useViewer({ chainId });
   const qc = useQueryClient();
 
@@ -63,12 +63,12 @@ export function useVaults() {
           contract: new Vault({
             address,
             chainId,
-            client: { public: publicClient },
+            client: { public: publicClient, wallet: walletClient },
           }),
         };
       }
     );
-  }, [publicClient, chainId, allVaults]);
+  }, [publicClient, chainId, allVaults, walletClient]);
 
   const enabled =
     !!chainId && !!publicClient && !!addressKey && vaultContracts.length > 0;
