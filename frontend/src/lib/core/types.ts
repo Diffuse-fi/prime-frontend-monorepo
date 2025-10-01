@@ -64,3 +64,20 @@ export type VaultRiskLevel =
   | 1 // low
   | 2 // medium
   | 3; // high
+
+export type BorrowerPosition = {
+  vault: VaultFullInfo;
+  asset: AssetInfo;
+  user: Address;
+  collateralType: number;
+  subjectToLiquidation: boolean;
+  strategyId: bigint;
+  assetsBorrowed: bigint;
+  collateralGiven: bigint;
+  leverage: bigint;
+  strategyBalance: bigint;
+  id: bigint;
+  enterTimeOrDeadline: number;
+  blockNumber: number;
+  liquidationPrice: bigint;
+};

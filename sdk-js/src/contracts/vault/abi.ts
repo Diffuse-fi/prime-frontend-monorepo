@@ -2670,4 +2670,899 @@ export const vaultAbi = [
     ],
     anonymous: false,
   },
+  {
+    type: "error",
+    name: "AlreadyInitialized",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "AttestationFailed",
+    inputs: [
+      {
+        name: "output",
+        type: "bytes",
+        internalType: "bytes",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "BaseAssetDeficitAmountOverflow",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "baseAssetDeficit",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "BlockHashNotExists",
+    inputs: [
+      {
+        name: "blockNumber",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "BlockHashesMismatch",
+    inputs: [
+      {
+        name: "hash1",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "hash2",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "BlockMismatch",
+    inputs: [
+      {
+        name: "blockNumber",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "blockHash",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "blockHashReal",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "BlockNumberTooOld",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "BorrowRequestExpired",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "BorrowRequestNotExpired",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "BorrowerAlreadyWhitelisted",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "BorrowerNotWhitelisted",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "BorrowersNotFinished",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "ContractIsPaused",
+    inputs: [
+      {
+        name: "paused",
+        type: "bool",
+        internalType: "bool",
+      },
+      {
+        name: "reason",
+        type: "string",
+        internalType: "string",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "ContractNotPaused",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "CuratorOnly",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "CuratorTimelockOnly",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "EmptyRoute",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InsufficientAssets",
+    inputs: [
+      {
+        name: "availableAssets",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "assetsToLock",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "InsufficientAssetsReceived",
+    inputs: [
+      {
+        name: "returned",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minAssetsOut",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "InsufficientAssetsReceivedForPosition",
+    inputs: [
+      {
+        name: "returned",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minAssetsOut",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "vault",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "positionId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "InsufficientBalance",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InsufficientStrategyBalance",
+    inputs: [
+      {
+        name: "strategyBalance",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "expectedStrategyBalance",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "InvalidAmountIn",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidAmountOut",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidAsset",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidAssetDecimals",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidAttestationContract",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidBase",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidBorrow",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidBorrowApr",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidBorrower",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidBorrowerPosition",
+    inputs: [
+      {
+        name: "positionId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "InvalidCurator",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidCuratorTimelock",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidDeadline",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidDepositAmount",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidERC4626",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidEarlyWithdrawalFee",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidEndDate",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidEventEmitter",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidFeeReceiver",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidFinalTokenOutBalance",
+    inputs: [
+      {
+        name: "tokenOutBalanceAfter",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "tokenOutBalanceBefore",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "InvalidImmutableData",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidInput",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidInputLength",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidLastToken",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidLenderPointsUpdateTime",
+    inputs: [
+      {
+        name: "currentTime",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "lastUpdateTime",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "InvalidLeverage",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidLiquidation",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidLiquidationFee",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidLiquidationPrice",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidLiquidationPriceDiff",
+    inputs: [
+      {
+        name: "liquidationPriceDiff",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "InvalidLiquidator",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidMarket",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidMinStrategyToReceive",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidMrEnclave",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidMrEnclaveExpected",
+    inputs: [
+      {
+        name: "expected",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "actual",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "InvalidName",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidOracle",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidOutputLength",
+    inputs: [
+      {
+        name: "length",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "InvalidPool",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidRoute",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidRouter",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidSpreadFee",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidStrategy",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidStrategyAssets",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidStrategyBalance",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidStrategyType",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidTokenIn",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidTokenOut",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidUser",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidVaultRegistry",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidYtIndex",
+    inputs: [
+      {
+        name: "positionId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "realYtIndex",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "ytIndex",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "LiquidatorOnly",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "NotEnoughCollateral",
+    inputs: [
+      {
+        name: "collateralGiven",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minCollateral",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "NotEnoughStrategyReceived",
+    inputs: [
+      {
+        name: "actual",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minimal",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "OnlyCallsAllowed",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "OnlyVaultAllowed",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "OnlyVaultRegistryAllowed",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "OracleOnly",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "PayloadHashesMismatch",
+    inputs: [
+      {
+        name: "hash1",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "hash2",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "PositionAddingFailed",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "PositionCountInconsistency",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "PositionDataHashesMismatch",
+    inputs: [
+      {
+        name: "hash1",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "hash2",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "PositionFinishFailed",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "PositionNotSubjectToLiquidation",
+    inputs: [
+      {
+        name: "positionId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "PositionRemoveFailed",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "PreviewLiquidateQuote",
+    inputs: [
+      {
+        name: "liquidationCount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "assetsToReceive",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "SameBlock",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "SelectorNotFound",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "StrategyAssetsUnderflow",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "strategyAssets",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "assets",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "StrategyBalanceAmountOverflow",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "strategyBalance",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "StrategyEnded",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "StrategyIsDisabled",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "StrategyNotFinished",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "TooMuchDeficitToFill",
+    inputs: [
+      {
+        name: "deficitToFill",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "currentBaseAssetDeficit",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "TotalAssetsUtilizedAmountOverflow",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "totalAssetsUtilized",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "TotalAssetsUtilizedMismatch",
+    inputs: [
+      {
+        name: "totalAssetsUtilized",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "totalAssets",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "TotalDebtUnderflow",
+    inputs: [
+      {
+        name: "totalDebt",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "newLenderPointsDebt",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "TotalLenderAssetsLockedAmountUnderflow",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "totalLenderAssetsLocked",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "TransferFailed",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "TransfersDisabled",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "UnpaidYieldAmountOverflow",
+    inputs: [
+      {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "unpaidYield",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "VaultNotFound",
+    inputs: [
+      {
+        name: "vault",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "WithdrawAmountExceedsMax",
+    inputs: [
+      {
+        name: "maxWithdraw",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "WrongStrategy",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
 ] as const satisfies Abi;
