@@ -67,7 +67,11 @@ export type VaultRiskLevel =
 
 export type BorrowerPosition = {
   vault: VaultFullInfo;
-  asset: AssetInfo;
+  asset: {
+    asset: Address;
+    symbol: string;
+    decimals: number;
+  };
   user: Address;
   collateralType: number;
   subjectToLiquidation: boolean;

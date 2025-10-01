@@ -1,4 +1,3 @@
-// lib/core/hooks/useBorrowerPositions.ts
 import pLimit from "p-limit";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -58,11 +57,10 @@ export function useBorrowerPositions(
             }
           );
 
-          const asset = vault.assets[0];
           return raw.map(
             (p): BorrowerPosition => ({
               vault,
-              asset,
+              asset: vault.strategies.find(s => s.id === p.strategyId)!.token,
               user: p.user as Address,
               collateralType: Number(p.collateralType),
               subjectToLiquidation: p.subjectToLiquidation,

@@ -1,6 +1,7 @@
 import type { FormatResult } from "./types";
-import { formatUnits as formatUnitsViem } from "viem";
+import { Address, formatUnits as formatUnitsViem } from "viem";
 import { formatThousandsSpace } from "./number";
+import truncateEthAddress from "truncate-eth-address";
 
 export function formatAsset(
   amount: bigint,
@@ -32,4 +33,8 @@ export function formatUnits(
     value: params[0],
     meta: { amount: params[0], decimals: params[1] },
   };
+}
+
+export function formatEvmAddress(address: Address): string {
+  return truncateEthAddress(address);
 }
