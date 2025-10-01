@@ -10,7 +10,7 @@ export interface StrategiesListProps {
 
 export function StrategiesList({ strategies }: StrategiesListProps) {
   return (
-    <div className="bg-preset-gray-50 overflow-hidden rounded-md pt-3 pb-6">
+    <div className="bg-preset-gray-50 overflow-hidden rounded-md pt-2 pb-4">
       <SimpleTable
         columns={["Asset", "APR", "End date"]}
         rows={strategies.map(s => [

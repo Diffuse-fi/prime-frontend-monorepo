@@ -9,17 +9,24 @@ import { useState } from "react";
 import { BorrowModal } from "./BorrowModal";
 import { BorrowCard } from "./BorrowCard";
 import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
-import { VaultFullInfo } from "@/lib/core/types";
+import { Strategy, VaultFullInfo } from "@/lib/core/types";
 import { useAccount } from "wagmi";
+import { useBorrowActivationWatcher } from "@/lib/core/hooks/useBorrowActivationWatcher";
+import { toast } from "@/lib/toast";
+
+export type SelectedStartegy = {
+  vault: VaultFullInfo;
+} & Strategy;
 
 export default function Borrow() {
   const [modalOpen, setModalOpen] = useState(false);
   const { chain } = useReadonlyChain();
   const { isLoading, vaultsAssetsList, vaults } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
-  const [selectedVault, setSelectedVault] = useState<VaultFullInfo | null>(null);
+  const [selectedStrategy, setSelectedStrategy] = useState<SelectedStartegy | null>(null);
   const { dir } = useLocalization();
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
+  const [pendingRequests, setPendingRequests] = useState<bigint[]>([]);
   const strategies = vaults
     .filter(v => v.assets?.some(a => a.address === selectedAsset?.address))
     .flatMap(v => v.strategies)
@@ -27,6 +34,17 @@ export default function Borrow() {
       ...strategy,
       vault: vaults.find(v => v.strategies.some(s => s.id === strategy.id))!,
     }));
+  useBorrowActivationWatcher({
+    vaultAddresses: vaults.map(v => v.address),
+    enabled: isConnected && !!pendingRequests.length,
+    chainId: chain?.id,
+    account: address,
+    onActivated: ({ strategyId }) => {
+      setPendingRequests(prev => prev.filter(id => id !== strategyId));
+      const strategyName = strategies.find(s => s.id === strategyId)?.name;
+      toast(`Your borrow request for strategy "${strategyName}" has been activated!`);
+    },
+  });
 
   return (
     <div className="mt-9 flex flex-col gap-3 md:gap-8">
@@ -49,21 +67,27 @@ export default function Borrow() {
                 strategy={strategy}
                 selectedAsset={selectedAsset!}
                 onBorrow={() => {
-                  setSelectedVault(strategy.vault);
+                  setSelectedStrategy(strategy);
                   setModalOpen(true);
                 }}
                 chain={chain}
                 isConnected={isConnected}
+                isBorrowRequestPending={pendingRequests.includes(strategy.id)}
               />
             ))
           : null}
       </div>
-      {selectedAsset !== null && selectedVault !== null && (
+      {selectedAsset !== null && selectedStrategy !== null && (
         <BorrowModal
           open={modalOpen}
           onOpenChange={setModalOpen}
           selectedAsset={selectedAsset}
-          selectedVault={selectedVault}
+          selectedStrategy={selectedStrategy}
+          onBorrowRequestSuccess={() => {
+            setSelectedStrategy(null);
+            setModalOpen(false);
+            setPendingRequests(prev => [...prev, selectedStrategy.id]);
+          }}
         />
       )}
     </div>

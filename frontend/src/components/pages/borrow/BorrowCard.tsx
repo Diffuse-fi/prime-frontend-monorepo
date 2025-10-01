@@ -9,6 +9,7 @@ import { formatAprToPercent } from "@/lib/formatters/finance";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
 import { Button, Card, Heading, SimpleTable } from "@diffuse/ui-kit";
 import { Chain } from "@rainbow-me/rainbowkit";
+import { Loader2 } from "lucide-react";
 
 type BorrowCardProps = {
   strategy: VaultFullInfo["strategies"][number];
@@ -16,6 +17,7 @@ type BorrowCardProps = {
   isConnected?: boolean;
   onBorrow?: () => void;
   chain: Chain;
+  isBorrowRequestPending?: boolean;
 };
 
 export function BorrowCard({
@@ -24,19 +26,22 @@ export function BorrowCard({
   onBorrow,
   chain,
   isConnected,
+  isBorrowRequestPending,
 }: BorrowCardProps) {
   const chainMeta = getStableChainMeta(chain.id);
 
   return (
     <Card
+      className="relative"
       cardBodyClassName="gap-4 items-center"
       header={
         <div className="flex items-center justify-start gap-4">
           <AssetImage alt="" address={selectedAsset.address} size={42} />
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col items-start">
             <Heading level="4" className="font-semibold">
-              {strategy.token.symbol}
+              {`${strategy.token.symbol} / ${selectedAsset.symbol}`}
             </Heading>
+            <span className="font-mono text-xs">{strategy.name}</span>
           </div>
         </div>
       }
@@ -91,10 +96,23 @@ export function BorrowCard({
         size="lg"
         className="mt-3 w-2/3 md:mt-6"
         onClick={onBorrow}
-        disabled={!isConnected}
+        disabled={!isConnected || isBorrowRequestPending}
       >
-        {isConnected ? "Borrow" : "Connect wallet"}
+        {isConnected
+          ? isBorrowRequestPending
+            ? "Request pending..."
+            : "Borrow"
+          : "Connect wallet"}
       </Button>
+      {isBorrowRequestPending && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10">
+          <Loader2
+            className="h-12 w-12 animate-spin"
+            aria-label="Borrow request pending"
+            color="white"
+          />
+        </div>
+      )}
     </Card>
   );
 }

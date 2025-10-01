@@ -48,38 +48,23 @@ export function useLenderPositions(allVaults: VaultFullInfo[]) {
     queryFn: async ({ signal }) => {
       const tasks = allVaults.map(vault =>
         LIMIT(async () => {
-          try {
-            const strategyIds =
-              vault.strategies.length > 0
-                ? vault.strategies.map((_, i) => BigInt(i))
-                : []; // if empty allowed; otherwise handle below
+          const strategiesLength = await vault.contract.getStrategylength({ signal });
+          const strategyIds =
+            vault.strategies.length > 0
+              ? Array.from({ length: Number(strategiesLength) }, (_, i) => BigInt(i))
+              : [];
 
-            // if (strategyIds.length === 0) {
-            //   // If the contract reverts on empty, skip querying accrued yield
-            //   const balance = await vault.contract.getLenderBalance(lender!, { signal });
+          const [accruedYieldData, balance] = await Promise.all([
+            vault.contract.accruedLenderYield(strategyIds, lender!, { signal }),
+            vault.contract.getLenderBalance(lender!, { signal }),
+          ]);
 
-            //   return {
-            //     vaultAddress: vault.address,
-            //     asset: vault.assets[0],
-            //     balance,
-            //     accruedYield: 0n as const,
-            //   };
-            // }
-
-            const [accruedYieldData, balance] = await Promise.all([
-              vault.contract.accruedLenderYield(strategyIds, lender!, { signal }),
-              vault.contract.getLenderBalance(lender!, { signal }),
-            ]);
-
-            return {
-              vault: vault,
-              asset: vault.assets[0],
-              balance,
-              accruedYield: accruedYieldData[0],
-            };
-          } catch (e) {
-            throw e;
-          }
+          return {
+            vault: vault,
+            asset: vault.assets[0],
+            balance,
+            accruedYield: accruedYieldData[0],
+          };
         })
       );
 

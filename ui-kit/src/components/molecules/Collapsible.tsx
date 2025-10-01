@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib";
 
 type CollapsibleCommonProps = {
-  summary: string;
+  summary: React.ReactNode;
   summaryClassName?: string;
 };
 
@@ -27,7 +27,7 @@ const CollapsibleSummary = ({
   open,
   summaryClassName,
 }: {
-  summary: string;
+  summary: React.ReactNode;
   open: boolean;
   summaryClassName?: string;
 }) => {

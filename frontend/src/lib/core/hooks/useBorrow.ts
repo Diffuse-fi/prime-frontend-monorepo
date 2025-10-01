@@ -106,7 +106,6 @@ export function useBorrow(
 
       if (!enabled || !selected || !addr || !wallet) return result;
 
-      // prevent duplicate submits for the same payload
       const idemKey = makeIdemKey(chainId!, addr, getAddress(wallet), selected);
       const currentPhase = (txState[addr]?.phase ?? "idle") as TxInfo["phase"];
       const active =
@@ -115,7 +114,6 @@ export function useBorrow(
         currentPhase === "replaced";
       if (active || pendingKey === idemKey) return result;
 
-      // basic validation
       if (selected.collateralAmount <= 0n) {
         const e = new Error("Collateral must be greater than zero");
         setPhase(addr, { phase: "error", errorMessage: e.message });
@@ -139,9 +137,7 @@ export function useBorrow(
         setPendingKey(idemKey);
         setPhase(addr, { phase: "awaiting-signature" });
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        /* @ts-expect-error */
-        const hash = await vault!.contract.borrowRequest([
+        const hash = await vault.contract.borrowRequest([
           selected.strategyId,
           selected.collateralType,
           selected.collateralAmount,

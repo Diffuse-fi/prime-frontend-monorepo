@@ -10,16 +10,6 @@ import { raceSignal as abortable } from "race-signal";
 /** @internal */
 type VaultContract = GenericContractType<typeof vaultAbi>;
 
-type BorrowRequestParams = {
-  strategyId: bigint;
-  collateralType: number;
-  collateralAmount: bigint;
-  assetsToBorrow: bigint;
-  liquidationPrice: bigint;
-  minStrategyToReceive: bigint;
-  deadline: bigint;
-};
-
 const contractName = "Vault";
 
 /** @internal */
@@ -197,7 +187,7 @@ export class Vault extends ContractBase {
   }
 
   async borrowRequest(
-    {
+    [
       strategyId,
       collateralType,
       collateralAmount,
@@ -205,7 +195,15 @@ export class Vault extends ContractBase {
       liquidationPrice,
       minStrategyToReceive,
       deadline,
-    }: BorrowRequestParams,
+    ]: [
+      bigint,
+      number,
+      bigint,
+      bigint,
+      bigint,
+      bigint,
+      bigint,
+    ],
     { signal }: SdkRequestOptions = {}
   ) {
     if (!this.init.client.wallet) throw new WalletRequiredError("borrowRequest");
@@ -245,6 +243,18 @@ export class Vault extends ContractBase {
           minStrategyToReceive,
           deadline,
         ],
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
+
+  async getStrategylength({ signal }: SdkRequestOptions = {}) {
+    try {
+      return abortable(this.getContract().read.getStrategyLength(), signal);
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "getStrategylength",
         contract: contractName,
         chainId: this.chainId,
       });
