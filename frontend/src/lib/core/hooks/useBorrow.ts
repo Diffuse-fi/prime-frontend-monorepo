@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { produce } from "immer";
+import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 
 export type SelectedBorrow = {
   chainId: number;
@@ -14,7 +15,6 @@ export type SelectedBorrow = {
   collateralType: number;
   collateralAmount: bigint;
   assetsToBorrow: bigint;
-  liquidationPrice: bigint;
   minStrategyToReceive: bigint;
   deadline: bigint;
   assetDecimals?: number;
@@ -63,7 +63,6 @@ function makeIdemKey(
     v.collateralType.toString(),
     v.collateralAmount.toString(),
     v.assetsToBorrow.toString(),
-    v.liquidationPrice.toString(),
     v.minStrategyToReceive.toString(),
     v.deadline.toString(),
   ].join(":");
@@ -137,12 +136,65 @@ export function useBorrow(
         setPendingKey(idemKey);
         setPhase(addr, { phase: "awaiting-signature" });
 
+        const strategy = vault.strategies.find(s => s.id === selected.strategyId);
+        if (!strategy) {
+          const e = new Error("Strategy not found");
+          setPhase(addr, { phase: "error", errorMessage: e.message });
+          result.error = e;
+          onBorrowError?.(e.message, addr);
+          return result;
+        }
+
+        const borrowingFactor = calcBorrowingFactor(
+          strategy.apr,
+          vault.spreadFee,
+          BigInt(Math.max(0, Number(strategy.endDate) - Math.floor(Date.now() / 1000)))
+        );
+
+        const predictedTokensToReceive = await vault.contract.previewBorrow([
+          wallet,
+          selected.strategyId,
+          selected.collateralType,
+          selected.collateralAmount,
+          selected.assetsToBorrow,
+        ]);
+
+        const WAD = 10n ** 18n;
+        const mulWad = (x: bigint, y: bigint) => (x * y) / WAD;
+        const divWad = (x: bigint, y: bigint) => (x * WAD) / y;
+
+        const toWad = (x: number) => {
+          const s = x.toString();
+          const [i, f = ""] = s.split(".");
+          const frac = (f + "0".repeat(18)).slice(0, 18);
+          return BigInt(i) * WAD + BigInt(frac);
+        };
+
+        const denom = selected.assetsToBorrow + selected.collateralAmount;
+        if (denom === 0n) throw new Error("Zero denominator");
+
+        const assetDec = selected.assetDecimals ?? vault.assets[0].decimals;
+        const stratDec = strategy.token.decimals;
+
+        const factorWad = toWad(1 + Number(borrowingFactor) / 10_000);
+
+        const borrowedShareWad = divWad(selected.assetsToBorrow, denom);
+
+        const depositPriceWad =
+          (predictedTokensToReceive * WAD * 10n ** BigInt(assetDec)) /
+          (denom * 10n ** BigInt(stratDec));
+
+        const resultWad =
+          depositPriceWad === 0n
+            ? 0n
+            : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
+
         const hash = await vault.contract.borrowRequest([
           selected.strategyId,
           selected.collateralType,
           selected.collateralAmount,
           selected.assetsToBorrow,
-          selected.liquidationPrice,
+          resultWad,
           selected.minStrategyToReceive,
           selected.deadline,
         ]);

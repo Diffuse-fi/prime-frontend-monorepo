@@ -96,13 +96,9 @@ export function BorrowCard({
         size="lg"
         className="mt-3 w-2/3 md:mt-6"
         onClick={onBorrow}
-        disabled={!isConnected || isBorrowRequestPending}
+        disabled={!isConnected}
       >
-        {isConnected
-          ? isBorrowRequestPending
-            ? "Request pending..."
-            : "Borrow"
-          : "Connect wallet"}
+        {isConnected ? "Borrow" : "Connect wallet"}
       </Button>
       {isBorrowRequestPending && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10">

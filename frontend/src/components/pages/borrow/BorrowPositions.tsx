@@ -8,6 +8,19 @@ import { useLocalization } from "@/lib/localization/useLocalization";
 import { showSkeletons } from "@/lib/misc/ui";
 import { Heading } from "@diffuse/ui-kit";
 import { BorrowerPositionCard } from "./BorrowPositionCard";
+import { useUnborrow } from "@/lib/core/hooks/useUnborrow";
+import { toast } from "@/lib/toast";
+import { BorrowerPosition } from "@/lib/core/types";
+import { useState } from "react";
+import { ManagePositionModal } from "./ManagePositionModal";
+import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
+import { AppLink } from "@/components/misc/AppLink";
+import { ExternalLink } from "lucide-react";
+import { formatEvmAddress } from "@/lib/formatters/asset";
+import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
+import { useAccount, useChainId } from "wagmi";
+import { getStableChainMeta } from "@/lib/chains/meta";
+import { getContractExplorerUrl } from "@/lib/chains/rpc";
 
 export function BorrowPositions() {
   const {
@@ -15,15 +28,37 @@ export function BorrowPositions() {
     vaultsAssetsList,
     isLoading: isLoadingVaults,
     isPending: isPendingVaults,
+    refetchLimits,
+    refetchTotalAssets,
   } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
+  const [selectedPosition, setSelectedPosition] = useState<BorrowerPosition>();
   const { dir } = useLocalization();
+  const strategies = vaults.flatMap(v => v.strategies);
+  const chainId = useChainId();
+  const { iconUrl, iconBackground } = getStableChainMeta(chainId);
+  const explorerUrl = selectedPosition
+    ? getContractExplorerUrl(chainId, selectedPosition.vault.address)
+    : "";
 
   const vaultsForSelectedAsset = selectedAsset
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
     : vaults;
-  const { positions, isLoading, isPending } =
-    useBorrowerPositions(vaultsForSelectedAsset);
+  const {
+    positions,
+    isLoading,
+    isPending,
+    refetch: refetchBorrowerPositions,
+  } = useBorrowerPositions(vaultsForSelectedAsset);
+  const { unborrow, isPending: isUnborrowPending } = useUnborrow(vaults, {
+    onSuccess: () => {
+      refetchLimits();
+      refetchTotalAssets();
+      refetchBorrowerPositions();
+      toast("Borrow position closed");
+    },
+    onError: () => toast("Error closing borrow position"),
+  });
 
   return (
     <div className="mt-4 flex flex-col gap-3 md:gap-8">
@@ -37,13 +72,21 @@ export function BorrowPositions() {
         className="w-1/2"
       />
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
-        {isLoading || isPending || isPendingVaults || isLoadingVaults ? (
+        {isLoading ||
+        isPending ||
+        isPendingVaults ||
+        isLoadingVaults ||
+        !selectedAsset ? (
           showSkeletons(2, "h-40 sm:h-80")
         ) : positions.length > 0 ? (
           positions.map(position => (
             <BorrowerPositionCard
               key={position.strategyId.toString()}
               position={position}
+              onManagePositionBtnClick={() => setSelectedPosition(position)}
+              disabled={isUnborrowPending}
+              selectedAsset={selectedAsset}
+              strategyApr={strategies.find(s => s.id === position.strategyId)?.apr ?? 0n}
             />
           ))
         ) : (
@@ -57,6 +100,48 @@ export function BorrowPositions() {
           </div>
         )}
       </div>
+      {selectedPosition && selectedAsset && (
+        <ManagePositionModal
+          selectedPosition={selectedPosition}
+          selectedAsset={selectedAsset}
+          open={!!selectedPosition}
+          onOpenChange={open => {
+            if (!open) {
+              setSelectedPosition(undefined);
+            }
+          }}
+          title={
+            <div className="flex items-center justify-between gap-4">
+              <Heading level="3" className="font-semibold">
+                Manage position
+              </Heading>
+              <div className="bg-muted/15 ml-auto flex size-8 items-center justify-center rounded-full">
+                <ImageWithJazziconFallback
+                  src={iconUrl}
+                  alt=""
+                  size={20}
+                  className="object-cover"
+                  style={{
+                    background: iconBackground || "transparent",
+                  }}
+                  fetchPriority="low"
+                  decoding="async"
+                  jazziconSeed={stableSeedForChainId(chainId)}
+                />
+              </div>
+              {explorerUrl && (
+                <AppLink
+                  href={explorerUrl}
+                  className="text-text-dimmed bg-muted/15 hover:bg-muted/20 flex h-8 items-center gap-3 rounded-md p-2 text-sm text-nowrap transition-colors"
+                >
+                  {formatEvmAddress(selectedPosition.vault.address)}
+                  <ExternalLink size={20} className="" />
+                </AppLink>
+              )}
+            </div>
+          }
+        />
+      )}
     </div>
   );
 }

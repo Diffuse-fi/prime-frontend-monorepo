@@ -12,14 +12,18 @@ export type UseBorrowerPositionsResult = {
   positions: BorrowerPosition[];
   isLoading: boolean;
   isPending: boolean;
+  pending: { vault: VaultFullInfo; positionIds: bigint[] }[];
   refetch: () => void;
   error: Error | null;
+  pendingError: Error | null;
 };
 
 const ROOT = "borrower-positions";
 const version = QV.borrowerPositions;
 const qKeys = {
   positions: (vaultsAddrKey: string | null, chainId: number, ownerAddr?: string) =>
+    qk([ROOT, version, opt(vaultsAddrKey), chainId, opt(ownerAddr)]),
+  pending: (vaultsAddrKey: string | null, chainId: number, ownerAddr?: string) =>
     qk([ROOT, version, opt(vaultsAddrKey), chainId, opt(ownerAddr)]),
 };
 
@@ -85,11 +89,37 @@ export function useBorrowerPositions(
     gcTime: 10 * 60_000,
   });
 
+  const pendingQuery = useQuery({
+    enabled,
+    queryKey: qKeys.pending(addressKey, chainId!, borrower),
+    queryFn: async ({ signal }) => {
+      const tasks = allVaults.map(vault =>
+        LIMIT(async () => {
+          const ids = await vault.contract.getPendingBorrowerPositionIds(
+            borrower as Address,
+            { signal }
+          );
+
+          return { vault, positionIds: ids as bigint[] };
+        })
+      );
+
+      return Promise.all(tasks);
+    },
+    staleTime: 30_000,
+    gcTime: 10 * 60_000,
+  });
+
   return {
     positions: positionsQuery.data || [],
-    isLoading: positionsQuery.isLoading,
-    isPending: positionsQuery.isPending,
-    refetch: positionsQuery.refetch,
+    pending: pendingQuery.data || [],
+    isLoading: positionsQuery.isLoading || pendingQuery.isLoading,
+    isPending: positionsQuery.isPending || pendingQuery.isPending,
+    refetch: () => {
+      positionsQuery.refetch();
+      pendingQuery.refetch();
+    },
     error: positionsQuery.error as Error | null,
+    pendingError: pendingQuery.error as Error | null,
   };
 }

@@ -260,6 +260,122 @@ export class Vault extends ContractBase {
       });
     }
   }
+
+  async getPendingBorrowerPositionIds(
+    owner: Address,
+    { signal }: SdkRequestOptions = {}
+  ) {
+    try {
+      return abortable(
+        this.getContract().read.getPendingBorrowerPositionIds([owner]),
+        signal
+      );
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "getPendingBorrowerPositionIds",
+        args: [owner],
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
+
+  async getSpreadFee({ signal }: SdkRequestOptions = {}) {
+    try {
+      return abortable(this.getContract().read.getSpreadFee(), signal);
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "getSpreadFee",
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
+
+  async previewBorrow(
+    [
+      forUser,
+      strategyId,
+      collateralType,
+      collateralAmount,
+      assetsToBorrow,
+    ]: [
+      Address,
+      bigint,
+      number,
+      bigint,
+      bigint,
+    ],
+    { signal }: SdkRequestOptions = {}
+  ) {
+    try {
+      const sim = await abortable(
+        this.init.client.public.simulateContract({
+          address: this.getContract().address,
+          abi: vaultAbi,
+          functionName: "previewBorrow",
+          args: [forUser, strategyId, collateralType, collateralAmount, assetsToBorrow],
+        }),
+        signal
+      );
+
+      return sim.result;
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "previewBorrow",
+        args: [forUser, strategyId, collateralType, collateralAmount, assetsToBorrow],
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
+
+  async unborrow(
+    [
+      positionId,
+      deadline,
+      slippageBps,
+    ]: [
+      bigint,
+      bigint,
+      bigint,
+    ],
+    { signal }: SdkRequestOptions = {}
+  ) {
+    if (!this.init.client.wallet) throw new WalletRequiredError("previewUnborrow");
+
+    try {
+      const minAssetsOutForPreview = 0n;
+      const sim = await abortable(
+        this.init.client.public.simulateContract({
+          address: this.getContract().address,
+          abi: vaultAbi,
+          functionName: "unborrow",
+          args: [positionId, minAssetsOutForPreview, deadline],
+          account: this.init.client.wallet.account!,
+        }),
+        signal
+      );
+
+      const strategyTokensAmount = sim.result;
+      const adjustedTokensAmount = strategyTokensAmount - slippageBps;
+
+      return await abortable(
+        this.init.client.wallet.writeContract({
+          ...sim.request,
+          args: [positionId, adjustedTokensAmount, deadline],
+        }),
+        signal
+      );
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "previewUnborrow",
+        args: [positionId, deadline, slippageBps],
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
 }
 
 export { vaultAbi };
