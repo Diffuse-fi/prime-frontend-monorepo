@@ -60,7 +60,7 @@ function borrowReducer(state: BorrowState, action: BorrowAction): BorrowState {
       return { ...state, leverage, borrow };
     }
     case "RESET":
-      return { collateral: 0n, borrow: 0n, leverage: 100 }; // 1.00x initial
+      return { collateral: 0n, borrow: 0n, leverage: 100 };
   }
 }
 
@@ -123,8 +123,13 @@ export function BorrowModal({
     legacyAllowance: false,
     chainId: selectedStrategy.vault.contract.chainId,
   };
-  const { allAllowed, isPendingApprovals, approveMissing, ableToRequest } =
-    useEnsureAllowances([allowanceInput]);
+  const {
+    allAllowed,
+    isPendingApprovals,
+    approveMissing,
+    ableToRequest,
+    refetchAllowances,
+  } = useEnsureAllowances([allowanceInput]);
   const { balance } = useERC20TokenBalance({ token: selectedAsset?.address });
   const {
     borrow,
@@ -140,7 +145,6 @@ export function BorrowModal({
       collateralType: 0, // TODO -allow 1 when str tokens as collateral allowed
       collateralAmount: collateralAmount,
       deadline: BigInt(Math.floor(Date.now() / 1000) + 3600),
-      liquidationPrice: BigInt(1000),
       minStrategyToReceive: minStrategyToReceiveProxy(collateralAmount, slippage),
     },
     selectedStrategy.vault,
@@ -148,6 +152,7 @@ export function BorrowModal({
       onBorrowSuccess: () => {
         toast("Borrow request made successfully");
         onBorrowRequestSuccess?.();
+        refetchAllowances();
       },
     }
   );

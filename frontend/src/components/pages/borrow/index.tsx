@@ -13,6 +13,7 @@ import { Strategy, VaultFullInfo } from "@/lib/core/types";
 import { useAccount } from "wagmi";
 import { useBorrowActivationWatcher } from "@/lib/core/hooks/useBorrowActivationWatcher";
 import { toast } from "@/lib/toast";
+import { usePendingBorrowerPositionIds } from "@/lib/core/hooks/useBorrowerPendingPositions";
 
 export type SelectedStartegy = {
   vault: VaultFullInfo;
@@ -27,9 +28,12 @@ export default function Borrow() {
   const { dir } = useLocalization();
   const { isConnected, address } = useAccount();
   const [pendingRequests, setPendingRequests] = useState<bigint[]>([]);
+  const { pending, refetch: refetchPendingRequests } =
+    usePendingBorrowerPositionIds(vaults);
   const strategies = vaults
     .filter(v => v.assets?.some(a => a.address === selectedAsset?.address))
     .flatMap(v => v.strategies)
+    .filter(str => !str.isDisabled)
     .map(strategy => ({
       ...strategy,
       vault: vaults.find(v => v.strategies.some(s => s.id === strategy.id))!,
@@ -43,6 +47,7 @@ export default function Borrow() {
       setPendingRequests(prev => prev.filter(id => id !== strategyId));
       const strategyName = strategies.find(s => s.id === strategyId)?.name;
       toast(`Your borrow request for strategy "${strategyName}" has been activated!`);
+      refetchPendingRequests();
     },
   });
 
@@ -72,7 +77,14 @@ export default function Borrow() {
                 }}
                 chain={chain}
                 isConnected={isConnected}
-                isBorrowRequestPending={pendingRequests.includes(strategy.id)}
+                isBorrowRequestPending={
+                  pendingRequests.includes(strategy.id) ||
+                  !!pending.find(
+                    p =>
+                      p.vault.address === strategy.vault.address &&
+                      p.positionIds.includes(strategy.id)
+                  )
+                }
               />
             ))
           : null}
@@ -87,6 +99,7 @@ export default function Borrow() {
             setSelectedStrategy(null);
             setModalOpen(false);
             setPendingRequests(prev => [...prev, selectedStrategy.id]);
+            refetchPendingRequests();
           }}
         />
       )}

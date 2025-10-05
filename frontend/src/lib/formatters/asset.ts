@@ -28,7 +28,7 @@ export function formatUnits(
 
   return {
     text: formatThousandsSpace(Number(res), {
-      maximumFractionDigits: params[1] ?? 2,
+      maximumFractionDigits: Math.min(params[1], 6) ?? 2,
     }).text,
     value: params[0],
     meta: { amount: params[0], decimals: params[1] },

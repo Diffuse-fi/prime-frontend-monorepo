@@ -9,7 +9,7 @@ type Params = {
   chainId?: number;
   account?: Address;
   enabled?: boolean;
-  onActivated?: (args: { strategyId: bigint; log: Log }) => void;
+  onActivated?: (args: { strategyId: bigint; id: bigint; log: Log }) => void;
 };
 
 export function useBorrowActivationWatcher({
@@ -29,8 +29,12 @@ export function useBorrowActivationWatcher({
     onLogs: logs => {
       console.log("BorrowerPositionActivated logs", logs);
       for (const log of logs) {
-        const { strategyId } = log.args as { strategyId: bigint };
-        onActivated?.({ strategyId, log });
+        const { strategyId, id } = log.args as {
+          strategyId: bigint;
+          id: bigint;
+          user: Address;
+        };
+        onActivated?.({ strategyId, id: id, log });
       }
     },
   });
