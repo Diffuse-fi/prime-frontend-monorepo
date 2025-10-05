@@ -6,6 +6,7 @@ import { useClients } from "../../wagmi/useClients";
 import { qk, opt } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import type { VaultFullInfo, TxInfo, TxState } from "../types";
+import { vaultAbi } from "@diffuse/sdk-js";
 
 export type UseUnborrowParams = {
   onSuccess?: (args: { vault: Address; positionId: bigint; hash: Hash }) => void;
@@ -62,7 +63,7 @@ export function useUnborrow(
     setTxState(
       produce(prev => {
         prev[key as keyof TxState] = {
-          ...(prev[key] as TxInfo | undefined),
+          ...(prev[key as keyof TxState] || { phase: "idle" }),
           ...info,
         } as TxInfo;
       })
@@ -90,14 +91,14 @@ export function useUnborrow(
       const deadline = params.deadline;
 
       const stateKey = `${address}:${positionId}`;
-      const currentPhase = (txState[stateKey]?.phase ?? "idle") as TxInfo["phase"];
+      const currentPhase = (txState[stateKey as keyof TxState] as TxInfo | undefined)
+        ?.phase;
       const active =
         currentPhase === "awaiting-signature" ||
         currentPhase === "pending" ||
         currentPhase === "replaced";
       if (active) return null;
 
-      // Pre-Checks
       let e: Error | null = null;
       if (!vault) e = new Error("Vault not found");
       if (positionId <= 0n) e = new Error("Invalid positionId");
@@ -127,14 +128,12 @@ export function useUnborrow(
         if (pendingByKey[key]) return null;
         setKeyPending(key);
 
-        // 3) Send TX (reusing simulated request but override args)
         setPhase(stateKey, { phase: "pending" });
         const hash = await walletClient.writeContract({
           ...request,
           args: [positionId, minOut, deadline],
         });
 
-        // 4) Wait receipt & handle replacement
         const receipt = await publicClient.waitForTransactionReceipt({
           hash,
           onReplaced: r => {
