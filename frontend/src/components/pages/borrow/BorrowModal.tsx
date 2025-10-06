@@ -64,21 +64,6 @@ function borrowReducer(state: BorrowState, action: BorrowAction): BorrowState {
   }
 }
 
-const DEN = 10_000n as const;
-const SLIPPAGE_NUM: Record<string, bigint> = {
-  "0.1": 9_990n,
-  "0.5": 9_950n,
-  "1.0": 9_900n,
-};
-
-export function minStrategyToReceiveProxy(
-  collateralAmountWei: bigint,
-  slippage: string
-): bigint {
-  if (collateralAmountWei <= 0n) return 0n;
-  return (collateralAmountWei * SLIPPAGE_NUM[slippage]) / DEN;
-}
-
 export function BorrowModal({
   open,
   onOpenChange,
@@ -145,7 +130,7 @@ export function BorrowModal({
       collateralType: 0, // TODO -allow 1 when str tokens as collateral allowed
       collateralAmount: collateralAmount,
       deadline: BigInt(Math.floor(Date.now() / 1000) + 3600),
-      minStrategyToReceive: minStrategyToReceiveProxy(collateralAmount, slippage),
+      slippage,
     },
     selectedStrategy.vault,
     {
