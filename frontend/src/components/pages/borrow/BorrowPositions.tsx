@@ -18,7 +18,7 @@ import { AppLink } from "@/components/misc/AppLink";
 import { ExternalLink } from "lucide-react";
 import { formatEvmAddress } from "@/lib/formatters/asset";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
-import { useAccount, useChainId } from "wagmi";
+import { useChainId } from "wagmi";
 import { getStableChainMeta } from "@/lib/chains/meta";
 import { getContractExplorerUrl } from "@/lib/chains/rpc";
 
@@ -86,7 +86,7 @@ export function BorrowPositions() {
               onManagePositionBtnClick={() => setSelectedPosition(position)}
               disabled={isUnborrowPending}
               selectedAsset={selectedAsset}
-              strategyApr={strategies.find(s => s.id === position.strategyId)?.apr ?? 0n}
+              strategy={strategies.find(s => s.id === position.strategyId)!}
             />
           ))
         ) : (

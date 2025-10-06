@@ -6,15 +6,17 @@ import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJaz
 import { AssetInfo } from "@/lib/assets/validations";
 import { getStableChainMeta } from "@/lib/chains/meta";
 import { getContractExplorerUrl } from "@/lib/chains/rpc";
-import { BorrowerPosition } from "@/lib/core/types";
+import { BorrowerPosition, Strategy } from "@/lib/core/types";
 import { formatAsset, formatEvmAddress, formatUnits } from "@/lib/formatters/asset";
+import { formatDateTime } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { calcAprInterest } from "@/lib/formulas/apr";
+import { calcDaysInterval } from "@/lib/formulas/date";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
 import {
   Button,
-  ButtonLike,
   Card,
+  cn,
   Heading,
   SimpleTable,
   Tooltip,
@@ -29,7 +31,7 @@ export interface BorrowerPositionCardProps {
   className?: string;
   onManagePositionBtnClick?: () => void;
   disabled?: boolean;
-  strategyApr: bigint;
+  strategy: Strategy;
 }
 
 export function BorrowerPositionCard({
@@ -38,25 +40,39 @@ export function BorrowerPositionCard({
   onManagePositionBtnClick,
   disabled,
   selectedAsset,
-  strategyApr,
+  strategy,
 }: BorrowerPositionCardProps) {
   const {
     strategyBalance,
-    strategyId,
     assetsBorrowed,
     asset: strategyAsset,
     leverage,
+    liquidationPrice,
     collateralGiven,
     collateralType,
+    enterTimeOrDeadline,
   } = position;
   const chainId = useChainId();
+  const { apr, endDate } = strategy;
   const explorerUrl = getContractExplorerUrl(chainId, position.vault.address);
   const { iconUrl, iconBackground } = getStableChainMeta(chainId);
   const collateralAsset = collateralType === 0 ? selectedAsset : strategyAsset;
 
+  const daysUntilMaturity = calcDaysInterval(endDate);
+  const fullEndDate = formatDateTime(endDate).text;
+  const maturityYield = calcAprInterest(apr, assetsBorrowed, {
+    durationInDays: calcDaysInterval(endDate, enterTimeOrDeadline),
+  });
+  const leverageDisplay = `x${(Number(leverage) / 100).toFixed(2)}`;
+  const liquidationPriceDisplay = formatAsset(
+    liquidationPrice,
+    strategyAsset.decimals,
+    `${strategyAsset.symbol} / ${selectedAsset.symbol}`
+  ).text;
+
   return (
     <Card
-      className={className}
+      className={cn("h-fit", className)}
       cardBodyClassName="gap-4"
       header={
         <div className="flex items-center justify-start gap-4">
@@ -97,11 +113,11 @@ export function BorrowerPositionCard({
         </div>
         <div className="flex flex-col gap-4">
           <p>Leverage</p>
-          <p className="text-lg">{`x${(Number(leverage) / 100).toFixed(2)}`}</p>
+          <p className="text-lg">{leverageDisplay}</p>
         </div>
         <div className="flex flex-col gap-4">
           <p>APY</p>
-          <p className="text-lg">{formatAprToPercent(strategyApr).text}</p>
+          <p className="text-lg">{formatAprToPercent(apr).text}</p>
         </div>
       </div>
       <SimpleTable
@@ -139,12 +155,63 @@ export function BorrowerPositionCard({
         ]}
       />
       <UncontrolledCollapsible summary="Position details" className="mt-2 px-10 md:mt-4">
-        <div></div>
+        <div className="text-text-dimmed mt-2 flex flex-col gap-2 text-sm">
+          <UncontrolledCollapsible
+            defaultOpen
+            summary={
+              <span className="text-muted font-mono text-xs">Position health</span>
+            }
+          >
+            <div className="flex flex-col gap-2 border-l border-[#FF4800] px-2 py-1">
+              <div className="flex items-center justify-between">
+                <span>Liquidation price</span>
+                <span>{liquidationPriceDisplay}</span>
+              </div>
+            </div>
+          </UncontrolledCollapsible>
+          <UncontrolledCollapsible
+            defaultOpen
+            summary={<span className="text-muted font-mono text-xs">APR</span>}
+          >
+            <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
+              <div className="flex items-center justify-between">
+                <span>Overall APR</span>
+                <span>{formatAprToPercent(apr).text}</span>
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
+              <div className="flex items-center justify-between">
+                <span>Leverage</span>
+                <span>{leverageDisplay}</span>
+              </div>
+            </div>
+          </UncontrolledCollapsible>
+          <UncontrolledCollapsible
+            defaultOpen
+            summary={<span className="text-muted font-mono text-xs">Yield</span>}
+          >
+            <div className="flex flex-col gap-2 border-l border-[#49E695] px-2 py-1">
+              <div className="flex items-center justify-between">
+                <span>Days until maturity</span>
+                <Tooltip content={fullEndDate} side="top">
+                  <span>{daysUntilMaturity}</span>
+                </Tooltip>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>Maturity yield</span>
+                <span>
+                  {formatUnits(maturityYield, selectedAsset.decimals).text}{" "}
+                  {selectedAsset.symbol}
+                </span>
+              </div>
+            </div>
+          </UncontrolledCollapsible>
+        </div>
       </UncontrolledCollapsible>
       <Button
         disabled={disabled}
         size="lg"
-        className="mx-auto"
+        className="mx-auto mt-6"
         onClick={onManagePositionBtnClick}
       >
         Manage position
