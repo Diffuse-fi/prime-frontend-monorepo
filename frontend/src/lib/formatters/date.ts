@@ -17,13 +17,13 @@ dayjsBase.extend(advancedFormat);
 
 export type Dateish = number | string | bigint;
 
-function normalizeTimestamp(ts: number | bigint): number {
+export function normalizeTimestamp(ts: number | bigint): number {
   const n = typeof ts === "bigint" ? Number(ts) : ts;
   const isUnix = n < 1_000_000_000_000;
   return isUnix ? n * 1000 : n;
 }
 
-const day = (ts?: Dateish, opts?: DateFormatOpts) => {
+export const day = (ts?: Dateish, opts?: DateFormatOpts) => {
   const d =
     ts !== undefined
       ? dayjsBase(

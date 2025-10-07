@@ -58,16 +58,19 @@ export function BorrowerPositionCard({
   const { iconUrl, iconBackground } = getStableChainMeta(chainId);
   const collateralAsset = collateralType === 0 ? selectedAsset : strategyAsset;
 
-  const daysUntilMaturity = calcDaysInterval(endDate);
+  const daysUntilMaturity = calcDaysInterval({ to: endDate });
   const fullEndDate = formatDateTime(endDate).text;
-  const maturityYield = calcAprInterest(apr, assetsBorrowed, {
-    durationInDays: calcDaysInterval(endDate, enterTimeOrDeadline),
+  const maturityYield = calcAprInterest(apr, collateralGiven, {
+    durationInDays: calcDaysInterval({
+      to: endDate,
+      from: enterTimeOrDeadline,
+    }),
   });
   const leverageDisplay = `x${(Number(leverage) / 100).toFixed(2)}`;
   const liquidationPriceDisplay = formatAsset(
     liquidationPrice,
     strategyAsset.decimals,
-    `${strategyAsset.symbol} / ${selectedAsset.symbol}`
+    `${selectedAsset.symbol} / ${strategyAsset.symbol}`
   ).text;
 
   return (

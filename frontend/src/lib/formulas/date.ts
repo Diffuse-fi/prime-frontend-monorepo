@@ -1,18 +1,23 @@
-import { Dateish } from "../formatters/date";
-import dayjsBase from "dayjs";
+import { Dateish, day } from "../formatters/date";
+import { DateFormatOpts } from "../formatters/types";
 
-export function calcDaysInterval(to: Dateish, from?: Dateish): number {
-  const fromD = dayjsBase(
-    from === undefined
-      ? dayjsBase()
-      : typeof from === "number" || typeof from === "bigint"
-        ? Number(from)
-        : from
-  );
+type CalcDaysIntervalParams = {
+  to: Dateish;
+  from?: Dateish;
+  opts?: DateFormatOpts;
+};
 
-  const toD = dayjsBase(
-    typeof to === "number" || typeof to === "bigint" ? Number(to) : to
-  );
+export function calcDaysInterval({
+  to,
+  from,
+  opts = {},
+}: CalcDaysIntervalParams): number {
+  const fromD = day(from ?? Date.now(), opts);
+  const toD = day(to, opts);
+
+  if (!fromD.isValid() || !toD.isValid()) {
+    throw new Error("Invalid date");
+  }
 
   return toD.diff(fromD, "day");
 }
