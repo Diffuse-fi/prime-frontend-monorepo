@@ -7,7 +7,7 @@ import { Heading, IconButton } from "../atoms";
 const content = tv({
   base: [
     "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-    "w-[92vw] max-w-xl p-4 z-100",
+    "w-[92vw] max-w-xl z-100",
     "bg-fg border border-border rounded-lg shadow-strong",
     "data-[state=open]:animate-modal-content-in",
     "focus:outline-none",
@@ -43,7 +43,7 @@ export function Dialog({
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="data-[state=open]:animate-in-fade data-[state=closed]:animate-out-fade fixed inset-0 z-60 bg-black/40 backdrop-blur-sm" />
         <DialogPrimitive.Content className={content({ size })}>
-          <div className="flex items-start gap-3">
+          <div className="border-border flex items-start gap-3 border-b p-4">
             <div className="text-text-dimmed min-w-0 flex-1">
               {title && (
                 <DialogPrimitive.Title asChild>
@@ -66,7 +66,7 @@ export function Dialog({
               />
             </DialogPrimitive.Close>
           </div>
-          {children && <div className="mt-4">{children}</div>}
+          {children && <div className="mt-2 p-4">{children}</div>}
         </DialogPrimitive.Content>
       </DialogPrimitive.Portal>
     </DialogPrimitive.Root>

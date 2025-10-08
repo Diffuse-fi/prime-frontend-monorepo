@@ -22,7 +22,7 @@ export function SlippageInput({
         <span className="text-md font-bold">{value + "%"}</span>
       </div>
       <RadioGroup
-        className={cn("mt-2! flex justify-end gap-4", className)}
+        className="mt-4 flex justify-end gap-4"
         aria-label="Select an asset"
         dir={dir}
         value={value}

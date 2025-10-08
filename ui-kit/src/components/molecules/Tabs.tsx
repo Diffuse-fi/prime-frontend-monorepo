@@ -4,65 +4,39 @@ import { tv, type VariantProps } from "@/lib";
 import { cn } from "@/lib";
 
 const tabsList = tv({
-  base: "relative inline-flex items-center gap-1 rounded-sm",
+  base: "relative inline-flex items-center gap-1 rounded-sm h-10 px-1.5",
   variants: {
-    size: {
-      sm: "h-9 px-1",
-      md: "h-10 px-1.5",
-      lg: "h-11 px-2",
-    },
     align: {
       start: "justify-start",
       center: "justify-center",
       end: "justify-end",
       between: "justify-between w-full",
     },
-    variant: {
-      underline: "border-b border-border",
-      solid: "bg-muted/40 p-1 rounded-lg",
-      pill: "bg-transparent",
-    },
     fitted: {
       true: "grid auto-cols-fr grid-flow-col w-full",
       false: "flex",
     },
   },
-  defaultVariants: { size: "md", align: "start", variant: "underline", fitted: false },
+  defaultVariants: { align: "start", fitted: false },
 });
 
 const tabsTrigger = tv({
   base: [
     "group inline-flex items-center gap-2 select-none",
-    "rounded-xs px-3 py-2 -mb-[1px]",
-    "text-sm font-medium text-text-dimmed",
+    "px-3 py-2",
+    "font-medium text-text-dimmed",
     "whitespace-nowrap standard-focus-ring",
-    "transition-colors duration-150",
+    "transition-colors",
     "data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed",
+    "border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary",
   ].join(" "),
   variants: {
-    size: {
-      sm: "text-sm px-2.5 py-1.5",
-      md: "text-sm px-3 py-2",
-      lg: "text-base px-4 py-2.5",
-    },
-    variant: {
-      underline:
-        "border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-text-primary hover:text-text-primary/90",
-      solid:
-        "rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-fg hover:bg-muted/60",
-      pill: "rounded-full data-[state=active]:bg-primary/10 data-[state=active]:text-text-primary hover:bg-muted/40",
-    },
     fitted: {
       true: "justify-center w-full",
       false: "",
     },
-    tone: {
-      default: "",
-      muted: "text-muted data-[state=active]:text-text-primary",
-      primary: "data-[state=active]:text-primary",
-    },
   },
-  defaultVariants: { size: "md", variant: "underline", fitted: false, tone: "default" },
+  defaultVariants: { fitted: false },
 });
 
 const tabsContent = tv({
@@ -79,11 +53,11 @@ export const TabsRoot = TabsPrimitive.Root;
 type TabsListProps = React.ComponentPropsWithoutRef<typeof TabsPrimitive.List> &
   VariantProps<typeof tabsList>;
 export const TabsList = React.forwardRef<HTMLDivElement, TabsListProps>(
-  ({ className, size, align, variant, fitted, ...props }, ref) => {
+  ({ className, align, fitted, ...props }, ref) => {
     return (
       <TabsPrimitive.List
         ref={ref}
-        className={cn(tabsList({ size, align, variant, fitted }), className)}
+        className={cn(tabsList({ align, fitted }), className)}
         {...props}
       />
     );
@@ -100,14 +74,11 @@ export type TabsTriggerProps = TriggerBaseProps &
   };
 
 export const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
-  (
-    { className, size, variant, fitted, tone, left, right, count, children, ...props },
-    ref
-  ) => {
+  ({ className, fitted, left, right, count, children, ...props }, ref) => {
     return (
       <TabsPrimitive.Trigger
         ref={ref}
-        className={cn(tabsTrigger({ size, variant, fitted, tone }), className)}
+        className={cn(tabsTrigger({ fitted }), className)}
         {...props}
       >
         {left && <span className="shrink-0">{left}</span>}
