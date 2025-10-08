@@ -109,7 +109,7 @@ export function BorrowerPositionCard({
         </div>
       }
     >
-      <div className="bg-preset-gray-50 flex justify-between gap-4 rounded-md px-10 py-5">
+      <div className="bg-muted/15 flex justify-between gap-4 rounded-md px-10 py-5">
         <div className="flex flex-col gap-4">
           <p>Health factor</p>
           <p className="text-lg">-</p>
@@ -158,7 +158,7 @@ export function BorrowerPositionCard({
         ]}
       />
       <UncontrolledCollapsible summary="Position details" className="mt-2 px-10 md:mt-4">
-        <div className="text-text-dimmed mt-2 flex flex-col gap-2 text-sm">
+        <div className="text-text-dimmed mt-2 flex flex-col gap-4 text-sm">
           <UncontrolledCollapsible
             defaultOpen
             summary={
@@ -178,7 +178,7 @@ export function BorrowerPositionCard({
           >
             <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
               <div className="flex items-center justify-between">
-                <span>Overall APR</span>
+                <span>Borrow APR</span>
                 <span>{formatAprToPercent(apr).text}</span>
               </div>
             </div>

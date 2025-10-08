@@ -8,11 +8,9 @@ import { useLocalization } from "@/lib/localization/useLocalization";
 import { showSkeletons } from "@/lib/misc/ui";
 import { Heading } from "@diffuse/ui-kit";
 import { BorrowerPositionCard } from "./BorrowPositionCard";
-import { useUnborrow } from "@/lib/core/hooks/useUnborrow";
-import { toast } from "@/lib/toast";
 import { BorrowerPosition } from "@/lib/core/types";
 import { useState } from "react";
-import { ManagePositionModal } from "./ManagePositionModal";
+import { ManagePositionModal } from "./ManagePositionModal/ManagePositionModal";
 import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
 import { AppLink } from "@/components/misc/AppLink";
 import { ExternalLink } from "lucide-react";
@@ -50,15 +48,6 @@ export function BorrowPositions() {
     isPending,
     refetch: refetchBorrowerPositions,
   } = useBorrowerPositions(vaultsForSelectedAsset);
-  const { unborrow, isPending: isUnborrowPending } = useUnborrow(vaults, {
-    onSuccess: () => {
-      refetchLimits();
-      refetchTotalAssets();
-      refetchBorrowerPositions();
-      toast("Borrow position closed");
-    },
-    onError: () => toast("Error closing borrow position"),
-  });
 
   return (
     <div className="mt-4 flex flex-col gap-3 md:gap-8">
@@ -81,10 +70,9 @@ export function BorrowPositions() {
         ) : positions.length > 0 ? (
           positions.map(position => (
             <BorrowerPositionCard
-              key={position.strategyId.toString()}
+              key={position.id}
               position={position}
               onManagePositionBtnClick={() => setSelectedPosition(position)}
-              disabled={isUnborrowPending}
               selectedAsset={selectedAsset}
               strategy={strategies.find(s => s.id === position.strategyId)!}
             />
@@ -109,6 +97,11 @@ export function BorrowPositions() {
             if (!open) {
               setSelectedPosition(undefined);
             }
+          }}
+          onCancelPosition={() => {
+            refetchLimits();
+            refetchTotalAssets();
+            refetchBorrowerPositions();
           }}
           title={
             <div className="flex items-center justify-between gap-4">
