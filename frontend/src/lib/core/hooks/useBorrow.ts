@@ -7,6 +7,7 @@ import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { produce } from "immer";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
+import { applySlippage } from "@/lib/formulas/slippage";
 
 export type SelectedBorrow = {
   chainId: number;
@@ -48,20 +49,6 @@ const qKeys = {
   borrow: (chainId: number | undefined, address: Address | undefined) =>
     qk([ROOT, version, opt(chainId), opt(address)]),
 };
-
-const DEN = 10_000n as const;
-
-const SLIPPAGE_BPS: Record<string, bigint> = {
-  "0.1": 10n,
-  "0.5": 50n,
-  "1.0": 100n,
-};
-
-function applySlippage(amount: bigint, slippageKey: string): bigint {
-  const bps = SLIPPAGE_BPS[slippageKey] ?? 0n;
-  const num = DEN - bps;
-  return (amount * num) / DEN;
-}
 
 function makeIdemKey(
   chainId: number,

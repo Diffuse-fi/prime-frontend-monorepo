@@ -31,15 +31,15 @@ export function SlippageInput({
         }}
       >
         {options.map(option => (
-          <RadioGroupItem key={option.value} value={option.value} className="">
-            <div
-              className={cn(
-                "bg-border/40 hover:bg-border cursor-pointer rounded-md px-3 py-1 text-sm font-medium transition-colors",
-                value === option.value && "bg-border hover:bg-border"
-              )}
-            >
-              {option.label}
-            </div>
+          <RadioGroupItem
+            key={option.value}
+            value={option.value}
+            className={cn(
+              "bg-border/40 hover:bg-border rounded-md px-3 py-1 text-sm font-medium transition-colors",
+              value === option.value && "bg-border hover:bg-border"
+            )}
+          >
+            {option.label}
           </RadioGroupItem>
         ))}
       </RadioGroup>
