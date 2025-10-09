@@ -334,7 +334,7 @@ export class Vault extends ContractBase {
     [
       positionId,
       deadline,
-      slippageBps,
+      slippage,
     ]: [
       bigint,
       bigint,
@@ -342,7 +342,7 @@ export class Vault extends ContractBase {
     ],
     { signal }: SdkRequestOptions = {}
   ) {
-    if (!this.init.client.wallet) throw new WalletRequiredError("previewUnborrow");
+    if (!this.init.client.wallet) throw new WalletRequiredError("unborrow");
 
     try {
       const minAssetsOutForPreview = 0n;
@@ -357,20 +357,35 @@ export class Vault extends ContractBase {
         signal
       );
 
+      const denominator = 10_000n;
       const strategyTokensAmount = sim.result;
-      const adjustedTokensAmount = strategyTokensAmount - slippageBps;
+      const num = denominator - slippage;
+      const adjustedTokensAmount = (strategyTokensAmount * num) / denominator;
+
+      const gas =
+        sim.request.gas ??
+        (await this.init.client.public.estimateContractGas({
+          address: this.getContract().address,
+          abi: vaultAbi,
+          functionName: "unborrow",
+          args: [positionId, adjustedTokensAmount, deadline],
+          account: this.init.client.wallet.account!,
+        }));
+
+      const gasAdj = (gas * 12n) / 10n;
 
       return await abortable(
         this.init.client.wallet.writeContract({
           ...sim.request,
           args: [positionId, adjustedTokensAmount, deadline],
+          gas: gasAdj,
         }),
         signal
       );
     } catch (e) {
       throw normalizeError(e, {
         op: "previewUnborrow",
-        args: [positionId, deadline, slippageBps],
+        args: [positionId, deadline, slippage],
         contract: contractName,
         chainId: this.chainId,
       });

@@ -1,189 +1,189 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { getAddress, type Address, type Hash } from "viem";
-import { useMutation } from "@tanstack/react-query";
-import { produce } from "immer";
 import { useClients } from "../../wagmi/useClients";
-import { qk, opt } from "../../query/helpers";
+import type { TxInfo, TxState, VaultFullInfo } from "../types";
+import { useMutation } from "@tanstack/react-query";
+import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
-import type { VaultFullInfo, TxInfo, TxState } from "../types";
-import { vaultAbi } from "@diffuse/sdk-js";
+import { produce } from "immer";
+import { getSlippageBps } from "@/lib/formulas/slippage";
+
+export type SelectedUnborrow = {
+  chainId: number;
+  address: Address;
+  positionId: bigint;
+  slippage: string;
+  deadline: bigint;
+};
 
 export type UseUnborrowParams = {
-  onSuccess?: (args: { vault: Address; positionId: bigint; hash: Hash }) => void;
-  onError?: (args: { vault: Address; positionId: bigint; message: string }) => void;
+  onUnborrowComplete?: (result: UnborrowResult) => void;
+  onUnborrowError?: (errorMessage: string, address: Address) => void;
+  onUnborrowSuccess?: (vaultAddress: Address, hash: Hash) => void;
+};
+
+export type UnborrowResult = {
+  hash?: Hash;
+  error?: Error;
 };
 
 export type UseUnborrowResult = {
-  unborrow: (params: {
-    vaultAddress: Address;
-    positionId: bigint;
-    minAssetsOut?: bigint;
-    slippageBps?: number;
-    deadline: bigint;
-  }) => Promise<Hash | null>;
-
+  unborrow: () => Promise<UnborrowResult>;
   reset: () => void;
   txState: TxState;
-  isPending: boolean;
-  someAwaitingSignature: boolean;
+  allConfirmed: boolean;
   someError: boolean;
+  someAwaitingSignature: boolean;
+  isPending: boolean;
 };
 
 const ROOT = "unborrow" as const;
 const version = QV.borrow;
+const qKeys = {
+  unborrow: (chainId: number | undefined, address: Address | undefined) =>
+    qk([ROOT, version, opt(chainId), opt(address)]),
+};
 
-const qKeySingle = (chainId: number, wallet?: Address | null) =>
-  qk([ROOT, "single", version, opt(chainId), opt(wallet)]);
-
-function idemKey(
+function makeIdemKey(
   chainId: number,
   vault: Address,
-  positionId: bigint,
-  minAssetsOut: bigint,
-  deadline: bigint
+  wallet: Address,
+  v: SelectedUnborrow
 ) {
-  return `${chainId}:${vault.toLowerCase()}:${positionId.toString()}:${minAssetsOut.toString()}:${deadline.toString()}`;
+  return [
+    chainId,
+    vault.toLowerCase(),
+    wallet.toLowerCase(),
+    v.positionId.toString(),
+    v.slippage.toString(),
+    v.deadline.toString(),
+  ].join(":");
 }
 
 export function useUnborrow(
-  allVaults: VaultFullInfo[],
-  { onSuccess, onError }: UseUnborrowParams = {}
+  selected: SelectedUnborrow | null,
+  vault: VaultFullInfo | null,
+  { onUnborrowComplete, onUnborrowError, onUnborrowSuccess }: UseUnborrowParams = {}
 ): UseUnborrowResult {
   const [txState, setTxState] = useState<TxState>({});
-  const [pendingByKey, setPendingByKey] = useState<Record<string, true>>({});
-  const { chainId, address: wallet, publicClient, walletClient } = useClients();
+  const [pendingKey, setPendingKey] = useState<string | null>(null);
 
-  const vaultByAddr = useMemo(() => {
-    const m = new Map<Address, VaultFullInfo>();
-    for (const v of allVaults) m.set(getAddress(v.address), v);
-    return m;
-  }, [allVaults]);
+  const { chainId, address: wallet, publicClient } = useClients();
 
-  const setPhase = (key: string, info: Partial<TxInfo>) =>
+  const enabled =
+    !!selected &&
+    !!wallet &&
+    !!publicClient &&
+    !!vault &&
+    selected.chainId === chainId &&
+    getAddress(selected.address) === getAddress(vault.address);
+
+  const addr = useMemo(
+    () => (selected ? getAddress(selected.address) : undefined),
+    [selected]
+  );
+
+  const setPhase = (addr: Address, info: Partial<TxInfo>) =>
     setTxState(
       produce(prev => {
-        prev[key as keyof TxState] = {
-          ...(prev[key as keyof TxState] || { phase: "idle" }),
-          ...info,
-        } as TxInfo;
+        prev[addr] = { ...(prev[addr] as TxInfo | undefined), ...info } as TxInfo;
       })
     );
 
-  const setKeyPending = (key: string) =>
-    setPendingByKey(produce(prev => void (prev[key] = true)));
-  const clearKeyPending = (key: string) =>
-    setPendingByKey(produce(prev => void delete prev[key]));
+  const unborrowMutation = useMutation({
+    mutationKey: qKeys.unborrow(chainId, addr),
+    mutationFn: async (): Promise<UnborrowResult> => {
+      const result: UnborrowResult = {};
+      if (!enabled || !selected || !addr || !wallet) return result;
 
-  const singleMutation = useMutation({
-    mutationKey: qKeySingle(chainId ?? 0, wallet ?? null),
-    mutationFn: async (params: {
-      vaultAddress: Address;
-      positionId: bigint;
-      minAssetsOut?: bigint;
-      slippageBps?: number;
-      deadline: bigint;
-    }) => {
-      if (!wallet || !publicClient || !walletClient || !chainId) return null;
-
-      const address = getAddress(params.vaultAddress);
-      const vault = vaultByAddr.get(address);
-      const positionId = params.positionId;
-      const deadline = params.deadline;
-
-      const stateKey = `${address}:${positionId}`;
-      const currentPhase = (txState[stateKey as keyof TxState] as TxInfo | undefined)
-        ?.phase;
+      const idemKey = makeIdemKey(chainId!, addr, getAddress(wallet), selected);
+      const currentPhase = (txState[addr]?.phase ?? "idle") as TxInfo["phase"];
       const active =
         currentPhase === "awaiting-signature" ||
         currentPhase === "pending" ||
         currentPhase === "replaced";
-      if (active) return null;
+      if (active || pendingKey === idemKey) return result;
 
-      let e: Error | null = null;
-      if (!vault) e = new Error("Vault not found");
-      if (positionId <= 0n) e = new Error("Invalid positionId");
-      if (deadline <= 0n) e = new Error("Invalid deadline");
-      if (e) {
-        setPhase(stateKey, { phase: "error", errorMessage: e.message });
-        onError?.({ vault: address, positionId, message: e.message });
-        return null;
+      if (selected.positionId <= 0n) {
+        const e = new Error("Position id must be greater than zero");
+        setPhase(addr, { phase: "error", errorMessage: e.message });
+        result.error = e;
+        onUnborrowError?.(e.message, addr);
+        onUnborrowComplete?.(result);
+        return result;
       }
 
+      setPhase(addr, { phase: "checking" });
+
       try {
-        setPhase(stateKey, { phase: "awaiting-signature" });
-        const { result: simOut, request } = await publicClient.simulateContract({
-          address,
-          abi: vaultAbi,
-          functionName: "unborrow",
-          args: [positionId, 0n, deadline],
-          account: walletClient.account!,
-        });
-        const expectedOut = simOut as bigint;
+        setPendingKey(idemKey);
+        setPhase(addr, { phase: "awaiting-signature" });
 
-        const bps = Math.max(0, Math.min(10_000, Math.floor(params.slippageBps ?? 0)));
-        const minOut =
-          params.minAssetsOut ?? (expectedOut * BigInt(10_000 - bps)) / 10_000n;
+        const hash = await vault!.contract.unborrow([
+          selected.positionId,
+          selected.deadline,
+          getSlippageBps(selected.slippage),
+        ]);
 
-        const key = idemKey(chainId, address, positionId, minOut, deadline);
-        if (pendingByKey[key]) return null;
-        setKeyPending(key);
+        setPhase(addr, { phase: "pending", hash });
+        result.hash = hash;
 
-        setPhase(stateKey, { phase: "pending" });
-        const hash = await walletClient.writeContract({
-          ...request,
-          args: [positionId, minOut, deadline],
-        });
-
-        const receipt = await publicClient.waitForTransactionReceipt({
+        const receipt = await publicClient!.waitForTransactionReceipt({
           hash,
           onReplaced: r => {
-            setPhase(stateKey, { phase: "replaced", hash: r.transaction.hash });
+            setPhase(addr, { phase: "replaced", hash: r.transaction.hash });
+            result.hash = r.transaction.hash;
           },
         });
 
         if (receipt.status === "success") {
-          setPhase(stateKey, { phase: "success", hash: receipt.transactionHash });
-          onSuccess?.({ vault: address, positionId, hash: receipt.transactionHash });
-          return receipt.transactionHash;
+          setPhase(addr, { phase: "success", hash: receipt.transactionHash });
+          result.hash = receipt.transactionHash;
+          onUnborrowSuccess?.(addr, receipt.transactionHash);
         } else {
-          const err = new Error("Transaction reverted");
-          setPhase(stateKey, { phase: "error", errorMessage: err.message });
-          onError?.({ vault: address, positionId, message: err.message });
-          return null;
+          const e = new Error("Transaction reverted");
+          setPhase(addr, { phase: "error", errorMessage: e.message });
+          result.error = e;
+          onUnborrowError?.(e.message, addr);
         }
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "Unknown error";
-        setPhase(stateKey, { phase: "error", errorMessage: msg });
-        onError?.({ vault: address, positionId, message: msg });
-        return null;
+      } catch (error) {
+        const e = error instanceof Error ? error : new Error("Unknown error");
+        setPhase(addr, { phase: "error", errorMessage: e.message });
+        result.error = e;
+        onUnborrowError?.(e.message, addr);
       } finally {
-        clearKeyPending(
-          idemKey(
-            chainId,
-            getAddress(params.vaultAddress),
-            params.positionId,
-            params.minAssetsOut ?? 0n,
-            params.deadline
-          )
-        );
+        setPendingKey(k => (k === idemKey ? null : k));
+        onUnborrowComplete?.(result);
       }
+
+      return result;
     },
   });
 
+  const unborrow = unborrowMutation.mutateAsync;
+
+  const allConfirmed =
+    Object.keys(txState).length > 0 &&
+    Object.values(txState).every(s => s.phase === "success");
+
+  const someError = Object.values(txState).some(s => s.phase === "error");
+  const someAwaitingSignature = Object.values(txState).some(
+    s => s.phase === "awaiting-signature"
+  );
+
   const reset = () => {
     setTxState({});
-    setPendingByKey({});
-    singleMutation.reset();
+    setPendingKey(null);
+    unborrowMutation.reset();
   };
 
   return {
-    unborrow: singleMutation.mutateAsync,
+    unborrow,
     reset,
     txState,
-    isPending: singleMutation.isPending,
-    someAwaitingSignature: Object.values(txState).some(
-      s => s.phase === "awaiting-signature"
-    ),
-    someError: Object.values(txState).some(s => s.phase === "error"),
+    allConfirmed,
+    someError,
+    someAwaitingSignature,
+    isPending: unborrowMutation.isPending,
   };
 }

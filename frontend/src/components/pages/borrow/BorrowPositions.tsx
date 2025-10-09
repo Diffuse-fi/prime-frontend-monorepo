@@ -68,15 +68,21 @@ export function BorrowPositions() {
         !selectedAsset ? (
           showSkeletons(2, "h-40 sm:h-80")
         ) : positions.length > 0 ? (
-          positions.map(position => (
-            <BorrowerPositionCard
-              key={position.id}
-              position={position}
-              onManagePositionBtnClick={() => setSelectedPosition(position)}
-              selectedAsset={selectedAsset}
-              strategy={strategies.find(s => s.id === position.strategyId)!}
-            />
-          ))
+          positions.map(position => {
+            const strategy = strategies.find(s => s.id === position.strategyId);
+
+            if (!strategy) return null;
+
+            return (
+              <BorrowerPositionCard
+                key={position.id}
+                position={position}
+                onManagePositionBtnClick={() => setSelectedPosition(position)}
+                selectedAsset={selectedAsset}
+                strategy={strategy}
+              />
+            );
+          })
         ) : (
           <div className="sm:col-span-3">
             <Heading level="5" className="pt-2 font-semibold">
@@ -102,6 +108,7 @@ export function BorrowPositions() {
             refetchLimits();
             refetchTotalAssets();
             refetchBorrowerPositions();
+            setSelectedPosition(undefined);
           }}
           title={
             <div className="flex items-center justify-between gap-4">
