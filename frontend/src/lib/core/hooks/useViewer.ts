@@ -9,7 +9,10 @@ import { useMemo } from "react";
 import { Viewer } from "@diffuse/sdk-js";
 import pLimit from "p-limit";
 import { useAssetsMeta } from "@/lib/assets/useAssetsMeta";
-import { populateAssetListWithMeta } from "@/lib/assets/assetsMeta";
+import {
+  populateAssetListWithMeta,
+  populateAssetWithMeta,
+} from "@/lib/assets/assetsMeta";
 import { VaultRiskLevel } from "../types";
 
 type UseViewerParams = {
@@ -82,6 +85,19 @@ export function useViewer({ addressOverride, chainId }: UseViewerParams) {
 
     return query.data.map(v => ({
       ...v,
+      strategies: v.strategies.map(s => ({
+        ...s,
+        token: populateAssetWithMeta({
+          asset: {
+            address: getAddress(s.token.asset),
+            chainId: chainId,
+            name: s.token.symbol,
+            decimals: s.token.decimals,
+            symbol: s.token.symbol,
+          },
+          meta,
+        }),
+      })),
       riskLevel: v.riskLevel as VaultRiskLevel,
       assets: populateAssetListWithMeta({
         list: v.assets.map(a => ({

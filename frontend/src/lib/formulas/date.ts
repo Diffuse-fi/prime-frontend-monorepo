@@ -21,3 +21,7 @@ export function calcDaysInterval({
 
   return toD.diff(fromD, "day");
 }
+
+export function now(): number {
+  return Date.now();
+}

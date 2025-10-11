@@ -195,8 +195,6 @@ export function useVaults() {
     return m;
   }, [spreadFeeQuery.data]);
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  /* @ts-expect-error */
   const vaults: VaultFullInfo[] = useMemo(() => {
     if (!vaultContracts.length) return [];
     if (rawTotalAssetQueries.isPending) return [];

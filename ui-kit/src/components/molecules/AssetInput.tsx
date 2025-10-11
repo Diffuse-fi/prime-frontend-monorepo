@@ -2,7 +2,7 @@ import * as React from "react";
 import { Input, type InputProps } from "@/atoms";
 import { NumericFormat, NumericFormatProps } from "react-number-format";
 
-export interface TokenInputProps
+export interface AssetInputProps
   extends Omit<InputProps, "right" | "type" | "onChange" | "value" | "defaultValue"> {
   renderAssetImage?: (ctx: { size: "sm" | "md" | "lg" }) => React.ReactNode;
   assetSymbol: string;
@@ -10,9 +10,17 @@ export interface TokenInputProps
   onValueChange?: NumericFormatProps["onValueChange"];
 }
 
-export const AssetInput = React.forwardRef<HTMLInputElement, TokenInputProps>(
+export const AssetInput = React.forwardRef<HTMLInputElement, AssetInputProps>(
   (
-    { renderAssetImage, size = "md", assetSymbol, value, onValueChange, ...props },
+    {
+      renderAssetImage,
+      size = "md",
+      assetSymbol,
+      value,
+      onValueChange,
+      className,
+      ...props
+    },
     ref
   ) => {
     const right = (
@@ -45,6 +53,7 @@ export const AssetInput = React.forwardRef<HTMLInputElement, TokenInputProps>(
         value={value}
         onValueChange={onValueChange}
         {...props}
+        wrapperClassName={className}
       />
     );
   }

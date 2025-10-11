@@ -1,8 +1,17 @@
-import { Viewer, type Vault } from "@diffuse/sdk-js";
+import { type Vault } from "@diffuse/sdk-js";
 import { Address, Hash } from "viem";
 import { AssetInfo } from "../assets/validations";
 
-export type Strategy = Awaited<ReturnType<Viewer["getStrategies"]>>[number];
+export type Strategy = {
+  id: bigint;
+  token: AssetInfo;
+  apr: bigint;
+  endDate: bigint;
+  balance: bigint;
+  pool: `0x${string}`;
+  isDisabled: boolean;
+  name: string;
+};
 
 export type VaultFullInfo = {
   assets: AssetInfo[];
@@ -68,11 +77,7 @@ export type VaultRiskLevel =
 
 export type BorrowerPosition = {
   vault: VaultFullInfo;
-  asset: {
-    asset: Address;
-    symbol: string;
-    decimals: number;
-  };
+  asset: AssetInfo;
   user: Address;
   collateralType: number;
   subjectToLiquidation: boolean;
