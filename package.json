@@ -10,7 +10,7 @@
     "sdk-js"
   ],
   "scripts": {
-    "build": "npm run build -w ui-kit && npm run build -w sdk-js && npm run build -w frontend",
+    "build": "concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" --success last && npm run build -w frontend",
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w sdk-js\" \"npm run dev -w ui-kit\" --kill-others --success last",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
