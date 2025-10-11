@@ -12,10 +12,10 @@
   "scripts": {
     "build": "npm run build -w ui-kit && npm run build -w sdk-js && npm run build -w frontend",
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w sdk-js\" \"npm run dev -w ui-kit\" --kill-others --success last",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "knip": "knip --production",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "prettier": "prettier --write .",
-    "prettier:check": "prettier --check .",
     "setup": "npx --no-install allow-scripts && simple-git-hooks && npm run build"
   },
   "simple-git-hooks": {
@@ -27,7 +27,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,md,json,css}": [
-      "npm run prettier"
+      "npm run format"
     ]
   },
   "overrides": {

@@ -20,6 +20,9 @@ const others = SUPPORTED_LOCALES.filter(l => l !== DEFAULT_LOCALE);
 const othersGroup = others.join("|");
 
 const nextConfig: NextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // To catch typical React issues in development
   reactStrictMode: true,
   // Memory optimization and prevents source code exposure on the client
