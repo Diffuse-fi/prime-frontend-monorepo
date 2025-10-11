@@ -2,7 +2,16 @@
 
 import { useTranslations } from "next-intl";
 import { AssetInfo } from "@/lib/assets/validations";
-import { AssetInput, Button, Card, Dialog, Heading, Slider } from "@diffuse/ui-kit";
+import {
+  AssetInput,
+  Button,
+  Card,
+  Dialog,
+  Heading,
+  Select,
+  SelectOption,
+  Slider,
+} from "@diffuse/ui-kit";
 import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
 import { useERC20TokenBalance } from "@/lib/wagmi/useERC20TokenBalance";
 import { formatUnits } from "@/lib/formatters/asset";
@@ -14,6 +23,9 @@ import { SelectedStartegy } from ".";
 import { ReactNode, useReducer } from "react";
 import { SlippageInput } from "./SlippageInput";
 import { useLocalStorage } from "@/lib/misc/useLocalStorage";
+import { PositionDetails } from "./PositionDetails";
+import now from "lodash/now";
+import { formatNumberToKMB } from "@/lib/formatters/number";
 
 type ChainSwitchModalProps = {
   open: boolean;
@@ -199,6 +211,13 @@ export function BorrowModal({
     .map(x => x.errorMessage)
     .filter(Boolean);
 
+  const selectOptions: SelectOption[] = [
+    {
+      label: selectedAsset.symbol,
+      value: selectedAsset.address,
+    },
+  ];
+
   return (
     <Dialog
       open={open}
@@ -208,20 +227,24 @@ export function BorrowModal({
         resetBorrow();
       }}
       title={title}
-      size="md"
+      size="lg"
     >
-      <div className="grid grid-cols-1 gap-6 pb-2 md:grid-cols-1 md:pb-6">
-        <div className="flex flex-col gap-3 text-center">
+      <div className="grid grid-cols-1 gap-10 pb-2 md:grid-cols-2 md:pb-6">
+        <div className="flex flex-col gap-4 text-center">
           <Heading level="5">Collateral</Heading>
-          <AssetInput
-            placeholder="0.0"
-            value={collateralText}
-            onValueChange={evt => onCollateralInput(evt.value)}
-            assetSymbol={selectedAsset?.symbol}
-            renderAssetImage={() => (
-              <AssetImage alt="" address={selectedAsset.address} size={24} />
-            )}
-          />
+          <div className="flex flex-nowrap items-center gap-2">
+            <AssetInput
+              className="flex-1"
+              placeholder="0.0"
+              value={collateralText}
+              onValueChange={evt => onCollateralInput(evt.value)}
+              assetSymbol={selectedAsset?.symbol}
+              renderAssetImage={() => (
+                <AssetImage alt="" address={selectedAsset.address} size={24} />
+              )}
+            />
+            <Select value={selectedAsset.address} options={selectOptions} disabled />
+          </div>
           <Card
             className="bg-preset-gray-50 border-none"
             cardBodyClassName="gap-2"
@@ -283,6 +306,26 @@ export function BorrowModal({
               ))}
             </div>
           )}
+        </div>
+        <div className="flex flex-col gap-8">
+          <Heading level="5">Position details</Heading>
+          <div className="flex flex-nowrap justify-between gap-4 overflow-ellipsis">
+            <Heading level="6" className="text-text-dimmed">
+              Total balance
+            </Heading>
+            <span>
+              {formatNumberToKMB(selectedStrategy.balance).text}
+              &nbsp;{selectedStrategy.token.symbol}
+            </span>
+          </div>
+          <PositionDetails
+            strategy={selectedStrategy}
+            selectedAsset={selectedAsset}
+            collateralGiven={collateralAmount}
+            leverage={BigInt(leverage)}
+            liquidationPrice={0n} // TODO - calculate liquidation price on input change
+            enterTimeOrDeadline={now()}
+          />
         </div>
       </div>
     </Dialog>

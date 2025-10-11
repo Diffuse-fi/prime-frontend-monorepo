@@ -9,7 +9,7 @@ import {
   Heading,
   SimpleTable,
   AssetInput,
-  TokenInputProps,
+  AssetInputProps,
   UncontrolledCollapsible,
   FormField,
 } from "@diffuse/ui-kit";
@@ -25,7 +25,7 @@ type VaultProps = {
   vault: VaultFullInfo;
   selectedAsset: AssetInfo;
   amount?: bigint;
-  onAmountChange?: TokenInputProps["onValueChange"];
+  onAmountChange?: AssetInputProps["onValueChange"];
   isConnected?: boolean;
 };
 

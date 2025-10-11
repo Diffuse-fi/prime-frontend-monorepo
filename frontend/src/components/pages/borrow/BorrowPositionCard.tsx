@@ -7,11 +7,8 @@ import { AssetInfo } from "@/lib/assets/validations";
 import { getStableChainMeta } from "@/lib/chains/meta";
 import { getContractExplorerUrl } from "@/lib/chains/rpc";
 import { BorrowerPosition, Strategy } from "@/lib/core/types";
-import { formatAsset, formatEvmAddress, formatUnits } from "@/lib/formatters/asset";
-import { formatDateTime } from "@/lib/formatters/date";
+import { formatEvmAddress, formatUnits } from "@/lib/formatters/asset";
 import { formatAprToPercent } from "@/lib/formatters/finance";
-import { calcAprInterest } from "@/lib/formulas/apr";
-import { calcDaysInterval } from "@/lib/formulas/date";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
 import {
   Button,
@@ -19,11 +16,11 @@ import {
   cn,
   Heading,
   SimpleTable,
-  Tooltip,
   UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
 import { ExternalLink } from "lucide-react";
 import { useChainId } from "wagmi";
+import { PositionDetails } from "./PositionDetails";
 
 export interface BorrowerPositionCardProps {
   selectedAsset: AssetInfo;
@@ -53,25 +50,10 @@ export function BorrowerPositionCard({
     enterTimeOrDeadline,
   } = position;
   const chainId = useChainId();
-  const { apr, endDate } = strategy;
+  const { apr } = strategy;
   const explorerUrl = getContractExplorerUrl(chainId, position.vault.address);
   const { iconUrl, iconBackground } = getStableChainMeta(chainId);
   const collateralAsset = collateralType === 0 ? selectedAsset : strategyAsset;
-
-  const daysUntilMaturity = calcDaysInterval({ to: endDate });
-  const fullEndDate = formatDateTime(endDate).text;
-  const maturityYield = calcAprInterest(apr, collateralGiven, {
-    durationInDays: calcDaysInterval({
-      to: endDate,
-      from: enterTimeOrDeadline,
-    }),
-  });
-  const leverageDisplay = `x${(Number(leverage) / 100).toFixed(2)}`;
-  const liquidationPriceDisplay = formatAsset(
-    liquidationPrice,
-    strategyAsset.decimals,
-    `${selectedAsset.symbol} / ${strategyAsset.symbol}`
-  ).text;
 
   return (
     <Card
@@ -79,7 +61,7 @@ export function BorrowerPositionCard({
       cardBodyClassName="gap-4"
       header={
         <div className="flex items-center justify-start gap-4">
-          <AssetImage alt="" address={strategyAsset.asset} size={20} />
+          <AssetImage alt="" address={strategyAsset.address} size={20} />
           <Heading level="4" className="inline font-semibold">
             {strategyAsset.symbol}
           </Heading>
@@ -116,7 +98,7 @@ export function BorrowerPositionCard({
         </div>
         <div className="flex flex-col gap-4">
           <p>Leverage</p>
-          <p className="text-lg">{leverageDisplay}</p>
+          <p className="text-lg">{`x${(Number(leverage) / 100).toFixed(2)}`}</p>
         </div>
         <div className="flex flex-col gap-4">
           <p>APY</p>
@@ -158,58 +140,14 @@ export function BorrowerPositionCard({
         ]}
       />
       <UncontrolledCollapsible summary="Position details" className="mt-2 px-10 md:mt-4">
-        <div className="text-text-dimmed mt-2 flex flex-col gap-4 text-sm">
-          <UncontrolledCollapsible
-            defaultOpen
-            summary={
-              <span className="text-muted font-mono text-xs">Position health</span>
-            }
-          >
-            <div className="flex flex-col gap-2 border-l border-[#FF4800] px-2 py-1">
-              <div className="flex items-center justify-between">
-                <span>Liquidation price</span>
-                <span>{liquidationPriceDisplay}</span>
-              </div>
-            </div>
-          </UncontrolledCollapsible>
-          <UncontrolledCollapsible
-            defaultOpen
-            summary={<span className="text-muted font-mono text-xs">APR</span>}
-          >
-            <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
-              <div className="flex items-center justify-between">
-                <span>Borrow APR</span>
-                <span>{formatAprToPercent(apr).text}</span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
-              <div className="flex items-center justify-between">
-                <span>Leverage</span>
-                <span>{leverageDisplay}</span>
-              </div>
-            </div>
-          </UncontrolledCollapsible>
-          <UncontrolledCollapsible
-            defaultOpen
-            summary={<span className="text-muted font-mono text-xs">Yield</span>}
-          >
-            <div className="flex flex-col gap-2 border-l border-[#49E695] px-2 py-1">
-              <div className="flex items-center justify-between">
-                <span>Days until maturity</span>
-                <Tooltip content={fullEndDate} side="top">
-                  <span>{daysUntilMaturity}</span>
-                </Tooltip>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Maturity yield</span>
-                <span>
-                  {formatUnits(maturityYield, selectedAsset.decimals).text}{" "}
-                  {selectedAsset.symbol}
-                </span>
-              </div>
-            </div>
-          </UncontrolledCollapsible>
-        </div>
+        <PositionDetails
+          strategy={strategy}
+          selectedAsset={selectedAsset}
+          liquidationPrice={liquidationPrice}
+          enterTimeOrDeadline={enterTimeOrDeadline}
+          collateralGiven={collateralGiven}
+          leverage={leverage}
+        />
       </UncontrolledCollapsible>
       <Button
         disabled={disabled}
