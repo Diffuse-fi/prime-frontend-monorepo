@@ -1,0 +1,37 @@
+name: Build
+
+on:
+  pull_request:
+  workflow_dispatch:
+  # push: we actully don't need to test it on main because Vercel won't update prod without building
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-lint:
+    name: Build and Lint code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v5
+
+      - name: Get nodejs version from .nvmrc
+        id: nvmrc
+        run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          setup-node: true
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Lint
+        uses: ./.github/actions/lint
+
+      - name: Build
+        uses: ./.github/actions/build

@@ -1,0 +1,17 @@
+name: "Lint"
+description: "Lints the code in the repo"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Lint
+      run: npm run lint
+      shell: bash
+
+    - name: Format
+      run: npm run format
+      shell: bash
+
+    # - name: Check for unused files, dependencies, and exports
+    #   run: npm run knip
+    #   shell: bash

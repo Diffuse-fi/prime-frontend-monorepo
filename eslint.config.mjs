@@ -9,15 +9,18 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-const eslintConfig = [
-  ...compat.config({
-    extends: ["next/typescript", "next/core-web-vitals"],
-    settings: {
-      next: {
-        rootDir: "frontend",
-      },
-    },
-  }),
+const nextCompat = compat.config({
+  extends: ["next/typescript", "next/core-web-vitals"],
+  settings: { next: { rootDir: ["frontend"] } },
+});
+
+const nextScoped = nextCompat.map(c => ({
+  files: ["frontend/**/*.{ts,tsx}"],
+  ...c,
+}));
+
+export default [
+  ...nextScoped,
   {
     ignores: [
       "**/node_modules",
@@ -27,8 +30,7 @@ const eslintConfig = [
       "**/out",
       "**/public",
       "**/frontend/src/dictionaries/*.json",
+      "**/.next/**",
     ],
   },
 ];
-
-export default eslintConfig;

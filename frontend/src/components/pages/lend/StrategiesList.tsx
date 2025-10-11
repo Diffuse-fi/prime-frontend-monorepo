@@ -15,7 +15,12 @@ export function StrategiesList({ strategies }: StrategiesListProps) {
         columns={["Asset", "APR", "End date"]}
         rows={strategies.map(s => [
           <div key="1" className="flex items-center gap-2">
-            <AssetImage alt="" address={s.token.asset} size={20} className="grayscale" />
+            <AssetImage
+              alt=""
+              address={s.token.address}
+              size={20}
+              className="grayscale"
+            />
             {s.token.symbol}
           </div>,
           <div key="2">{formatAprToPercent(s.apr).text}</div>,

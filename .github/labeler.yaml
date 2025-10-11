@@ -1,0 +1,46 @@
+# This file is used by actions/labeler to automatically label pull requests.
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/workflows/**
+          - .github/actions/**
+          - .github/labeler.yaml
+          - .github/labels.yaml
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.test.ts"
+          - "**/*.spec.ts"
+          - "**/*.test.tsx"
+          - "**/*.spec.tsx"
+          - "**/vitest.config.ts"
+          - "**/playwright.config.ts"
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/package.json"
+          - "package-lock.json"
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "frontend/**"
+
+sdk-js:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "sdk-js/**"
+
+ui-kit:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "ui-kit/**"
+
+eslint:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "eslint.config.*"
+          - ".eslintignore"
