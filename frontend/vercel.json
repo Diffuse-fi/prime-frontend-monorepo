@@ -1,11 +1,5 @@
 {
   "buildCommand": "npm run build:deps && npm run build",
-  "git": {
-    "deploymentEnabled": {
-      "main": true,
-      "*": false
-    }
-  },
   "installCommand": "npm --prefix .. ci",
   "$schema": "https://openapi.vercel.sh/vercel.json"
 }
