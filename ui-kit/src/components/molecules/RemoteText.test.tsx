@@ -13,7 +13,7 @@ import { RemoteText } from "./RemoteText";
 
 describe("<RemoteText />", () => {
   it("shows skeleton overlay while loading and hides the text", () => {
-    render(<RemoteText isLoading text="Hello world" initialSkeletonLength={12} />);
+    render(<RemoteText isLoading text="Hello world" />);
 
     const container = screen.getByRole("generic", { hidden: true }) as HTMLElement;
     expect(container).toHaveAttribute("aria-busy", "true");

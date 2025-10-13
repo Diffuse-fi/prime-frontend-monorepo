@@ -33,6 +33,8 @@ const qKeys = {
     ]),
   spreadFee: (address: string | null, chainId: number) =>
     qk([ROOT, version, opt(address), chainId, "spreadFee"]),
+  liquidity: (address: string | null, chainId: number) =>
+    qk([ROOT, version, opt(address), chainId, "availableLiquidity"]),
 };
 
 export function useVaults() {
@@ -168,7 +170,7 @@ export function useVaults() {
 
   const availableLiquidityQuery = useQuery({
     enabled,
-    queryKey: qKeys.spreadFee(addressKey, chainId),
+    queryKey: qKeys.liquidity(addressKey, chainId),
     queryFn: async () => {
       if (!vaultContracts.length) return [];
 
