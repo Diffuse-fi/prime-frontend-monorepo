@@ -168,6 +168,8 @@ export function BorrowModal({
       collateralAmount: debouncedCollateral,
       deadline: BigInt(Math.floor(Date.now() / 1000) + 3600),
       slippage,
+      assetDecimals: selectedAsset.decimals,
+      assetSymbol: selectedAsset.symbol,
     }),
     [
       debouncedBorrow,
@@ -178,6 +180,8 @@ export function BorrowModal({
       selectedStrategy.vault.address,
       slippage,
       selectedStrategy.vault.contract.chainId,
+      selectedAsset.decimals,
+      selectedAsset.symbol,
     ]
   );
 
@@ -272,7 +276,7 @@ export function BorrowModal({
 
   const { isLoading, isFetching, predictedTokensToReceive, liquidationPriceWad, error } =
     useBorrowPreview(borrowInput, selectedStrategy.vault);
-  const borrowPreviewLoadingDisaplyed = isLoading || isFetching;
+  const borrowPreviewLoadingDisplayed = isLoading || isFetching;
 
   return (
     <Dialog
@@ -385,7 +389,7 @@ export function BorrowModal({
               Total balance
             </Heading>
             <RemoteText
-              isLoading={borrowPreviewLoadingDisaplyed}
+              isLoading={borrowPreviewLoadingDisplayed}
               text={
                 predictedTokensToReceive
                   ? `${
@@ -406,7 +410,8 @@ export function BorrowModal({
             leverage={BigInt(leverage)}
             liquidationPrice={liquidationPriceWad}
             enterTimeOrDeadline={now()}
-            loadingLiquidationPrice={borrowPreviewLoadingDisaplyed}
+            loadingLiquidationPrice={borrowPreviewLoadingDisplayed}
+            liquidationPriceLoadingError={error?.message}
           />
         </div>
       </div>

@@ -17,7 +17,7 @@ export type SelectedBorrow = {
   assetsToBorrow: bigint;
   slippage: string;
   deadline: bigint;
-  assetDecimals?: number;
+  assetDecimals: number;
   assetSymbol?: string;
 };
 
@@ -27,12 +27,6 @@ const version = QV.borrow;
 const WAD = 10n ** 18n;
 const mulWad = (x: bigint, y: bigint) => (x * y) / WAD;
 const divWad = (x: bigint, y: bigint) => (x * WAD) / y;
-const toWad = (x: number) => {
-  const s = x.toString();
-  const [i, f = ""] = s.split(".");
-  const frac = (f + "0".repeat(18)).slice(0, 18);
-  return BigInt(i) * WAD + BigInt(frac);
-};
 
 export function useBorrowPreview(
   selected: SelectedBorrow | null,
@@ -99,34 +93,51 @@ export function useBorrowPreview(
         { signal }
       );
 
-      const coefficient = strategyAssetAmount / baseAssetAmount;
-      const predictedTokensToReceive = selected.assetsToBorrow * coefficient;
+      const baseAssetUnits =
+        (baseAssetAmount * 1000000n) / 10n ** BigInt(selected.assetDecimals);
+      const strategyAssetUnits =
+        (strategyAssetAmount * 1000000n) / 10n ** BigInt(strategy.token.decimals);
 
-      const denom = baseAssetAmount;
+      const price =
+        baseAssetUnits === 0n ? 0 : Number(strategyAssetUnits) / Number(baseAssetUnits);
+
+      const predictedTokensToReceive =
+        ((((selected.assetsToBorrow + selected.collateralAmount) *
+          BigInt(Math.floor(price * 1_000_000))) /
+          1_000_000n) *
+          10n ** BigInt(strategy.token.decimals)) /
+        10n ** BigInt(selected.assetDecimals);
+
+      const denom = selected.collateralAmount + selected.assetsToBorrow;
 
       if (denom === 0n) {
         return { predictedTokensToReceive, liquidationPriceWad: 0n };
       }
 
-      const assetDec = selected.assetDecimals ?? vault.assets[0].decimals;
+      const assetDec = selected.assetDecimals;
       const stratDec = strategy.token.decimals;
 
       const secondsLeft = Math.max(
         0,
         Number(strategy.endDate) - Math.floor(Date.now() / 1000)
       );
-
-      const borrowingFactor = calcBorrowingFactor(
+      const borrowingFactorBpsRaw = calcBorrowingFactor(
         strategy.apr,
         vault.spreadFee,
         BigInt(secondsLeft)
       );
 
-      const factorWad = toWad(1 + Number(borrowingFactor) / 10_000);
-      const borrowedShareWad = divWad(
-        selected.assetsToBorrow,
-        selected.assetsToBorrow + selected.collateralAmount
-      );
+      const borrowingFactorBps =
+        typeof borrowingFactorBpsRaw === "bigint"
+          ? borrowingFactorBpsRaw
+          : BigInt(Math.floor(Number(borrowingFactorBpsRaw)));
+
+      const borrowingFactorWad = (borrowingFactorBps * WAD) / 10_000n;
+      const factorWad = WAD + borrowingFactorWad;
+
+      const totalBase = selected.assetsToBorrow + selected.collateralAmount;
+      const borrowedShareWad =
+        totalBase === 0n ? 0n : divWad(selected.assetsToBorrow, totalBase);
 
       const depositPriceWad =
         predictedTokensToReceive === 0n
