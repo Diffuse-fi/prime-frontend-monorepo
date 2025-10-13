@@ -391,6 +391,18 @@ export class Vault extends ContractBase {
       });
     }
   }
+
+  async getAvailableLiquidity({ signal }: SdkRequestOptions = {}) {
+    try {
+      return abortable(this.getContract().read.availableLiquidity(), signal);
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "availableLiquidity",
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
 }
 
 export { vaultAbi };

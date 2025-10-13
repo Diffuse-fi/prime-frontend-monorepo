@@ -73,6 +73,31 @@ export class Viewer extends ContractBase {
       });
     }
   }
+
+  async previewEnterStrategy(
+    vault: Address,
+    strategyId: bigint,
+    { signal }: SdkRequestOptions = {}
+  ) {
+    try {
+      const sim = await abortable(
+        this.init.client.public.simulateContract({
+          address: _addr(this.init),
+          abi: viewerAbi,
+          functionName: "previewEnterStrategy",
+          args: [vault, strategyId],
+        }),
+        signal
+      );
+      return sim.result;
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "previewEnterStrategy",
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
 }
 
 export { viewerAbi };

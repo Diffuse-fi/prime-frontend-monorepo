@@ -15,6 +15,7 @@ import { usePublicClient } from "wagmi";
 const ASSET_LIMIT = pLimit(6);
 const VAULT_LIMITS_LIMIT = pLimit(3);
 const SPREAD_FEE_LIMIT = pLimit(6);
+const AVAILABLE_LIQUIDITY_LIMIT = pLimit(6);
 
 const ROOT = "vault" as const;
 const version = QV.vault;
@@ -165,6 +166,28 @@ export function useVaults() {
     gcTime: 10 * 60_000,
   });
 
+  const availableLiquidityQuery = useQuery({
+    enabled,
+    queryKey: qKeys.spreadFee(addressKey, chainId),
+    queryFn: async () => {
+      if (!vaultContracts.length) return [];
+
+      const promises = vaultContracts.map(v =>
+        AVAILABLE_LIQUIDITY_LIMIT(() =>
+          v.contract.getAvailableLiquidity().then(liquidity => ({
+            vaultAddress: v.address,
+            liquidity,
+          }))
+        )
+      );
+      const liquidities = await Promise.all(promises);
+
+      return liquidities;
+    },
+    staleTime: 30_000,
+    gcTime: 10 * 60_000,
+  });
+
   const totalAssetsByVault = useMemo(() => {
     const m = new Map<Address, bigint>();
 
@@ -195,6 +218,16 @@ export function useVaults() {
     return m;
   }, [spreadFeeQuery.data]);
 
+  const availableLiquidityByVault = useMemo(() => {
+    const m = new Map<Address, bigint>();
+
+    availableLiquidityQuery.data?.forEach(({ vaultAddress, liquidity }) => {
+      m.set(vaultAddress, liquidity);
+    });
+
+    return m;
+  }, [availableLiquidityQuery.data]);
+
   const vaults: VaultFullInfo[] = useMemo(() => {
     if (!vaultContracts.length) return [];
     if (rawTotalAssetQueries.isPending) return [];
@@ -205,9 +238,13 @@ export function useVaults() {
     if (rawTotalAssetQueries.isError) return [];
 
     if (!totalAssetsByVault.size) return [];
+    if (!spreadFeeByVault.size) return [];
+    if (!availableLiquidityByVault.size) return [];
 
     if (spreadFeeQuery.isPending) return [];
     if (spreadFeeQuery.isError) return [];
+    if (availableLiquidityQuery.isPending) return [];
+    if (availableLiquidityQuery.isError) return [];
 
     return vaultContracts.map(v => ({
       ...v,
@@ -217,6 +254,7 @@ export function useVaults() {
       },
       totalAssets: totalAssetsByVault.get(v.address),
       spreadFee: spreadFeeByVault.get(v.address) ?? 0,
+      availableLiquidity: availableLiquidityByVault.get(v.address) ?? 0n,
     }));
   }, [
     vaultContracts,
@@ -229,6 +267,9 @@ export function useVaults() {
     spreadFeeQuery.isPending,
     spreadFeeQuery.isError,
     spreadFeeByVault,
+    availableLiquidityByVault,
+    availableLiquidityQuery.isPending,
+    availableLiquidityQuery.isError,
   ]);
 
   const vaultsAssetsList = useMemo(
