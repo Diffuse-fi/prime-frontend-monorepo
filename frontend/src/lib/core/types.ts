@@ -27,6 +27,7 @@ export type VaultFullInfo = {
   totalAssets?: bigint;
   riskLevel: VaultRiskLevel;
   spreadFee: number;
+  availableLiquidity: bigint;
 };
 
 export type SelectedVault = {

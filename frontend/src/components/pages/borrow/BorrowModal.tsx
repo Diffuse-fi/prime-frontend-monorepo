@@ -1,13 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { AssetInfo } from "@/lib/assets/validations";
+import { AssetInfo, AssetInfoSchema } from "@/lib/assets/validations";
 import {
   AssetInput,
   Button,
   Card,
   Dialog,
   Heading,
+  RemoteText,
   Select,
   SelectOption,
   Slider,
@@ -16,16 +17,18 @@ import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
 import { useERC20TokenBalance } from "@/lib/wagmi/useERC20TokenBalance";
 import { formatUnits } from "@/lib/formatters/asset";
 import { AssetImage } from "@/components/misc/images/AssetImage";
-import { parseUnits } from "viem";
+import { getAddress, parseUnits } from "viem";
 import { useBorrow } from "@/lib/core/hooks/useBorrow";
 import { toast } from "@/lib/toast";
 import { SelectedStartegy } from ".";
-import { ReactNode, useReducer } from "react";
+import { ReactNode, useMemo, useReducer } from "react";
 import { SlippageInput } from "./SlippageInput";
 import { useLocalStorage } from "@/lib/misc/useLocalStorage";
 import { PositionDetails } from "./PositionDetails";
 import now from "lodash/now";
 import { formatNumberToKMB } from "@/lib/formatters/number";
+import { useBorrowPreview } from "@/lib/core/hooks/useBorrowPreview";
+import { useDebounce } from "@uidotdev/usehooks";
 
 type ChainSwitchModalProps = {
   open: boolean;
@@ -84,7 +87,19 @@ export function BorrowModal({
   onBorrowRequestSuccess,
 }: ChainSwitchModalProps) {
   const t = useTranslations("borrow.borrowModal");
+  const availableLiquidity = selectedStrategy.vault.availableLiquidity;
   const title = t("title", { assetSymbol: selectedAsset.symbol });
+  const [collateralAsset, setCollateralAsset] = useLocalStorage<AssetInfo>(
+    "borrow-collateral-asset",
+    {
+      symbol: selectedAsset.symbol,
+      address: selectedAsset.address,
+      decimals: selectedAsset.decimals,
+      chainId: selectedAsset.chainId,
+      name: selectedAsset.name,
+    },
+    v => AssetInfoSchema.safeParse(v).success
+  );
   const [slippage, setSlippage] = useLocalStorage("slippage-borrow-modal", "0.1", v =>
     ["0.1", "0.5", "1.0"].includes(v)
   );
@@ -94,6 +109,8 @@ export function BorrowModal({
     leverage: 100,
   });
   const { collateral: collateralAmount, borrow: amountToBorrow, leverage } = state;
+  const debouncedCollateral = useDebounce(collateralAmount, 200);
+  const debouncedBorrow = useDebounce(amountToBorrow, 200);
   const collateralText = state.collateral
     ? formatUnits(state.collateral, selectedAsset.decimals).text
     : "";
@@ -113,9 +130,9 @@ export function BorrowModal({
     : "";
   const allowanceInput = {
     address: selectedStrategy.vault.address,
-    assetAddress: selectedAsset.address,
-    assetSymbol: selectedAsset.symbol,
-    assetDecimals: selectedAsset.decimals,
+    assetAddress: collateralAsset.address,
+    assetSymbol: collateralAsset.symbol,
+    assetDecimals: collateralAsset.decimals,
     amount: collateralAmount,
     legacyAllowance: false,
     chainId: selectedStrategy.vault.contract.chainId,
@@ -127,32 +144,55 @@ export function BorrowModal({
     ableToRequest,
     refetchAllowances,
   } = useEnsureAllowances([allowanceInput]);
-  const { balance } = useERC20TokenBalance({ token: selectedAsset?.address });
+  const { balance: selectedAssetBalance } = useERC20TokenBalance({
+    token: selectedAsset?.address,
+  });
+  const { balance: strategyTokenBalance } = useERC20TokenBalance({
+    token: selectedStrategy.token.address,
+  });
+  const balance =
+    getAddress(collateralAsset.address) === getAddress(selectedAsset.address)
+      ? selectedAssetBalance
+      : getAddress(collateralAsset.address) === getAddress(selectedStrategy.token.address)
+        ? strategyTokenBalance
+        : undefined;
+
+  const borrowInput = useMemo(
+    () => ({
+      chainId: selectedStrategy.vault.contract.chainId,
+      strategyId: selectedStrategy.id,
+      address: selectedStrategy.vault.address,
+      assetsToBorrow: debouncedBorrow,
+      collateralType:
+        getAddress(collateralAsset.address) === getAddress(selectedAsset.address) ? 0 : 1,
+      collateralAmount: debouncedCollateral,
+      deadline: BigInt(Math.floor(Date.now() / 1000) + 3600),
+      slippage,
+    }),
+    [
+      debouncedBorrow,
+      debouncedCollateral,
+      collateralAsset.address,
+      selectedAsset.address,
+      selectedStrategy.id,
+      selectedStrategy.vault.address,
+      slippage,
+      selectedStrategy.vault.contract.chainId,
+    ]
+  );
+
   const {
     borrow,
     isPending,
     reset: resetBorrow,
     txState,
-  } = useBorrow(
-    {
-      chainId: selectedStrategy.vault.contract.chainId,
-      strategyId: selectedStrategy.id,
-      address: selectedStrategy.vault.address,
-      assetsToBorrow: amountToBorrow,
-      collateralType: 0, // TODO -allow 1 when str tokens as collateral allowed
-      collateralAmount: collateralAmount,
-      deadline: BigInt(Math.floor(Date.now() / 1000) + 3600),
-      slippage,
+  } = useBorrow(borrowInput, selectedStrategy.vault, {
+    onBorrowSuccess: () => {
+      toast("Borrow request made successfully");
+      onBorrowRequestSuccess?.();
+      refetchAllowances();
     },
-    selectedStrategy.vault,
-    {
-      onBorrowSuccess: () => {
-        toast("Borrow request made successfully");
-        onBorrowRequestSuccess?.();
-        refetchAllowances();
-      },
-    }
-  );
+  });
   const totalAmountToDeposit = BigInt(amountToBorrow || "0");
   const isAmountExceedsBalance =
     selectedAsset !== undefined && balance !== undefined && collateralAmount > balance;
@@ -173,6 +213,14 @@ export function BorrowModal({
     if (isAmountExceedsBalance) {
       return {
         text: "Insufficient balance",
+        disabled: true,
+        onClick: undefined,
+      };
+    }
+
+    if (collateralAmount > availableLiquidity) {
+      return {
+        text: "Exceeds available liquidity",
         disabled: true,
         onClick: undefined,
       };
@@ -216,7 +264,15 @@ export function BorrowModal({
       label: selectedAsset.symbol,
       value: selectedAsset.address,
     },
+    {
+      label: selectedStrategy.token.symbol,
+      value: selectedStrategy.token.address,
+    },
   ];
+
+  const { isLoading, isFetching, predictedTokensToReceive, liquidationPriceWad, error } =
+    useBorrowPreview(borrowInput, selectedStrategy.vault);
+  const borrowPreviewLoadingDisaplyed = isLoading || isFetching;
 
   return (
     <Dialog
@@ -243,7 +299,17 @@ export function BorrowModal({
                 <AssetImage alt="" address={selectedAsset.address} size={24} />
               )}
             />
-            <Select value={selectedAsset.address} options={selectOptions} disabled />
+            <Select
+              value={getAddress(collateralAsset.address)}
+              options={selectOptions}
+              onValueChange={val =>
+                getAddress(val) === getAddress(selectedAsset.address)
+                  ? setCollateralAsset(selectedAsset)
+                  : setCollateralAsset(selectedStrategy.token as AssetInfo)
+              }
+              aria-label="Select collateral asset"
+              disabled
+            />
           </div>
           <Card
             className="bg-preset-gray-50 border-none"
@@ -258,7 +324,7 @@ export function BorrowModal({
             }
           >
             <Slider
-              value={[state.leverage]}
+              value={[leverage]}
               onValueChange={onLeverageChange}
               min={100}
               step={10}
@@ -268,15 +334,20 @@ export function BorrowModal({
               <span>1.00x</span>
               <span>Max 10x</span>
             </div>
-            <AssetInput
-              placeholder="0.0"
-              value={borrowText}
-              onValueChange={evt => onBorrowInput(evt.value)}
-              assetSymbol={selectedAsset?.symbol}
-              renderAssetImage={() => (
-                <AssetImage alt="" address={selectedAsset.address} size={24} />
-              )}
-            />
+            <div className="flex flex-col gap-2 text-left">
+              <AssetInput
+                placeholder="0.0"
+                value={borrowText}
+                onValueChange={evt => onBorrowInput(evt.value)}
+                assetSymbol={selectedAsset?.symbol}
+                renderAssetImage={() => (
+                  <AssetImage alt="" address={selectedAsset.address} size={24} />
+                )}
+              />
+              <p className="text-muted font-mono text-xs">
+                {`Available for borrow ${selectedAsset.symbol}: ${formatNumberToKMB(availableLiquidity).text}`}
+              </p>
+            </div>
           </Card>
           <SlippageInput
             className="mt-3 md:mt-6"
@@ -309,22 +380,33 @@ export function BorrowModal({
         </div>
         <div className="flex flex-col gap-8">
           <Heading level="5">Position details</Heading>
-          <div className="flex flex-nowrap justify-between gap-4 overflow-ellipsis">
+          <div className="flex flex-nowrap justify-between gap-4 pr-2 overflow-ellipsis">
             <Heading level="6" className="text-text-dimmed">
               Total balance
             </Heading>
-            <span>
-              {formatNumberToKMB(selectedStrategy.balance).text}
-              &nbsp;{selectedStrategy.token.symbol}
-            </span>
+            <RemoteText
+              isLoading={borrowPreviewLoadingDisaplyed}
+              text={
+                predictedTokensToReceive
+                  ? `${
+                      formatUnits(
+                        predictedTokensToReceive,
+                        selectedStrategy.token.decimals
+                      ).text
+                    } ${selectedStrategy.token.symbol}`
+                  : "N/A"
+              }
+              error={error?.message}
+            />
           </div>
           <PositionDetails
             strategy={selectedStrategy}
             selectedAsset={selectedAsset}
             collateralGiven={collateralAmount}
             leverage={BigInt(leverage)}
-            liquidationPrice={0n} // TODO - calculate liquidation price on input change
+            liquidationPrice={liquidationPriceWad}
             enterTimeOrDeadline={now()}
+            loadingLiquidationPrice={borrowPreviewLoadingDisaplyed}
           />
         </div>
       </div>
