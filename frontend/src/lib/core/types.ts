@@ -24,9 +24,13 @@ export type VaultFullInfo = {
     maxDeposit?: bigint;
     maxWithdraw?: bigint;
   };
+  feeData: {
+    spreadFee: number;
+    earlyWithdrawalFee: number;
+    liquidationFee: number;
+  };
   totalAssets?: bigint;
   riskLevel: VaultRiskLevel;
-  spreadFee: number;
   availableLiquidity: bigint;
 };
 

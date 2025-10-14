@@ -148,7 +148,7 @@ export function useBorrow(
 
         const borrowingFactor = calcBorrowingFactor(
           strategy.apr,
-          vault.spreadFee,
+          vault.feeData.spreadFee,
           BigInt(Math.max(0, Number(strategy.endDate) - Math.floor(Date.now() / 1000)))
         );
 

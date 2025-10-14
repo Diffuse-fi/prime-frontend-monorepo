@@ -147,6 +147,10 @@ export function BorrowerPositionCard({
           enterTimeOrDeadline={enterTimeOrDeadline}
           collateralGiven={collateralGiven}
           leverage={leverage}
+          spreadFee={position.vault.feeData.spreadFee}
+          loadingLiquidationPrice={false}
+          liquidationPriceLoadingError={undefined}
+          liquidationPenalty={position.vault.feeData.liquidationFee}
         />
       </UncontrolledCollapsible>
       <Button

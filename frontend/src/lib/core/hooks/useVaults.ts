@@ -14,7 +14,6 @@ import { usePublicClient } from "wagmi";
 
 const ASSET_LIMIT = pLimit(6);
 const VAULT_LIMITS_LIMIT = pLimit(3);
-const SPREAD_FEE_LIMIT = pLimit(6);
 const AVAILABLE_LIQUIDITY_LIMIT = pLimit(6);
 
 const ROOT = "vault" as const;
@@ -31,8 +30,6 @@ const qKeys = {
       opt(owner),
       "limits",
     ]),
-  spreadFee: (address: string | null, chainId: number) =>
-    qk([ROOT, version, opt(address), chainId, "spreadFee"]),
   liquidity: (address: string | null, chainId: number) =>
     qk([ROOT, version, opt(address), chainId, "availableLiquidity"]),
 };
@@ -56,7 +53,15 @@ export function useVaults() {
     if (!publicClient || !allVaults?.length || !chainId) return [];
 
     return allVaults.map(
-      ({ vault: vaultAddress, name, targetApr, riskLevel, strategies, assets }) => {
+      ({
+        vault: vaultAddress,
+        name,
+        targetApr,
+        riskLevel,
+        strategies,
+        assets,
+        feeData,
+      }) => {
         const address = getAddress(vaultAddress);
 
         return {
@@ -66,6 +71,7 @@ export function useVaults() {
           riskLevel,
           strategies,
           assets,
+          feeData,
           contract: new Vault({
             address,
             chainId,
@@ -146,28 +152,6 @@ export function useVaults() {
     staleTime: 60 * 1000 * 5,
   });
 
-  const spreadFeeQuery = useQuery({
-    enabled,
-    queryKey: qKeys.spreadFee(addressKey, chainId),
-    queryFn: async () => {
-      if (!vaultContracts.length) return [];
-
-      const promises = vaultContracts.map(v =>
-        SPREAD_FEE_LIMIT(() =>
-          v.contract.getSpreadFee().then(fee => ({
-            vaultAddress: v.address,
-            fee,
-          }))
-        )
-      );
-      const fees = await Promise.all(promises);
-
-      return fees;
-    },
-    staleTime: 30_000,
-    gcTime: 10 * 60_000,
-  });
-
   const availableLiquidityQuery = useQuery({
     enabled,
     queryKey: qKeys.liquidity(addressKey, chainId),
@@ -210,16 +194,6 @@ export function useVaults() {
     return m;
   }, [limits]);
 
-  const spreadFeeByVault = useMemo(() => {
-    const m = new Map<Address, number>();
-
-    spreadFeeQuery.data?.forEach(({ vaultAddress, fee }) => {
-      m.set(vaultAddress, fee);
-    });
-
-    return m;
-  }, [spreadFeeQuery.data]);
-
   const availableLiquidityByVault = useMemo(() => {
     const m = new Map<Address, bigint>();
 
@@ -240,11 +214,8 @@ export function useVaults() {
     if (rawTotalAssetQueries.isError) return [];
 
     if (!totalAssetsByVault.size) return [];
-    if (!spreadFeeByVault.size) return [];
     if (!availableLiquidityByVault.size) return [];
 
-    if (spreadFeeQuery.isPending) return [];
-    if (spreadFeeQuery.isError) return [];
     if (availableLiquidityQuery.isPending) return [];
     if (availableLiquidityQuery.isError) return [];
 
@@ -255,7 +226,6 @@ export function useVaults() {
         maxWithdraw: limitsByVault.get(v.address)?.maxWithdraw,
       },
       totalAssets: totalAssetsByVault.get(v.address),
-      spreadFee: spreadFeeByVault.get(v.address) ?? 0,
       availableLiquidity: availableLiquidityByVault.get(v.address) ?? 0n,
     }));
   }, [
@@ -266,9 +236,6 @@ export function useVaults() {
     limitsQueries.isPending,
     rawTotalAssetQueries.isError,
     limitsQueries.isError,
-    spreadFeeQuery.isPending,
-    spreadFeeQuery.isError,
-    spreadFeeByVault,
     availableLiquidityByVault,
     availableLiquidityQuery.isPending,
     availableLiquidityQuery.isError,

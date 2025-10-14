@@ -16,6 +16,8 @@ interface PositionDetailsProps {
   leverage: bigint;
   loadingLiquidationPrice?: boolean;
   liquidationPriceLoadingError?: string;
+  spreadFee: number;
+  liquidationPenalty: number;
 }
 
 export function PositionDetails({
@@ -27,6 +29,8 @@ export function PositionDetails({
   leverage,
   loadingLiquidationPrice,
   liquidationPriceLoadingError,
+  spreadFee,
+  liquidationPenalty,
 }: PositionDetailsProps) {
   const { apr, endDate, token: strategyAsset } = strategy;
   const daysUntilMaturity = calcDaysInterval({ to: endDate });
@@ -61,6 +65,10 @@ export function PositionDetails({
               error={liquidationPriceLoadingError}
             />
           </div>
+          <div className="flex items-center justify-between">
+            <span>Liquidation penalty</span>
+            <span>{formatAprToPercent(liquidationPenalty, 0).text}</span>
+          </div>
         </div>
       </UncontrolledCollapsible>
       <UncontrolledCollapsible
@@ -77,6 +85,12 @@ export function PositionDetails({
           <div className="flex items-center justify-between">
             <span>Leverage</span>
             <span>{leverageDisplay}</span>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
+          <div className="flex items-center justify-between">
+            <span>Spread fee</span>
+            <span>{formatAprToPercent(spreadFee, 0).text}</span>
           </div>
         </div>
       </UncontrolledCollapsible>
