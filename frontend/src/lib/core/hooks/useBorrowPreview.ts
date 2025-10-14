@@ -123,7 +123,7 @@ export function useBorrowPreview(
       );
       const borrowingFactorBpsRaw = calcBorrowingFactor(
         strategy.apr,
-        vault.spreadFee,
+        vault.feeData.spreadFee,
         BigInt(secondsLeft)
       );
 

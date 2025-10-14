@@ -52,6 +52,7 @@ export function useBorrowerPositions(
     enabled,
     queryKey: qKeys.positions(addressKey, chainId!, borrower),
     queryFn: async ({ signal }) => {
+      console.log("Fetching borrower positions for", allVaults);
       const tasks = allVaults.map(vault =>
         LIMIT(async () => {
           const raw = await vault.contract.getActiveBorrowerPositions(

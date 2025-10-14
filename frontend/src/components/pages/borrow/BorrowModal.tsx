@@ -412,6 +412,8 @@ export function BorrowModal({
             enterTimeOrDeadline={now()}
             loadingLiquidationPrice={borrowPreviewLoadingDisplayed}
             liquidationPriceLoadingError={error?.message}
+            spreadFee={selectedStrategy.vault.feeData.spreadFee}
+            liquidationPenalty={selectedStrategy.vault.feeData.liquidationFee}
           />
         </div>
       </div>
