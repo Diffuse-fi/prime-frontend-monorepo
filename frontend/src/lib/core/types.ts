@@ -20,10 +20,6 @@ export type VaultFullInfo = {
   targetApr: bigint;
   strategies: Strategy[];
   contract: Vault;
-  limits: {
-    maxDeposit?: bigint;
-    maxWithdraw?: bigint;
-  };
   feeData: {
     spreadFee: number;
     earlyWithdrawalFee: number;
@@ -32,6 +28,13 @@ export type VaultFullInfo = {
   totalAssets?: bigint;
   riskLevel: VaultRiskLevel;
   availableLiquidity: bigint;
+};
+
+export type VaultLimits = {
+  maxDeposit?: bigint;
+  maxWithdraw?: bigint;
+  address: Address;
+  chainId: number;
 };
 
 export type SelectedVault = {

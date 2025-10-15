@@ -24,6 +24,7 @@ export default function MyPositions() {
     isLoading: isLoadingVaults,
     isPending: isPendingVaults,
     refetchTotalAssets,
+    vaultLimits,
   } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const { dir } = useLocalization();
@@ -60,7 +61,7 @@ export default function MyPositions() {
   const onWithdrawError = () => {
     toast(t("toasts.withdrawErrorToast"));
   };
-  const { withdraw, isPendingSingle } = useWithdraw(vaults, {
+  const { withdraw, isPendingSingle } = useWithdraw(vaults, vaultLimits, {
     onWithdrawSuccess,
     onWithdrawError,
   });

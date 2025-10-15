@@ -8,6 +8,7 @@ import type {
   TxInfo,
   TxState,
   VaultFullInfo,
+  VaultLimits,
 } from "../types";
 import { useMutation } from "@tanstack/react-query";
 import { opt, qk } from "../../query/helpers";
@@ -73,6 +74,7 @@ function makeIdemKey(
 
 export function useWithdraw(
   allVaults: VaultFullInfo[],
+  vaultsLimits: VaultLimits[],
   {
     txConcurrency = 6,
     onWithdrawSuccess,
@@ -144,7 +146,7 @@ export function useWithdraw(
       let e: Error | null = null;
       if (!vault) e = new Error("Vault not found");
       if (assets <= 0n) e = new Error("Amount must be greater than zero");
-      const maxWithdraw = vault?.limits?.maxWithdraw;
+      const maxWithdraw = vaultsLimits.find(v => v.address === address)?.maxWithdraw;
       if (maxWithdraw !== undefined && assets > maxWithdraw) {
         e = new Error(
           `Amount exceeds max withdraw limit of ${formatUnits(maxWithdraw, vault!.assets[0].decimals)} ${
@@ -229,7 +231,9 @@ export function useWithdraw(
             let e: Error | null = null;
             if (!vault) e = new Error("Vault not found");
             if (assets <= 0n) e = new Error("Amount must be greater than zero");
-            const maxWithdraw = vault?.limits?.maxWithdraw;
+            const maxWithdraw = vaultsLimits.find(
+              vv => vv.address === address
+            )?.maxWithdraw;
             if (maxWithdraw !== undefined && assets > maxWithdraw) {
               e = new Error(
                 `Amount exceeds max withdraw limit of ${formatUnits(
