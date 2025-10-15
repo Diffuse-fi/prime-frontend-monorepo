@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useClients } from "../../wagmi/useClients";
 import { useViewer } from "./useViewer";
 import { Vault } from "@diffuse/sdk-js";
-import { VaultFullInfo } from "../types";
+import { VaultFullInfo, VaultLimits } from "../types";
 import { QV } from "../../query/versions";
 import { opt, qk } from "../../query/helpers";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -205,12 +205,11 @@ export function useVaults() {
   }, [availableLiquidityQuery.data]);
 
   const vaults: VaultFullInfo[] = useMemo(() => {
+    if (!chainId) return [];
+
     if (!vaultContracts.length) return [];
     if (rawTotalAssetQueries.isPending) return [];
-    if (limitsQueries.isPending) return [];
-    if (!limitsByVault.size) return [];
 
-    if (limitsQueries.isError) return [];
     if (rawTotalAssetQueries.isError) return [];
 
     if (!totalAssetsByVault.size) return [];
@@ -221,24 +220,18 @@ export function useVaults() {
 
     return vaultContracts.map(v => ({
       ...v,
-      limits: {
-        maxDeposit: limitsByVault.get(v.address)?.maxDeposit,
-        maxWithdraw: limitsByVault.get(v.address)?.maxWithdraw,
-      },
       totalAssets: totalAssetsByVault.get(v.address),
       availableLiquidity: availableLiquidityByVault.get(v.address) ?? 0n,
     }));
   }, [
     vaultContracts,
-    limitsByVault,
     totalAssetsByVault,
     rawTotalAssetQueries.isPending,
-    limitsQueries.isPending,
     rawTotalAssetQueries.isError,
-    limitsQueries.isError,
     availableLiquidityByVault,
     availableLiquidityQuery.isPending,
     availableLiquidityQuery.isError,
+    chainId,
   ]);
 
   const vaultsAssetsList = useMemo(
@@ -249,6 +242,22 @@ export function useVaults() {
       ),
     [vaults]
   );
+
+  const vaultLimits = useMemo(() => {
+    const limits: VaultLimits[] = [];
+    for (const v of vaults) {
+      const l = limitsByVault.get(v.address);
+      if (l) {
+        limits.push({
+          address: v.address,
+          chainId,
+          maxDeposit: l.maxDeposit,
+          maxWithdraw: l.maxWithdraw,
+        });
+      }
+    }
+    return uniqBy(limits, l => `${l.chainId}-${l.address}`);
+  }, [chainId, vaults, limitsByVault]);
 
   const invalidate = () => {
     if (!chainId || !addressKey) return;
@@ -264,6 +273,7 @@ export function useVaults() {
     vaults,
     invalidate,
     isPending,
+    vaultLimits,
     isLoading,
     vaultsAssetsList,
     refetchTotalAssets: () =>

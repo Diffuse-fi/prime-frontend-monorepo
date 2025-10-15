@@ -2,7 +2,13 @@ import { useMemo, useState } from "react";
 import pLimit from "p-limit";
 import { getAddress, type Address, type Hash } from "viem";
 import { useClients } from "../../wagmi/useClients";
-import type { SelectedVault, TxInfo, TxState, VaultFullInfo } from "../types";
+import type {
+  SelectedVault,
+  TxInfo,
+  TxState,
+  VaultFullInfo,
+  VaultLimits,
+} from "../types";
 import { useMutation } from "@tanstack/react-query";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
@@ -47,6 +53,7 @@ function makeIdemKey(chainId: number, vault: Address, amount: bigint, receiver: 
 export function useDeposit(
   selected: SelectedVault[],
   allVaults: VaultFullInfo[],
+  vaultsLimits: VaultLimits[],
   {
     txConcurrency = 6,
     onDepositBatchComplete,
@@ -116,7 +123,9 @@ export function useDeposit(
         selected.map(v =>
           limit(async () => {
             const vault = vaultByAddr.get(getAddress(v.address));
-            const maxDeposit = vault?.limits.maxDeposit ?? undefined;
+            const maxDeposit = vaultsLimits.find(
+              l => l.address === getAddress(v.address)
+            )?.maxDeposit;
             const address = getAddress(v.address);
             const amount = v.amount;
             const receiver = getAddress(wallet);

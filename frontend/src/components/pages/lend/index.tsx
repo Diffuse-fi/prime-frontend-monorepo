@@ -19,7 +19,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/localization/navigation";
 import { env } from "@/env";
 import { showSkeletons } from "@/lib/misc/ui";
-import { useAccount } from "wagmi";
+import { useAccount, useAccountEffect } from "wagmi";
 import { useERC20TokenBalance } from "@/lib/wagmi/useERC20TokenBalance";
 import { useOnChainSwitch } from "@/lib/wagmi/onChainSwitch";
 
@@ -31,6 +31,7 @@ export default function Lend() {
     isPending,
     refetchTotalAssets,
     refetchLimits,
+    vaultLimits,
   } = useVaults();
   const previousVaultsCount = usePrevValueLocalStorage(
     vaults.length,
@@ -66,24 +67,29 @@ export default function Lend() {
   };
   const { isConnected } = useAccount();
 
-  const { reset, deposit, isPendingBatch } = useDeposit(selectedVaults, vaults, {
-    onDepositBatchAllSuccess: () => {
-      router.push("/lend/my-positions");
-      toast(t("toasts.depositSuccessToast"));
-      setTimeout(() => {
-        resetForms();
-        reset();
-        refetchTotalAssets();
-        refetchLimits();
-      }, 0);
-    },
-    onDepositBatchSomeError: () => {
-      toast(t("toasts.depositErrorToast"));
-    },
-    onDepositBatchComplete: () => {
-      refetchAllowances();
-    },
-  });
+  const { reset, deposit, isPendingBatch } = useDeposit(
+    selectedVaults,
+    vaults,
+    vaultLimits,
+    {
+      onDepositBatchAllSuccess: () => {
+        router.push("/lend/my-positions");
+        toast(t("toasts.depositSuccessToast"));
+        setTimeout(() => {
+          resetForms();
+          reset();
+          refetchTotalAssets();
+          refetchLimits();
+        }, 0);
+      },
+      onDepositBatchSomeError: () => {
+        toast(t("toasts.depositErrorToast"));
+      },
+      onDepositBatchComplete: () => {
+        refetchAllowances();
+      },
+    }
+  );
 
   const vaultsForSelectedAsset = selectedAsset
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
@@ -131,6 +137,9 @@ export default function Lend() {
   const stepText = !allAllowed ? "1/2" : "2/2";
 
   useOnChainSwitch(resetSelectedVaults);
+  useAccountEffect({
+    onDisconnect: resetSelectedVaults,
+  });
 
   return (
     <div className="mt-9 grid grid-cols-1 gap-x-2 gap-y-4 md:grid-cols-2 md:gap-x-4 md:gap-y-9">
