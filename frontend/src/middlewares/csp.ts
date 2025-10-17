@@ -24,6 +24,7 @@ const allowedSources = allowedSourcesRaw.filter(Boolean).join(" ");
 
 const allowedFrameAncestors = [
   // Specify here if a website needs to be embedded in an iframe on a specific domain
+  "https://app.safe.global", // Gnosis Safe
 ]
   .filter(Boolean)
   .join(" ");

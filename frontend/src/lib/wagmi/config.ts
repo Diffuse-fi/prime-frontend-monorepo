@@ -4,6 +4,7 @@ import {
   metaMaskWallet,
   trustWallet,
   walletConnectWallet,
+  safeWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { getAvailableChains } from "../chains";
 import { env } from "@/env";
@@ -45,6 +46,7 @@ export const config = getDefaultConfig({
         metaMaskWallet,
         trustWallet,
         walletConnectWallet,
+        safeWallet,
       ],
     },
   ],

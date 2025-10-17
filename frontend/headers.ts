@@ -23,9 +23,6 @@ async function getSecurityHeaders(enableHSTS = false): Promise<Header[]> {
           : []),
         // Prevents the browser from interpreting files as a different MIME type than what is specified in the Content-Type header.
         { key: "X-Content-Type-Options", value: "nosniff" },
-        // Prevents clickjacking attacks by disallowing the page to be rendered in iframes (Legacy browsers).
-        // If the site need to be embedded in a partner's iframe, this header should be removed.
-        { key: "X-Frame-Options", value: "DENY" },
         // Prevents sending full url in the Referer header when navigating to a different origin.
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
         // Defines which features can be used in the browser.
@@ -59,6 +56,14 @@ async function getSecurityHeaders(enableHSTS = false): Promise<Header[]> {
     {
       source: "/api/og/:path*",
       headers: [{ key: "Cross-Origin-Resource-Policy", value: "cross-origin" }],
+    },
+    // Allow external access to the Safe app (Gnosis Safe) manifest.
+    {
+      source: "/manifest.json",
+      headers: [
+        { key: "Access-Control-Allow-Origin", value: "*" },
+        { key: "Access-Control-Allow-Methods", value: "GET" },
+      ],
     },
   ];
 }
