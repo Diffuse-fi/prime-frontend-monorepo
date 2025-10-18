@@ -4,20 +4,21 @@ import { AssetImage } from "@/components/misc/images/AssetImage";
 import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
 import { AssetInfo } from "@/lib/assets/validations";
 import { getStableChainMeta } from "@/lib/chains/meta";
-import { VaultFullInfo } from "@/lib/core/types";
+import { Strategy, VaultFullInfo } from "@/lib/core/types";
+import { formatUnits } from "@/lib/formatters/asset";
 import { formatAprToPercent } from "@/lib/formatters/finance";
+import { formatNumberToKMB } from "@/lib/formatters/number";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
 import { Button, Card, Heading, SimpleTable } from "@diffuse/ui-kit";
 import { Chain } from "@rainbow-me/rainbowkit";
-import { Loader2 } from "lucide-react";
 
 type BorrowCardProps = {
-  strategy: VaultFullInfo["strategies"][number];
+  strategy: Strategy;
   selectedAsset: AssetInfo;
   isConnected?: boolean;
   onBorrow?: () => void;
   chain: Chain;
-  isBorrowRequestPending?: boolean;
+  vault: VaultFullInfo;
 };
 
 export function BorrowCard({
@@ -26,9 +27,16 @@ export function BorrowCard({
   onBorrow,
   chain,
   isConnected,
-  isBorrowRequestPending,
+  vault,
 }: BorrowCardProps) {
   const chainMeta = getStableChainMeta(chain.id);
+  const availableLiquidityUnits = formatUnits(
+    vault.availableLiquidity,
+    selectedAsset.decimals
+  );
+  const availableLiquidityFormatted = formatNumberToKMB(
+    Number(availableLiquidityUnits.meta!.rawViem)
+  );
 
   return (
     <Card
@@ -90,6 +98,12 @@ export function BorrowCard({
               {selectedAsset.symbol}
             </div>,
           ],
+          [
+            <div key="1">Liquidity</div>,
+            <div key="2" className="text-right">
+              {availableLiquidityFormatted.text} {selectedAsset.symbol}
+            </div>,
+          ],
         ]}
       />
       <Button
@@ -100,15 +114,6 @@ export function BorrowCard({
       >
         {isConnected ? "Borrow" : "Connect wallet"}
       </Button>
-      {isBorrowRequestPending && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10">
-          <Loader2
-            className="h-12 w-12 animate-spin"
-            aria-label="Borrow request pending"
-            color="white"
-          />
-        </div>
-      )}
     </Card>
   );
 }

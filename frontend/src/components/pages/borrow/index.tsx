@@ -77,14 +77,7 @@ export default function Borrow() {
                 }}
                 chain={chain}
                 isConnected={isConnected}
-                isBorrowRequestPending={
-                  pendingRequests.includes(strategy.id) ||
-                  !!pending.find(
-                    p =>
-                      p.vault.address === strategy.vault.address &&
-                      p.positionIds.includes(strategy.id)
-                  )
-                }
+                vault={strategy.vault}
               />
             ))
           : null}

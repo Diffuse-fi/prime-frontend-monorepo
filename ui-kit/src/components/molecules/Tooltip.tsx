@@ -49,7 +49,7 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
           {...props}
         >
           {content}
-          <TooltipPrimitive.Arrow width={11} height={5} className="bg-fg" />
+          <TooltipPrimitive.Arrow width={11} height={5} className="fill-fg" />
         </TooltipPrimitive.Content>
       </TooltipPrimitive.Root>
     );
