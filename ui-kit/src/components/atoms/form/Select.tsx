@@ -31,7 +31,7 @@ export interface SelectProps
 }
 
 const selectRoot = tv({
-  base: "relative flex items-center justify-between rounded-xs border border-border bg-transparent standard-focus-ring text-lg h-13 px-3",
+  base: "relative flex items-center justify-between rounded-xs border border-border bg-transparent standard-focus-ring h-13 px-3",
   variants: {
     state: {
       default: "",
@@ -47,7 +47,7 @@ const selectRoot = tv({
 
 const selectValue = tv({
   base:
-    "w-full flex-1 outline-none bg-transparent text-lg " +
+    "w-full flex-1 outline-none bg-transparent" +
     "placeholder:text-border " +
     "data-[placeholder]:text-border",
 });
@@ -59,7 +59,7 @@ const chevronWrap = tv({
 const contentBox = tv({
   base:
     "z-150 min-w-[var(--radix-select-trigger-width)] rounded-xs border border-border " +
-    "bg-background shadow-lg overflow-hidden",
+    "bg-fg shadow-soft overflow-hidden",
 });
 
 const viewportBox = "p-1";

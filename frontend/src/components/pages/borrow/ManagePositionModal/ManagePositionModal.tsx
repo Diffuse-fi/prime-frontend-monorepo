@@ -32,7 +32,6 @@ export function ManagePositionModal({
       title={title}
       size="lg"
     >
-      <div className="grid grid-cols-1 gap-6 pb-2 md:grid-cols-2 md:pb-6"></div>
       <Tabs defaultValue="close">
         <Tabs.List align="start">
           <Tabs.Trigger value="collateral" disabled>
