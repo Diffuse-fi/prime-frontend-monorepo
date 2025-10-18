@@ -278,6 +278,11 @@ export function BorrowModal({
     useBorrowPreview(borrowInput, selectedStrategy.vault);
   const borrowPreviewLoadingDisplayed = isLoading || isFetching;
 
+  const availableLiquidityUnits = formatUnits(availableLiquidity, selectedAsset.decimals);
+  const availableLiquidityFormatted = formatNumberToKMB(
+    Number(availableLiquidityUnits.meta!.rawViem)
+  );
+
   return (
     <Dialog
       open={open}
@@ -349,7 +354,7 @@ export function BorrowModal({
                 )}
               />
               <p className="text-muted font-mono text-xs">
-                {`Available for borrow ${selectedAsset.symbol}: ${formatNumberToKMB(availableLiquidity).text}`}
+                {`Available for borrow ${selectedAsset.symbol}: ${availableLiquidityFormatted.text}`}
               </p>
             </div>
           </Card>
