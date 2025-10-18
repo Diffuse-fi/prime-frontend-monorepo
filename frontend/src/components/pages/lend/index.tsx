@@ -67,28 +67,28 @@ export default function Lend() {
   };
   const { isConnected } = useAccount();
 
-  const { reset, deposit, isPendingBatch } = useDeposit(
-    selectedVaults,
-    vaults,
-    vaultLimits,
-    {
-      onDepositBatchAllSuccess: () => {
-        router.push("/lend/my-positions");
-        toast(t("toasts.depositSuccessToast"));
-        setTimeout(() => {
-          resetForms();
-          reset();
-          refetchTotalAssets();
-          refetchLimits();
-        }, 0);
-      },
-      onDepositBatchSomeError: () => {
-        toast(t("toasts.depositErrorToast"));
-      },
-      onDepositBatchComplete: () => {
-        refetchAllowances();
-      },
-    }
+  const { reset, deposit, txState } = useDeposit(selectedVaults, vaults, vaultLimits, {
+    onDepositBatchAllSuccess: () => {
+      router.push("/lend/my-positions");
+      toast(t("toasts.depositSuccessToast"));
+      setTimeout(() => {
+        resetForms();
+        reset();
+        refetchTotalAssets();
+        refetchLimits();
+      }, 0);
+    },
+    onDepositBatchSomeError: () => {
+      toast(t("toasts.depositErrorToast"));
+    },
+    onDepositBatchComplete: () => {
+      refetchAllowances();
+    },
+  });
+
+  const isPendingBatch = Object.values(txState).some(s => s.phase === "pending");
+  const confirmingInWallet = Object.values(txState).some(
+    s => s.phase === "awaiting-signature"
   );
 
   const vaultsForSelectedAsset = selectedAsset
@@ -112,6 +112,14 @@ export default function Lend() {
     }
 
     if (allAllowed) {
+      if (confirmingInWallet) {
+        return {
+          text: "Confirming...",
+          disabled: true,
+          onClick: undefined,
+        };
+      }
+
       return {
         text: isPendingBatch ? t("depositing") : t("depositButtonText"),
         disabled: isPendingBatch,

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib/cn";
-import { Card } from "../molecules";
+import { Card } from "./index.js";
 import { tv, VariantProps } from "@/lib";
 
 type RenderImage = (props: { alt: string; className: string }) => React.ReactNode;

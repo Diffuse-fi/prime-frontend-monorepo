@@ -16,7 +16,8 @@
     "format:check": "prettier --check .",
     "knip": "knip --production",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "setup": "npx --no-install allow-scripts && simple-git-hooks && npm run build"
+    "setup": "npx --no-install allow-scripts && simple-git-hooks && npm run build",
+    "test:all": "concurrently \"npm run test:all -w frontend\" \"npm run test:all -w ui-kit\" \"npm run test:all -w sdk-js\" --success all"
   },
   "simple-git-hooks": {
     "pre-commit": "npx --no-install lint-staged",
@@ -29,19 +30,6 @@
     "*.{ts,tsx,md,json,css}": [
       "npm run format"
     ]
-  },
-  "overrides": {
-    "@tailwindcss/postcss": "4.1.12",
-    "@tanstack/react-query": "5.85.3",
-    "@tanstack/react-table": "8.21.3",
-    "dayjs": "1.11.13",
-    "negotiator": "1.0.0",
-    "next": "15.5.2",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "tailwindcss": "4.1.12",
-    "viem": "2.33.3",
-    "wagmi": "2.16.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.0",
@@ -90,7 +78,8 @@
       "@lavamoat/preinstall-always-fail": false,
       "eslint-config-next>eslint-import-resolver-typescript>unrs-resolver": true,
       "knip>oxc-resolver": true,
-      "simple-git-hooks": true
+      "simple-git-hooks": true,
+      "vitest>vite>esbuild": false
     }
   }
 }

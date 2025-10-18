@@ -1,6 +1,6 @@
 import { it, expect, vi, describe } from "vitest";
 import * as React from "react";
-import { Toast } from "./Toast";
+import { Toast } from "./Toast.js";
 import { render, screen } from "@testing-library/react";
 
 describe("<Toast />", () => {

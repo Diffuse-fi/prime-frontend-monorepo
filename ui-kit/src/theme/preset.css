@@ -35,8 +35,8 @@
   --text-subtle: 12px;
   --text-xs: 10px;
 
-  --shadow-soft: 0 10px 15px -3px rgb(0 0 0 / 0.15), 0 4px 6px -4px rgb(0 0 0 / 0.12);
-  --shadow-strong: 0 25px 40px -12px rgb(0 0 0 / 0.25);
+  --shadow-soft: 0 0 14px 4px rgb(0 0 0 / 0.06), 0 0 4px 1px rgb(0 0 0 / 0.03);
+  --shadow-strong: 0 0 40px 12px rgb(0 0 0 / 0.1), 0 0 16px 4px rgb(0 0 0 / 0.05);
 }
 
 /* Dark theme overrides */

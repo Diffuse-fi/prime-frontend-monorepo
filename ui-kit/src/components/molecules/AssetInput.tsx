@@ -8,6 +8,7 @@ export interface AssetInputProps
   assetSymbol: string;
   value?: string | number;
   onValueChange?: NumericFormatProps["onValueChange"];
+  displayAssetMeta?: boolean;
 }
 
 export const AssetInput = React.forwardRef<HTMLInputElement, AssetInputProps>(
@@ -19,6 +20,7 @@ export const AssetInput = React.forwardRef<HTMLInputElement, AssetInputProps>(
       value,
       onValueChange,
       className,
+      displayAssetMeta = true,
       ...props
     },
     ref
@@ -43,7 +45,7 @@ export const AssetInput = React.forwardRef<HTMLInputElement, AssetInputProps>(
         inputMode="decimal"
         getInputRef={ref}
         size={size}
-        right={right}
+        right={displayAssetMeta ? right : undefined}
         type="text"
         decimalScale={2}
         fixedDecimalScale

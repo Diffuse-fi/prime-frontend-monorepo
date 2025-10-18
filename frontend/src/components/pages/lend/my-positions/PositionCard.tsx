@@ -58,11 +58,11 @@ export function PositionCard({ className, position, withdrawButton }: PositionCa
               alt=""
             />
           )}
-          <div className="flex items-center gap-2">
-            <Heading level="4" className="inline font-semibold">
+          <div className="flex items-end gap-2">
+            <Heading level="4" className="leading-none">
               {vault.name}
             </Heading>
-            <span className="text-text-dimmed text-sm">{asset?.symbol}</span>
+            <p className="text-text-dimmed leading-none">{asset?.symbol}</p>
           </div>
         </div>
       }

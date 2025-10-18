@@ -101,8 +101,10 @@ export function PositionDetails({
         <div className="flex flex-col gap-2 border-l border-[#49E695] px-2 py-1">
           <div className="flex items-center justify-between">
             <span>Days until maturity</span>
-            <Tooltip content={fullEndDate} side="top">
-              <span>{daysUntilMaturity}</span>
+            <Tooltip content={`Until ${fullEndDate}`} side="top">
+              <span className="underline decoration-dashed underline-offset-2">
+                {daysUntilMaturity}
+              </span>
             </Tooltip>
           </div>
           <div className="flex items-center justify-between">

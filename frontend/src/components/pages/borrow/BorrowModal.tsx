@@ -21,7 +21,7 @@ import { getAddress, parseUnits } from "viem";
 import { useBorrow } from "@/lib/core/hooks/useBorrow";
 import { toast } from "@/lib/toast";
 import { SelectedStartegy } from ".";
-import { ReactNode, useMemo, useReducer } from "react";
+import { ReactNode, useCallback, useMemo, useReducer } from "react";
 import { SlippageInput } from "./SlippageInput";
 import { useLocalStorage } from "@/lib/misc/useLocalStorage";
 import { PositionDetails } from "./PositionDetails";
@@ -29,6 +29,8 @@ import now from "lodash/now";
 import { formatNumberToKMB } from "@/lib/formatters/number";
 import { useBorrowPreview } from "@/lib/core/hooks/useBorrowPreview";
 import { useDebounce } from "@uidotdev/usehooks";
+import { useVaults } from "@/lib/core/hooks/useVaults";
+import { useRouter } from "@/lib/localization/navigation";
 
 type ChainSwitchModalProps = {
   open: boolean;
@@ -87,6 +89,7 @@ export function BorrowModal({
   onBorrowRequestSuccess,
 }: ChainSwitchModalProps) {
   const t = useTranslations("borrow.borrowModal");
+  const { refetchTotalAssets, refetchLimits } = useVaults();
   const availableLiquidity = selectedStrategy.vault.availableLiquidity;
   const title = t("title", { assetSymbol: selectedAsset.symbol });
   const [collateralAsset, setCollateralAsset] = useLocalStorage<AssetInfo>(
@@ -103,6 +106,7 @@ export function BorrowModal({
   const [slippage, setSlippage] = useLocalStorage("slippage-borrow-modal", "0.1", v =>
     ["0.1", "0.5", "1.0"].includes(v)
   );
+  const router = useRouter();
   const [state, dispatch] = useReducer(borrowReducer, {
     collateral: 0n,
     borrow: 0n,
@@ -128,6 +132,9 @@ export function BorrowModal({
   const borrowText = state.borrow
     ? formatUnits(state.borrow, selectedAsset.decimals).text
     : "";
+  const onSuccessAllowance = useCallback(() => {
+    toast("Approval successful");
+  }, []);
   const allowanceInput = {
     address: selectedStrategy.vault.address,
     assetAddress: collateralAsset.address,
@@ -143,19 +150,28 @@ export function BorrowModal({
     approveMissing,
     ableToRequest,
     refetchAllowances,
-  } = useEnsureAllowances([allowanceInput]);
+  } = useEnsureAllowances([allowanceInput], {
+    onSuccess: onSuccessAllowance,
+  });
   const { balance: selectedAssetBalance } = useERC20TokenBalance({
     token: selectedAsset?.address,
   });
   const { balance: strategyTokenBalance } = useERC20TokenBalance({
     token: selectedStrategy.token.address,
   });
+
   const balance =
     getAddress(collateralAsset.address) === getAddress(selectedAsset.address)
       ? selectedAssetBalance
       : getAddress(collateralAsset.address) === getAddress(selectedStrategy.token.address)
         ? strategyTokenBalance
         : undefined;
+  const balanceDisplay =
+    balance !== undefined && balance !== null
+      ? formatNumberToKMB(
+          Number(formatUnits(balance, collateralAsset.decimals).meta!.rawViem)
+        )
+      : undefined;
 
   const borrowInput = useMemo(
     () => ({
@@ -195,12 +211,18 @@ export function BorrowModal({
       toast("Borrow request made successfully");
       onBorrowRequestSuccess?.();
       refetchAllowances();
+      refetchTotalAssets();
+      refetchLimits();
+      router.push("/lend/my-positions");
     },
   });
   const totalAmountToDeposit = BigInt(amountToBorrow || "0");
   const isAmountExceedsBalance =
     selectedAsset !== undefined && balance !== undefined && collateralAmount > balance;
 
+  const confirmingInWallet = Object.values(txState).some(
+    s => s.phase === "awaiting-signature"
+  );
   const actionButtonMeta = (() => {
     if (
       collateralAmount === undefined ||
@@ -231,6 +253,14 @@ export function BorrowModal({
     }
 
     if (allAllowed) {
+      if (confirmingInWallet) {
+        return {
+          text: "Confirming...",
+          disabled: true,
+          onClick: undefined,
+        };
+      }
+
       return {
         text: isPending ? "Request pending..." : "Borrow",
         disabled:
@@ -258,10 +288,6 @@ export function BorrowModal({
   })();
 
   const stepText = collateralAmount === 0n || !allAllowed ? "1/2" : "2/2";
-
-  const errors = Object.values(txState)
-    .map(x => x.errorMessage)
-    .filter(Boolean);
 
   const selectOptions: SelectOption[] = [
     {
@@ -297,28 +323,28 @@ export function BorrowModal({
       <div className="grid grid-cols-1 gap-10 pb-2 md:grid-cols-2 md:pb-6">
         <div className="flex flex-col gap-4 text-center">
           <Heading level="5">Collateral</Heading>
-          <div className="flex flex-nowrap items-center gap-2">
-            <AssetInput
-              className="flex-1"
-              placeholder="0.0"
-              value={collateralText}
-              onValueChange={evt => onCollateralInput(evt.value)}
-              assetSymbol={selectedAsset?.symbol}
-              renderAssetImage={() => (
-                <AssetImage alt="" address={selectedAsset.address} size={24} />
-              )}
-            />
-            <Select
-              value={getAddress(collateralAsset.address)}
-              options={selectOptions}
-              onValueChange={val =>
-                getAddress(val) === getAddress(selectedAsset.address)
-                  ? setCollateralAsset(selectedAsset)
-                  : setCollateralAsset(selectedStrategy.token as AssetInfo)
-              }
-              aria-label="Select collateral asset"
-              disabled
-            />
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-nowrap items-center gap-2">
+              <AssetInput
+                className="flex-1"
+                placeholder="0.0"
+                value={collateralText}
+                onValueChange={evt => onCollateralInput(evt.value)}
+                assetSymbol={selectedAsset?.symbol}
+                displayAssetMeta={false}
+              />
+              <Select
+                value={getAddress(collateralAsset.address)}
+                options={selectOptions}
+                onValueChange={val =>
+                  getAddress(val) === getAddress(selectedAsset.address)
+                    ? setCollateralAsset(selectedAsset)
+                    : setCollateralAsset(selectedStrategy.token as AssetInfo)
+                }
+                aria-label="Select collateral asset"
+              />
+            </div>
+            <div className="text-muted pl-2 text-left font-mono text-xs whitespace-nowrap">{`Balance ${collateralAsset.symbol}: ${balanceDisplay ? balanceDisplay?.text : "N/A"}`}</div>
           </div>
           <Card
             className="bg-preset-gray-50 border-none"
@@ -377,15 +403,6 @@ export function BorrowModal({
             {actionButtonMeta.text}
           </Button>
           <p className="font-mono text-xs">{`Step ${stepText}`}</p>
-          {errors.length > 0 && (
-            <div className="space-y-1">
-              {errors.map((err, i) => (
-                <p key={i} className="text-err-light text-center text-sm">
-                  {err}
-                </p>
-              ))}
-            </div>
-          )}
         </div>
         <div className="flex flex-col gap-8">
           <Heading level="5">Position details</Heading>
