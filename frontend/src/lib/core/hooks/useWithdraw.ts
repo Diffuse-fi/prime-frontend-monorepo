@@ -149,7 +149,7 @@ export function useWithdraw(
       const maxWithdraw = vaultsLimits.find(v => v.address === address)?.maxWithdraw;
       if (maxWithdraw !== undefined && assets > maxWithdraw) {
         e = new Error(
-          `Amount exceeds max withdraw limit of ${formatUnits(maxWithdraw, vault!.assets[0].decimals)} ${
+          `Amount exceeds max withdraw limit of ${formatUnits(maxWithdraw, vault!.assets[0].decimals).text} ${
             vault!.assets[0].symbol
           }`
         );

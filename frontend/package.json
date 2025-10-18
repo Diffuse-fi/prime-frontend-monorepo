@@ -6,10 +6,10 @@
   "license": "PolyForm-Noncommercial-1.0.0",
   "type": "module",
   "scripts": {
-    "buid:safe-manifest": "tsx ./scripts/buildSafeManifest.ts",
-    "build": "npm run lint:env && npm run buid:safe-manifest && next build",
+    "build": "npm run lint:env && npm run build:safe-manifest && next build",
     "build:deps": "npm run build -w ../ui-kit && npm run build -w ../sdk-js",
-    "dev": "npm run buid:safe-manifest && next dev --turbopack",
+    "build:safe-manifest": "tsx ./scripts/buildSafeManifest.ts",
+    "dev": "npm run build:safe-manifest && next dev --turbopack",
     "lint:env": "tsx ./scripts/validateEnv",
     "start": "npm run lint:env && next start",
     "test:all": "npm run test:unit -- --run",
