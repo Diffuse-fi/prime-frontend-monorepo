@@ -5,7 +5,7 @@ import { useLocalization } from "@/lib/localization/useLocalization";
 import { AssetsList } from "@/components/AssetsList";
 import { Heading } from "@diffuse/ui-kit";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BorrowModal } from "./BorrowModal";
 import { BorrowCard } from "./BorrowCard";
 import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
@@ -20,16 +20,13 @@ export type SelectedStartegy = {
 } & Strategy;
 
 export default function Borrow() {
-  const [modalOpen, setModalOpen] = useState(false);
   const { chain } = useReadonlyChain();
-  const { isLoading, vaultsAssetsList, vaults } = useVaults();
+  const { isLoading, vaultsAssetsList, vaults, refetch } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const [selectedStrategy, setSelectedStrategy] = useState<SelectedStartegy | null>(null);
   const { dir } = useLocalization();
   const { isConnected, address } = useAccount();
-  const [pendingRequests, setPendingRequests] = useState<bigint[]>([]);
-  const { pending, refetch: refetchPendingRequests } =
-    usePendingBorrowerPositionIds(vaults);
+  const { refetch: refetchPendingRequests } = usePendingBorrowerPositionIds(vaults);
   const strategies = vaults
     .filter(v => v.assets?.some(a => a.address === selectedAsset?.address))
     .flatMap(v => v.strategies)
@@ -38,16 +35,17 @@ export default function Borrow() {
       ...strategy,
       vault: vaults.find(v => v.strategies.some(s => s.id === strategy.id))!,
     }));
+  const vaultAddresses = useMemo(() => vaults.map(v => v.address), [vaults]);
   useBorrowActivationWatcher({
-    vaultAddresses: vaults.map(v => v.address),
-    enabled: isConnected && !!pendingRequests.length,
+    vaultAddresses: vaultAddresses,
+    enabled: isConnected,
     chainId: chain?.id,
     account: address,
     onActivated: ({ strategyId }) => {
-      setPendingRequests(prev => prev.filter(id => id !== strategyId));
       const strategyName = strategies.find(s => s.id === strategyId)?.name;
       toast(`Your borrow request for strategy "${strategyName}" has been activated!`);
       refetchPendingRequests();
+      refetch();
     },
   });
 
@@ -73,7 +71,6 @@ export default function Borrow() {
                 selectedAsset={selectedAsset!}
                 onBorrow={() => {
                   setSelectedStrategy(strategy);
-                  setModalOpen(true);
                 }}
                 chain={chain}
                 isConnected={isConnected}
@@ -84,15 +81,18 @@ export default function Borrow() {
       </div>
       {selectedAsset !== null && selectedStrategy !== null && (
         <BorrowModal
-          open={modalOpen}
-          onOpenChange={setModalOpen}
+          open={selectedStrategy !== null}
+          onOpenChange={open => {
+            if (!open) {
+              setSelectedStrategy(null);
+            }
+          }}
           selectedAsset={selectedAsset}
           selectedStrategy={selectedStrategy}
           onBorrowRequestSuccess={() => {
             setSelectedStrategy(null);
-            setModalOpen(false);
-            setPendingRequests(prev => [...prev, selectedStrategy.id]);
             refetchPendingRequests();
+            refetch();
           }}
         />
       )}

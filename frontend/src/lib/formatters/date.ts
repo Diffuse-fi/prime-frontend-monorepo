@@ -73,3 +73,11 @@ export function formatDuration(totalSeconds: number): FormatResult<number> {
 
   return { value: totalSeconds, text: parts.join(" ") };
 }
+
+export function compareDatish(ts1: Dateish, ts2: Dateish): number {
+  const n1 = normalizeTimestamp(typeof ts1 === "bigint" ? ts1 : Number(ts1));
+  const n2 = normalizeTimestamp(typeof ts2 === "bigint" ? ts2 : Number(ts2));
+
+  const firstIsBigger = n1 > n2;
+  return firstIsBigger ? 1 : n1 < n2 ? -1 : 0;
+}

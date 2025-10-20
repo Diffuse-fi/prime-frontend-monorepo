@@ -38,7 +38,7 @@ export function useVaults() {
   const { chainId } = useReadonlyChain();
   const publicClient = usePublicClient({ chainId });
   const { address: owner, walletClient } = useClients();
-  const { allVaults, isLoading, isPending } = useViewer({ chainId });
+  const { allVaults, isLoading, isPending, refetch } = useViewer({ chainId });
   const qc = useQueryClient();
 
   const addressKey = useMemo(() => {
@@ -276,6 +276,7 @@ export function useVaults() {
     vaultLimits,
     isLoading,
     vaultsAssetsList,
+    refetch,
     refetchTotalAssets: () =>
       qc.refetchQueries({ queryKey: qKeys.totalAssets(addressKey, chainId) }),
     refetchLimits: () =>

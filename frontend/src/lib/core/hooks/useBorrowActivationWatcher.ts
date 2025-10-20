@@ -1,11 +1,11 @@
 "use client";
 
-import type { Address, Log } from "viem";
+import { getAddress, type Address, type Log } from "viem";
 import { useWatchContractEvent } from "wagmi";
 import { vaultAbi } from "@diffuse/sdk-js";
 
 type Params = {
-  vaultAddresses?: Address[];
+  vaultAddresses: Address[];
   chainId?: number;
   account?: Address;
   enabled?: boolean;
@@ -20,15 +20,20 @@ export function useBorrowActivationWatcher({
   onActivated,
 }: Params) {
   useWatchContractEvent({
-    address: vaultAddresses ?? [],
+    address: vaultAddresses[0],
     abi: vaultAbi,
     eventName: "BorrowerPositionActivated",
     chainId,
-    ...(account ? ({ args: { user: account } } as const) : {}),
     enabled: enabled && !!vaultAddresses?.length,
     onLogs: logs => {
       console.log("BorrowerPositionActivated logs", logs);
       for (const log of logs) {
+        if (account) {
+          const user = (log.args as { user: Address }).user;
+
+          if (getAddress(user) !== getAddress(account)) continue;
+        }
+
         const { strategyId, id } = log.args as {
           strategyId: bigint;
           id: bigint;

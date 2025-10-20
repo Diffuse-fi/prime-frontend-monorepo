@@ -24,9 +24,15 @@ export interface PositionCardProps {
   position: LenderPosition;
   className?: string;
   withdrawButton?: ReactNode;
+  claimRewardsButton?: ReactNode;
 }
 
-export function PositionCard({ className, position, withdrawButton }: PositionCardProps) {
+export function PositionCard({
+  className,
+  position,
+  withdrawButton,
+  claimRewardsButton,
+}: PositionCardProps) {
   const { vault, asset, balance, accruedYield } = position;
   const chainId = useChainId();
   const explorerUrl = getContractExplorerUrl(chainId, vault.address);
@@ -114,7 +120,8 @@ export function PositionCard({ className, position, withdrawButton }: PositionCa
       <UncontrolledCollapsible summary="List of strategies" defaultOpen={false}>
         <StrategiesList strategies={vault.strategies} />
       </UncontrolledCollapsible>
-      <div className="flex justify-between">
+      <div className="flex justify-between gap-2">
+        {claimRewardsButton}
         {withdrawButton}
         <Tooltip side="top" content="Open in explorer">
           <ButtonLike
