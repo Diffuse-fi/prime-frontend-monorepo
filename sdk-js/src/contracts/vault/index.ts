@@ -403,6 +403,34 @@ export class Vault extends ContractBase {
       });
     }
   }
+
+  async withdrawYield([strategyIds]: [bigint[]], { signal }: SdkRequestOptions = {}) {
+    if (!this.init.client.wallet) throw new WalletRequiredError("withdrawYield");
+
+    const c = this.getContract();
+
+    try {
+      const sim = await abortable(
+        this.init.client.public.simulateContract({
+          address: c.address,
+          abi: vaultAbi,
+          functionName: "withdrawYield",
+          args: [strategyIds],
+          account: this.init.client.wallet.account!,
+        }),
+        signal
+      );
+
+      return await abortable(this.init.client.wallet.writeContract(sim.request), signal);
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "withdrawYield",
+        args: [strategyIds],
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
 }
 
 export { vaultAbi };

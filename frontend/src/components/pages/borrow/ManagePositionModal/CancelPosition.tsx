@@ -42,6 +42,10 @@ export function CancelPosition({
     .map(x => x.errorMessage)
     .filter(Boolean);
 
+  const confirmingInWallet = Object.values(txState).some(
+    s => s.phase === "awaiting-signature"
+  );
+
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       <div className="flex flex-col gap-6">
@@ -81,12 +85,16 @@ export function CancelPosition({
             unborrow();
           }}
         >
-          {isUnborrowPending ? "Closing position..." : "Close position"}
+          {confirmingInWallet
+            ? "Confirming in wallet..."
+            : isUnborrowPending
+              ? "Closing position..."
+              : "Close position"}
         </Button>
         {errors.length > 0 && (
           <div className="space-y-1">
             {errors.map((err, i) => (
-              <p key={i} className="text-err-light text-center text-sm">
+              <p key={i} className="text-err text-center text-sm">
                 {err}
               </p>
             ))}

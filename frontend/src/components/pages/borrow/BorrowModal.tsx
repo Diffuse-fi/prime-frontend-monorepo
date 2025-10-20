@@ -213,7 +213,7 @@ export function BorrowModal({
       refetchAllowances();
       refetchTotalAssets();
       refetchLimits();
-      router.push("/lend/my-positions");
+      router.push("/borrow/my-positions");
     },
   });
   const totalAmountToDeposit = BigInt(amountToBorrow || "0");
