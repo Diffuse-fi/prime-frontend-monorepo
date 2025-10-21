@@ -2,7 +2,7 @@
 
 import { useVaults } from "../../../lib/core/hooks/useVaults";
 import { useLocalization } from "@/lib/localization/useLocalization";
-import { Button, Card, Heading, SimpleTable } from "@diffuse/ui-kit";
+import { Button, Card, Heading, SimpleTable, Tooltip } from "@diffuse/ui-kit";
 import { VaultCard } from "./VaultCard";
 import { AssetsList } from "../../AssetsList";
 import { useCallback } from "react";
@@ -13,7 +13,7 @@ import { useDeposit } from "@/lib/core/hooks/useDeposit";
 import { toast } from "@/lib/toast";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
 import { formatAprToPercent } from "@/lib/formatters/finance";
-import { formatUnits } from "@/lib/formatters/asset";
+import { formatUnits, getPartialAllowanceText } from "@/lib/formatters/asset";
 import { usePrevValueLocalStorage } from "@/lib/misc/usePrevValueLocalStorage";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/localization/navigation";
@@ -22,6 +22,7 @@ import { showSkeletons } from "@/lib/misc/ui";
 import { useAccount, useAccountEffect } from "wagmi";
 import { useERC20TokenBalance } from "@/lib/wagmi/useERC20TokenBalance";
 import { useOnChainSwitch } from "@/lib/wagmi/onChainSwitch";
+import { InfoIcon } from "lucide-react";
 
 export default function Lend() {
   const {
@@ -52,6 +53,7 @@ export default function Lend() {
   }, [t]);
   const {
     allAllowed,
+    allowances,
     approveMissing,
     ableToRequest,
     refetchAllowances,
@@ -102,6 +104,21 @@ export default function Lend() {
     balance !== undefined &&
     totalAmountToDeposit > balance;
 
+  const currentlyAllowed = allowances
+    ? allowances.reduce(
+        (acc, a) => {
+          const vaultAllowance = a.current;
+
+          if (vaultAllowance !== null) {
+            return acc ?? 0n + vaultAllowance;
+          }
+
+          return acc;
+        },
+        undefined as bigint | undefined
+      )
+    : undefined;
+
   const actionButtonMeta = (() => {
     if (isAmountExceedsBalance) {
       return {
@@ -129,7 +146,28 @@ export default function Lend() {
 
     if (ableToRequest) {
       return {
-        text: isPendingApprovals ? t("approving") : t("approveButtonText"),
+        text: isPendingApprovals ? (
+          t("approving")
+        ) : (
+          <div className="flex items-center gap-1">
+            <div className="leading-none">{t("approveButtonText")}</div>
+            {currentlyAllowed !== null &&
+            currentlyAllowed !== undefined &&
+            !!selectedAsset ? (
+              <Tooltip
+                content={getPartialAllowanceText(
+                  currentlyAllowed,
+                  totalAmountToDeposit,
+                  selectedAsset.decimals,
+                  selectedAsset.symbol
+                )}
+                side="top"
+              >
+                <InfoIcon size={14} />
+              </Tooltip>
+            ) : null}
+          </div>
+        ),
         disabled: isPendingApprovals,
         onClick: () => approveMissing({ mode: "exact" }),
       };

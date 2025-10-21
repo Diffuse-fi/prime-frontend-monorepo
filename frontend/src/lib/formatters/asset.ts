@@ -38,3 +38,15 @@ export function formatUnits(
 export function formatEvmAddress(address: Address): string {
   return truncateEthAddress(address);
 }
+
+export function getPartialAllowanceText(
+  allowed: bigint,
+  required: bigint,
+  decimals: number,
+  symbol: string
+): string {
+  const allowedFormatted = formatUnits(allowed, decimals).text;
+  const requiredFormatted = formatUnits(required, decimals).text;
+
+  return `${allowedFormatted} out of ${requiredFormatted} ${symbol} approved`;
+}

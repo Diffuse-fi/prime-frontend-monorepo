@@ -20,7 +20,7 @@ export function useBorrowActivationWatcher({
   onActivated,
 }: Params) {
   useWatchContractEvent({
-    address: vaultAddresses[0],
+    address: vaultAddresses,
     abi: vaultAbi,
     eventName: "BorrowerPositionActivated",
     chainId,
