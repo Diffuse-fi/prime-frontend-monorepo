@@ -12,10 +12,11 @@ import {
   Select,
   SelectOption,
   Slider,
+  Tooltip,
 } from "@diffuse/ui-kit";
 import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
 import { useERC20TokenBalance } from "@/lib/wagmi/useERC20TokenBalance";
-import { formatUnits } from "@/lib/formatters/asset";
+import { formatUnits, getPartialAllowanceText } from "@/lib/formatters/asset";
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { getAddress, parseUnits } from "viem";
 import { useBorrow } from "@/lib/core/hooks/useBorrow";
@@ -31,6 +32,7 @@ import { useBorrowPreview } from "@/lib/core/hooks/useBorrowPreview";
 import { useDebounce } from "@uidotdev/usehooks";
 import { useVaults } from "@/lib/core/hooks/useVaults";
 import { useRouter } from "@/lib/localization/navigation";
+import { InfoIcon } from "lucide-react";
 
 type ChainSwitchModalProps = {
   open: boolean;
@@ -148,6 +150,7 @@ export function BorrowModal({
     allAllowed,
     isPendingApprovals,
     approveMissing,
+    allowances,
     ableToRequest,
     refetchAllowances,
   } = useEnsureAllowances([allowanceInput], {
@@ -216,18 +219,22 @@ export function BorrowModal({
       router.push("/borrow/my-positions");
     },
   });
-  const totalAmountToDeposit = BigInt(amountToBorrow || "0");
+  const totalAmountToBorrow = BigInt(amountToBorrow || "0");
   const isAmountExceedsBalance =
     selectedAsset !== undefined && balance !== undefined && collateralAmount > balance;
 
   const confirmingInWallet = Object.values(txState).some(
     s => s.phase === "awaiting-signature"
   );
+  const currentlyAllowed = allowances?.find(
+    a => a.vault.address === selectedStrategy.vault.address
+  )?.current;
+
   const actionButtonMeta = (() => {
     if (
       collateralAmount === undefined ||
       collateralAmount === BigInt(0) ||
-      totalAmountToDeposit === 0n
+      totalAmountToBorrow === 0n
     ) {
       return {
         text: "Enter amount",
@@ -274,7 +281,26 @@ export function BorrowModal({
 
     if (ableToRequest) {
       return {
-        text: isPendingApprovals ? "Approving..." : "Approve",
+        text: isPendingApprovals ? (
+          "Approving..."
+        ) : (
+          <div className="flex items-center gap-1">
+            <div className="leading-none">Approve</div>
+            {currentlyAllowed !== null && currentlyAllowed !== undefined ? (
+              <Tooltip
+                content={getPartialAllowanceText(
+                  currentlyAllowed,
+                  collateralAmount,
+                  collateralAsset.decimals,
+                  collateralAsset.symbol
+                )}
+                side="top"
+              >
+                <InfoIcon size={14} />
+              </Tooltip>
+            ) : null}
+          </div>
+        ),
         disabled: isPendingApprovals,
         onClick: () => approveMissing({ mode: "exact" }),
       };
@@ -344,7 +370,7 @@ export function BorrowModal({
                 aria-label="Select collateral asset"
               />
             </div>
-            <div className="text-muted pl-2 text-left font-mono text-xs whitespace-nowrap">{`Balance ${collateralAsset.symbol}: ${balanceDisplay ? balanceDisplay?.text : "N/A"}`}</div>
+            <div className="text-muted pl-2 text-left font-mono text-xs whitespace-nowrap">{`Balance ${collateralAsset.symbol}: ${balanceDisplay ? balanceDisplay.text : "N/A"}`}</div>
           </div>
           <Card
             className="bg-preset-gray-50 border-none"

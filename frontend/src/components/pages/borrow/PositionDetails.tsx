@@ -110,8 +110,9 @@ export function PositionDetails({
           <div className="flex items-center justify-between">
             <span>Maturity yield</span>
             <span>
-              {formatUnits(maturityYield, selectedAsset.decimals).text}{" "}
-              {selectedAsset.symbol}
+              {maturityYield !== 0n
+                ? `${formatUnits(maturityYield, selectedAsset.decimals).text} ${selectedAsset.symbol}`
+                : "N/A"}
             </span>
           </div>
         </div>
