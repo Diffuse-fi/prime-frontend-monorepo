@@ -175,7 +175,7 @@ export default function MyPositions() {
                   ? "Confirming..."
                   : isPendingWithdrawYield
                     ? "Withdrawing..."
-                    : "Clain rewards"}
+                    : "Claim rewards"}
               </Button>
             );
 

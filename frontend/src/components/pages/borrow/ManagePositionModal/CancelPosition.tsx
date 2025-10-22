@@ -7,12 +7,12 @@ import { TriangleAlert } from "lucide-react";
 import { SlippageInput } from "../SlippageInput";
 
 interface CancelPositionProps {
-  onCancelPosition?: () => void;
+  onPositionClosure?: () => void;
   selectedPosition: BorrowerPosition;
 }
 
 export function CancelPosition({
-  onCancelPosition,
+  onPositionClosure,
   selectedPosition,
 }: CancelPositionProps) {
   const [slippage, setSlippage] = useLocalStorage(
@@ -34,7 +34,7 @@ export function CancelPosition({
   } = useUnborrow(useUnborrowInput, selectedPosition.vault, {
     onUnborrowSuccess: () => {
       toast("Borrow position closed");
-      onCancelPosition?.();
+      onPositionClosure?.();
     },
     onUnborrowError: () => toast("Error closing borrow position"),
   });

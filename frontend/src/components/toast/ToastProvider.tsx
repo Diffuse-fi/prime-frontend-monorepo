@@ -88,7 +88,7 @@ export default function ToastProvider({
             defaultPosition === "top-right" && "top-4 right-4 items-end",
             defaultPosition === "bottom-left" && "bottom-4 left-4 items-start",
             defaultPosition === "bottom-right" && "right-4 bottom-4 items-end",
-            "z-50 gap-2 px-4 py-2"
+            "z-110 max-w-[300px] gap-2 px-4 py-2"
           )}
           role="region"
           aria-label="Notifications"
