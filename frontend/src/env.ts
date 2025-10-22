@@ -36,6 +36,8 @@ export const env = createEnv({
 
     ORG_TWITTER_ACCOUNT: z.string().min(1).optional(),
     ORG_GITHUB_ACCOUNT: z.string().min(1).optional(),
+
+    GOOGLE_ANALYTICS_ID: z.string().regex(GTM_OR_GA_ID).optional(),
   },
   client: {
     NEXT_PUBLIC_APP_NAME: z.string().min(1),
@@ -43,8 +45,7 @@ export const env = createEnv({
 
     NEXT_PUBLIC_INITIAL_CHAIN_ID: zInt,
 
-    NEXT_PUBLIC_GTM_ID: z.string().regex(GTM_OR_GA_ID).optional(),
-    NEXT_PUBLIC_ENABLE_GTAG: zBool.optional(),
+    NEXT_PUBLIC_ENABLE_TRACKING: zBool.optional(),
 
     NEXT_PUBLIC_SENTRY_DSN: z.url().optional(),
     NEXT_PUBLIC_ENABLE_SENTRY: zBool.optional(),
@@ -58,8 +59,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID:
       process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
-    NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID,
-    NEXT_PUBLIC_ENABLE_GTAG: process.env.NEXT_PUBLIC_ENABLE_GTAG,
+    NEXT_PUBLIC_ENABLE_TRACKING: process.env.NEXT_PUBLIC_ENABLE_TRACKING,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_ENABLE_SENTRY: process.env.NEXT_PUBLIC_ENABLE_SENTRY,
     NEXT_PUBLIC_APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION,

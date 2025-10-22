@@ -118,8 +118,11 @@ export function useWithdrawYield(
       try {
         setKeyPending(idemKey);
         setPhase(address, { phase: "awaiting-signature" });
+        const sortedStrategyIds = [...strategyIds].sort((a, b) =>
+          a < b ? -1 : a > b ? 1 : 0
+        );
 
-        const hash = await vault!.contract.withdrawYield([strategyIds]);
+        const hash = await vault!.contract.withdrawYield([sortedStrategyIds]);
 
         setPhase(address, { phase: "pending", hash });
 

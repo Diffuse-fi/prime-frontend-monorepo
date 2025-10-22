@@ -25,6 +25,8 @@ export function useBorrowActivationWatcher({
     eventName: "BorrowerPositionActivated",
     chainId,
     enabled: enabled && !!vaultAddresses?.length,
+    poll: true,
+    pollingInterval: 4000,
     onLogs: logs => {
       console.log("BorrowerPositionActivated logs", logs);
       for (const log of logs) {

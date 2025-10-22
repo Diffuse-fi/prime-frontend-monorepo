@@ -9,7 +9,7 @@ import {
   SUPPORTED_LOCALES,
 } from "@/lib/localization/locale";
 import { ThemeProvider } from "next-themes";
-import { GoogleTagManager } from "@next/third-parties/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { WebVitals } from "@/components/misc/WebVitals";
 import ThemeSwitcher from "@/components/misc/ThemeSwitcher";
 import Image from "next/image";
@@ -57,8 +57,8 @@ export default async function RootLayout({
 }>) {
   const { lang = DEFAULT_LOCALE } = await params;
   const dir = isLocaleRtl(lang) ? "rtl" : "ltr";
-  const gtmId = env.NEXT_PUBLIC_GTM_ID ?? "";
-  const gtagEnabled = !!env.NEXT_PUBLIC_ENABLE_GTAG;
+  const gaId = env.GOOGLE_ANALYTICS_ID;
+  const trackingEnabled = !!env.NEXT_PUBLIC_ENABLE_TRACKING;
   const messages = await getMessages({ locale: lang });
   const tCommon = await getTranslations({ locale: lang, namespace: "common" });
 
@@ -70,9 +70,9 @@ export default async function RootLayout({
       className={`${fonts.DM_Sans.className} ${fonts.DM_mono.variable} h-screen antialiased supports-[height:100dvh]:h-dvh`}
     >
       <body className="px-safe pb-safe h-full">
-        {gtagEnabled && (
+        {trackingEnabled && gaId && (
           <>
-            <GoogleTagManager gtmId={gtmId} />
+            <GoogleAnalytics gaId={gaId} />
             <WebVitals />
           </>
         )}
