@@ -117,7 +117,6 @@ export function useBorrowerPositions(
     isPending: positionsQuery.isPending || pendingQuery.isPending,
     refetch: () => {
       positionsQuery.refetch();
-      pendingQuery.refetch();
     },
     error: positionsQuery.error as Error | null,
     pendingError: pendingQuery.error as Error | null,

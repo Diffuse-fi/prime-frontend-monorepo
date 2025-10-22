@@ -79,7 +79,7 @@
       "eslint-config-next>eslint-import-resolver-typescript>unrs-resolver": true,
       "knip>oxc-resolver": true,
       "simple-git-hooks": true,
-      "vitest>vite>esbuild": false
+      "vitest>vite>esbuild": true
     }
   }
 }

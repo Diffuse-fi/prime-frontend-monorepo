@@ -26,7 +26,7 @@ export type UseWithdrawYieldResult = {
 };
 
 const ROOT = "withdrawYield" as const;
-const version = QV.withdraw;
+const version = QV.withdrawYield;
 
 const qKeys = {
   single: (chainId: number, wallet?: Address | null) =>

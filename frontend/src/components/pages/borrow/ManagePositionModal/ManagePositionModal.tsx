@@ -13,14 +13,14 @@ type ManagePositionModalProps = {
   description?: React.ReactNode;
   selectedAsset: AssetInfo;
   selectedPosition: BorrowerPosition;
-  onCancelPosition?: () => void;
+  onPositionClosure?: () => void;
 };
 
 export function ManagePositionModal({
   open,
   onOpenChange,
   title,
-  onCancelPosition,
+  onPositionClosure,
   selectedPosition,
 }: ManagePositionModalProps) {
   return (
@@ -44,7 +44,7 @@ export function ManagePositionModal({
         </Tabs.List>
         <Tabs.Content value="close" inset>
           <CancelPosition
-            onCancelPosition={onCancelPosition}
+            onPositionClosure={onPositionClosure}
             selectedPosition={selectedPosition}
           />
         </Tabs.Content>

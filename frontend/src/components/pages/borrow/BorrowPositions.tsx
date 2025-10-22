@@ -123,7 +123,7 @@ export function BorrowPositions() {
               setSelectedPosition(undefined);
             }
           }}
-          onCancelPosition={() => {
+          onPositionClosure={() => {
             refetchLimits();
             refetchTotalAssets();
             refetchBorrowerPositions();

@@ -12,6 +12,7 @@ const withdrawVersion = `v1-${lendVersion}`;
 const lenderPositionVersion = `v1-${lendVersion}`;
 const borrowVersion = `v1-${vaultVersion}`;
 const borrowerPositionVersion = `v1-${borrowVersion}`;
+const withdrawYieldVersion = `v1-${lendVersion}`;
 
 export const QV = {
   lend: lendVersion,
@@ -24,4 +25,5 @@ export const QV = {
   lenderPositions: lenderPositionVersion,
   borrow: borrowVersion,
   borrowerPositions: borrowerPositionVersion,
+  withdrawYield: withdrawYieldVersion,
 } as const;

@@ -110,7 +110,7 @@ export default function Lend() {
           const vaultAllowance = a.current;
 
           if (vaultAllowance !== null) {
-            return acc ?? 0n + vaultAllowance;
+            return (acc ?? 0n) + vaultAllowance;
           }
 
           return acc;
