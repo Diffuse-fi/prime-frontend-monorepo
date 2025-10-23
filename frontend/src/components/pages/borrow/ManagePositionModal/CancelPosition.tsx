@@ -36,11 +36,8 @@ export function CancelPosition({
       toast("Borrow position closed");
       onPositionClosure?.();
     },
-    onUnborrowError: () => toast("Error closing borrow position"),
+    onUnborrowError: e => toast(`Error closing borrow position: ${e}`),
   });
-  const errors = Object.values(txState)
-    .map(x => x.errorMessage)
-    .filter(Boolean);
 
   const confirmingInWallet = Object.values(txState).some(
     s => s.phase === "awaiting-signature"
@@ -91,15 +88,6 @@ export function CancelPosition({
               ? "Closing position..."
               : "Close position"}
         </Button>
-        {errors.length > 0 && (
-          <div className="space-y-1">
-            {errors.map((err, i) => (
-              <p key={i} className="text-err text-center text-sm">
-                {err}
-              </p>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );

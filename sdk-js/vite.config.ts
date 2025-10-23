@@ -44,6 +44,9 @@ export default defineConfig(() => {
           ...Object.keys(packageJson.peerDependencies || {}),
         ],
       },
+      terserOptions: {
+        keep_classnames: true,
+      },
     },
   };
 });

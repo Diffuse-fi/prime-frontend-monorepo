@@ -218,6 +218,9 @@ export function BorrowModal({
       refetchLimits();
       router.push("/borrow/my-positions");
     },
+    onBorrowError: error => {
+      toast(`Borrow request failed: ${error}`);
+    },
   });
   const totalAmountToBorrow = BigInt(amountToBorrow || "0");
   const isAmountExceedsBalance =
