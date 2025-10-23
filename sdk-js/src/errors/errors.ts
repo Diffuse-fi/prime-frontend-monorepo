@@ -3,6 +3,7 @@ import type { ErrorCtx, SdkErrorJSON } from "./types";
 import { version } from "../version";
 
 type ErrorOptions = {
+  name?: string;
   userMessage?: string;
   cause?: unknown;
   context?: ErrorCtx;
@@ -18,7 +19,7 @@ export class SdkError extends Error {
   constructor(code: SdkErrorCode, message: string, opts?: ErrorOptions) {
     super(message);
 
-    this.name = this.constructor.name;
+    this.name = opts?.name ?? this.constructor.name ?? "SdkError";
     this.code = code;
     this.userMessage = opts?.userMessage;
     this.cause = opts?.cause;
@@ -54,7 +55,11 @@ export class AddressNotFoundError extends SdkError {
     super(
       SdkErrorCode.ADDRESS_NOT_FOUND,
       "Contract address is not configured for this chain.",
-      { userMessage: "Contract address not found.", context: ctx }
+      {
+        userMessage: "Contract address not found.",
+        context: ctx,
+        name: "AddressNotFoundError",
+      }
     );
   }
 }
@@ -64,6 +69,7 @@ export class InvalidAddressError extends SdkError {
     super(SdkErrorCode.INVALID_ADDRESS, `Invalid address provided: ${addr}`, {
       userMessage: "Invalid contract address configuration.",
       context: { address: addr, ...ctx },
+      name: "InvalidAddressError",
     });
   }
 }
@@ -75,6 +81,8 @@ export class WalletRequiredError extends SdkError {
       `Wallet client is required${op ? ` for ${op}` : ""}.`,
       {
         userMessage: "Connect a wallet to continue.",
+        context: { operation: op },
+        name: "WalletRequiredError",
       }
     );
   }
@@ -86,6 +94,7 @@ export class UserRejectedError extends SdkError {
       userMessage: "Request rejected in wallet.",
       context: ctx,
       cause,
+      name: "UserRejectedError",
     });
   }
 }
@@ -96,6 +105,7 @@ export class InsufficientFundsError extends SdkError {
       userMessage: "Insufficient funds for gas.",
       context: ctx,
       cause,
+      name: "InsufficientFundsError",
     });
   }
 }
@@ -106,6 +116,7 @@ export class SimulationRevertedError extends SdkError {
       userMessage: "This action would fail (simulation).",
       context: ctx,
       cause,
+      name: "SimulationRevertedError",
     });
   }
 }
@@ -116,6 +127,7 @@ export class ContractRevertError extends SdkError {
       userMessage: "Transaction reverted on-chain.",
       context: ctx,
       cause,
+      name: "ContractRevertError",
     });
   }
 }
@@ -126,6 +138,7 @@ export class RpcError extends SdkError {
       userMessage: "RPC error. Please retry.",
       context: ctx,
       cause,
+      name: "RpcError",
     });
   }
 }
@@ -136,6 +149,7 @@ export class NetworkError extends SdkError {
       userMessage: "Network error. Check your connection.",
       context: ctx,
       cause,
+      name: "NetworkError",
     });
   }
 }
@@ -146,6 +160,7 @@ export class UnknownError extends SdkError {
       userMessage: "Something went wrong.",
       context: ctx,
       cause,
+      name: "UnknownError",
     });
   }
 }

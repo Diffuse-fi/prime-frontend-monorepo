@@ -80,8 +80,12 @@ export default function Lend() {
         refetchLimits();
       }, 0);
     },
-    onDepositBatchSomeError: () => {
-      toast(t("toasts.depositErrorToast"));
+    onDepositBatchSomeError: e => {
+      toast(
+        `Error depositing to some vaults: ${Object.values(e)
+          .map(err => err.message)
+          .join(", ")}`
+      );
     },
     onDepositBatchComplete: () => {
       refetchAllowances();

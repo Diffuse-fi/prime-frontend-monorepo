@@ -8,17 +8,17 @@ function toInt(name: string, value: number) {
 
 export function WebVitals() {
   useReportWebVitals(metric => {
-    const payload = {
-      event: "web_vitals",
-      metric_name: metric.name,
-      metric_id: metric.id,
+    const params = {
       value: toInt(metric.name, metric.value),
+      metric_value: metric.value,
+      metric_id: metric.id,
       label: metric.label,
-      path: location.pathname,
+      page_path: location.pathname,
+      non_interaction: true,
+      debug_mode: process.env.NODE_ENV !== "production",
     };
 
-    window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push(payload);
+    window.gtag?.("event", metric.name, params);
   });
 
   return null;
