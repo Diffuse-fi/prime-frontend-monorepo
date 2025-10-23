@@ -6,21 +6,28 @@ const isProd = process.env.NODE_ENV === "production";
 const httpsSecurityEnabled = !!env.ENABLE_HTTPS_SECURITY_HEADERS;
 
 // Allowed sources to connect to, e.g. for fetch, WebSocket, etc.
-const allowedSourcesRaw = [
+const allowedSources = [
   "'self'",
   "https://www.google-analytics.com",
   // Web3Modal API (used by WalletConnect V2)
   "https://api.web3modal.org",
-  // WalletConnect V2 relay server
+  // WalletConnect V2
   "wss://relay.walletconnect.org",
   "https://relay.walletconnect.org",
+  "https://pulse.walletconnect.org",
   // EUC domain for ENS avatar images
   "https://euc.li",
   // Allowed chains RPC URLs
   ...Object.values(RPCs).flat(),
-];
+]
+  .filter(Boolean)
+  .join(" ");
 
-const allowedSources = allowedSourcesRaw.filter(Boolean).join(" ");
+const allowedScriptSources = [
+  "https://www.googletagmanager.com",
+]
+  .filter(Boolean)
+  .join(" ");
 
 const allowedFrameAncestors = [
   // Specify here if a website needs to be embedded in an iframe on a specific domain
@@ -55,7 +62,7 @@ export const cspMiddleware: Finalizer = (_req, _ev, _ctx, res) => {
     ? normalizeTemplateString(
         `
           default-src 'self';
-          script-src 'self' 'unsafe-inline';
+          script-src 'self' 'unsafe-inline' ${allowedScriptSources};
           style-src 'self' 'unsafe-inline';
           connect-src ${allowedSources};
           img-src 'self' blob: data: ${allowedImageSources};
