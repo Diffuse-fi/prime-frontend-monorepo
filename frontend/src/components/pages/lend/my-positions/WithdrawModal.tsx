@@ -24,7 +24,7 @@ type WithdrawModalProps = {
   selectedAsset: AssetInfo;
   selectedPosition: LenderPosition;
   onWithdrawSuccess: () => void;
-  onWithdrawError: () => void;
+  onWithdrawError: (e: string) => void;
 };
 
 export function WithdrawModal({

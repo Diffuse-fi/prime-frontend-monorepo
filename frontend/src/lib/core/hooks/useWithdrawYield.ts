@@ -6,6 +6,7 @@ import { useClients } from "../../wagmi/useClients";
 import type { TxInfo, TxState, VaultFullInfo } from "../types";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
+import { isUserRejectedError } from "../utils/errors";
 
 export type UseWithdrawYieldParams = {
   onWithdrawYieldSuccess?: (vaultAddress: Address, hash: Hash) => void;
@@ -144,6 +145,11 @@ export function useWithdrawYield(
           return null;
         }
       } catch (error) {
+        if (isUserRejectedError(error)) {
+          setPhase(address, { phase: "idle" });
+          return null;
+        }
+
         const err = error instanceof Error ? error : new Error("Unknown error");
         setPhase(address, { phase: "error", errorMessage: err.message });
         onWithdrawYieldError?.(err.message, address);

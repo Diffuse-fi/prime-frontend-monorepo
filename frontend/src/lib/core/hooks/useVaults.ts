@@ -276,7 +276,10 @@ export function useVaults() {
     vaultLimits,
     isLoading,
     vaultsAssetsList,
-    refetch,
+    refetch: () => {
+      refetch();
+      availableLiquidityQuery.refetch();
+    },
     refetchTotalAssets: () =>
       qc.refetchQueries({ queryKey: qKeys.totalAssets(addressKey, chainId) }),
     refetchLimits: () =>

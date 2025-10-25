@@ -29,6 +29,7 @@ export default function MyPositions() {
     isPending: isPendingVaults,
     refetchTotalAssets,
     refetchLimits,
+    refetch: refetchVaults,
   } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const [selectedPosition, setSelectedPosition] = useState<LenderPosition | null>(null);
@@ -65,9 +66,10 @@ export default function MyPositions() {
     refetchTotalAssets();
     refetchLimits();
     setSelectedPosition(null);
+    refetchVaults();
   };
-  const onWithdrawError = () => {
-    toast(t("toasts.withdrawErrorToast"));
+  const onWithdrawError = (e: string) => {
+    toast(t("toasts.withdrawErrorToast") + ": " + e);
   };
 
   const {
@@ -80,8 +82,8 @@ export default function MyPositions() {
       refetch();
       refetchTotalAssets();
     },
-    onWithdrawYieldError: () => {
-      toast("Error withdrawing yield");
+    onWithdrawYieldError: e => {
+      toast(`Error withdrawing yield: ${e}`);
     },
   });
 

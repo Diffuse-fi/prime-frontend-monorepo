@@ -14,6 +14,7 @@ import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { produce } from "immer";
 import { formatUnits } from "../../formatters/asset";
+import { isUserRejectedError } from "../utils/errors";
 
 export type UseLendParams = {
   txConcurrency?: number;
@@ -197,6 +198,11 @@ export function useDeposit(
                 onDepositError?.(e.message, address);
               }
             } catch (error) {
+              if (isUserRejectedError(error)) {
+                setPhase(address, { phase: "idle" });
+                return;
+              }
+
               const e = error instanceof Error ? error : new Error("Unknown error");
 
               setPhase(address, { phase: "error", errorMessage: e.message });
