@@ -20,6 +20,7 @@ import {
   UnknownError,
   AddressNotFoundError,
   InvalidAddressError,
+  AbortedError,
 } from "./errors";
 import type { ErrorCtx } from "./types";
 
@@ -78,8 +79,32 @@ function isUserRejected(err: unknown): boolean {
   return false;
 }
 
+function isAbortError(err: unknown): boolean {
+  let cur: unknown = err;
+  const seen = new Set<unknown>();
+  const msgRx = /\babort(ed|ing)?\b/i;
+
+  while (cur && typeof cur === "object" && !seen.has(cur)) {
+    seen.add(cur);
+    const any = cur as any;
+
+    if (any?.name === "AbortError") return true;
+    if (any?.code === "ABORT_ERR") return true;
+    if (any?.code === "UND_ERR_ABORTED") return true;
+
+    const m = msgOf(cur);
+    if (m && typeof m === "string" && m.length > 0 && msgRx.test(m)) return true;
+
+    cur = any?.cause;
+  }
+
+  return false;
+}
+
 export function normalizeError(err: unknown, context?: ErrorCtx): SdkError {
   if (err instanceof SdkError) return err;
+
+  if (isAbortError(err)) return new AbortedError(context);
 
   if (isUserRejected(err)) return new UserRejectedError(context, err as Error);
 

@@ -14,4 +14,5 @@ export enum SdkErrorCode {
   RPC_ERROR = "RPC_ERROR",
 
   UNKNOWN = "UNKNOWN",
+  ABORTED = "ABORTED",
 }
