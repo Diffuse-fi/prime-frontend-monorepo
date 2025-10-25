@@ -13,6 +13,7 @@ export const button = tv({
         "border bg-primary/80 border-primary text-fg hover:bg-primary active:bg-secondary " +
         "disabled:bg-muted disabled:border-muted",
       ghost: "bg-transparent hover:bg-muted/10 text-primary",
+      link: "bg-transparent underline decoration-dashed underline-offset-2 text-primary hover:text-primary/80 active:text-primary/60",
     },
     size: {
       sm: "text-sm px-3 py-1.5 rounded-sm",
@@ -28,6 +29,9 @@ export const button = tv({
     { icon: true, size: "sm", class: "h-8 w-8" },
     { icon: true, size: "md", class: "h-10 w-10" },
     { icon: true, size: "lg", class: "h-12 w-12" },
+    { variant: "link", size: "sm", class: "px-0 py-0" },
+    { variant: "link", size: "md", class: "px-0 py-0" },
+    { variant: "link", size: "lg", class: "px-0 py-0" },
   ],
   defaultVariants: { size: "md", variant: "solid", icon: false },
 });

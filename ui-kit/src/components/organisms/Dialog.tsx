@@ -12,7 +12,7 @@ const content = tv({
     "data-[state=open]:animate-modal-content-in",
     "focus:outline-none",
   ],
-  variants: { size: { sm: "max-w-[360px]", md: "max-w-[728px]", lg: "max-w-[1024px]" } },
+  variants: { size: { sm: "max-w-[360px]", md: "max-w-[642px]", lg: "max-w-[1024px]" } },
   defaultVariants: { size: "md" },
 });
 
