@@ -7,6 +7,7 @@ import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { produce } from "immer";
 import { getSlippageBps } from "@/lib/formulas/slippage";
+import { isUserRejectedError } from "../utils/errors";
 
 export type SelectedUnborrow = {
   chainId: number;
@@ -147,6 +148,11 @@ export function useUnborrow(
           onUnborrowError?.(e.message, addr);
         }
       } catch (error) {
+        if (isUserRejectedError(error)) {
+          setPhase(addr, { phase: "idle" });
+          return result;
+        }
+
         const e = error instanceof Error ? error : new Error("Unknown error");
         setPhase(addr, { phase: "error", errorMessage: e.message });
         result.error = e;

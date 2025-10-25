@@ -7,6 +7,7 @@ import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { produce } from "immer";
 import { formatUnits } from "../../formatters/asset";
+import { isUserRejectedError } from "../utils/errors";
 
 export type UseWithdrawParams = {
   onWithdrawSuccess?: (vaultAddress: Address, hash: Hash) => void;
@@ -157,6 +158,11 @@ export function useWithdraw(
           return null;
         }
       } catch (error) {
+        if (isUserRejectedError(error)) {
+          setPhase(address, { phase: "idle" });
+          return null;
+        }
+
         const err = error instanceof Error ? error : new Error("Unknown error");
         setPhase(address, { phase: "error", errorMessage: err.message });
         onWithdrawError?.(err.message, address);
