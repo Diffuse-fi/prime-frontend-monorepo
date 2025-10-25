@@ -6,7 +6,6 @@ import { getContractExplorerUrl } from "@/lib/chains/rpc";
 import { LenderPosition } from "@/lib/core/types";
 import { formatAsset, formatUnits } from "@/lib/formatters/asset";
 import { formatAprToPercent } from "@/lib/formatters/finance";
-import { calcAprInterest } from "@/lib/formulas/apr";
 import {
   ButtonLike,
   Card,
@@ -37,15 +36,6 @@ export function PositionCard({
   const chainId = useChainId();
   const explorerUrl = getContractExplorerUrl(chainId, vault.address);
   const vaultAprFormatted = formatAprToPercent(vault.targetApr);
-  const defaultLockupPerdiod = 90; // TODO - get real value from the vault data when ready
-  const reward = formatUnits(
-    calcAprInterest(vault.targetApr, balance, {
-      durationInDays: defaultLockupPerdiod,
-    }),
-    asset.decimals
-  ).text;
-  const rewardDisplay = reward ? `${reward} ${asset.symbol}` : "-";
-
   const profitDisplay = !!accruedYield
     ? `${formatUnits(accruedYield, asset.decimals).text} ${asset.symbol}`
     : "-";
@@ -112,7 +102,7 @@ export function PositionCard({
               {vaultAprFormatted.text}
             </div>,
             <div key="3" className="text-right">
-              {rewardDisplay}
+              {profitDisplay}
             </div>,
           ],
         ]}

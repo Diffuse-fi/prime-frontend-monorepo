@@ -14,7 +14,6 @@ import {
   FormField,
 } from "@diffuse/ui-kit";
 import { AssetInfo } from "@/lib/assets/validations";
-import { calcAprInterest } from "@/lib/formulas/apr";
 import { formatUnits } from "@/lib/formatters/asset";
 import { RisksNotice } from "./RisksNotice";
 import { getVaultRiskLevelColor } from "@/lib/core/utils/vault";
@@ -38,16 +37,6 @@ export function VaultCard({
 }: VaultProps) {
   const t = useTranslations("lend");
   const vaultAprFormatted = formatAprToPercent(vault.targetApr);
-  const defaultLockupPerdiod = 90; // TODO - get real value from the vault data when ready
-  const reward = amount
-    ? formatUnits(
-        calcAprInterest(vault.targetApr, amount, {
-          durationInDays: defaultLockupPerdiod,
-        }),
-        selectedAsset.decimals
-      ).text
-    : "";
-  const rewardDisplay = reward ? `${reward} ${selectedAsset.symbol}` : "-";
 
   return (
     <Card
@@ -86,9 +75,6 @@ export function VaultCard({
           <div key="key" className="text-right font-mono text-xs">
             APR
           </div>,
-          <div key="key" className="text-right font-mono text-xs">
-            Reward
-          </div>,
         ]}
         rows={[
           [
@@ -103,9 +89,6 @@ export function VaultCard({
             </div>,
             <div key="2" className="text-right">
               {vaultAprFormatted.text}
-            </div>,
-            <div key="3" className="text-right">
-              {rewardDisplay}
             </div>,
           ],
         ]}
