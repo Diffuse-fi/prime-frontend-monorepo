@@ -60,7 +60,9 @@ export class Vault extends ContractBase {
         signal
       );
 
-      return await abortable(this.init.client.wallet.writeContract(sim.request), signal);
+      if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+
+      return await this.init.client.wallet.writeContract(sim.request);
     } catch (e) {
       throw normalizeError(e, {
         op: "deposit",
@@ -88,7 +90,9 @@ export class Vault extends ContractBase {
         signal
       );
 
-      return await abortable(this.init.client.wallet.writeContract(sim.request), signal);
+      if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+
+      return await this.init.client.wallet.writeContract(sim.request);
     } catch (e) {
       throw normalizeError(e, {
         op: "withdraw",
@@ -230,7 +234,9 @@ export class Vault extends ContractBase {
         signal
       );
 
-      return await abortable(this.init.client.wallet.writeContract(sim.request), signal);
+      if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+
+      return await this.init.client.wallet.writeContract(sim.request);
     } catch (e) {
       throw normalizeError(e, {
         op: "borrowRequest",
@@ -374,14 +380,13 @@ export class Vault extends ContractBase {
 
       const gasAdj = (gas * 12n) / 10n;
 
-      return await abortable(
-        this.init.client.wallet.writeContract({
-          ...sim.request,
-          args: [positionId, adjustedTokensAmount, deadline],
-          gas: gasAdj,
-        }),
-        signal
-      );
+      if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+
+      return await this.init.client.wallet.writeContract({
+        ...sim.request,
+        args: [positionId, adjustedTokensAmount, deadline],
+        gas: gasAdj,
+      });
     } catch (e) {
       throw normalizeError(e, {
         op: "previewUnborrow",
@@ -421,7 +426,9 @@ export class Vault extends ContractBase {
         signal
       );
 
-      return await abortable(this.init.client.wallet.writeContract(sim.request), signal);
+      if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+
+      return await this.init.client.wallet.writeContract(sim.request);
     } catch (e) {
       throw normalizeError(e, {
         op: "withdrawYield",

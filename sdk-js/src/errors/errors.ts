@@ -164,3 +164,13 @@ export class UnknownError extends SdkError {
     });
   }
 }
+
+export class AbortedError extends SdkError {
+  constructor(ctx?: Record<string, unknown>) {
+    super(SdkErrorCode.ABORTED, "Operation was aborted.", {
+      userMessage: "Operation aborted.",
+      context: ctx,
+      name: "AbortedError",
+    });
+  }
+}
