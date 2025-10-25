@@ -15,9 +15,11 @@ import { useTranslations } from "next-intl";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { calcAprByInterestEarned } from "@/lib/formulas/apr";
 import { showSkeletons } from "@/lib/misc/ui";
-import { useWithdraw } from "@/lib/core/hooks/useWithdraw";
 import { useWithdrawYield } from "@/lib/core/hooks/useWithdrawYield";
 import { compareDatish } from "@/lib/formatters/date";
+import { useState } from "react";
+import { LenderPosition } from "@/lib/core/types";
+import { WithdrawModal } from "./WithdrawModal";
 
 export default function MyPositions() {
   const {
@@ -26,9 +28,11 @@ export default function MyPositions() {
     isLoading: isLoadingVaults,
     isPending: isPendingVaults,
     refetchTotalAssets,
-    vaultLimits,
+    refetchLimits,
   } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
+  const [selectedPosition, setSelectedPosition] = useState<LenderPosition | null>(null);
+
   const { dir } = useLocalization();
   const t = useTranslations("myPositions");
 
@@ -59,14 +63,12 @@ export default function MyPositions() {
     toast(t("toasts.withdrawSuccessToast"));
     refetch();
     refetchTotalAssets();
+    refetchLimits();
+    setSelectedPosition(null);
   };
   const onWithdrawError = () => {
     toast(t("toasts.withdrawErrorToast"));
   };
-  const { withdraw, isPendingSingle, txState } = useWithdraw(vaults, vaultLimits, {
-    onWithdrawSuccess,
-    onWithdrawError,
-  });
 
   const {
     withdrawYield,
@@ -82,10 +84,6 @@ export default function MyPositions() {
       toast("Error withdrawing yield");
     },
   });
-
-  const confirmingInWalletWithdraw = Object.values(txState).some(
-    s => s.phase === "awaiting-signature"
-  );
 
   const confirmingInWalletWithdrawYield = Object.values(withdrawYieldTxState).some(
     s => s.phase === "awaiting-signature"
@@ -186,19 +184,10 @@ export default function MyPositions() {
                 withdrawButton={
                   <Button
                     className="flex-1"
-                    onClick={() =>
-                      withdraw({
-                        vaultAddress: position.vault.address,
-                        amount: position.balance,
-                      })
-                    }
-                    disabled={isPendingSingle || position.balance === 0n}
+                    onClick={() => setSelectedPosition(position)}
+                    disabled={position.balance === 0n}
                   >
-                    {confirmingInWalletWithdraw
-                      ? "Confirming..."
-                      : isPendingSingle
-                        ? t("withdrawing")
-                        : t("withdraw")}
+                    {t("withdraw")}
                   </Button>
                 }
                 claimRewardsButton={
@@ -225,6 +214,21 @@ export default function MyPositions() {
           </div>
         )}
       </div>
+      {selectedPosition && selectedAsset && (
+        <WithdrawModal
+          open={Boolean(selectedPosition)}
+          onOpenChange={open => {
+            if (!open) {
+              setSelectedPosition(null);
+            }
+          }}
+          title="Withdraw deposit"
+          selectedAsset={selectedAsset}
+          selectedPosition={selectedPosition}
+          onWithdrawSuccess={onWithdrawSuccess}
+          onWithdrawError={onWithdrawError}
+        />
+      )}
     </div>
   );
 }
