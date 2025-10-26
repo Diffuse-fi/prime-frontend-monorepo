@@ -29,6 +29,7 @@ jobs:
         with:
           setup-node: true
           node-version: ${{ env.NODE_VERSION }}
+          audit: true
 
       - name: Lint
         uses: ./.github/actions/lint
