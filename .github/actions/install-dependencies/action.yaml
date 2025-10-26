@@ -9,6 +9,10 @@ inputs:
     description: "Setup Node.js environment"
     default: true
     required: false
+  audit:
+    description: "Run npm audit after installation"
+    default: false
+    required: false
 
 runs:
   using: "composite"
@@ -22,4 +26,9 @@ runs:
 
     - name: Install dependencies
       run: npm ci --ignore-scripts --audit=false
+      shell: bash
+
+    - name: Run npm audit
+      if: ${{ inputs.audit == 'true' }}
+      run: npm audit --audit-level=high --omit=dev
       shell: bash

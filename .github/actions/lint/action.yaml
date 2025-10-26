@@ -15,3 +15,11 @@ runs:
     # - name: Check for unused files, dependencies, and exports
     #   run: npm run knip
     #   shell: bash
+
+    - name: Check that only allowed licenses are used in production
+      run: npm run check:licenses
+      shell: bash
+
+    - name: Check that prod dependencies are pinned to specific versions
+      run: npm run check:deps-pinning
+      shell: bash
