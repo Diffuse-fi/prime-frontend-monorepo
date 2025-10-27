@@ -11,11 +11,13 @@ import { formatNumberToKMB } from "@/lib/formatters/number";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
 import { Button, Card, Heading, SimpleTable } from "@diffuse/ui-kit";
 import { Chain } from "@rainbow-me/rainbowkit";
+import { useTranslations } from "next-intl";
 
 type BorrowCardProps = {
   strategy: Strategy;
   selectedAsset: AssetInfo;
   isConnected?: boolean;
+  onConnectWallet?: () => void;
   onBorrow?: () => void;
   chain: Chain;
   vault: VaultFullInfo;
@@ -28,6 +30,7 @@ export function BorrowCard({
   chain,
   isConnected,
   vault,
+  onConnectWallet,
 }: BorrowCardProps) {
   const chainMeta = getStableChainMeta(chain.id);
   const availableLiquidityUnits = formatUnits(
@@ -37,6 +40,15 @@ export function BorrowCard({
   const availableLiquidityFormatted = formatNumberToKMB(
     Number(availableLiquidityUnits.meta!.rawViem)
   );
+  const t = useTranslations("common");
+  const onBtnClick = () => {
+    if (!isConnected) {
+      onConnectWallet?.();
+      return;
+    }
+
+    onBorrow?.();
+  };
 
   return (
     <Card
@@ -106,13 +118,8 @@ export function BorrowCard({
           ],
         ]}
       />
-      <Button
-        size="lg"
-        className="mt-3 w-2/3 md:mt-6"
-        onClick={onBorrow}
-        disabled={!isConnected}
-      >
-        {isConnected ? "Borrow" : "Connect wallet"}
+      <Button size="lg" className="mt-3 w-2/3 md:mt-6" onClick={onBtnClick}>
+        {isConnected ? "Borrow" : t("connectWallet")}
       </Button>
     </Card>
   );

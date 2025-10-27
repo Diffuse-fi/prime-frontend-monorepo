@@ -72,11 +72,6 @@ export type LenderPosition = {
   accruedYield: bigint;
 };
 
-export type BatchResult = {
-  hashes: Record<Address, Hash>;
-  errors: Record<Address, Error>;
-};
-
 export type VaultRiskLevel =
   | 0 // none
   | 1 // low

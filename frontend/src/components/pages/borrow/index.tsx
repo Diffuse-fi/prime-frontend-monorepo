@@ -14,6 +14,7 @@ import { useAccount } from "wagmi";
 import { useBorrowActivationWatcher } from "@/lib/core/hooks/useBorrowActivationWatcher";
 import { toast } from "@/lib/toast";
 import { usePendingBorrowerPositionIds } from "@/lib/core/hooks/useBorrowerPendingPositions";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 
 export type SelectedStartegy = {
   vault: VaultFullInfo;
@@ -48,6 +49,7 @@ export default function Borrow() {
       refetch();
     },
   });
+  const { openConnectModal } = useConnectModal();
 
   return (
     <div className="mt-9 flex flex-col gap-3 md:gap-8">
@@ -75,6 +77,7 @@ export default function Borrow() {
                 chain={chain}
                 isConnected={isConnected}
                 vault={strategy.vault}
+                onConnectWallet={openConnectModal}
               />
             ))
           : null}

@@ -25,6 +25,7 @@
     "title": "My Borrow Positions"
   },
   "common": {
+    "connectWallet": "Connect Wallet",
     "navbar": {
       "connected": "Connected",
       "navigation": {
@@ -45,7 +46,6 @@
     "approveButtonText": "Approve",
     "approving": "Approval Pending...",
     "assetsToLend": "Assets to lend",
-    "connectWalletToDeposit": "Connect wallet to deposit",
     "deposit": "Deposit",
     "depositButtonText": "Deposit",
     "depositing": "Depositing...",

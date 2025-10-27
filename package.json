@@ -74,7 +74,8 @@
     "ignore": [],
     "ignoreBinaries": [
       "commitlint",
-      "commit-msg"
+      "commit-msg",
+      "lint-staged"
     ]
   },
   "lavamoat": {

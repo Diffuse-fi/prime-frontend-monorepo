@@ -9,7 +9,7 @@ runs:
       shell: bash
 
     - name: Format
-      run: npm run format
+      run: npm run format:check
       shell: bash
 
     # - name: Check for unused files, dependencies, and exports
