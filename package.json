@@ -12,10 +12,10 @@
   "scripts": {
     "build": "concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" --success last && npm run build -w frontend",
     "check:deps-pinning": "tsx ./scripts/checkDepsPinning.ts",
+    "check:format": "prettier --check .",
     "check:licenses": "tsx ./scripts/checkLicenses.ts",
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w sdk-js\" \"npm run dev -w ui-kit\" --kill-others --success last",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
     "knip": "knip --production",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "setup": "npx --no-install allow-scripts && simple-git-hooks && npm run build",

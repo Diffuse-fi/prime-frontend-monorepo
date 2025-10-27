@@ -17,7 +17,7 @@ export function ButtonLike<T extends React.ElementType = "button">({
   component,
   className,
   variant,
-  size,
+  size = "md",
   icon,
   ...rest
 }: ButtonLikeProps<T>) {

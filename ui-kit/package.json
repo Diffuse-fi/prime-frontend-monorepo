@@ -59,6 +59,7 @@
   },
   "peerDependencies": {
     "@tanstack/react-table": "8.21.3",
+    "copy-to-clipboard": "3.3.3",
     "lucide-react": "0.542.0",
     "radix-ui": "1.4.3",
     "react": ">=19",

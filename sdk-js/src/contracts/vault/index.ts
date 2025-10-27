@@ -438,6 +438,18 @@ export class Vault extends ContractBase {
       });
     }
   }
+
+  async getCurator({ signal }: SdkRequestOptions = {}) {
+    try {
+      return abortable(this.getContract().read.getCurator(), signal);
+    } catch (e) {
+      throw normalizeError(e, {
+        op: "getCurator",
+        contract: contractName,
+        chainId: this.chainId,
+      });
+    }
+  }
 }
 
 export { vaultAbi };

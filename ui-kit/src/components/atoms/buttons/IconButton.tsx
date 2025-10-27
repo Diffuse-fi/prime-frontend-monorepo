@@ -16,7 +16,7 @@ export interface IconButtonProps
 }
 
 export function IconButton({
-  size,
+  size = "md",
   variant,
   className,
   icon,
@@ -28,6 +28,7 @@ export function IconButton({
       className={iconButton({ size, variant, className, icon: true })}
       aria-label={ariaLabel}
       variant={variant}
+      size={size}
       {...rest}
     >
       {icon}
