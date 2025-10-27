@@ -62,9 +62,12 @@ export function BorrowerPositionCard({
       header={
         <div className="flex items-center justify-start gap-4">
           <AssetImage alt="" address={strategyAsset.address} size={20} />
-          <Heading level="4" className="inline font-semibold">
-            {strategyAsset.symbol}
-          </Heading>
+          <div className="flex flex-col items-start">
+            <Heading level="4" className="font-semibold">
+              {strategyAsset.symbol}
+            </Heading>
+            <span className="font-mono text-xs">{strategy.name}</span>
+          </div>
           <div className="bg-muted/15 ml-auto flex size-8 items-center justify-center rounded-full">
             <ImageWithJazziconFallback
               src={iconUrl}
