@@ -17,6 +17,7 @@ export function apiUrl<K extends ApiRouteKey>(
   const search = params
     ? `?${qs.stringify(params, {
         arrayFormat: "comma",
+        sort: (a, b) => a.localeCompare(b),
       })}`
     : "";
 

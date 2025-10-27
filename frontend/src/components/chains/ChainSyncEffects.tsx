@@ -10,21 +10,25 @@ import {
 
 const SUPPORTED = new Set(getAvailableChainsIds());
 
+function isSupported(chainId: number | undefined): boolean {
+  return typeof chainId === "number" && SUPPORTED.has(chainId);
+}
+
 export function ChainSyncEffects() {
   const { isConnected } = useAccount();
   const walletChainId = useChainId();
-  const { readonlyChainId, followWallet } = useReadonlyChainState();
+  const { readonlyChainId } = useReadonlyChainState();
   const { setReadonlyChainId } = useReadonlyChainActions();
 
   useEffect(() => {
-    if (!isConnected || !followWallet) return;
+    if (!isConnected) return;
 
-    if (typeof walletChainId !== "number" || !SUPPORTED.has(walletChainId)) return;
+    if (!isSupported(walletChainId)) return;
 
     if (walletChainId === readonlyChainId) return;
 
     setReadonlyChainId(walletChainId);
-  }, [isConnected, followWallet, walletChainId, readonlyChainId, setReadonlyChainId]);
+  }, [isConnected, walletChainId, readonlyChainId, setReadonlyChainId]);
 
   return null;
 }

@@ -21,20 +21,15 @@ export function ReadonlyChainProvider({ children }: ReadonlyChainProviderProps) 
     "readonly-chain:v1",
     {
       readonlyChainId: getAvailableChainsIds()[0],
-      followWallet: true,
     },
-    ({ readonlyChainId, followWallet }) =>
-      Number.isInteger(readonlyChainId) &&
-      availableChainIds.includes(readonlyChainId) &&
-      typeof followWallet === "boolean"
+    ({ readonlyChainId }) =>
+      Number.isInteger(readonlyChainId) && availableChainIds.includes(readonlyChainId)
   );
 
   const actions = useMemo<ReadonlyChainActions>(
     () => ({
       setReadonlyChainId: id =>
         setState(s => (s.readonlyChainId === id ? s : { ...s, readonlyChainId: id })),
-      setFollowWallet: v =>
-        setState(s => (s.followWallet === v ? s : { ...s, followWallet: v })),
     }),
     [setState]
   );
