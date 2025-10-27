@@ -6,7 +6,7 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof button>;
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { className, variant = "solid", size, ...rest },
+  { className, variant = "solid", size = "md", ...rest },
   ref
 ) {
   return <button ref={ref} className={button({ variant, size, className })} {...rest} />;

@@ -15,6 +15,7 @@ import { usePublicClient } from "wagmi";
 const ASSET_LIMIT = pLimit(6);
 const VAULT_LIMITS_LIMIT = pLimit(3);
 const AVAILABLE_LIQUIDITY_LIMIT = pLimit(6);
+const CURATORS_LIMIT = pLimit(6);
 
 const ROOT = "vault" as const;
 const version = QV.vault;
@@ -32,6 +33,8 @@ const qKeys = {
     ]),
   liquidity: (address: string | null, chainId: number) =>
     qk([ROOT, version, opt(address), chainId, "availableLiquidity"]),
+  curators: (address: string | null, chainId: number) =>
+    qk([ROOT, version, opt(address), chainId, "curators"]),
 };
 
 export function useVaults() {
@@ -174,6 +177,28 @@ export function useVaults() {
     gcTime: 10 * 60_000,
   });
 
+  const curatorsQuery = useQuery({
+    enabled,
+    queryKey: qKeys.curators(addressKey, chainId),
+    queryFn: async () => {
+      if (!vaultContracts.length) return [];
+
+      const promises = vaultContracts.map(v =>
+        CURATORS_LIMIT(() =>
+          v.contract.getCurator().then(curator => ({
+            vaultAddress: v.address,
+            curator: getAddress(curator),
+          }))
+        )
+      );
+      const curators = await Promise.all(promises);
+
+      return curators;
+    },
+    staleTime: 60 * 60 * 1000,
+    gcTime: 2 * 60 * 60 * 1000,
+  });
+
   const totalAssetsByVault = useMemo(() => {
     const m = new Map<Address, bigint>();
 
@@ -204,24 +229,39 @@ export function useVaults() {
     return m;
   }, [availableLiquidityQuery.data]);
 
+  const curatorsByVault = useMemo(() => {
+    const m = new Map<Address, Address>();
+
+    curatorsQuery.data?.forEach(({ vaultAddress, curator }) => {
+      m.set(vaultAddress, curator);
+    });
+
+    return m;
+  }, [curatorsQuery.data]);
+
   const vaults: VaultFullInfo[] = useMemo(() => {
     if (!chainId) return [];
 
     if (!vaultContracts.length) return [];
+
     if (rawTotalAssetQueries.isPending) return [];
-
     if (rawTotalAssetQueries.isError) return [];
-
-    if (!totalAssetsByVault.size) return [];
-    if (!availableLiquidityByVault.size) return [];
 
     if (availableLiquidityQuery.isPending) return [];
     if (availableLiquidityQuery.isError) return [];
+
+    if (curatorsQuery.isPending) return [];
+    if (curatorsQuery.isError) return [];
+
+    if (!totalAssetsByVault.size) return [];
+    if (!availableLiquidityByVault.size) return [];
+    if (!curatorsByVault.size) return [];
 
     return vaultContracts.map(v => ({
       ...v,
       totalAssets: totalAssetsByVault.get(v.address),
       availableLiquidity: availableLiquidityByVault.get(v.address) ?? 0n,
+      curator: curatorsByVault.get(v.address),
     }));
   }, [
     vaultContracts,
@@ -232,6 +272,9 @@ export function useVaults() {
     availableLiquidityQuery.isPending,
     availableLiquidityQuery.isError,
     chainId,
+    curatorsByVault,
+    curatorsQuery.isPending,
+    curatorsQuery.isError,
   ]);
 
   const vaultsAssetsList = useMemo(

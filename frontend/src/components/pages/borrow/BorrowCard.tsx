@@ -5,11 +5,11 @@ import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJaz
 import { AssetInfo } from "@/lib/assets/validations";
 import { getStableChainMeta } from "@/lib/chains/meta";
 import { Strategy, VaultFullInfo } from "@/lib/core/types";
-import { formatUnits } from "@/lib/formatters/asset";
+import { formatEvmAddress, formatUnits } from "@/lib/formatters/asset";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { formatNumberToKMB } from "@/lib/formatters/number";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
-import { Button, Card, Heading, SimpleTable } from "@diffuse/ui-kit";
+import { Button, Card, CopyButton, Heading, SimpleTable } from "@diffuse/ui-kit";
 import { Chain } from "@rainbow-me/rainbowkit";
 import { useTranslations } from "next-intl";
 
@@ -101,13 +101,39 @@ export function BorrowCard({
           [
             <div key="1">Curator</div>,
             <div key="2" className="text-right">
-              Diffuse Prime
+              {vault.curator ? (
+                <div className="-my-1 -mr-1 flex items-center justify-end gap-1">
+                  {formatEvmAddress(vault.curator)}
+                  <CopyButton size="sm" textToCopy={vault.curator} variant="ghost" />
+                </div>
+              ) : (
+                "-"
+              )}
             </div>,
           ],
           [
             <div key="1">Collateral</div>,
             <div key="2" className="text-right">
-              {selectedAsset.symbol}
+              <div className="flex flex-col items-end gap-2">
+                <div className="flex items-center justify-end gap-2">
+                  <AssetImage
+                    imgURI={selectedAsset.logoURI}
+                    alt={selectedAsset.symbol}
+                    address={selectedAsset.address}
+                    size={20}
+                  />
+                  {selectedAsset.symbol}
+                </div>
+                <div className="flex items-center justify-end gap-2">
+                  <AssetImage
+                    imgURI={strategy.token.logoURI}
+                    alt={strategy.token.symbol}
+                    address={strategy.token.address}
+                    size={20}
+                  />
+                  {strategy.token.symbol}
+                </div>
+              </div>
             </div>,
           ],
           [

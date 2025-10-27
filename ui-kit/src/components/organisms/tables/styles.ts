@@ -12,7 +12,7 @@ export const table = tv({
 });
 
 export const td = tv({
-  base: "px-3 py-2 border-b border-dashed border-border text-text-dimmed",
+  base: "px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top",
 });
 
 export const th = tv({

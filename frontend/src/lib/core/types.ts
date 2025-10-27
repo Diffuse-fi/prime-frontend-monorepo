@@ -28,6 +28,7 @@ export type VaultFullInfo = {
   totalAssets?: bigint;
   riskLevel: VaultRiskLevel;
   availableLiquidity: bigint;
+  curator?: Address;
 };
 
 export type VaultLimits = {
