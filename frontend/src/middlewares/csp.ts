@@ -45,6 +45,7 @@ const allowedFrameSources = [
 
 const allowedImageSources = [
   "https://euc.li", // EUC domain for ENS avatar images
+  "https://storage.googleapis.com", // Pendle token images
 ]
   .filter(Boolean)
   .join(" ");

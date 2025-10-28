@@ -109,7 +109,12 @@ export function WithdrawModal({
             }}
             assetSymbol={selectedAsset?.symbol}
             renderAssetImage={() => (
-              <AssetImage alt="" address={selectedAsset.address} size={24} />
+              <AssetImage
+                alt=""
+                address={selectedAsset.address}
+                imgURI={selectedAsset.logoURI}
+                size={24}
+              />
             )}
           />
           <div className="text-muted flex flex-nowrap items-center gap-2 pl-2 font-mono text-xs">

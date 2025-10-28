@@ -405,7 +405,12 @@ export function BorrowModal({
                 onValueChange={evt => onBorrowInput(evt.value)}
                 assetSymbol={selectedAsset?.symbol}
                 renderAssetImage={() => (
-                  <AssetImage alt="" address={selectedAsset.address} size={24} />
+                  <AssetImage
+                    alt=""
+                    address={selectedAsset.address}
+                    imgURI={selectedAsset.logoURI}
+                    size={24}
+                  />
                 )}
               />
               <p className="text-muted font-mono text-xs">
