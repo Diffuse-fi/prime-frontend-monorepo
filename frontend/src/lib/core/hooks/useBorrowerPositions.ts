@@ -1,5 +1,5 @@
 import pLimit from "p-limit";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useClients } from "../../wagmi/useClients";
 import { opt, qk } from "../../query/helpers";
@@ -7,6 +7,7 @@ import { QV } from "../../query/versions";
 import type { Address } from "viem";
 import type { VaultFullInfo } from "../types";
 import type { BorrowerPosition } from "../types";
+import { toast } from "@/lib/toast";
 
 export type UseBorrowerPositionsResult = {
   positions: BorrowerPosition[];
@@ -87,7 +88,26 @@ export function useBorrowerPositions(
     },
     staleTime: 30_000,
     gcTime: 10 * 60_000,
+    refetchInterval: 3000, // TODO - remove when wecan listen for events and revalidate on event
+    refetchIntervalInBackground: true,
   });
+
+  // TODO - remove when we can listen for events and revalidate on event
+  const prevLenRef = useRef<number>(0);
+  const [grew, setGrew] = useState(false);
+
+  useEffect(() => {
+    const len = positionsQuery.data?.length ?? 0;
+    setGrew(len > prevLenRef.current);
+    prevLenRef.current = len;
+  }, [positionsQuery.data]);
+
+  useEffect(() => {
+    if (grew) {
+      toast("Successfully created borrow position");
+      setGrew(false);
+    }
+  }, [grew, positionsQuery]);
 
   const pendingQuery = useQuery({
     enabled,
