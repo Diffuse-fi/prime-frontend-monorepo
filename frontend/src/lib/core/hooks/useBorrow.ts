@@ -9,6 +9,7 @@ import { produce } from "immer";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 import { applySlippage } from "@/lib/formulas/slippage";
 import { isUserRejectedError } from "../utils/errors";
+import { debugLog } from "@/lib/misc/debug";
 
 export type SelectedBorrow = {
   chainId: number;
@@ -223,6 +224,7 @@ export function useBorrow(
           onBorrowSuccess?.(addr, receipt.transactionHash);
         } else {
           const e = new Error("Transaction reverted");
+          debugLog("Borrow error:", { e });
           setPhase(addr, { phase: "error", errorMessage: e.message });
           result.error = e;
           onBorrowError?.(e.message, addr);
@@ -234,6 +236,7 @@ export function useBorrow(
         }
 
         const e = error instanceof Error ? error : new Error("Unknown error");
+        debugLog("Borrow error:", { e });
         setPhase(addr, { phase: "error", errorMessage: e.message });
         result.error = e;
         onBorrowError?.(e.message, addr);

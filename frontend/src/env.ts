@@ -52,6 +52,8 @@ export const env = createEnv({
 
     NEXT_PUBLIC_APP_DESCRIPTION: z.string().min(1),
     NEXT_PUBLIC_OG_VERSION: z.string().min(1).optional(),
+
+    NEXT_PUBLIC_DEBUG: zBool.optional(),
   },
   // Due to how Next.js loads environment variables, we must reflect here client variables
   // to be available at build time.
@@ -65,5 +67,6 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION,
     NEXT_PUBLIC_OG_VERSION: process.env.NEXT_PUBLIC_OG_VERSION,
     NEXT_PUBLIC_INITIAL_CHAIN_ID: process.env.NEXT_PUBLIC_INITIAL_CHAIN_ID,
+    NEXT_PUBLIC_DEBUG: process.env.NEXT_PUBLIC_DEBUG,
   },
 });
