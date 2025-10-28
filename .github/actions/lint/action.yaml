@@ -23,3 +23,7 @@ runs:
     - name: Check dependency versions with Syncpack
       run: npm run check:syncpack
       shell: bash
+
+    - name: Check that workspace packages use current versions
+      run: npm run check:packages-sync
+      shell: bash

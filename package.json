@@ -14,6 +14,7 @@
     "check:format": "prettier --check .",
     "check:licenses": "tsx ./scripts/checkLicenses.ts",
     "check:syncpack": "syncpack list-mismatches && syncpack lint-semver-ranges",
+    "check:packages-sync": "tsx ./scripts/checkPackagesSync.ts",
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w sdk-js\" \"npm run dev -w ui-kit\" --kill-others --success last",
     "fix:syncpack": "syncpack fix-mismatches && syncpack set-semver-ranges",
     "format": "prettier --write .",
