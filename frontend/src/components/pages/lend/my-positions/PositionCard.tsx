@@ -93,6 +93,7 @@ export function PositionCard({
               <AssetImage
                 alt=""
                 address={vault?.assets?.at(0)!.address}
+                imgURI={vault?.assets?.at(0)!.logoURI}
                 className="mr-1"
                 size={20}
               />

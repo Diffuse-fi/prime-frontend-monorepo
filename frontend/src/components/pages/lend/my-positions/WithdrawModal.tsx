@@ -114,7 +114,7 @@ export function WithdrawModal({
           />
           <div className="text-muted flex flex-nowrap items-center gap-2 pl-2 font-mono text-xs">
             {`Available for Withdraw ${selectedAsset.symbol}: `}
-            <Tooltip content="Withdraw all" side="top">
+            <Tooltip content="Withdraw all" side="bottom">
               <Button
                 size="sm"
                 variant="link"

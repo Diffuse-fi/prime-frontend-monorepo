@@ -47,6 +47,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "raw.githubusercontent.com",
       },
+      // Load PT token images from Pendle storage.googleapis.com
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+      },
     ],
   },
   redirects: async () => {

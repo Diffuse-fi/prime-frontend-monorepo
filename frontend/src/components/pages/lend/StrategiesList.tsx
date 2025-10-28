@@ -17,6 +17,7 @@ export function StrategiesList({ strategies }: StrategiesListProps) {
           <div key="1" className="flex items-center gap-2">
             <AssetImage
               alt=""
+              imgURI={s.token.logoURI}
               address={s.token.address}
               size={20}
               className="grayscale"

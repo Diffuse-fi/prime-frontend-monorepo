@@ -61,7 +61,12 @@ export function BorrowerPositionCard({
       cardBodyClassName="gap-4"
       header={
         <div className="flex items-center justify-start gap-4">
-          <AssetImage alt="" address={strategyAsset.address} size={20} />
+          <AssetImage
+            alt=""
+            imgURI={strategyAsset.logoURI}
+            address={strategyAsset.address}
+            size={24}
+          />
           <div className="flex flex-col items-start">
             <Heading level="4" className="font-semibold">
               {strategyAsset.symbol}

@@ -38,6 +38,30 @@
       ],
       "chainId": 80094,
       "name": "Berachain Mainnet"
+    },
+    {
+      "assets": [
+        {
+          "address": "0x29219dd400f2Bf60E5a23d13Be72B486D4038894",
+          "chainId": 146,
+          "decimals": 6,
+          "legacyAllowance": false,
+          "logoURI": "https://assets.smold.app/api/token/146/0x29219dd400f2Bf60E5a23d13Be72B486D4038894/logo-128.png",
+          "name": "Sonic USD Coin",
+          "symbol": "USDC"
+        },
+        {
+          "address": "0x01d6dafa8B3bD04bDf7bA6Ff76104d15E2B7485c",
+          "chainId": 146,
+          "decimals": 18,
+          "legacyAllowance": false,
+          "logoURI": "https://storage.googleapis.com/prod-pendle-bucket-a/images/uploads/57a4f9fc-a935-433b-8648-daa034e65bfe.svg",
+          "name": "PT-ghUSDC-18DEC2025",
+          "symbol": "PT-ghUSDC-18DEC2025"
+        }
+      ],
+      "chainId": 146,
+      "name": "Sonic"
     }
   ]
 }

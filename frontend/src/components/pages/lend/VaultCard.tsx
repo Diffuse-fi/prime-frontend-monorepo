@@ -62,7 +62,12 @@ export function VaultCard({
             onValueChange={onAmountChange}
             assetSymbol={selectedAsset?.symbol}
             renderAssetImage={() => (
-              <AssetImage alt="" address={vault?.assets?.at(0)!.address} size={24} />
+              <AssetImage
+                alt=""
+                imgURI={vault?.assets?.at(0)!.logoURI}
+                address={vault?.assets?.at(0)!.address}
+                size={24}
+              />
             )}
           />
         </FormField>
@@ -82,6 +87,7 @@ export function VaultCard({
               <AssetImage
                 alt=""
                 address={vault?.assets?.at(0)!.address}
+                imgURI={vault?.assets?.at(0)!.logoURI}
                 className="mr-1"
                 size={20}
               />
