@@ -40,7 +40,7 @@ export class Viewer extends ContractBase {
 
   async getVaults({ signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(this.getContract().read.getVaults(), signal);
+      return await abortable(this.getContract().read.getVaults(), signal);
     } catch (e) {
       throw normalizeError(e, {
         op: "getVaults",
@@ -52,7 +52,7 @@ export class Viewer extends ContractBase {
 
   async getAssets(vault: Address, { signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(this.getContract().read.getAssets([vault]), signal);
+      return await abortable(this.getContract().read.getAssets([vault]), signal);
     } catch (e) {
       throw normalizeError(e, {
         op: "getAssets",
