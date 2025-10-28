@@ -105,7 +105,7 @@ export class Vault extends ContractBase {
 
   async getMaxDeposit(receiver: Address, { signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(this.getContract().read.maxDeposit([receiver]), signal);
+      return await abortable(this.getContract().read.maxDeposit([receiver]), signal);
     } catch (e) {
       throw normalizeError(e, {
         op: "getMaxDeposit",
@@ -118,7 +118,7 @@ export class Vault extends ContractBase {
 
   async getMaxWithdraw(owner: Address, { signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(this.getContract().read.maxWithdraw([owner]), signal);
+      return await abortable(this.getContract().read.maxWithdraw([owner]), signal);
     } catch (e) {
       throw normalizeError(e, {
         op: "getMaxWithdraw",
@@ -131,7 +131,7 @@ export class Vault extends ContractBase {
 
   async totalAssets({ signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(this.getContract().read.totalAssets(), signal);
+      return await abortable(this.getContract().read.totalAssets(), signal);
     } catch (e) {
       throw normalizeError(e, {
         op: "totalAssets",
@@ -147,7 +147,7 @@ export class Vault extends ContractBase {
     { signal }: SdkRequestOptions = {}
   ) {
     try {
-      return abortable(
+      return await abortable(
         this.getContract().read.accruedLenderYield([strategiesIds, owner]),
         signal
       );
@@ -163,7 +163,7 @@ export class Vault extends ContractBase {
 
   async getLenderBalance(owner: Address, { signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(this.getContract().read.balanceOf([owner]), signal);
+      return await abortable(this.getContract().read.balanceOf([owner]), signal);
     } catch (e) {
       throw normalizeError(e, {
         op: "getLenderBalance",
@@ -176,7 +176,7 @@ export class Vault extends ContractBase {
 
   async getActiveBorrowerPositions(owner: Address, { signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(
+      return await abortable(
         this.getContract().read.getActiveBorrowerPositions([owner]),
         signal
       );
@@ -257,7 +257,7 @@ export class Vault extends ContractBase {
 
   async getStrategylength({ signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(this.getContract().read.getStrategyLength(), signal);
+      return await abortable(this.getContract().read.getStrategyLength(), signal);
     } catch (e) {
       throw normalizeError(e, {
         op: "getStrategylength",
@@ -272,7 +272,7 @@ export class Vault extends ContractBase {
     { signal }: SdkRequestOptions = {}
   ) {
     try {
-      return abortable(
+      return await abortable(
         this.getContract().read.getPendingBorrowerPositionIds([owner]),
         signal
       );
@@ -288,7 +288,7 @@ export class Vault extends ContractBase {
 
   async getSpreadFee({ signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(this.getContract().read.getSpreadFee(), signal);
+      return await abortable(this.getContract().read.getSpreadFee(), signal);
     } catch (e) {
       throw normalizeError(e, {
         op: "getSpreadFee",
@@ -399,7 +399,7 @@ export class Vault extends ContractBase {
 
   async getAvailableLiquidity({ signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(this.getContract().read.availableLiquidity(), signal);
+      return await abortable(this.getContract().read.availableLiquidity(), signal);
     } catch (e) {
       throw normalizeError(e, {
         op: "availableLiquidity",
@@ -441,7 +441,7 @@ export class Vault extends ContractBase {
 
   async getCurator({ signal }: SdkRequestOptions = {}) {
     try {
-      return abortable(this.getContract().read.getCurator(), signal);
+      return await abortable(this.getContract().read.getCurator(), signal);
     } catch (e) {
       throw normalizeError(e, {
         op: "getCurator",
