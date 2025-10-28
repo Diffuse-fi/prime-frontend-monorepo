@@ -1,5 +1,5 @@
 /**
- * Script to check that the frontend package uses the current versions
+ * Script to check that all workspace packages use the current versions
  * of other workspace packages from the monorepo.
  */
 
@@ -26,7 +26,7 @@ function main() {
     }
   }
 
-  // Check that frontend uses the current versions of workspace packages
+  // Check that all workspace packages use the current versions of other workspace packages
   for (const dir of wsDirs) {
     const pjPath = path.join(dir, "package.json");
     const pj = readJSON<PkgJson>(pjPath);
