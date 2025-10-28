@@ -52,7 +52,7 @@
     "zod": "4.1.8"
   },
   "devDependencies": {
-    "@next/env": "15.5.2",
+    "@next/env": "^15.5.2",
     "@types/negotiator": "^0.6.4",
     "@types/qs": "^6.14.0",
     "@types/react-portal": "^4.0.7",
