@@ -22,7 +22,7 @@ export function AssetImage({
 
   return (
     <div
-      className={cn("overflow-hidden rounded-full", className)}
+      className={cn("bg-transparent", className)}
       style={{ width: size, height: size }}
     >
       <ImageWithJazziconFallback

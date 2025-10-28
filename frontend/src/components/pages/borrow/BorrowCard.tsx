@@ -56,7 +56,12 @@ export function BorrowCard({
       cardBodyClassName="gap-4 items-center"
       header={
         <div className="flex items-center justify-start gap-4">
-          <AssetImage alt="" address={selectedAsset.address} size={42} />
+          <AssetImage
+            alt=""
+            imgURI={strategy.token.logoURI}
+            address={strategy.token.address}
+            size={42}
+          />
           <div className="flex flex-col items-start">
             <Heading level="4" className="font-semibold">
               {`${strategy.token.symbol} / ${selectedAsset.symbol}`}

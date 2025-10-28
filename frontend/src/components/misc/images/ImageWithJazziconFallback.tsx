@@ -1,6 +1,7 @@
+import { cn } from "@diffuse/ui-kit/cn";
 import dynamic from "next/dynamic";
 import Image, { ImageProps } from "next/image";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 
 const Jazzicon = dynamic(() => import("react-jazzicon"), { ssr: false });
 
@@ -22,7 +23,7 @@ export function ImageWithJazziconFallback({
   const showImg = !!src && !broken;
 
   return (
-    <Fragment>
+    <div className={cn(showImg ? "" : "overflow-hidden rounded-full")}>
       {showImg ? (
         <Image
           alt={alt}
@@ -38,6 +39,6 @@ export function ImageWithJazziconFallback({
       ) : (
         <Jazzicon diameter={size} seed={jazziconSeed} />
       )}
-    </Fragment>
+    </div>
   );
 }
