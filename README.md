@@ -52,6 +52,22 @@ You may want to override some env variables for local development. You can do th
 
 This project uses [commitlint](https://commitlint.js.org/) to enforce a consistent commit message format. Commit messages should follow the configuration defined in `commitlint.config.ts`.
 
+#### Dependency Management with Syncpack
+
+This project uses [Syncpack](https://jamiemason.github.io/syncpack/) to ensure consistent dependency versions across all packages in the monorepo.
+
+Available commands:
+
+- `npm run check:syncpack` - Check for version mismatches and semver range violations
+- `npm run fix:syncpack` - Automatically fix version mismatches and semver ranges
+- `npm run syncpack:list` - List all dependencies across packages
+
+Syncpack is integrated into the CI pipeline and will fail the build if inconsistencies are detected. The configuration enforces:
+
+- Production dependencies use exact versions (e.g., `1.2.3`)
+- Development dependencies use caret ranges (e.g., `^1.2.3`)
+- Peer dependencies use specific versions or compatible ranges
+
 ## Security considerations (on repository level)
 
 This project implements security measures to protect against common vulnerabilities.
