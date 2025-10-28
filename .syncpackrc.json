@@ -1,0 +1,100 @@
+{
+  "dependencyTypes": [
+    "dev",
+    "peer",
+    "prod"
+  ],
+  "filter": ".",
+  "indent": "  ",
+  "semverGroups": [
+    {
+      "dependencies": [
+        "**"
+      ],
+      "dependencyTypes": [
+        "prod"
+      ],
+      "packages": [
+        "**"
+      ],
+      "range": ""
+    },
+    {
+      "dependencies": [
+        "**"
+      ],
+      "dependencyTypes": [
+        "dev"
+      ],
+      "packages": [
+        "**"
+      ],
+      "range": "^"
+    },
+    {
+      "dependencies": [
+        "**"
+      ],
+      "dependencyTypes": [
+        "peer"
+      ],
+      "packages": [
+        "**"
+      ],
+      "range": ">=^"
+    }
+  ],
+  "sortAz": [
+    "contributors",
+    "dependencies",
+    "devDependencies",
+    "keywords",
+    "peerDependencies",
+    "resolutions",
+    "scripts"
+  ],
+  "sortFirst": [
+    "name",
+    "description",
+    "version",
+    "author",
+    "private",
+    "license",
+    "keywords",
+    "repository",
+    "homepage",
+    "bugs",
+    "main",
+    "module",
+    "browser",
+    "types",
+    "typings",
+    "exports",
+    "files",
+    "bin",
+    "scripts",
+    "dependencies",
+    "devDependencies",
+    "peerDependencies",
+    "optionalDependencies",
+    "bundledDependencies",
+    "resolutions",
+    "engines"
+  ],
+  "versionGroups": [
+    {
+      "dependencies": [
+        "**"
+      ],
+      "dependencyTypes": [
+        "dev",
+        "peer",
+        "prod"
+      ],
+      "packages": [
+        "**"
+      ]
+    }
+  ],
+  "$schema": "https://unpkg.com/syncpack@13.0.4/dist/schema.json"
+}

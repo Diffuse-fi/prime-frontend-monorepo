@@ -23,3 +23,7 @@ runs:
     - name: Check that prod dependencies are pinned to specific versions
       run: npm run check:deps-pinning
       shell: bash
+
+    - name: Check dependency versions with Syncpack
+      run: npm run check:syncpack
+      shell: bash
