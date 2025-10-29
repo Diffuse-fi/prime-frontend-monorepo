@@ -1,8 +1,13 @@
-# Prime frontend monorepo
+<div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <img src="https://raw.githubusercontent.com/Diffuse-fi/prime-frontend-monorepo/main/frontend/public/logo.svg" alt="Diffuse Prime Logo" width="76" />
+  <h1 style="margin: 0; padding: 0;">Prime Frontend Monorepo</h1>
+</div>
 
-## Description
+<div style="margin-bottom: 40px; text-align: center;">
+  This is a monorepo for the <span style="font-weight: bold;">Diffuse Prime</span> frontend application, which includes multiple packages such as the main frontend application and a shared UI kit.
+</div>
 
-This is a monorepo for the **Diffuse Prime** frontend application, which includes multiple packages such as the main frontend application and a shared UI kit.
+## Overview
 
 A monorepo for the **Diffuse Prime** frontend stack:
 
@@ -21,9 +26,11 @@ Each package has its own `README.md` file with more details about the specific p
 
 This repository uses [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) to manage multiple packages within a single repository.
 
-But all general scripts you may need are deifined in the root `package.json` "scripts" section.
+But all general scripts you may need are defined in the root `package.json` "scripts" section.
 
-## Setup
+## Development
+
+#### Setup
 
 To setup the project, run the following command in the root directory:
 
@@ -34,7 +41,7 @@ npm run setup
 
 This will install all dependencies and run necessary setup scripts for each package.
 
-## Development
+#### Dev command
 
 To start developing, you can use the following command to run all packages in watch mode:
 
@@ -51,6 +58,22 @@ You may want to override some env variables for local development. You can do th
 #### Commitlint
 
 This project uses [commitlint](https://commitlint.js.org/) to enforce a consistent commit message format. Commit messages should follow the configuration defined in `commitlint.config.ts`.
+
+#### Dependency Management with Syncpack
+
+This project uses [Syncpack](https://jamiemason.github.io/syncpack/) to ensure consistent dependency versions across all packages in the monorepo.
+
+Available commands:
+
+- `npm run check:syncpack` - Check for version mismatches and semver range violations
+- `npm run fix:syncpack` - Automatically fix version mismatches and semver ranges
+- `npm run syncpack:list` - List all dependencies across packages
+
+Syncpack is integrated into the CI pipeline and will fail the build if inconsistencies are detected. The configuration enforces:
+
+- Production dependencies use exact versions (e.g., `1.2.3`)
+- Development dependencies use caret ranges (e.g., `^1.2.3`)
+- Peer dependencies use specific versions or compatible ranges
 
 ## Security considerations (on repository level)
 

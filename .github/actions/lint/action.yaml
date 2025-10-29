@@ -20,6 +20,6 @@ runs:
       run: npm run check:licenses
       shell: bash
 
-    - name: Check that prod dependencies are pinned to specific versions
-      run: npm run check:deps-pinning
+    - name: Check dependency versions with Syncpack
+      run: npm run check:syncpack
       shell: bash
