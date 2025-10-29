@@ -4,7 +4,7 @@
 </div>
 
 <div style="margin-bottom: 40px; text-align: center;">
-  This is a monorepo for the **Diffuse Prime** frontend application, which includes multiple packages such as the main frontend application and a shared UI kit.
+  This is a monorepo for the <span style="font-weight: bold;">Diffuse Prime</span> frontend application, which includes multiple packages such as the main frontend application and a shared UI kit.
 </div>
 
 ## Overview
@@ -26,7 +26,7 @@ Each package has its own `README.md` file with more details about the specific p
 
 This repository uses [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) to manage multiple packages within a single repository.
 
-But all general scripts you may need are deifined in the root `package.json` "scripts" section.
+But all general scripts you may need are defined in the root `package.json` "scripts" section.
 
 ## Development
 
@@ -39,9 +39,9 @@ npm ci
 npm run setup
 ```
 
-#### Dev command
-
 This will install all dependencies and run necessary setup scripts for each package.
+
+#### Dev command
 
 To start developing, you can use the following command to run all packages in watch mode:
 
