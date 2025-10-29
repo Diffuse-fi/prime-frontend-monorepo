@@ -1,9 +1,10 @@
-<div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
-  <img src="https://raw.githubusercontent.com/Diffuse-fi/prime-frontend-monorepo/main/frontend/public/logo.svg" alt="Diffuse Prime Logo" width="76" />
+<div align="center">
   <h1 style="margin: 0; padding: 0;">Prime Frontend Monorepo</h1>
+  <br />
+  <img src="https://raw.githubusercontent.com/Diffuse-fi/prime-frontend-monorepo/main/frontend/public/logo.svg" alt="Diffuse Prime Logo" width="76" />
 </div>
-
-<div style="margin-bottom: 40px; text-align: center;">
+<br />
+<div align="center">
   This is a monorepo for the <span style="font-weight: bold;">Diffuse Prime</span> frontend application, which includes multiple packages such as the main frontend application and a shared UI kit.
 </div>
 
