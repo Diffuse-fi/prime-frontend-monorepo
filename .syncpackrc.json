@@ -1,6 +1,5 @@
 {
   "dependencyTypes": [
-    "dev",
     "peer",
     "prod"
   ],
@@ -14,6 +13,7 @@
       "dependencyTypes": [
         "prod"
       ],
+      "label": "Prod dependencies",
       "packages": [
         "**"
       ],
@@ -21,15 +21,18 @@
     },
     {
       "dependencies": [
-        "**"
+        "react",
+        "react-dom",
+        "@types/react"
       ],
       "dependencyTypes": [
-        "dev"
+        "peer"
       ],
+      "label": "React peer dependencies",
       "packages": [
         "**"
       ],
-      "range": "^"
+      "range": ">="
     },
     {
       "dependencies": [
@@ -38,10 +41,11 @@
       "dependencyTypes": [
         "peer"
       ],
+      "label": "All peer dependencies",
       "packages": [
         "**"
       ],
-      "range": ">=^"
+      "range": ""
     }
   ],
   "sortAz": [
@@ -87,7 +91,6 @@
         "**"
       ],
       "dependencyTypes": [
-        "dev",
         "peer",
         "prod"
       ],

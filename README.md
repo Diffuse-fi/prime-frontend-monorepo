@@ -1,8 +1,13 @@
-# Prime frontend monorepo
+<div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
+  <img src="https://raw.githubusercontent.com/Diffuse-fi/prime-frontend-monorepo/main/frontend/public/logo.svg" alt="Diffuse Prime Logo" width="76" />
+  <h1 style="margin: 0; padding: 0;">Prime Frontend Monorepo</h1>
+</div>
 
-## Description
+<div style="margin-bottom: 40px; text-align: center;">
+  This is a monorepo for the **Diffuse Prime** frontend application, which includes multiple packages such as the main frontend application and a shared UI kit.
+</div>
 
-This is a monorepo for the **Diffuse Prime** frontend application, which includes multiple packages such as the main frontend application and a shared UI kit.
+## Overview
 
 A monorepo for the **Diffuse Prime** frontend stack:
 
@@ -23,7 +28,9 @@ This repository uses [npm workspaces](https://docs.npmjs.com/cli/using-npm/works
 
 But all general scripts you may need are deifined in the root `package.json` "scripts" section.
 
-## Setup
+## Development
+
+#### Setup
 
 To setup the project, run the following command in the root directory:
 
@@ -32,9 +39,9 @@ npm ci
 npm run setup
 ```
 
-This will install all dependencies and run necessary setup scripts for each package.
+#### Dev command
 
-## Development
+This will install all dependencies and run necessary setup scripts for each package.
 
 To start developing, you can use the following command to run all packages in watch mode:
 
