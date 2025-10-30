@@ -5,10 +5,9 @@ import { NumericFormat, NumericFormatProps } from "react-number-format";
 export interface AssetInputProps
   extends Omit<InputProps, "right" | "type" | "onChange" | "value" | "defaultValue"> {
   renderAssetImage?: (ctx: { size: "sm" | "md" | "lg" }) => React.ReactNode;
-  assetSymbol: string;
+  assetSymbol?: string;
   value?: string | number;
   onValueChange?: NumericFormatProps["onValueChange"];
-  displayAssetMeta?: boolean;
 }
 
 export const AssetInput = React.forwardRef<HTMLInputElement, AssetInputProps>(
@@ -20,21 +19,15 @@ export const AssetInput = React.forwardRef<HTMLInputElement, AssetInputProps>(
       value,
       onValueChange,
       className,
-      displayAssetMeta = true,
       ...props
     },
     ref
   ) => {
+    const displayAssetMeta = renderAssetImage || assetSymbol;
     const right = (
       <div className="mr-2 flex items-center space-x-1">
-        {renderAssetImage ? (
-          renderAssetImage({ size })
-        ) : (
-          <div className="h-5 w-5 flex-shrink-0 rounded-full bg-[color:var(--ui-muted)]" />
-        )}
-        <span className="text-sm font-medium text-[color:var(--ui-text)]">
-          {assetSymbol}
-        </span>
+        {renderAssetImage && renderAssetImage({ size })}
+        <span className="text-sm font-medium">{assetSymbol}</span>
       </div>
     );
 
@@ -54,8 +47,8 @@ export const AssetInput = React.forwardRef<HTMLInputElement, AssetInputProps>(
         valueIsNumericString
         value={value}
         onValueChange={onValueChange}
-        {...props}
         wrapperClassName={className}
+        {...props}
       />
     );
   }

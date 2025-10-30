@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cn } from "@/lib";
-import { tv } from "@/lib";
+import { inputField, inputRoot } from "./inputStyles";
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
@@ -13,42 +13,6 @@ export interface InputProps
   wrapperClassName?: string;
 }
 
-const inputRoot = tv({
-  base:
-    "relative flex items-center rounded-xs border border-border bg-fg focus-within:border-text-primary " +
-    "transition-colors duration-200",
-  variants: {
-    size: {
-      sm: "h-12 px-2",
-      md: "h-13 px-3",
-      lg: "h-14 px-4",
-    },
-    state: {
-      default: "",
-      error: "",
-      success: "",
-    },
-  },
-  defaultVariants: { size: "md", state: "default" },
-});
-
-const inputField = tv({
-  base:
-    "w-full flex-1 outline-none bg-transparent " +
-    "placeholder:text-border " +
-    "disabled:opacity-50 disabled:cursor-not-allowed",
-  variants: {
-    size: {
-      sm: "text-lg",
-      md: "text-lg",
-      lg: "text-lg",
-    },
-    withLeft: { true: "pl-1" },
-    withRight: { true: "pr-1" },
-  },
-  defaultVariants: { size: "md" },
-});
-
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
@@ -59,20 +23,19 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       right,
       className,
       wrapperClassName,
+      disabled,
       type = "text",
       ...props
     },
     ref
   ) => {
-    const state = error ? "error" : success ? "success" : "default";
+    const state = error ? "error" : "default";
 
     return (
-      <div className={cn(inputRoot({ size, state }), wrapperClassName)}>
-        {left ? (
-          <span className="ml-2 inline-flex items-center text-[color:var(--ui-muted)]">
-            {left}
-          </span>
-        ) : null}
+      <div
+        className={cn(inputRoot({ size, state, disabled: !!disabled }), wrapperClassName)}
+      >
+        {left ? <span className="ml-2 inline-flex items-center">{left}</span> : null}
 
         <input
           ref={ref}
@@ -85,14 +48,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             }),
             className
           )}
+          aria-invalid={error ? "true" : undefined}
+          disabled={disabled}
           {...props}
         />
 
-        {right ? (
-          <span className="mr-2 inline-flex items-center text-[color:var(--ui-muted)]">
-            {right}
-          </span>
-        ) : null}
+        {right ? <span className="mr-2 inline-flex items-center">{right}</span> : null}
       </div>
     );
   }

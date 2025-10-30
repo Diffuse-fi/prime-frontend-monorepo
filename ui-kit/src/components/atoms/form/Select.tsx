@@ -2,6 +2,7 @@ import * as React from "react";
 import * as SelectpPimitive from "@radix-ui/react-select";
 import { ChevronDown } from "lucide-react";
 import { cn, tv } from "@/lib";
+import { inputRoot } from "./inputStyles";
 
 export type SelectOption = {
   value: string;
@@ -28,22 +29,8 @@ export interface SelectProps
   itemClassName?: string;
   align?: "start" | "center" | "end";
   "aria-label"?: string;
+  size?: "sm" | "md" | "lg";
 }
-
-const selectRoot = tv({
-  base: "relative flex items-center justify-between rounded-xs border border-border bg-transparent standard-focus-ring h-13 px-3",
-  variants: {
-    state: {
-      default: "",
-      error: "",
-      success: "",
-    },
-    disabled: {
-      true: "opacity-50 cursor-not-allowed",
-    },
-  },
-  defaultVariants: { state: "default" },
-});
 
 const selectValue = tv({
   base:
@@ -85,17 +72,18 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       error,
       success,
       disabled,
-      placeholder = "Select…",
+      placeholder,
       className,
       valueClassName,
       contentClassName,
       itemClassName,
       align = "start",
+      size = "md",
       ...rootProps
     },
     ref
   ) => {
-    const state = error ? "error" : success ? "success" : "default";
+    const state = error ? "error" : "default";
 
     return (
       <SelectpPimitive.Root
@@ -107,7 +95,11 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
       >
         <SelectpPimitive.Trigger
           ref={ref}
-          className={cn(selectRoot({ state, disabled: !!disabled }), className)}
+          className={cn(
+            inputRoot({ state, disabled: !!disabled, size }),
+            "focus:outline-none",
+            className
+          )}
           aria-invalid={error || undefined}
         >
           <SelectpPimitive.Value

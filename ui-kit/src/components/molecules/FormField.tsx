@@ -23,12 +23,8 @@ const labelText = tv({
       md: "text-xs",
       lg: "text-xs",
     },
-    tone: {
-      default: "",
-      muted: "text-muted",
-    },
   },
-  defaultVariants: { size: "md", tone: "default" },
+  defaultVariants: { size: "md" },
 });
 
 export interface FormFieldProps
@@ -38,11 +34,14 @@ export interface FormFieldProps
   label: React.ReactNode;
   labelClassName?: string;
   children: React.ReactElement;
+
+  hint?: React.ReactNode;
+  aboveText?: React.ReactNode;
 }
 
 export const FormField = React.forwardRef<HTMLLabelElement, FormFieldProps>(
   (
-    { label, size, tone, disabled, className, labelClassName, children, ...rest },
+    { label, size, disabled, className, labelClassName, children, hint, ...rest },
     ref
   ) => {
     return (
@@ -52,11 +51,13 @@ export const FormField = React.forwardRef<HTMLLabelElement, FormFieldProps>(
         aria-disabled={disabled || undefined}
         {...rest}
       >
-        <span className={cn(labelText({ size, tone }), labelClassName)}>
+        <span className={cn(labelText({ size }), labelClassName)}>
           <span>{label}</span>
         </span>
 
         {children}
+
+        {hint ? <span className="text-border text-xs">{hint}</span> : null}
       </label>
     );
   }
