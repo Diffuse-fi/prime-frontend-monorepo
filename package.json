@@ -13,6 +13,7 @@
     "build": "concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" --success last && npm run build -w frontend",
     "check:format": "prettier --check .",
     "check:licenses": "tsx ./scripts/checkLicenses.ts",
+    "check:packages-sync": "tsx ./scripts/checkPackagesSync.ts",
     "check:syncpack": "syncpack list-mismatches && syncpack lint-semver-ranges",
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w sdk-js\" \"npm run dev -w ui-kit\" --kill-others --success last",
     "fix:syncpack": "syncpack fix-mismatches && syncpack set-semver-ranges",
@@ -32,7 +33,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx,md,json,css}": [
-      "npm run format"
+      "npm run format",
+      "git add"
     ]
   },
   "devDependencies": {

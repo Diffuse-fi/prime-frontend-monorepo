@@ -5,7 +5,7 @@
 
 import { execSync } from "node:child_process";
 import path from "node:path";
-import { listWorkspaceDirs, readJSON } from "./utils/getWorkspaceDirs";
+import { listWorkspaceDirs, readJSON } from "./utils/workspaceUtils";
 
 type WsPkg = { name?: string };
 
