@@ -4,7 +4,7 @@
  */
 
 import path from "node:path";
-import { listWorkspaceDirs, readJSON } from "./utils/getWorkspaceDirs";
+import { listWorkspaceDirs, readJSON } from "./utils/workspaceUtils";
 
 type PkgJson = {
   name?: string;
@@ -16,7 +16,6 @@ function main() {
   const wsDirs = listWorkspaceDirs();
   let failed = false;
 
-  // Build a map of workspace package names to their versions
   const wsVersions = new Map<string, { version: string; dir: string }>();
   for (const dir of wsDirs) {
     const pjPath = path.join(dir, "package.json");
@@ -26,12 +25,10 @@ function main() {
     }
   }
 
-  // Check that all workspace packages use the current versions of other workspace packages
   for (const dir of wsDirs) {
     const pjPath = path.join(dir, "package.json");
     const pj = readJSON<PkgJson>(pjPath);
 
-    // Skip packages without dependencies
     if (!pj.dependencies) continue;
 
     for (const [depName, depVersion] of Object.entries(pj.dependencies)) {
