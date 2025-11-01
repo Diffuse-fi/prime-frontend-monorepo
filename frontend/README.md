@@ -60,6 +60,19 @@ CPS is implemented in the app to mitigate cross-site scripting (XSS) attacks and
 
 Sentry is configured with several environment variables that need to be set for it to work properly, take a look at `.env` file for reference.
 
+## Logging
+
+Several log levels are supported in the app: `error`, `warn`, `info`, `debug`, and `trace`. Each level includes all levels above it. For example, "info" includes "warn" and "error".
+Logs are written to the browser console.
+
+Logging is controlled via the following environment variables:
+
+- `NEXT_PUBLIC_DEBUG`: Enables or disables logging of app state in the console. Set to `"true"` to enable logging, `"false"` to disable.
+- `NEXT_PUBLIC_LOG_NAMESPACES`: A comma-separated list of namespaces to log in CSV style, e.g. `"*"`, `"app:*,rq:query"`. To log all namespaces, use `"*"`. To hide logs from a specific namespace, prefix it with `"-"` or `"!"`, e.g. `"-app:lend"`.
+- `NEXT_PUBLIC_LOG_LEVEL`: Sets the log level for the logger. Options are: `error` (least detailed), `warn`, `info`, `debug`, `trace` (most detailed).
+
+The reasonable strategy is to enable debug mode on a testing/staging environment to increase debuggability, while keeping it disabled on production to reduce noise in the logs.
+
 ## Deployment
 
 For deployment, you can use platforms like Vercel, which is optimized for Next.js applications. Ensure that all required environment variables are set in your deployment platform.

@@ -15,6 +15,7 @@ import { QV } from "../../query/versions";
 import { produce } from "immer";
 import { formatUnits } from "../../formatters/asset";
 import { isUserRejectedError } from "../utils/errors";
+import { lendLogger, loggerMut } from "../utils/loggers";
 
 export type UseLendParams = {
   txConcurrency?: number;
@@ -163,6 +164,7 @@ export function useDeposit(
             if (e) {
               setPhase(address, { phase: "error", errorMessage: e.message });
               result.errors[address] = e;
+              lendLogger.warn("preflight error", { address, reason: e.message });
               return;
             }
 
@@ -196,10 +198,12 @@ export function useDeposit(
                 result.errors[address] = e;
 
                 onDepositError?.(e.message, address);
+                lendLogger.warn("deposit error", { address, reason: e.message });
               }
             } catch (error) {
               if (isUserRejectedError(error)) {
                 setPhase(address, { phase: "idle" });
+                lendLogger.info("deposit() cancelled by user", { address });
                 return;
               }
 
@@ -209,6 +213,11 @@ export function useDeposit(
               result.errors[address] = e;
 
               onDepositError?.(e.message, address);
+              loggerMut.error("mutation error (deposit)", {
+                mutationKey: qKeys.deposit(chainId, vaultsKey),
+                address,
+                error: e,
+              });
             } finally {
               clearKeyPending(idemKey);
             }

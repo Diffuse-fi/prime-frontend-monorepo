@@ -8,6 +8,7 @@ import { QV } from "../../query/versions";
 import { produce } from "immer";
 import { getSlippageBps } from "@/lib/formulas/slippage";
 import { isUserRejectedError } from "../utils/errors";
+import { borrowLogger, loggerMut } from "../utils/loggers";
 
 export type SelectedUnborrow = {
   chainId: number;
@@ -111,6 +112,10 @@ export function useUnborrow(
         result.error = e;
         onUnborrowError?.(e.message, addr);
         onUnborrowComplete?.(result);
+        borrowLogger.error("unborrow failed: invalid position id", {
+          vault: addr,
+          positionId: selected.positionId.toString(),
+        });
         return result;
       }
 
@@ -146,10 +151,15 @@ export function useUnborrow(
           setPhase(addr, { phase: "error", errorMessage: e.message });
           result.error = e;
           onUnborrowError?.(e.message, addr);
+          borrowLogger.error("unborrow failed: transaction reverted", {
+            vault: addr,
+            hash,
+          });
         }
       } catch (error) {
         if (isUserRejectedError(error)) {
           setPhase(addr, { phase: "idle" });
+          borrowLogger.info("unborrow cancelled by user", { address: addr });
           return result;
         }
 
@@ -157,6 +167,11 @@ export function useUnborrow(
         setPhase(addr, { phase: "error", errorMessage: e.message });
         result.error = e;
         onUnborrowError?.(e.message, addr);
+        loggerMut.error("mutation error (unborrow)", {
+          mutationKey: qKeys.unborrow(chainId, addr),
+          address: addr,
+          error: e,
+        });
       } finally {
         setPendingKey(k => (k === idemKey ? null : k));
         onUnborrowComplete?.(result);

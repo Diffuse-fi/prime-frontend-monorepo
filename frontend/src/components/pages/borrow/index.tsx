@@ -5,14 +5,12 @@ import { useLocalization } from "@/lib/localization/useLocalization";
 import { AssetsList } from "@/components/AssetsList";
 import { Heading } from "@diffuse/ui-kit";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { BorrowModal } from "./BorrowModal";
 import { BorrowCard } from "./BorrowCard";
 import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
 import { Strategy, VaultFullInfo } from "@/lib/core/types";
 import { useAccount } from "wagmi";
-import { useBorrowActivationWatcher } from "@/lib/core/hooks/useBorrowActivationWatcher";
-import { toast } from "@/lib/toast";
 import { usePendingBorrowerPositionIds } from "@/lib/core/hooks/useBorrowerPendingPositions";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 
@@ -26,7 +24,7 @@ export default function Borrow() {
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const [selectedStrategy, setSelectedStrategy] = useState<SelectedStartegy | null>(null);
   const { dir } = useLocalization();
-  const { isConnected, address } = useAccount();
+  const { isConnected } = useAccount();
   const { refetch: refetchPendingRequests } = usePendingBorrowerPositionIds(vaults);
   const strategies = vaults
     .filter(v => v.assets?.some(a => a.address === selectedAsset?.address))
@@ -36,19 +34,6 @@ export default function Borrow() {
       ...strategy,
       vault: vaults.find(v => v.strategies.some(s => s.id === strategy.id))!,
     }));
-  const vaultAddresses = useMemo(() => vaults.map(v => v.address), [vaults]);
-  useBorrowActivationWatcher({
-    vaultAddresses: vaultAddresses,
-    enabled: isConnected,
-    chainId: chain?.id,
-    account: address,
-    onActivated: ({ strategyId }) => {
-      const strategyName = strategies.find(s => s.id === strategyId)?.name;
-      toast(`Your borrow request for strategy "${strategyName}" has been activated!`);
-      refetchPendingRequests();
-      refetch();
-    },
-  });
   const { openConnectModal } = useConnectModal();
 
   return (
