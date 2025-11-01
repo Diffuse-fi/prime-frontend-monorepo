@@ -7,6 +7,7 @@ import type { TxInfo, TxState, VaultFullInfo } from "../types";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { isUserRejectedError } from "../utils/errors";
+import { lendLogger, loggerMut } from "../utils/loggers";
 
 export type UseWithdrawYieldParams = {
   onWithdrawYieldSuccess?: (vaultAddress: Address, hash: Hash) => void;
@@ -113,6 +114,13 @@ export function useWithdrawYield(
       if (e) {
         setPhase(address, { phase: "error", errorMessage: e.message });
         onWithdrawYieldError?.(e.message, address);
+        lendLogger.error("withdraw yield failed: validation error", {
+          vault: address,
+          strategyIds: strategyIds.map(String).join(","),
+          receiver,
+          owner,
+          error: e.message,
+        });
         return null;
       }
 
@@ -142,17 +150,29 @@ export function useWithdrawYield(
           const err = new Error("Transaction reverted");
           setPhase(address, { phase: "error", errorMessage: err.message });
           onWithdrawYieldError?.(err.message, address);
+          lendLogger.error("withdraw yield failed: transaction reverted", {
+            vault: address,
+            hash,
+          });
+
           return null;
         }
       } catch (error) {
         if (isUserRejectedError(error)) {
           setPhase(address, { phase: "idle" });
+          lendLogger.info("withdraw yield cancelled by user", { address });
           return null;
         }
 
         const err = error instanceof Error ? error : new Error("Unknown error");
         setPhase(address, { phase: "error", errorMessage: err.message });
         onWithdrawYieldError?.(err.message, address);
+        loggerMut.error("mutation error (withdraw yield)", {
+          mutationKey: qKeys.single(chainId, wallet),
+          address,
+          error: err,
+        });
+
         return null;
       } finally {
         clearKeyPending(idemKey);

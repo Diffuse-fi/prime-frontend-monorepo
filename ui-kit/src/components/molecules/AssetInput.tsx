@@ -27,7 +27,7 @@ export const AssetInput = React.forwardRef<HTMLInputElement, AssetInputProps>(
     const right = (
       <div className="mr-2 flex items-center space-x-1">
         {renderAssetImage && renderAssetImage({ size })}
-        <span className="text-sm font-medium">{assetSymbol}</span>
+        {assetSymbol && <span className="text-sm font-medium">{assetSymbol}</span>}
       </div>
     );
 
