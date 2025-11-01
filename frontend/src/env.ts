@@ -1,5 +1,6 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
+import { LogLevelSchema, NamespacesCsvSchema } from "./lib/logger/schemas";
 
 const zBool = z.preprocess(v => {
   if (typeof v === "boolean") return v;
@@ -54,6 +55,8 @@ export const env = createEnv({
     NEXT_PUBLIC_OG_VERSION: z.string().min(1).optional(),
 
     NEXT_PUBLIC_DEBUG: zBool.optional(),
+    NEXT_PUBLIC_LOG_NAMESPACES: NamespacesCsvSchema.optional(),
+    NEXT_PUBLIC_LOG_LEVEL: LogLevelSchema.optional(),
   },
   // Due to how Next.js loads environment variables, we must reflect here client variables
   // to be available at build time.
@@ -68,5 +71,7 @@ export const env = createEnv({
     NEXT_PUBLIC_OG_VERSION: process.env.NEXT_PUBLIC_OG_VERSION,
     NEXT_PUBLIC_INITIAL_CHAIN_ID: process.env.NEXT_PUBLIC_INITIAL_CHAIN_ID,
     NEXT_PUBLIC_DEBUG: process.env.NEXT_PUBLIC_DEBUG,
+    NEXT_PUBLIC_LOG_NAMESPACES: process.env.NEXT_PUBLIC_LOG_NAMESPACES,
+    NEXT_PUBLIC_LOG_LEVEL: process.env.NEXT_PUBLIC_LOG_LEVEL,
   },
 });

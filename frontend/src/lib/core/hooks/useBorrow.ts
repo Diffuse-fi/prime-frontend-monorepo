@@ -9,7 +9,7 @@ import { produce } from "immer";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 import { applySlippage } from "@/lib/formulas/slippage";
 import { isUserRejectedError } from "../utils/errors";
-import { debugLog } from "@/lib/misc/debug";
+import { borrowLogger, loggerMut } from "../utils/loggers";
 
 export type SelectedBorrow = {
   chainId: number;
@@ -130,6 +130,7 @@ export function useBorrow(
         result.error = e;
         onBorrowError?.(e.message, addr);
         onBorrowComplete?.(result);
+        borrowLogger.warn("borrow error", { address: addr, reason: e.message });
         return result;
       }
 
@@ -145,6 +146,7 @@ export function useBorrow(
           setPhase(addr, { phase: "error", errorMessage: e.message });
           result.error = e;
           onBorrowError?.(e.message, addr);
+          borrowLogger.warn("borrow error", { address: addr, reason: e.message });
           return result;
         }
 
@@ -224,22 +226,27 @@ export function useBorrow(
           onBorrowSuccess?.(addr, receipt.transactionHash);
         } else {
           const e = new Error("Transaction reverted");
-          debugLog("Borrow error:", { e });
           setPhase(addr, { phase: "error", errorMessage: e.message });
           result.error = e;
           onBorrowError?.(e.message, addr);
+          borrowLogger.warn("borrow error", { address: addr, reason: e.message });
         }
       } catch (error) {
         if (isUserRejectedError(error)) {
           setPhase(addr, { phase: "idle" });
+          borrowLogger.info("borrow request cancelled by user", { address: addr });
           return result;
         }
 
         const e = error instanceof Error ? error : new Error("Unknown error");
-        debugLog("Borrow error:", { e });
         setPhase(addr, { phase: "error", errorMessage: e.message });
         result.error = e;
         onBorrowError?.(e.message, addr);
+        loggerMut.error("mutation error (borrow)", {
+          mutationKey: qKeys.borrow(chainId, addr),
+          address: addr,
+          error: e,
+        });
       } finally {
         setPendingKey(k => (k === idemKey ? null : k));
         onBorrowComplete?.(result);

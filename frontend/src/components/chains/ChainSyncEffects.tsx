@@ -7,6 +7,8 @@ import {
   useReadonlyChainActions,
   useReadonlyChainState,
 } from "@/lib/chains/ReadonlyChainContext";
+import { chainLogger } from "@/lib/core/utils/loggers";
+import { installWagmiWatchers } from "@/lib/wagmi/logging";
 
 const SUPPORTED = new Set(getAvailableChainsIds());
 
@@ -21,6 +23,13 @@ export function ChainSyncEffects() {
   const { setReadonlyChainId } = useReadonlyChainActions();
 
   useEffect(() => {
+    const uninstall = installWagmiWatchers();
+    return () => {
+      uninstall();
+    };
+  }, []);
+
+  useEffect(() => {
     if (!isConnected) return;
 
     if (!isSupported(walletChainId)) return;
@@ -29,6 +38,12 @@ export function ChainSyncEffects() {
 
     setReadonlyChainId(walletChainId);
   }, [isConnected, walletChainId, readonlyChainId, setReadonlyChainId]);
+
+  useEffect(() => {
+    chainLogger.info("chain id changed", {
+      readonlyChainId,
+    });
+  }, [readonlyChainId]);
 
   return null;
 }

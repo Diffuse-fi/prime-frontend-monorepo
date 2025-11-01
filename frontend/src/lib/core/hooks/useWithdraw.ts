@@ -8,6 +8,7 @@ import { QV } from "../../query/versions";
 import { produce } from "immer";
 import { formatUnits } from "../../formatters/asset";
 import { isUserRejectedError } from "../utils/errors";
+import { lendLogger, loggerMut } from "../utils/loggers";
 
 export type UseWithdrawParams = {
   onWithdrawSuccess?: (vaultAddress: Address, hash: Hash) => void;
@@ -129,6 +130,13 @@ export function useWithdraw(
       if (e) {
         setPhase(address, { phase: "error", errorMessage: e.message });
         onWithdrawError?.(e.message, address);
+        lendLogger.error("withdraw failed: validation error", {
+          vault: address,
+          amount: assets.toString(),
+          receiver,
+          owner,
+          error: e.message,
+        });
         return null;
       }
 
@@ -155,17 +163,28 @@ export function useWithdraw(
           const err = new Error("Transaction reverted");
           setPhase(address, { phase: "error", errorMessage: err.message });
           onWithdrawError?.(err.message, address);
+          lendLogger.error("withdraw failed: transaction reverted", {
+            vault: address,
+            hash,
+          });
           return null;
         }
       } catch (error) {
         if (isUserRejectedError(error)) {
           setPhase(address, { phase: "idle" });
+          lendLogger.info("withdraw cancelled by user", { address });
           return null;
         }
 
         const err = error instanceof Error ? error : new Error("Unknown error");
         setPhase(address, { phase: "error", errorMessage: err.message });
         onWithdrawError?.(err.message, address);
+        loggerMut.error("mutation error (withdraw)", {
+          mutationKey: qKeys.mutation(chainId, address, wallet),
+          address,
+          error: err,
+        });
+
         return null;
       } finally {
         clearKeyPending(idemKey);

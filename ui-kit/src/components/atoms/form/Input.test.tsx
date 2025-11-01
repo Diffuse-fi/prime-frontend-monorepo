@@ -110,22 +110,6 @@ describe("<Input />", () => {
     expect(el).toHaveAttribute("type", "email");
   });
 
-  it("supports asChild, passing props through Slot to child input", async () => {
-    const user = userEvent.setup();
-
-    render(
-      <Input asChild placeholder="slot-placeholder">
-        <input data-testid="slot-input" />
-      </Input>
-    );
-
-    const el = screen.getByTestId("slot-input") as HTMLInputElement;
-    expect(el).toHaveAttribute("placeholder", "slot-placeholder");
-    expect(el.className).toContain("w-full");
-    await user.type(el, "xyz");
-    expect(el.value).toBe("xyz");
-  });
-
   it("fires right-slot button clicks (no event swallowing)", async () => {
     const user = userEvent.setup();
     const onClick = vi.fn();

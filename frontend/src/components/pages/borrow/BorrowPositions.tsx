@@ -9,19 +9,16 @@ import { showSkeletons } from "@/lib/misc/ui";
 import { Heading } from "@diffuse/ui-kit";
 import { BorrowerPositionCard } from "./BorrowPositionCard";
 import { BorrowerPosition } from "@/lib/core/types";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ManagePositionModal } from "./ManagePositionModal/ManagePositionModal";
 import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
 import { AppLink } from "@/components/misc/AppLink";
 import { ExternalLink } from "lucide-react";
 import { formatEvmAddress } from "@/lib/formatters/asset";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
-import { useAccount, useChainId } from "wagmi";
+import { useChainId } from "wagmi";
 import { getStableChainMeta } from "@/lib/chains/meta";
 import { getContractExplorerUrl } from "@/lib/chains/rpc";
-import { useBorrowActivationWatcher } from "@/lib/core/hooks/useBorrowActivationWatcher";
-import { toast } from "@/lib/toast";
-import { usePendingBorrowerPositionIds } from "@/lib/core/hooks/useBorrowerPendingPositions";
 
 export function BorrowPositions() {
   const {
@@ -33,7 +30,6 @@ export function BorrowPositions() {
     refetchTotalAssets,
     refetch,
   } = useVaults();
-  const { isConnected, address } = useAccount();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const [selectedPosition, setSelectedPosition] = useState<BorrowerPosition>();
   const { dir } = useLocalization();
@@ -53,20 +49,6 @@ export function BorrowPositions() {
     isPending,
     refetch: refetchBorrowerPositions,
   } = useBorrowerPositions(vaultsForSelectedAsset);
-
-  const { refetch: refetchPendingRequests } = usePendingBorrowerPositionIds(vaults);
-  const vaultAddresses = useMemo(() => vaults.map(v => v.address), [vaults]);
-  useBorrowActivationWatcher({
-    vaultAddresses: vaultAddresses,
-    enabled: isConnected,
-    chainId: chainId,
-    account: address,
-    onActivated: ({ strategyId }) => {
-      const strategyName = strategies.find(s => s.id === strategyId)?.name;
-      toast(`Your borrow request for strategy "${strategyName}" has been activated!`);
-      refetchPendingRequests();
-    },
-  });
 
   return (
     <div className="mt-4 flex flex-col gap-3 md:gap-8">

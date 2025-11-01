@@ -59,6 +59,10 @@ export function useLenderPositions(allVaults: VaultFullInfo[]) {
             vault.contract.getLenderBalance(lender!, { signal }),
           ]);
 
+          if (balance === 0n && accruedYieldData.every(y => y === 0n)) {
+            return null;
+          }
+
           return {
             vault: vault,
             asset: vault.assets[0],
@@ -74,8 +78,13 @@ export function useLenderPositions(allVaults: VaultFullInfo[]) {
     gcTime: 1000 * 60 * 10,
   });
 
+  const positions =
+    positionsQueries.data && positionsQueries.data?.length > 0
+      ? positionsQueries.data.filter((p): p is LenderPosition => p !== null)
+      : [];
+
   return {
-    positions: positionsQueries.data || [],
+    positions,
     isLoading: positionsQueries.isLoading,
     isPending: positionsQueries.isPending,
     refetch: positionsQueries.refetch,

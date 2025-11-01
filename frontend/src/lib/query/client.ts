@@ -1,7 +1,10 @@
 import { QueryClient } from "@tanstack/react-query";
 import { defaultRetry } from "./defaults";
+import { mutationCacheWithLogger, queryCacheWithLogger } from "./logging";
 
 export const queryClient = new QueryClient({
+  queryCache: queryCacheWithLogger,
+  mutationCache: mutationCacheWithLogger,
   defaultOptions: {
     queries: {
       refetchOnReconnect: true,

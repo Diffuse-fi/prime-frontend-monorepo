@@ -359,8 +359,6 @@ export function BorrowModal({
                 placeholder="0.0"
                 value={collateralText}
                 onValueChange={evt => onCollateralInput(evt.value)}
-                assetSymbol={selectedAsset?.symbol}
-                displayAssetMeta={false}
               />
               <Select
                 value={getAddress(collateralAsset.address)}
