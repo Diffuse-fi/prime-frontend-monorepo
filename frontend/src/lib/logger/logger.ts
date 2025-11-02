@@ -58,15 +58,15 @@ export type Logger = {
 
 function out(method: LogMethod, ns: Namespace, level: LogLevel, args: unknown[]) {
   const prefix = `%c[${ns.toUpperCase()}]%c (${level.toUpperCase()})`; // %c allows adding styles
-  const styleLogLevel = "font-weight:bold;";
-  const styleNs = "color:gray;";
+  const styleLogLevel = "color:gray;";
+  const styleNs = "font-weight:bold;";
 
   const logFunction = console[method] || console.log;
 
   logFunction.apply(console, [
     prefix,
-    styleLogLevel,
     styleNs,
+    styleLogLevel,
     ...args,
   ]);
 }

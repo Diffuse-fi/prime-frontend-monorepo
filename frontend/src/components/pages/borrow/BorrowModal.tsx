@@ -29,10 +29,10 @@ import { PositionDetails } from "./PositionDetails";
 import now from "lodash/now";
 import { formatNumberToKMB } from "@/lib/formatters/number";
 import { useBorrowPreview } from "@/lib/core/hooks/useBorrowPreview";
-import { useDebounce } from "@uidotdev/usehooks";
 import { useVaults } from "@/lib/core/hooks/useVaults";
 import { useRouter } from "@/lib/localization/navigation";
 import { InfoIcon } from "lucide-react";
+import { useDebounce } from "@/lib/misc/useDebounce";
 
 type ChainSwitchModalProps = {
   open: boolean;

@@ -1,6 +1,7 @@
-# Copilot Instructions — dApp (Next.js + RainbowKit/Wagmi/viem + Tailwind/shadcn + Monorepo)
+# Copilot Instructions
 
-> This file tells GitHub Copilot exactly **how we build this project**: stack choices, coding style, folders, security guardrails, and ready‑to‑use code patterns. Keep this at the repo root as `copilot-instructions.md`.
+> This file tells GitHub Copilot exactly **how we build this project**: stack choices, coding style, folders, security guardrails, and ready‑to‑use code patterns.
+> Keep this at the repo root as `copilot-instructions.md`.
 
 ---
 
@@ -10,7 +11,7 @@
 
 - Framework: **Next.js (App Router, TypeScript, RSC-first)**
 - Wallet/Connect: **RainbowKit** + **Wagmi** (v2) + **viem**
-- Styling/UI: **Tailwind CSS** + **shadcn/ui** (Radix primitives). Custom UI kit lives in a **separate workspace package**.
+- Styling/UI: **Tailwind CSS** + **radix-ui** (Radix primitives). Custom UI kit lives in a **separate workspace package**.
 - Package manager: **npm** monorepo
 - Testing: **Vitest** + **Testing Library** (unit), **Playwright** (e2e)
 - Lint/format: **ESLint** + **Prettier**
@@ -20,7 +21,6 @@
 - Contract **reads**: server‑side (RSC/server actions) wherever possible.
 - Contract **writes**: client‑side via Wagmi; never sign on server.
 - No private keys in code. No server-side wallets. No secrets in client bundle.
-- Indexing: plan to use a dedicated indexer (e.g., The Graph/Subsquid) for history/aggregations; don’t “loop RPC” in the UI.
 
 ---
 

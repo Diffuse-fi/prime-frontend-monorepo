@@ -8,30 +8,32 @@ import type { Address } from "viem";
 import type { VaultFullInfo } from "../types";
 import type { BorrowerPosition } from "../types";
 
-export type UseBorrowerPositionsResult = {
-  positions: BorrowerPosition[];
-  isLoading: boolean;
-  isPending: boolean;
-  pending: { vault: VaultFullInfo; positionIds: bigint[] }[];
-  refetch: () => void;
-  error: Error | null;
-  pendingError: Error | null;
-};
-
 const ROOT = "borrower-positions";
 const version = QV.borrowerPositions;
 const qKeys = {
   positions: (vaultsAddrKey: string | null, chainId: number, ownerAddr?: string) =>
-    qk([ROOT, version, opt(vaultsAddrKey), chainId, opt(ownerAddr)]),
+    qk([
+      ROOT,
+      version,
+      opt(vaultsAddrKey),
+      chainId,
+      opt(ownerAddr),
+      "positions",
+    ]),
   pending: (vaultsAddrKey: string | null, chainId: number, ownerAddr?: string) =>
-    qk([ROOT, version, opt(vaultsAddrKey), chainId, opt(ownerAddr)]),
+    qk([
+      ROOT,
+      version,
+      opt(vaultsAddrKey),
+      chainId,
+      opt(ownerAddr),
+      "pending-positions",
+    ]),
 };
 
 const LIMIT = pLimit(6);
 
-export function useBorrowerPositions(
-  allVaults: VaultFullInfo[]
-): UseBorrowerPositionsResult {
+export function useBorrowerPositions(allVaults: VaultFullInfo[]) {
   const { chainId, address: borrower, publicClient } = useClients();
   const vaultsConsistency = allVaults.every(v => v.contract.chainId === chainId);
   const addressKey = useMemo(() => {
@@ -47,6 +49,33 @@ export function useBorrowerPositions(
     !!borrower &&
     vaultsConsistency &&
     allVaults.length > 0;
+
+  const pendingQuery = useQuery({
+    enabled,
+    queryKey: qKeys.pending(addressKey, chainId!, borrower),
+    queryFn: async ({ signal }) => {
+      const tasks = allVaults.map(vault =>
+        LIMIT(async () => {
+          const ids = await vault.contract.getPendingBorrowerPositionIds(
+            borrower as Address,
+            { signal }
+          );
+
+          return { vault, positionIds: ids as bigint[] };
+        })
+      );
+
+      return Promise.all(tasks);
+    },
+    staleTime: 30_000,
+    gcTime: 10 * 60_000,
+    refetchInterval: 5000,
+    refetchIntervalInBackground: true,
+  });
+
+  const somePending = pendingQuery.data
+    ? pendingQuery.data.some(p => p.positionIds.length > 0)
+    : true;
 
   const positionsQuery = useQuery({
     enabled,
@@ -87,29 +116,8 @@ export function useBorrowerPositions(
     },
     staleTime: 30_000,
     gcTime: 10 * 60_000,
-    refetchInterval: 3000, // TODO - remove when wecan listen for events and revalidate on event
-    refetchIntervalInBackground: true,
-  });
-
-  const pendingQuery = useQuery({
-    enabled,
-    queryKey: qKeys.pending(addressKey, chainId!, borrower),
-    queryFn: async ({ signal }) => {
-      const tasks = allVaults.map(vault =>
-        LIMIT(async () => {
-          const ids = await vault.contract.getPendingBorrowerPositionIds(
-            borrower as Address,
-            { signal }
-          );
-
-          return { vault, positionIds: ids as bigint[] };
-        })
-      );
-
-      return Promise.all(tasks);
-    },
-    staleTime: 30_000,
-    gcTime: 10 * 60_000,
+    refetchInterval: somePending ? 2000 : false,
+    refetchIntervalInBackground: somePending,
   });
 
   return {
@@ -117,9 +125,8 @@ export function useBorrowerPositions(
     pending: pendingQuery.data || [],
     isLoading: positionsQuery.isLoading || pendingQuery.isLoading,
     isPending: positionsQuery.isPending || pendingQuery.isPending,
-    refetch: () => {
-      positionsQuery.refetch();
-    },
+    refetchPending: pendingQuery.refetch,
+    refetchPositions: positionsQuery.refetch,
     error: positionsQuery.error as Error | null,
     pendingError: pendingQuery.error as Error | null,
   };

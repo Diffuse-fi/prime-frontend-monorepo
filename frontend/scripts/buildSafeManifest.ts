@@ -26,4 +26,4 @@ async function generateSafeManifest() {
 
 await generateSafeManifest();
 
-console.log("Safe manifest built successfully.");
+console.log("Safe (Gnosis Safe) manifest built successfully.");

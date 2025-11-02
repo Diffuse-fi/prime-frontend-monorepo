@@ -1,5 +1,5 @@
 {
   "buildCommand": "npm run build:deps && npm run build",
-  "installCommand": "npm --prefix .. ci",
+  "installCommand": "npm --prefix .. ci --audit=false",
   "$schema": "https://openapi.vercel.sh/vercel.json"
 }
