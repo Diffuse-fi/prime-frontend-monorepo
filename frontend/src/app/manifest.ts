@@ -25,7 +25,7 @@ export default function manifest(): MetadataRoute.Manifest {
       //   type: "image/png",
       //   purpose: "any",
       // },
-      // icons for google search dispaly - 48x48, 72x72, 96x96, 144x144, 192x192
+      // icons for google search display - 48x48, 72x72, 96x96, 144x144, 192x192
     ],
   };
 }

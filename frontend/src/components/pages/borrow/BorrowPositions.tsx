@@ -47,7 +47,7 @@ export function BorrowPositions() {
     positions,
     isLoading,
     isPending,
-    refetch: refetchBorrowerPositions,
+    refetchPositions: refetchBorrowerPositions,
   } = useBorrowerPositions(vaultsForSelectedAsset);
 
   return (

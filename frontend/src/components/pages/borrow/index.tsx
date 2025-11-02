@@ -11,8 +11,8 @@ import { BorrowCard } from "./BorrowCard";
 import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
 import { Strategy, VaultFullInfo } from "@/lib/core/types";
 import { useAccount } from "wagmi";
-import { usePendingBorrowerPositionIds } from "@/lib/core/hooks/useBorrowerPendingPositions";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useBorrowerPositions } from "@/lib/core/hooks/useBorrowerPositions";
 
 export type SelectedStartegy = {
   vault: VaultFullInfo;
@@ -25,7 +25,7 @@ export default function Borrow() {
   const [selectedStrategy, setSelectedStrategy] = useState<SelectedStartegy | null>(null);
   const { dir } = useLocalization();
   const { isConnected } = useAccount();
-  const { refetch: refetchPendingRequests } = usePendingBorrowerPositionIds(vaults);
+  const { refetchPending } = useBorrowerPositions(vaults);
   const strategies = vaults
     .filter(v => v.assets?.some(a => a.address === selectedAsset?.address))
     .flatMap(v => v.strategies)
@@ -79,8 +79,8 @@ export default function Borrow() {
           selectedStrategy={selectedStrategy}
           onBorrowRequestSuccess={() => {
             setSelectedStrategy(null);
-            refetchPendingRequests();
             refetch();
+            refetchPending();
           }}
         />
       )}
