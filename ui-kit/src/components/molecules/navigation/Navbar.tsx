@@ -1,7 +1,7 @@
 import React from "react";
 import { cn } from "@/lib";
 import { forwardRef, HTMLAttributes } from "react";
-import { Container } from "../atoms";
+import { Container } from "../../atoms";
 
 export interface NavbarProps extends HTMLAttributes<HTMLElement> {
   logo?: React.ReactNode;

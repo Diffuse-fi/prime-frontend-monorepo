@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calcAprInterest, calcAverageApr, calcAprByInterestEarned } from "./apr.js";
+import { calcAprInterest, calcAverageApr, calcAprByInterestEarned } from "./apr";
 
 describe("APR formulas", () => {
   const BPS = 10_000n;

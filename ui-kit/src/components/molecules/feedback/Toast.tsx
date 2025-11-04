@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IconButton } from "../atoms";
+import { IconButton } from "../../atoms";
 import { X } from "lucide-react";
 import { cn } from "@/lib";
 

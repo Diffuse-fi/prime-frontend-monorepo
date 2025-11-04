@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import * as React from "react";
 import { render, screen } from "@testing-library/react";
-import { AssetCard, type AssetCardProps } from "./AssetCard.js";
+import { AssetCard, type AssetCardProps } from "./AssetCard";
 
 describe("<AssetCard />", () => {
   const renderImage: AssetCardProps["renderImage"] = ({ alt, className }) => (

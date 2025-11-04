@@ -5,7 +5,12 @@ import { formatDateTime } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { calcAprInterest } from "@/lib/formulas/apr";
 import { calcDaysInterval } from "@/lib/formulas/date";
-import { RemoteText, Tooltip, UncontrolledCollapsible } from "@diffuse/ui-kit";
+import {
+  InfoIcon,
+  RemoteText,
+  TextWithTooltip,
+  UncontrolledCollapsible,
+} from "@diffuse/ui-kit";
 
 interface PositionDetailsProps {
   strategy: Strategy;
@@ -89,7 +94,15 @@ export function PositionDetails({
         </div>
         <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
           <div className="flex items-center justify-between">
-            <span>Spread fee</span>
+            <div className="flex items-center leading-none">
+              Spread fee
+              <InfoIcon
+                text="The fee charged by the platform for facilitating the borrowing process."
+                size={14}
+                className="ml-1"
+                ariaLabel="Spread fee information"
+              />
+            </div>
             <span>{formatAprToPercent(spreadFee, 0).text}</span>
           </div>
         </div>
@@ -101,11 +114,11 @@ export function PositionDetails({
         <div className="flex flex-col gap-2 border-l border-[#49E695] px-2 py-1">
           <div className="flex items-center justify-between">
             <span>Days until maturity</span>
-            <Tooltip content={`Until ${fullEndDate}`} side="top">
-              <span className="underline decoration-dashed underline-offset-2">
-                {daysUntilMaturity}
-              </span>
-            </Tooltip>
+            <TextWithTooltip
+              text={daysUntilMaturity.toString()}
+              tooltip={`Until ${fullEndDate}`}
+              className="underline decoration-dashed underline-offset-2"
+            />
           </div>
           <div className="flex items-center justify-between">
             <span>Maturity yield</span>

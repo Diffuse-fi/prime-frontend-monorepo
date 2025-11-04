@@ -16,6 +16,7 @@ export const button = tv({
       link: "bg-transparent underline decoration-dashed underline-offset-2 text-primary hover:text-primary/80 active:text-primary/60",
     },
     size: {
+      xs: "text-xs px-2 text-xs py-1 rounded-xs",
       sm: "text-sm px-3 py-1.5 rounded-sm",
       md: "rounded-md text-body px-4 py-2",
       lg: "rounded-lg text-[18px] px-5 py-2.5 h-13",
@@ -26,9 +27,11 @@ export const button = tv({
     },
   },
   compoundVariants: [
+    { icon: true, size: "xs", class: "h-6 w-6" },
     { icon: true, size: "sm", class: "h-8 w-8" },
     { icon: true, size: "md", class: "h-10 w-10" },
     { icon: true, size: "lg", class: "h-12 w-12" },
+    { variant: "link", size: "xs", class: "px-0 py-0" },
     { variant: "link", size: "sm", class: "px-0 py-0" },
     { variant: "link", size: "md", class: "px-0 py-0" },
     { variant: "link", size: "lg", class: "px-0 py-0" },
