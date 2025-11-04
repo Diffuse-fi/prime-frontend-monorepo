@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Skeleton } from "../atoms";
+import { Skeleton } from "../../atoms";
 import { cn } from "@/lib";
 
 export interface RemoteTextProps {

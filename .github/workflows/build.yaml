@@ -36,3 +36,34 @@ jobs:
 
       - name: Build
         uses: ./.github/actions/build
+
+  test-e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/ukorvl/custom-github-actions-playwright:latest
+      options: --user pwuser
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v5
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          setup-node: false # already setup in container
+          audit: false
+
+      - name: Build
+        uses: ./.github/actions/build
+
+      - name: Run E2E tests
+        working-directory: frontend
+        run: npm run test:e2e
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: frontend/tests/e2e/output/playwright-report
+          if-no-files-found: "warn"
+          retention-days: 30

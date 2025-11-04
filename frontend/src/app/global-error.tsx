@@ -13,6 +13,7 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
   return (
     <html>
       <body>
+        cdcdcdcdc
         <NextError statusCode={0} />
       </body>
     </html>
