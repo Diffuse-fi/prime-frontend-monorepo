@@ -2,4 +2,4 @@
 public/manifest.json
 
 # Tests outputs
-tests/e2e/outputs
+tests/e2e/output

@@ -16,7 +16,7 @@ export const button = tv({
       link: "bg-transparent underline decoration-dashed underline-offset-2 text-primary hover:text-primary/80 active:text-primary/60",
     },
     size: {
-      xs: "text-xs px-2 text-xs py-1 rounded-xs",
+      xs: "text-xs px-2 py-1 rounded-xs",
       sm: "text-sm px-3 py-1.5 rounded-sm",
       md: "rounded-md text-body px-4 py-2",
       lg: "rounded-lg text-[18px] px-5 py-2.5 h-13",

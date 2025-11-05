@@ -18,6 +18,7 @@
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w sdk-js\" \"npm run dev -w ui-kit\" --kill-others --success last",
     "fix:syncpack": "syncpack fix-mismatches && syncpack set-semver-ranges",
     "format": "prettier --write .",
+    "i:clean": "tsx scripts/cleanInstall.ts",
     "knip": "knip --production",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "setup": "npx --no-install allow-scripts && simple-git-hooks && npm run build",
