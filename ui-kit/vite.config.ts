@@ -104,6 +104,7 @@ export default defineConfig(() => {
       rollupTypes: true,
       insertTypesEntry: true,
       exclude: ["**/*.test.*", "**/__tests__/**"],
+      tsconfigPath: resolve(__dirname, "tsconfig.build.json"),
     }),
     presetCssAsset(),
   ];

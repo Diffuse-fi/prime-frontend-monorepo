@@ -46,8 +46,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "cross-env BUILD_WATCH=1 && vite build --watch",
-    "test:all": "npm run test:unit -- --run",
-    "test:unit": "vitest --coverage"
+    "test:unit": "vitest run --coverage"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.12",

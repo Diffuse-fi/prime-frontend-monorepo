@@ -18,12 +18,11 @@
     "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w sdk-js\" \"npm run dev -w ui-kit\" --kill-others --success last",
     "fix:syncpack": "syncpack fix-mismatches && syncpack set-semver-ranges",
     "format": "prettier --write .",
-    "i:clean": "tsx scripts/cleanInstall.ts",
     "knip": "knip --production",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "setup": "npx --no-install allow-scripts && simple-git-hooks && npm run build",
     "syncpack:list": "syncpack list",
-    "test:all": "concurrently \"npm run test:all -w frontend\" \"npm run test:all -w ui-kit\" \"npm run test:all -w sdk-js\" --success all"
+    "test:unit": "concurrently \"npm run test:unit -w frontend\" \"npm run test:unit -w ui-kit\" \"npm run test:unit -w sdk-js\" --success all"
   },
   "simple-git-hooks": {
     "pre-commit": "npx --no-install lint-staged",
@@ -34,8 +33,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,md,json,css}": [
-      "npm run format",
-      "git add"
+      "npm run format"
     ]
   },
   "devDependencies": {
