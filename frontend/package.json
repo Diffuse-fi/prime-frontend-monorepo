@@ -6,15 +6,15 @@
   "license": "PolyForm-Noncommercial-1.0.0",
   "type": "module",
   "scripts": {
-    "build": "npm run lint:env && npm run build:safe-manifest && next build",
+    "build": "npm run check:env && npm run build:safe-manifest && next build",
     "build:deps": "npm run build -w ../ui-kit && npm run build -w ../sdk-js",
     "build:safe-manifest": "tsx ./scripts/buildSafeManifest.ts",
+    "check:env": "tsx ./scripts/validateEnv",
     "dev": "npm run build:safe-manifest && next dev --turbopack",
-    "lint:env": "tsx ./scripts/validateEnv",
-    "start": "npm run lint:env && next start",
-    "test:all": "npm run test:unit -- --run",
+    "start": "npm run check:env && next start",
     "test:e2e": "playwright test",
-    "test:unit": "vitest"
+    "test:unit": "vitest run --coverage",
+    "test:unit:watch": "vitest"
   },
   "dependencies": {
     "@diffuse/sdk-js": "0.2.0",
@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@next/env": "15.5.2",
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "1.56.1",
     "@types/negotiator": "^0.6.4",
     "@types/qs": "^6.14.0",
     "@types/react-portal": "^4.0.7",

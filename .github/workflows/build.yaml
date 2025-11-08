@@ -37,6 +37,9 @@ jobs:
       - name: Build
         uses: ./.github/actions/build
 
+      - name: Unit tests
+        run: npm run test:unit
+
   test-e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -50,7 +53,7 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
         with:
-          setup-node: false # already setup in container
+          setup-node: true
           audit: false
 
       - name: Build
@@ -58,7 +61,9 @@ jobs:
 
       - name: Run E2E tests
         working-directory: frontend
-        run: npm run test:e2e
+        run: |
+          export CI=true
+          npm run test:e2e
 
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
