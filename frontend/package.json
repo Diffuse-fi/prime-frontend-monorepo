@@ -13,6 +13,7 @@
     "dev": "npm run build:safe-manifest && next dev --turbopack",
     "start": "npm run check:env && next start",
     "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "test:unit": "vitest run --coverage",
     "test:unit:watch": "vitest"
   },
@@ -58,6 +59,7 @@
     "@types/negotiator": "^0.6.4",
     "@types/qs": "^6.14.0",
     "@types/react-portal": "^4.0.7",
+    "dotenv-flow": "^4.1.0",
     "schema-dts": "^1.1.5",
     "utility-types": "^3.11.0"
   },

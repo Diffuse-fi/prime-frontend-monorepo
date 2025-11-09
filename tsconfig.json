@@ -20,7 +20,9 @@
     "**/coverage/**",
     "**/*.config.mjs",
     "**/*.config.js",
-    "**/.next/**"
+    "**/.next/**",
+    "**/.vercel/**",
+    "**/e2e/output"
   ],
   "references": [
     { "path": "sdk-js" },

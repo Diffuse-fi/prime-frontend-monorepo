@@ -1,12 +1,17 @@
 import { defineConfig, devices } from "@playwright/test";
+import dotenvFlow from "dotenv-flow";
+
+dotenvFlow.config({ node_env: "e2e" });
 
 const isCI = /^(1|true)$/i.test(process.env.CI ?? "");
-const BASE_URL = process.env.E2E_BASE_URL ?? "http://localhost:3000";
 
-const WORKERS = Number(process.env.E2E_WORKERS ?? (isCI ? 2 : 4));
-const RETRIES = Number(process.env.E2E_RETRIES ?? (isCI ? 2 : 1));
-const OPEN_REPORT =
-  (process.env.E2E_OPEN_REPORT as "never" | "on-failure" | "always") ?? "never";
+const BASE_URL = process.env.E2E_BASE_URL || "http://localhost:3000";
+const WORKERS = Number(process.env.E2E_WORKERS || (isCI ? 2 : 4));
+const RETRIES = Number(process.env.E2E_RETRIES || (isCI ? 3 : 1));
+const validOpenReportValues = ["never", "on-failure", "always"] as const;
+const OPEN_REPORT = validOpenReportValues.some(v => v === process.env.E2E_OPEN_REPORT)
+  ? (process.env.E2E_OPEN_REPORT as (typeof validOpenReportValues)[number])
+  : "never";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -18,8 +23,8 @@ export default defineConfig({
   use: {
     baseURL: BASE_URL,
     trace: "on-first-retry",
-    screenshot: "only-on-failure",
-    video: "retain-on-failure",
+    screenshot: isCI ? "off" : "only-on-failure",
+    video: isCI ? "off" : "retain-on-failure",
   },
   timeout: 30 * 1000,
   expect: {
@@ -32,7 +37,15 @@ export default defineConfig({
     },
     {
       name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
+      use: {
+        ...devices["Desktop Firefox"],
+        serviceWorkers: "block",
+        launchOptions: {
+          firefoxUserPrefs: {
+            "dom.disable_beforeunload": true,
+          },
+        },
+      },
     },
     {
       name: "webkit",
@@ -62,7 +75,7 @@ export default defineConfig({
     ["list"],
   ],
   webServer: {
-    command: "npm run dev",
+    command: "npm run start",
     url: BASE_URL,
     reuseExistingServer: !isCI,
     stdout: "ignore",
