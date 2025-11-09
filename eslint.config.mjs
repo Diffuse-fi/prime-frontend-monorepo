@@ -1,6 +1,7 @@
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
+import playwright from "eslint-plugin-playwright";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,6 +22,13 @@ const nextScoped = nextCompat.map(c => ({
 
 export default [
   ...nextScoped,
+  {
+    ...playwright.configs["flat/recommended"],
+    files: ["**/tests/e2e/**/*.ts", "**/tests/e2e/**/*.tsx"],
+    rules: {
+      ...playwright.configs["flat/recommended"].rules,
+    },
+  },
   {
     ignores: [
       "**/node_modules",
