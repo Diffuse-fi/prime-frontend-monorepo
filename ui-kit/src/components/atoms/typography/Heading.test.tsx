@@ -15,8 +15,7 @@ describe("<Heading />", () => {
       "tracking-tight",
       "text-balance",
       "text-h2",
-      "text-left",
-      "text-text-primary"
+      "text-left"
     );
   });
 

@@ -37,9 +37,6 @@ jobs:
       - name: Build
         uses: ./.github/actions/build
 
-      - name: Unit tests
-        run: npm run test:unit
-
   test-e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -72,3 +69,54 @@ jobs:
           path: frontend/tests/e2e/output/playwright-report
           if-no-files-found: "warn"
           retention-days: 30
+
+  frontend-unit-tests:
+    name: Unit Tests / Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v5
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          setup-node: true
+          audit: false
+
+      - name: Run frontend unit tests
+        working-directory: frontend
+        run: npm run test:unit
+
+  sdk-unit-tests:
+    name: Unit Tests / SDK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v5
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          setup-node: true
+          audit: false
+
+      - name: Run SDK unit tests
+        working-directory: sdk-js
+        run: npm run test:unit
+
+  ui-kit-unit-tests:
+    name: Unit Tests / UI Kit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v5
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          setup-node: true
+          audit: false
+
+      - name: Run UI Kit unit tests
+        working-directory: ui-kit
+        run: npm run test:unit

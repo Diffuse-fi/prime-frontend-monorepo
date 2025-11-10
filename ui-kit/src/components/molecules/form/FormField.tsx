@@ -51,9 +51,7 @@ export const FormField = React.forwardRef<HTMLLabelElement, FormFieldProps>(
         aria-disabled={disabled || undefined}
         {...rest}
       >
-        <span className={cn(labelText({ size }), labelClassName)}>
-          <span>{label}</span>
-        </span>
+        <span className={cn(labelText({ size }), labelClassName)}>{label}</span>
 
         {children}
 

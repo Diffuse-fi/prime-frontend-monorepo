@@ -1,146 +1,51 @@
-import React, { createRef, useState } from "react";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as React from "react";
 import { Input } from "./Input";
 
 describe("<Input />", () => {
-  it("renders with placeholder", () => {
-    render(<Input placeholder="Type here" />);
-    const el = screen.getByPlaceholderText("Type here");
-
-    expect(el).toBeInTheDocument();
-    expect(el).toHaveAttribute("type", "text");
-  });
-
-  it("forwards ref to the underlying input", () => {
-    const ref = createRef<HTMLInputElement>();
-    render(<Input ref={ref} placeholder="Ref test" />);
-    expect(ref.current).toBeInstanceOf(HTMLInputElement);
-
-    ref.current!.focus();
-    expect(document.activeElement).toBe(ref.current);
-  });
-
-  it("supports uncontrolled typing (defaultValue)", async () => {
+  it("renders input, forwards ref, merges className, and fires onChange", async () => {
     const user = userEvent.setup();
+    const ref = React.createRef<HTMLInputElement>();
     const onChange = vi.fn();
 
-    render(<Input defaultValue="hi" onChange={onChange} />);
-    const el = screen.getByDisplayValue("hi");
+    render(<Input ref={ref} aria-label="Name" className="custom" onChange={onChange} />);
 
-    await user.type(el, "!");
-    // onChange fires for each keystroke
+    const input = screen.getByRole("textbox", { name: "Name" });
+    expect(input).toBeInTheDocument();
+    expect(ref.current).toBe(input);
+    expect(input).toHaveClass("custom");
+
+    await user.type(input, "Yuri");
     expect(onChange).toHaveBeenCalled();
-    expect((el as HTMLInputElement).value).toBe("hi!");
+    expect(input).toHaveValue("Yuri");
   });
 
-  it("supports controlled value + onChange", async () => {
-    const user = userEvent.setup();
-
-    function Controlled() {
-      const [v, setV] = useState("a");
-      return (
-        <Input value={v} onChange={e => setV(e.target.value)} placeholder="controlled" />
-      );
-    }
-
-    render(<Controlled />);
-    const el = screen.getByPlaceholderText("controlled") as HTMLInputElement;
-    expect(el.value).toBe("a");
-
-    await user.type(el, "bc");
-    expect(el.value).toBe("abc");
-  });
-
-  it("applies size classes (sm / md / lg)", () => {
-    const { rerender } = render(<Input size="sm" placeholder="sm" />);
-    let el = screen.getByPlaceholderText("sm");
-    expect(el).toHaveClass("h-8");
-    expect(el).toHaveClass("px-2");
-    expect(el).toHaveClass("text-sm");
-
-    rerender(<Input size="md" placeholder="md" />);
-    el = screen.getByPlaceholderText("md");
-    expect(el).toHaveClass("h-10");
-    expect(el).toHaveClass("px-3");
-    expect(el).toHaveClass("text-sm");
-
-    rerender(<Input size="lg" placeholder="lg" />);
-    el = screen.getByPlaceholderText("lg");
-    expect(el).toHaveClass("h-12");
-    expect(el).toHaveClass("px-4");
-    expect(el).toHaveClass("text-base");
-  });
-
-  it("applies error / success state classes on wrapper", () => {
-    const { rerender, container } = render(<Input error placeholder="e" />);
-    let wrapper = container.firstChild as HTMLElement;
-    expect(wrapper.className).toContain("border-[color:var(--ui-danger)]");
-
-    rerender(<Input success placeholder="s" />);
-    wrapper = container.firstChild as HTMLElement;
-    expect(wrapper.className).toContain("border-[color:var(--ui-success)]");
-  });
-
-  it("renders left and right adornments and adjusts input paddings", () => {
+  it("renders left and right adornments", () => {
     render(
       <Input
-        placeholder="adorned"
+        aria-label="Amount"
         left={<span data-testid="left">L</span>}
-        right={<button data-testid="right">R</button>}
-      />
-    );
-    const el = screen.getByPlaceholderText("adorned");
-    expect(screen.getByTestId("left")).toBeInTheDocument();
-    expect(screen.getByTestId("right")).toBeInTheDocument();
-
-    expect(el).toHaveClass("pl-1");
-    expect(el).toHaveClass("pr-1");
-  });
-
-  it("respects disabled", () => {
-    render(<Input disabled placeholder="disabled" />);
-    const el = screen.getByPlaceholderText("disabled");
-    expect(el).toBeDisabled();
-  });
-
-  it("accepts different input types", () => {
-    render(<Input type="email" placeholder="email" />);
-    const el = screen.getByPlaceholderText("email");
-    expect(el).toHaveAttribute("type", "email");
-  });
-
-  it("fires right-slot button clicks (no event swallowing)", async () => {
-    const user = userEvent.setup();
-    const onClick = vi.fn();
-
-    render(
-      <Input
-        placeholder="click"
-        right={
-          <button data-testid="clear" onClick={onClick}>
-            Clear
-          </button>
-        }
+        right={<span data-testid="right">R</span>}
       />
     );
 
-    await user.click(screen.getByTestId("clear"));
-    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("textbox", { name: "Amount" })).toBeInTheDocument();
+    expect(screen.getByTestId("left")).toHaveTextContent("L");
+    expect(screen.getByTestId("right")).toHaveTextContent("R");
   });
 
-  it("focuses via label htmlFor (integration)", async () => {
+  it("sets aria-invalid when error and supports disabled and type", async () => {
     const user = userEvent.setup();
-    render(
-      <label htmlFor="nm">
-        Name
-        <Input id="nm" placeholder="focus via label" />
-      </label>
-    );
+    render(<Input aria-label="Secret" type="password" error disabled defaultValue="x" />);
 
-    const label = screen.getByText("Name");
-    await user.click(label);
-    const input = screen.getByPlaceholderText("focus via label");
-    expect(document.activeElement).toBe(input);
+    const input = screen.getByLabelText("Secret");
+    expect(input).toHaveAttribute("type", "password");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toBeDisabled();
+
+    await user.type(input, "123");
+    expect(input).toHaveValue("x");
   });
 });

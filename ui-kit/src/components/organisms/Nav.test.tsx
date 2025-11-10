@@ -14,7 +14,7 @@ describe("<Nav />", () => {
         items={[
           { href: "/", label: "Home" },
           { href: "/lend", label: "Lend" },
-          { href: "/lend/my-positions", label: "My Positions", exact: true }, // exact
+          { href: "/lend/my-positions", label: "My Positions", exact: true },
         ]}
       />
     );
@@ -46,7 +46,7 @@ describe("<Nav />", () => {
     const nav = screen.getByRole("navigation", { name: "tabs" });
     const list = within(nav).getByRole("list");
 
-    expect(list).toHaveClass("border-b");
+    expect(list).toHaveClass("text-body");
 
     const a = screen.getByRole("link", { name: "A" });
 

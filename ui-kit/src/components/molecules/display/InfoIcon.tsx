@@ -29,7 +29,7 @@ export const InfoIcon = React.forwardRef<HTMLSpanElement, InfoIconProps>(
             className
           )}
           aria-describedby={tooltipId}
-          aria-label={ariaLabel ?? text}
+          aria-label={ariaLabel}
           ref={ref}
         >
           <Info size={size} aria-hidden="true" />
