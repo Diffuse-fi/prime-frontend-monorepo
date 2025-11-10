@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { resolveAddress } from "./resolve";
 import { AddressNotFoundError, InvalidAddressError } from "@/errors";
 import { AddressBook, ContractName } from "./addressBook";
-import { isAddressEqual } from "viem";
+import { getAddress, isAddressEqual } from "viem";
 
 vi.mock("./addressBook", () => {
   return {
@@ -10,12 +10,12 @@ vi.mock("./addressBook", () => {
       const book: AddressBook = {
         1: {
           Vault: {
-            current: "0x0000000000000000000000000000000000000AAA",
+            current: "0x0000000000000000000000000000000000000aaa",
           },
         },
         80085: {
           Vault: {
-            current: "0x0000000000000000000000000000000000000BBB",
+            current: "0x0000000000000000000000000000000000000bbb",
           },
         },
       };
@@ -26,7 +26,7 @@ vi.mock("./addressBook", () => {
         throw new AddressNotFoundError({ chainId, contract: contract });
       }
 
-      return byChain[contract];
+      return byChain[contract].current;
     },
   };
 });
@@ -47,12 +47,14 @@ describe("resolveAddress", () => {
   it("returns current from ADDRESS_BOOK", () => {
     const out = resolveAddress({ chainId: 80085, contract: "Vault" });
 
-    expect(out).toBe("0x0000000000000000000000000000000000000BBB");
+    expect(
+      isAddressEqual(out, getAddress("0x0000000000000000000000000000000000000bbb"))
+    ).toBe(true);
   });
 
   it("throws AddressNotFoundError for missing chain", () => {
     expect(() => resolveAddress({ chainId: 999, contract: "Vault" })).toThrow(
-      AddressNotFoundError
+      new AddressNotFoundError({ chainId: 999, contract: "Vault" })
     );
   });
 
@@ -63,6 +65,11 @@ describe("resolveAddress", () => {
         contract: "Vault",
         addressOverride: "0x_not-an-address",
       })
-    ).toThrow(InvalidAddressError);
+    ).toThrow(
+      new InvalidAddressError("0x_not-an-address", {
+        chainId: 1,
+        contract: "Vault",
+      })
+    );
   });
 });

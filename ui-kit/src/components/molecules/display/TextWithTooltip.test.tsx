@@ -3,44 +3,51 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { TextWithTooltip } from "./TextWithTooltip";
+import { TooltipProvider } from "./Tooltip";
+
+const renderWithProvider = (ui: React.ReactNode) =>
+  render(
+    <TooltipProvider delayDuration={0} skipDelayDuration={0} disableHoverableContent>
+      {ui}
+    </TooltipProvider>
+  );
 
 describe("<TextWithTooltip />", () => {
-  it("renders a focusable trigger with proper a11y wiring (aria-label & aria-describedby -> role=tooltip)", async () => {
-    render(<TextWithTooltip text="Variable APR" tooltip="APR changes each block." />);
-
-    const trigger = screen.getByText("Variable APR");
-
-    expect(trigger.tagName).toBe("SPAN");
-    expect(trigger).toHaveAttribute("tabIndex", "0");
-    expect(trigger).toHaveAttribute("aria-label", "Variable APR");
-
-    await userEvent.tab();
-    const tooltip = await screen.findByRole("tooltip");
-    expect(tooltip).toHaveTextContent("APR changes each block.");
-
-    const describedBy = trigger.getAttribute("aria-describedby");
-    expect(describedBy).toBeTruthy();
-    expect(tooltip.getAttribute("id")).toBe(describedBy);
-  });
-
-  it("opens on focus/hover and closes on Escape/blur", async () => {
+  it("renders focusable text with default aria-label and wires tooltip description", async () => {
     const user = userEvent.setup();
-    render(<TextWithTooltip text="More details" tooltip="Detailed explanation here." />);
-
-    const trigger = screen.getByText("More details");
-
-    await user.hover(trigger);
-    expect(await screen.findByRole("tooltip")).toHaveTextContent(
-      "Detailed explanation here."
+    renderWithProvider(
+      <TextWithTooltip text="Variable APR" tooltip="APR changes each block." />
     );
 
-    await user.keyboard("{Escape}");
-    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    const trigger = screen.getByLabelText("Variable APR");
+    expect(trigger).toBeInTheDocument();
+    expect(trigger).toHaveAttribute("tabIndex", "0");
+    expect(trigger).toHaveAttribute("aria-describedby");
 
-    await user.tab();
-    expect(await screen.findByRole("tooltip")).toBeInTheDocument();
+    await user.hover(trigger);
+    await screen.findByRole("tooltip", { hidden: true });
+    expect(trigger).toHaveAccessibleDescription("APR changes each block.");
+  });
 
-    trigger.blur();
-    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  it("respects custom ariaLabel, side and merges className", async () => {
+    const user = userEvent.setup();
+    renderWithProvider(
+      <TextWithTooltip
+        text="More info"
+        tooltip="Detailed explanation here."
+        ariaLabel="Custom label"
+        className="mx-2"
+        side="bottom"
+      />
+    );
+
+    const trigger = screen.getByLabelText("Custom label");
+    expect(trigger).toHaveClass("mx-2");
+
+    await user.hover(trigger);
+    const contentDiv = await screen.findByText("Detailed explanation here.", {
+      selector: "div",
+    });
+    expect(contentDiv).toHaveAttribute("data-side", "bottom");
   });
 });

@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { ControlledCollapsible, UncontrolledCollapsible } from "./Collapsible";
 
 describe("Collapsible components", () => {
-  it("ControlledCollapsible: calls onOpenChange when toggled", async () => {
+  it("controlledCollapsible: calls onOpenChange when toggled", async () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();
 
@@ -23,21 +23,21 @@ describe("Collapsible components", () => {
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it("UncontrolledCollapsible: toggles open attribute on click", async () => {
+  it("uncontrolledCollapsible: toggles open attribute on click", async () => {
     const user = userEvent.setup();
-    const { container } = render(
+    render(
       <UncontrolledCollapsible defaultOpen={false} summary="Details">
         <div>Content</div>
       </UncontrolledCollapsible>
     );
 
-    const details = container.querySelector("details")!;
-    const summary = screen.getByText("Details");
+    const details = screen.getByRole("group");
+    const toggle = screen.getByText("Details");
 
     expect(details).not.toHaveAttribute("open");
-    await user.click(summary);
+    await user.click(toggle);
     expect(details).toHaveAttribute("open");
-    await user.click(summary);
+    await user.click(toggle);
     expect(details).not.toHaveAttribute("open");
   });
 });

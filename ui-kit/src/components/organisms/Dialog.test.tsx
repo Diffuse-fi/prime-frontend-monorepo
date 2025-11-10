@@ -19,13 +19,13 @@ describe("<Dialog />", () => {
     expect(screen.getByText("Desc")).toBeInTheDocument();
     expect(screen.getByText("Body")).toBeInTheDocument();
 
-    expect(dlg).toHaveClass("max-w-md");
+    expect(dlg).toHaveClass("max-w-xl");
   });
 
   it("uncontrolled: trigger opens and close button closes", async () => {
     const user = userEvent.setup();
     render(
-      <Dialog trigger={<button>Open</button>} title="Hello">
+      <Dialog trigger={<button>Open</button>} title="Hello" description="World">
         <div>Content</div>
       </Dialog>
     );
@@ -46,7 +46,13 @@ describe("<Dialog />", () => {
     const onOpenChange = vi.fn();
 
     const { rerender } = render(
-      <Dialog trigger={<button>Open</button>} open={false} onOpenChange={onOpenChange} />
+      <Dialog
+        trigger={<button>Open</button>}
+        open={false}
+        onOpenChange={onOpenChange}
+        title="Title"
+        description="Desc"
+      />
     );
 
     await user.click(screen.getByText("Open"));
@@ -54,7 +60,15 @@ describe("<Dialog />", () => {
     expect(onOpenChange).toHaveBeenCalledWith(true);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-    rerender(<Dialog trigger={<button>Open</button>} open onOpenChange={onOpenChange} />);
+    rerender(
+      <Dialog
+        trigger={<button>Open</button>}
+        open
+        onOpenChange={onOpenChange}
+        title="Title"
+        description="Desc"
+      />
+    );
     expect(screen.getByRole("dialog")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Close" }));

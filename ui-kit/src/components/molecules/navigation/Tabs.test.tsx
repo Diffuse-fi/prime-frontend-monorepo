@@ -1,61 +1,109 @@
-// Tabs.test.tsx
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import React from "react";
+import * as React from "react";
 import { Tabs } from "./Tabs";
 
-describe("Tabs", () => {
-  it("switches content when clicking triggers and updates selected state", async () => {
-    const user = userEvent.setup();
-
-    render(
+function setup(ui?: React.ReactNode) {
+  return render(
+    ui ?? (
       <Tabs defaultValue="one">
-        <Tabs.List>
+        <Tabs.List aria-label="Demo tabs">
           <Tabs.Trigger value="one">One</Tabs.Trigger>
           <Tabs.Trigger value="two">Two</Tabs.Trigger>
         </Tabs.List>
-        <Tabs.Content value="one">Content One</Tabs.Content>
-        <Tabs.Content value="two">Content Two</Tabs.Content>
+        <Tabs.Content value="one">Panel One</Tabs.Content>
+        <Tabs.Content value="two">Panel Two</Tabs.Content>
       </Tabs>
-    );
+    )
+  );
+}
 
-    const trigOne = screen.getByRole("tab", { name: "One" });
-    const trigTwo = screen.getByRole("tab", { name: "Two" });
-    const contentOne = screen.getByText("Content One");
-    const contentTwo = screen.getByText("Content Two");
+describe("<Tabs />", () => {
+  it("renders tablist, tabs, and shows the selected tabpanel", async () => {
+    setup();
 
-    expect(trigOne).toHaveAttribute("data-state", "active");
-    expect(trigTwo).toHaveAttribute("data-state", "inactive");
-    expect(contentOne).toBeVisible();
-    expect(contentTwo).not.toBeVisible();
+    const list = screen.getByRole("tablist", { name: /demo tabs/i });
+    expect(list).toBeInTheDocument();
 
-    await user.click(trigTwo);
+    const tabOne = screen.getByRole("tab", { name: "One", selected: true });
+    const tabTwo = screen.getByRole("tab", { name: "Two", selected: false });
+    expect(tabOne).toBeInTheDocument();
+    expect(tabTwo).toBeInTheDocument();
 
-    expect(trigTwo).toHaveAttribute("data-state", "active");
-    expect(trigOne).toHaveAttribute("data-state", "inactive");
-    expect(contentTwo).toBeVisible();
-    expect(contentOne).not.toBeVisible();
+    const panelOne = screen.getByRole("tabpanel", { name: "One" });
+    expect(panelOne).toHaveTextContent("Panel One");
+    expect(screen.queryByRole("tabpanel", { name: "Two" })).not.toBeInTheDocument();
+
+    await userEvent.click(tabTwo);
+    const panelTwo = await screen.findByRole("tabpanel", { name: "Two" });
+    expect(panelTwo).toHaveTextContent("Panel Two");
+    expect(screen.queryByRole("tabpanel", { name: "One" })).not.toBeInTheDocument();
   });
 
-  it("renders count badge and applies fitted list layout classes", () => {
-    render(
+  it("applies visual variants: List align+fitted, Trigger fitted, Content inset", async () => {
+    setup(
       <Tabs defaultValue="a">
-        <Tabs.List fitted>
-          <Tabs.Trigger value="a" count={12}>
-            Tab A
+        <Tabs.List aria-label="Variants" align="between" fitted>
+          <Tabs.Trigger value="a" fitted>
+            A
           </Tabs.Trigger>
-          <Tabs.Trigger value="b">Tab B</Tabs.Trigger>
+          <Tabs.Trigger value="b" fitted>
+            B
+          </Tabs.Trigger>
         </Tabs.List>
-        <Tabs.Content value="a">A</Tabs.Content>
-        <Tabs.Content value="b">B</Tabs.Content>
+        <Tabs.Content value="a" inset>
+          Pa
+        </Tabs.Content>
+        <Tabs.Content value="b" inset>
+          Pb
+        </Tabs.Content>
       </Tabs>
     );
 
-    expect(screen.getByText("12")).toBeInTheDocument();
+    const list = screen.getByRole("tablist", { name: /variants/i });
+    expect(list).toHaveClass("justify-between", "w-full");
+    expect(list).toHaveClass("grid", "auto-cols-fr", "grid-flow-col");
 
-    const list = screen.getByRole("tablist");
-    expect(list.className).toContain("w-full");
-    expect(list.className).toMatch(/grid|auto-cols-fr|grid-flow-col/);
+    const tabA = screen.getByRole("tab", { name: "A" });
+    const tabB = screen.getByRole("tab", { name: "B" });
+    expect(tabA).toHaveClass("justify-center", "w-full");
+    expect(tabB).toHaveClass("justify-center", "w-full");
+
+    const panelA = screen.getByRole("tabpanel", { name: "A" });
+    expect(panelA).toHaveClass("pt-3");
+    expect(panelA).toHaveClass("mt-2");
+  });
+
+  it("renders left/right slots and count badge on trigger", async () => {
+    setup(
+      <Tabs defaultValue="x">
+        <Tabs.List aria-label="Extras">
+          <Tabs.Trigger
+            value="x"
+            left={<span>🔹</span>}
+            right={<span>ℹ️</span>}
+            count={3}
+          >
+            X tab
+          </Tabs.Trigger>
+          <Tabs.Trigger value="y">Y tab</Tabs.Trigger>
+        </Tabs.List>
+        <Tabs.Content value="x">Px</Tabs.Content>
+        <Tabs.Content value="y">Py</Tabs.Content>
+      </Tabs>
+    );
+
+    const tabX = screen.getByRole("tab", { name: /x tab/i });
+    expect(tabX).toBeInTheDocument();
+
+    const leftIcon = screen.getByText("🔹");
+    const rightIcon = screen.getByText("ℹ️");
+    const countBadge = screen.getByText("3");
+
+    expect(leftIcon).toBeInTheDocument();
+    expect(rightIcon).toBeInTheDocument();
+    expect(countBadge).toBeInTheDocument();
+    expect(countBadge).toHaveClass("rounded-full");
   });
 });

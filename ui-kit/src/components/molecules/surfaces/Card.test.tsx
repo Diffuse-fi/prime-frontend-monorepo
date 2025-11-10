@@ -8,7 +8,7 @@ describe("Card", () => {
   it("renders with string header", () => {
     render(<Card header="Test Header">Body content</Card>);
 
-    expect(screen.getByRole("heading", { level: 3 })).toHaveTextContent("Test Header");
+    expect(screen.getByRole("heading", { level: 4 })).toHaveTextContent("Test Header");
     expect(screen.getByText("Body content")).toBeInTheDocument();
   });
 

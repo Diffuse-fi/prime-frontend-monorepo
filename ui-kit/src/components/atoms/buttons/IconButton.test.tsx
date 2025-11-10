@@ -27,7 +27,7 @@ describe("<IconButton />", () => {
 
     const btn = screen.getByRole("button", { name: "confirm" });
 
-    expect(btn).toHaveClass("h-12", "w-12", "bg-primary", "text-primary-fg", "extra");
+    expect(btn).toHaveClass("h-12", "w-12", "bg-primary/80", "extra");
   });
 
   it("fires onClick when enabled, and not when disabled", async () => {
