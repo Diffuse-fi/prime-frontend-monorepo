@@ -22,7 +22,7 @@ export const DifferentSizes: Story = () => (
 );
 
 export const CardSkeleton: Story = () => (
-  <div className="bg-fg border border-border rounded-lg p-4 space-y-4 max-w-md">
+  <div className="bg-fg border-border max-w-md space-y-4 rounded-lg border p-4">
     <div className="flex items-center gap-4">
       <Skeleton className="h-12 w-12" rounded="full" />
       <div className="flex-1 space-y-2">
@@ -62,7 +62,7 @@ export const TableSkeleton: Story = () => (
 );
 
 export const ListSkeleton: Story = () => (
-  <div className="space-y-3 max-w-md">
+  <div className="max-w-md space-y-3">
     {[1, 2, 3, 4].map(i => (
       <div key={i} className="flex items-center gap-3">
         <Skeleton className="h-10 w-10" rounded="full" />

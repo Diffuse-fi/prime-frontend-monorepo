@@ -12,5 +12,5 @@ export const Provider: GlobalProvider = ({ children, globalState }) => {
     }
   }, [globalState.theme]);
 
-  return <div className="p-8 bg-bg text-text-primary">{children}</div>;
+  return <div className="bg-bg text-text-primary p-8">{children}</div>;
 };

@@ -6,8 +6,12 @@ export const Default: Story = () => {
   const [open, setOpen] = useState(true);
   return (
     <div className="p-8">
-      <ul className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
-        <Toast open={open} message="This is a toast notification" onClose={() => setOpen(false)} />
+      <ul className="fixed right-4 bottom-4 z-50 flex flex-col gap-2">
+        <Toast
+          open={open}
+          message="This is a toast notification"
+          onClose={() => setOpen(false)}
+        />
       </ul>
     </div>
   );
@@ -17,7 +21,7 @@ export const WithTitle: Story = () => {
   const [open, setOpen] = useState(true);
   return (
     <div className="p-8">
-      <ul className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+      <ul className="fixed right-4 bottom-4 z-50 flex flex-col gap-2">
         <Toast
           open={open}
           title="Success"
@@ -33,7 +37,7 @@ export const Closeable: Story = () => {
   const [open, setOpen] = useState(true);
   return (
     <div className="p-8">
-      <ul className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+      <ul className="fixed right-4 bottom-4 z-50 flex flex-col gap-2">
         <Toast
           open={open}
           title="Notification"
@@ -45,7 +49,7 @@ export const Closeable: Story = () => {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="px-4 py-2 bg-primary text-fg rounded"
+          className="bg-primary text-fg rounded px-4 py-2"
         >
           Show Toast
         </button>
@@ -58,7 +62,7 @@ export const AutoDismiss: Story = () => {
   const [open, setOpen] = useState(true);
   return (
     <div className="p-8">
-      <ul className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+      <ul className="fixed right-4 bottom-4 z-50 flex flex-col gap-2">
         <Toast
           open={open}
           message="This will auto-dismiss in 3 seconds"
@@ -70,7 +74,7 @@ export const AutoDismiss: Story = () => {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="px-4 py-2 bg-primary text-fg rounded"
+          className="bg-primary text-fg rounded px-4 py-2"
         >
           Show Toast Again
         </button>
@@ -88,7 +92,7 @@ export const MultipleToasts: Story = () => {
 
   return (
     <div className="p-8">
-      <ul className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+      <ul className="fixed right-4 bottom-4 z-50 flex flex-col gap-2">
         {toasts.map(toast => (
           <Toast
             key={toast.id}
@@ -111,7 +115,7 @@ export const MultipleToasts: Story = () => {
             { id: newId, message: `Notification ${newId}`, open: true },
           ]);
         }}
-        className="px-4 py-2 bg-primary text-fg rounded"
+        className="bg-primary text-fg rounded px-4 py-2"
       >
         Add Toast
       </button>
@@ -129,7 +133,7 @@ export const DifferentVariants: Story = () => {
 
   return (
     <div className="p-8">
-      <ul className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
+      <ul className="fixed right-4 bottom-4 z-50 flex max-w-sm flex-col gap-2">
         {toasts.map(toast => (
           <Toast
             key={toast.id}
@@ -153,7 +157,7 @@ export const LongMessage: Story = () => {
   const [open, setOpen] = useState(true);
   return (
     <div className="p-8">
-      <ul className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-md">
+      <ul className="fixed right-4 bottom-4 z-50 flex max-w-md flex-col gap-2">
         <Toast
           open={open}
           title="Detailed Information"

@@ -4,10 +4,10 @@ import { TooltipProvider } from "./Tooltip";
 
 export const Default: Story = () => (
   <TooltipProvider>
-    <div className="p-20 flex justify-center">
+    <div className="flex justify-center p-20">
       <p className="text-body">
-        This text has a <TextWithTooltip text="tooltip" tooltip="Additional information" />{" "}
-        word.
+        This text has a{" "}
+        <TextWithTooltip text="tooltip" tooltip="Additional information" /> word.
       </p>
     </div>
   </TooltipProvider>
@@ -15,7 +15,7 @@ export const Default: Story = () => (
 
 export const InParagraph: Story = () => (
   <TooltipProvider>
-    <div className="p-20 max-w-2xl">
+    <div className="max-w-2xl p-20">
       <p className="text-body">
         The{" "}
         <TextWithTooltip
@@ -35,7 +35,7 @@ export const InParagraph: Story = () => (
 
 export const Sides: Story = () => (
   <TooltipProvider>
-    <div className="p-20 space-y-4">
+    <div className="space-y-4 p-20">
       <p>
         Tooltip on <TextWithTooltip text="top" tooltip="Top tooltip" side="top" />
       </p>
@@ -43,7 +43,8 @@ export const Sides: Story = () => (
         Tooltip on <TextWithTooltip text="right" tooltip="Right tooltip" side="right" />
       </p>
       <p>
-        Tooltip on <TextWithTooltip text="bottom" tooltip="Bottom tooltip" side="bottom" />
+        Tooltip on{" "}
+        <TextWithTooltip text="bottom" tooltip="Bottom tooltip" side="bottom" />
       </p>
       <p>
         Tooltip on <TextWithTooltip text="left" tooltip="Left tooltip" side="left" />
@@ -69,7 +70,7 @@ export const LongTooltip: Story = () => (
 
 export const MultipleInLine: Story = () => (
   <TooltipProvider>
-    <div className="p-20 max-w-2xl">
+    <div className="max-w-2xl p-20">
       <p className="text-body">
         The{" "}
         <TextWithTooltip

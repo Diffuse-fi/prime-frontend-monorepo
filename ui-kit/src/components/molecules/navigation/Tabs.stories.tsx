@@ -26,16 +26,16 @@ export const Controlled: Story = () => {
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
         <TabsContent value="overview">
-          <div className="p-4 bg-fg border border-border rounded">Overview content</div>
+          <div className="bg-fg border-border rounded border p-4">Overview content</div>
         </TabsContent>
         <TabsContent value="details">
-          <div className="p-4 bg-fg border border-border rounded">Details content</div>
+          <div className="bg-fg border-border rounded border p-4">Details content</div>
         </TabsContent>
         <TabsContent value="settings">
-          <div className="p-4 bg-fg border border-border rounded">Settings content</div>
+          <div className="bg-fg border-border rounded border p-4">Settings content</div>
         </TabsContent>
       </TabsRoot>
-      <p className="text-sm text-muted">Selected: {value}</p>
+      <p className="text-muted text-sm">Selected: {value}</p>
     </div>
   );
 };
@@ -54,13 +54,13 @@ export const Fitted: Story = () => (
       </TabsTrigger>
     </TabsList>
     <TabsContent value="buy">
-      <div className="p-4 bg-fg border border-border rounded">Buy content</div>
+      <div className="bg-fg border-border rounded border p-4">Buy content</div>
     </TabsContent>
     <TabsContent value="sell">
-      <div className="p-4 bg-fg border border-border rounded">Sell content</div>
+      <div className="bg-fg border-border rounded border p-4">Sell content</div>
     </TabsContent>
     <TabsContent value="swap">
-      <div className="p-4 bg-fg border border-border rounded">Swap content</div>
+      <div className="bg-fg border-border rounded border p-4">Swap content</div>
     </TabsContent>
   </TabsRoot>
 );
@@ -83,7 +83,7 @@ export const WithDisabled: Story = () => (
 export const Alignment: Story = () => (
   <div className="space-y-8">
     <div>
-      <p className="text-sm text-muted mb-2">Start (default)</p>
+      <p className="text-muted mb-2 text-sm">Start (default)</p>
       <TabsRoot defaultValue="1">
         <TabsList align="start">
           <TabsTrigger value="1">Tab 1</TabsTrigger>
@@ -94,7 +94,7 @@ export const Alignment: Story = () => (
       </TabsRoot>
     </div>
     <div>
-      <p className="text-sm text-muted mb-2">Center</p>
+      <p className="text-muted mb-2 text-sm">Center</p>
       <TabsRoot defaultValue="1">
         <TabsList align="center">
           <TabsTrigger value="1">Tab 1</TabsTrigger>
@@ -105,7 +105,7 @@ export const Alignment: Story = () => (
       </TabsRoot>
     </div>
     <div>
-      <p className="text-sm text-muted mb-2">End</p>
+      <p className="text-muted mb-2 text-sm">End</p>
       <TabsRoot defaultValue="1">
         <TabsList align="end">
           <TabsTrigger value="1">Tab 1</TabsTrigger>

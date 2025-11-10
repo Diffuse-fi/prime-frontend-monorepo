@@ -13,15 +13,15 @@ export const WithError: Story = () => (
 export const States: Story = () => (
   <div className="space-y-4">
     <div>
-      <p className="text-sm text-muted mb-2">Default</p>
+      <p className="text-muted mb-2 text-sm">Default</p>
       <RemoteText text="1,234.56 ETH" />
     </div>
     <div>
-      <p className="text-sm text-muted mb-2">Loading</p>
+      <p className="text-muted mb-2 text-sm">Loading</p>
       <RemoteText text="Loading..." isLoading />
     </div>
     <div>
-      <p className="text-sm text-muted mb-2">Error</p>
+      <p className="text-muted mb-2 text-sm">Error</p>
       <RemoteText text="Failed" error="Could not fetch data" />
     </div>
   </div>
@@ -60,14 +60,14 @@ export const Interactive: Story = () => {
       <div className="flex gap-2">
         <button
           onClick={handleLoad}
-          className="px-4 py-2 bg-primary text-fg rounded"
+          className="bg-primary text-fg rounded px-4 py-2"
           disabled={isLoading}
         >
           Reload
         </button>
         <button
           onClick={handleError}
-          className="px-4 py-2 bg-error text-fg rounded"
+          className="bg-error text-fg rounded px-4 py-2"
           disabled={isLoading}
         >
           Trigger Error
@@ -86,17 +86,17 @@ export const CustomComponent: Story = () => (
 );
 
 export const InContext: Story = () => (
-  <div className="space-y-4 max-w-md">
-    <div className="p-4 bg-fg border border-border rounded">
-      <div className="flex justify-between items-center mb-2">
+  <div className="max-w-md space-y-4">
+    <div className="bg-fg border-border rounded border p-4">
+      <div className="mb-2 flex items-center justify-between">
         <span className="text-muted">Total Value Locked</span>
         <RemoteText text="$1,234,567.89" isLoading />
       </div>
-      <div className="flex justify-between items-center mb-2">
+      <div className="mb-2 flex items-center justify-between">
         <span className="text-muted">Your Balance</span>
         <RemoteText text="123.45 ETH" />
       </div>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <span className="text-muted">APY</span>
         <RemoteText text="12.5%" error="Failed to load" />
       </div>

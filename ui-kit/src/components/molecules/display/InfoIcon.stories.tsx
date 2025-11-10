@@ -4,7 +4,7 @@ import { TooltipProvider } from "./Tooltip";
 
 export const Default: Story = () => (
   <TooltipProvider>
-    <div className="p-20 flex justify-center">
+    <div className="flex justify-center p-20">
       <InfoIcon text="This is helpful information" />
     </div>
   </TooltipProvider>
@@ -12,7 +12,7 @@ export const Default: Story = () => (
 
 export const Sizes: Story = () => (
   <TooltipProvider>
-    <div className="p-20 flex gap-4 items-center justify-center">
+    <div className="flex items-center justify-center gap-4 p-20">
       <InfoIcon text="Small size" size={14} />
       <InfoIcon text="Default size (16)" size={16} />
       <InfoIcon text="Medium size" size={20} />
@@ -23,7 +23,7 @@ export const Sizes: Story = () => (
 
 export const Sides: Story = () => (
   <TooltipProvider>
-    <div className="p-20 flex gap-8 justify-center items-center">
+    <div className="flex items-center justify-center gap-8 p-20">
       <InfoIcon text="Top tooltip" side="top" />
       <InfoIcon text="Right tooltip" side="right" />
       <InfoIcon text="Bottom tooltip" side="bottom" />
@@ -34,7 +34,7 @@ export const Sides: Story = () => (
 
 export const LongText: Story = () => (
   <TooltipProvider>
-    <div className="p-20 flex justify-center">
+    <div className="flex justify-center p-20">
       <InfoIcon text="This is a much longer tooltip that contains detailed information about the feature or element it's describing. It will wrap to multiple lines when the content is too long." />
     </div>
   </TooltipProvider>
@@ -42,11 +42,11 @@ export const LongText: Story = () => (
 
 export const InContext: Story = () => (
   <TooltipProvider>
-    <div className="p-8 space-y-4 max-w-md">
+    <div className="max-w-md space-y-4 p-8">
       <div className="flex items-center gap-2">
         <span className="font-medium">APY</span>
         <InfoIcon text="Annual Percentage Yield - the rate of return on your investment over one year" />
-        <span className="ml-auto text-success font-semibold">12.5%</span>
+        <span className="text-success ml-auto font-semibold">12.5%</span>
       </div>
       <div className="flex items-center gap-2">
         <span className="font-medium">Health Factor</span>
@@ -64,7 +64,7 @@ export const InContext: Story = () => (
 
 export const WithCustomColor: Story = () => (
   <TooltipProvider>
-    <div className="p-20 flex gap-4 justify-center">
+    <div className="flex justify-center gap-4 p-20">
       <InfoIcon text="Default color" />
       <InfoIcon text="Primary color" className="text-primary" />
       <InfoIcon text="Muted color" className="text-muted" />

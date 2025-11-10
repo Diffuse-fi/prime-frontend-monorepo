@@ -4,7 +4,7 @@ import { CopyButton } from "./CopyButton";
 export const Default: Story = () => <CopyButton textToCopy="Hello, World!" />;
 
 export const Sizes: Story = () => (
-  <div className="flex gap-4 items-center">
+  <div className="flex items-center gap-4">
     <CopyButton textToCopy="Copy me" size="sm" />
     <CopyButton textToCopy="Copy me" size="md" />
     <CopyButton textToCopy="Copy me" size="lg" />
@@ -12,7 +12,7 @@ export const Sizes: Story = () => (
 );
 
 export const WithVariants: Story = () => (
-  <div className="flex gap-4 items-center">
+  <div className="flex items-center gap-4">
     <CopyButton textToCopy="0x1234567890abcdef" variant="ghost" />
     <CopyButton textToCopy="0x1234567890abcdef" variant="solid" />
     <CopyButton textToCopy="0x1234567890abcdef" variant="link" />
@@ -24,8 +24,8 @@ export const LongText: Story = () => (
 );
 
 export const WithAddress: Story = () => (
-  <div className="flex gap-2 items-center">
-    <code className="text-sm bg-muted/20 px-2 py-1 rounded">
+  <div className="flex items-center gap-2">
+    <code className="bg-muted/20 rounded px-2 py-1 text-sm">
       0x742d35Cc6634C0532925a3b8...
     </code>
     <CopyButton textToCopy="0x742d35Cc6634C0532925a3b844F9a5C6735cB3e8" />

@@ -5,7 +5,7 @@ import { useState } from "react";
 export const Default: Story = () => <Input placeholder="Enter text..." />;
 
 export const Sizes: Story = () => (
-  <div className="flex flex-col gap-4 max-w-md">
+  <div className="flex max-w-md flex-col gap-4">
     <Input placeholder="Small input" size="sm" />
     <Input placeholder="Medium input" size="md" />
     <Input placeholder="Large input" size="lg" />
@@ -24,7 +24,7 @@ export const WithValue: Story = () => {
 };
 
 export const States: Story = () => (
-  <div className="flex flex-col gap-4 max-w-md">
+  <div className="flex max-w-md flex-col gap-4">
     <Input placeholder="Default state" />
     <Input placeholder="Error state" error />
     <Input placeholder="Disabled state" disabled />
@@ -32,21 +32,21 @@ export const States: Story = () => (
 );
 
 export const WithLeftIcon: Story = () => (
-  <div className="flex flex-col gap-4 max-w-md">
+  <div className="flex max-w-md flex-col gap-4">
     <Input placeholder="Search..." left={<span>🔍</span>} />
     <Input placeholder="Email address" left={<span>✉️</span>} />
   </div>
 );
 
 export const WithRightIcon: Story = () => (
-  <div className="flex flex-col gap-4 max-w-md">
+  <div className="flex max-w-md flex-col gap-4">
     <Input placeholder="Password" type="password" right={<span>👁️</span>} />
     <Input placeholder="Amount" right={<span>$</span>} />
   </div>
 );
 
 export const WithBothIcons: Story = () => (
-  <div className="flex flex-col gap-4 max-w-md">
+  <div className="flex max-w-md flex-col gap-4">
     <Input
       placeholder="Enter amount"
       left={<span className="text-muted">$</span>}
@@ -56,7 +56,7 @@ export const WithBothIcons: Story = () => (
 );
 
 export const DifferentTypes: Story = () => (
-  <div className="flex flex-col gap-4 max-w-md">
+  <div className="flex max-w-md flex-col gap-4">
     <Input type="text" placeholder="Text" />
     <Input type="email" placeholder="email@example.com" />
     <Input type="password" placeholder="Password" />

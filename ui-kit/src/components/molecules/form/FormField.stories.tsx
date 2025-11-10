@@ -9,7 +9,7 @@ export const Default: Story = () => (
 );
 
 export const Sizes: Story = () => (
-  <div className="space-y-4 max-w-md">
+  <div className="max-w-md space-y-4">
     <FormField label="Small" size="sm">
       <Input size="sm" placeholder="Small input" />
     </FormField>
@@ -29,7 +29,13 @@ export const WithHint: Story = () => (
 );
 
 export const Required: Story = () => (
-  <FormField label={<>Email <span className="text-error">*</span></>}>
+  <FormField
+    label={
+      <>
+        Email <span className="text-error">*</span>
+      </>
+    }
+  >
     <Input type="email" placeholder="email@example.com" />
   </FormField>
 );
@@ -49,7 +55,7 @@ export const WithError: Story = () => (
 export const ComplexLabel: Story = () => (
   <FormField
     label={
-      <span className="flex items-center justify-between w-full">
+      <span className="flex w-full items-center justify-between">
         <span>Amount</span>
         <span className="text-muted text-xs font-normal">Balance: 1,234.56</span>
       </span>
@@ -60,7 +66,7 @@ export const ComplexLabel: Story = () => (
 );
 
 export const MultipleFields: Story = () => (
-  <div className="space-y-4 max-w-md">
+  <div className="max-w-md space-y-4">
     <FormField label="First Name">
       <Input placeholder="John" />
     </FormField>

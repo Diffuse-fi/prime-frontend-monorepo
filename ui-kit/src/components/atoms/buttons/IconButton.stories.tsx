@@ -4,7 +4,7 @@ import { IconButton } from "./IconButton";
 export const Default: Story = () => <IconButton icon="🏠" aria-label="Home" />;
 
 export const Variants: Story = () => (
-  <div className="flex gap-4 items-center">
+  <div className="flex items-center gap-4">
     <IconButton icon="🔍" aria-label="Search" variant="solid" />
     <IconButton icon="🔍" aria-label="Search" variant="ghost" />
     <IconButton icon="🔍" aria-label="Search" variant="link" />
@@ -12,7 +12,7 @@ export const Variants: Story = () => (
 );
 
 export const Sizes: Story = () => (
-  <div className="flex gap-4 items-center">
+  <div className="flex items-center gap-4">
     <IconButton icon="⚙️" aria-label="Settings" size="xs" />
     <IconButton icon="⚙️" aria-label="Settings" size="sm" />
     <IconButton icon="⚙️" aria-label="Settings" size="md" />
@@ -21,14 +21,14 @@ export const Sizes: Story = () => (
 );
 
 export const Disabled: Story = () => (
-  <div className="flex gap-4 items-center">
+  <div className="flex items-center gap-4">
     <IconButton icon="✖️" aria-label="Close" disabled />
     <IconButton icon="✖️" aria-label="Close" variant="solid" disabled />
   </div>
 );
 
 export const CommonIcons: Story = () => (
-  <div className="flex gap-4 items-center flex-wrap">
+  <div className="flex flex-wrap items-center gap-4">
     <IconButton icon="✖️" aria-label="Close" />
     <IconButton icon="✏️" aria-label="Edit" />
     <IconButton icon="🗑️" aria-label="Delete" />

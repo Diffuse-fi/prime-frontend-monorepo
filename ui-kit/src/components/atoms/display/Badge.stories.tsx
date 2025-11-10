@@ -4,7 +4,7 @@ import { Badge } from "./Badge";
 export const Default: Story = () => <Badge>Default</Badge>;
 
 export const Colors: Story = () => (
-  <div className="flex gap-4 items-center flex-wrap">
+  <div className="flex flex-wrap items-center gap-4">
     <Badge color="success">Success</Badge>
     <Badge color="warning">Warning</Badge>
     <Badge color="error">Error</Badge>
@@ -13,7 +13,7 @@ export const Colors: Story = () => (
 );
 
 export const Sizes: Story = () => (
-  <div className="flex gap-4 items-center">
+  <div className="flex items-center gap-4">
     <Badge size="sm" color="success">
       Small
     </Badge>
@@ -27,7 +27,7 @@ export const Sizes: Story = () => (
 );
 
 export const WithoutText: Story = () => (
-  <div className="flex gap-4 items-center">
+  <div className="flex items-center gap-4">
     <Badge color="success" />
     <Badge color="warning" />
     <Badge color="error" />
@@ -54,15 +54,15 @@ export const InContext: Story = () => (
 
 export const InList: Story = () => (
   <div className="space-y-2">
-    <div className="flex items-center justify-between p-3 bg-fg rounded border border-border">
+    <div className="bg-fg border-border flex items-center justify-between rounded border p-3">
       <span>Transaction 1</span>
       <Badge color="success">Confirmed</Badge>
     </div>
-    <div className="flex items-center justify-between p-3 bg-fg rounded border border-border">
+    <div className="bg-fg border-border flex items-center justify-between rounded border p-3">
       <span>Transaction 2</span>
       <Badge color="warning">Pending</Badge>
     </div>
-    <div className="flex items-center justify-between p-3 bg-fg rounded border border-border">
+    <div className="bg-fg border-border flex items-center justify-between rounded border p-3">
       <span>Transaction 3</span>
       <Badge color="error">Failed</Badge>
     </div>

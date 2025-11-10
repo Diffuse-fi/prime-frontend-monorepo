@@ -15,7 +15,7 @@ export const WithDescription: Story = () => (
     description="This action cannot be undone. Please confirm you want to proceed."
     trigger={<Button>Open Dialog</Button>}
   >
-    <div className="flex gap-2 justify-end mt-4">
+    <div className="mt-4 flex justify-end gap-2">
       <Button variant="ghost">Cancel</Button>
       <Button>Confirm</Button>
     </div>
@@ -47,11 +47,11 @@ export const Controlled: Story = () => {
         trigger={<Button>Open</Button>}
       >
         <p className="text-body">This dialog is controlled from outside.</p>
-        <div className="flex gap-2 justify-end mt-4">
+        <div className="mt-4 flex justify-end gap-2">
           <Button onClick={() => setOpen(false)}>Close</Button>
         </div>
       </Dialog>
-      <p className="text-sm text-muted">Dialog is: {open ? "open" : "closed"}</p>
+      <p className="text-muted text-sm">Dialog is: {open ? "open" : "closed"}</p>
     </div>
   );
 };
@@ -60,22 +60,22 @@ export const WithForm: Story = () => (
   <Dialog title="User Information" trigger={<Button>Fill Form</Button>}>
     <form className="space-y-4">
       <div>
-        <label className="text-sm font-medium block mb-1">Name</label>
+        <label className="mb-1 block text-sm font-medium">Name</label>
         <input
           type="text"
-          className="w-full px-3 py-2 border border-border rounded bg-bg"
+          className="border-border bg-bg w-full rounded border px-3 py-2"
           placeholder="Enter your name"
         />
       </div>
       <div>
-        <label className="text-sm font-medium block mb-1">Email</label>
+        <label className="mb-1 block text-sm font-medium">Email</label>
         <input
           type="email"
-          className="w-full px-3 py-2 border border-border rounded bg-bg"
+          className="border-border bg-bg w-full rounded border px-3 py-2"
           placeholder="Enter your email"
         />
       </div>
-      <div className="flex gap-2 justify-end">
+      <div className="flex justify-end gap-2">
         <Button variant="ghost" type="button">
           Cancel
         </Button>
@@ -87,7 +87,7 @@ export const WithForm: Story = () => (
 
 export const LongContent: Story = () => (
   <Dialog title="Terms and Conditions" trigger={<Button>View Terms</Button>}>
-    <div className="space-y-4 max-h-96 overflow-y-auto">
+    <div className="max-h-96 space-y-4 overflow-y-auto">
       <p className="text-body">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
         incididunt ut labore et dolore magna aliqua.

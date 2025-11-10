@@ -20,12 +20,16 @@ export const Controlled: Story = () => {
   const [open, setOpen] = useState(false);
   return (
     <div className="space-y-4">
-      <ControlledCollapsible summary="Controlled collapsible" open={open} onOpenChange={setOpen}>
+      <ControlledCollapsible
+        summary="Controlled collapsible"
+        open={open}
+        onOpenChange={setOpen}
+      >
         <p className="text-body">This is controlled externally.</p>
       </ControlledCollapsible>
       <button
         onClick={() => setOpen(!open)}
-        className="px-4 py-2 bg-primary text-fg rounded"
+        className="bg-primary text-fg rounded px-4 py-2"
       >
         Toggle from outside
       </button>
@@ -40,7 +44,7 @@ export const WithComplexContent: Story = () => (
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
         incididunt ut labore et dolore magna aliqua.
       </p>
-      <ul className="list-disc list-inside text-body space-y-1">
+      <ul className="text-body list-inside list-disc space-y-1">
         <li>Feature one</li>
         <li>Feature two</li>
         <li>Feature three</li>
@@ -50,7 +54,7 @@ export const WithComplexContent: Story = () => (
 );
 
 export const Multiple: Story = () => (
-  <div className="space-y-4 max-w-2xl">
+  <div className="max-w-2xl space-y-4">
     <UncontrolledCollapsible summary="Section 1">
       <p className="text-body">Content for section 1</p>
     </UncontrolledCollapsible>

@@ -4,16 +4,16 @@ import { Button } from "@/atoms";
 
 export const Default: Story = () => (
   <Navbar
-    logo={<div className="font-bold text-xl">Logo</div>}
+    logo={<div className="text-xl font-bold">Logo</div>}
     navigation={
       <nav className="flex gap-4">
-        <a href="#" className="text-sm hover:text-primary">
+        <a href="#" className="hover:text-primary text-sm">
           Home
         </a>
-        <a href="#" className="text-sm hover:text-primary">
+        <a href="#" className="hover:text-primary text-sm">
           About
         </a>
-        <a href="#" className="text-sm hover:text-primary">
+        <a href="#" className="hover:text-primary text-sm">
           Contact
         </a>
       </nav>
@@ -26,19 +26,19 @@ export const WithLogoImage: Story = () => (
   <Navbar
     logo={
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-primary rounded-full" />
+        <div className="bg-primary h-8 w-8 rounded-full" />
         <span className="font-bold">Diffuse</span>
       </div>
     }
     navigation={
       <nav className="flex gap-6">
-        <a href="#" className="text-sm font-medium hover:text-primary">
+        <a href="#" className="hover:text-primary text-sm font-medium">
           Markets
         </a>
-        <a href="#" className="text-sm font-medium hover:text-primary">
+        <a href="#" className="hover:text-primary text-sm font-medium">
           Dashboard
         </a>
-        <a href="#" className="text-sm font-medium hover:text-primary">
+        <a href="#" className="hover:text-primary text-sm font-medium">
           Docs
         </a>
       </nav>
@@ -49,16 +49,19 @@ export const WithLogoImage: Story = () => (
 
 export const WithActiveState: Story = () => (
   <Navbar
-    logo={<div className="font-bold text-xl">DeFi App</div>}
+    logo={<div className="text-xl font-bold">DeFi App</div>}
     navigation={
       <nav className="flex gap-6">
-        <a href="#" className="text-sm font-medium text-primary border-b-2 border-primary">
+        <a
+          href="#"
+          className="text-primary border-primary border-b-2 text-sm font-medium"
+        >
           Lend
         </a>
-        <a href="#" className="text-sm font-medium hover:text-primary">
+        <a href="#" className="hover:text-primary text-sm font-medium">
           Borrow
         </a>
-        <a href="#" className="text-sm font-medium hover:text-primary">
+        <a href="#" className="hover:text-primary text-sm font-medium">
           Stake
         </a>
       </nav>
@@ -76,7 +79,7 @@ export const WithActiveState: Story = () => (
 
 export const Minimal: Story = () => (
   <Navbar
-    logo={<div className="font-bold text-xl">App</div>}
+    logo={<div className="text-xl font-bold">App</div>}
     wallet={<Button size="sm">Sign In</Button>}
   />
 );
@@ -91,13 +94,13 @@ export const WithIcons: Story = () => (
     }
     navigation={
       <nav className="flex gap-6">
-        <a href="#" className="flex items-center gap-2 text-sm hover:text-primary">
+        <a href="#" className="hover:text-primary flex items-center gap-2 text-sm">
           <span>📊</span> Dashboard
         </a>
-        <a href="#" className="flex items-center gap-2 text-sm hover:text-primary">
+        <a href="#" className="hover:text-primary flex items-center gap-2 text-sm">
           <span>💰</span> Markets
         </a>
-        <a href="#" className="flex items-center gap-2 text-sm hover:text-primary">
+        <a href="#" className="hover:text-primary flex items-center gap-2 text-sm">
           <span>⚙️</span> Settings
         </a>
       </nav>
@@ -112,16 +115,16 @@ export const WithIcons: Story = () => (
 
 export const WithDropdown: Story = () => (
   <Navbar
-    logo={<div className="font-bold text-xl">Platform</div>}
+    logo={<div className="text-xl font-bold">Platform</div>}
     navigation={
       <nav className="flex gap-6">
-        <a href="#" className="text-sm font-medium hover:text-primary">
+        <a href="#" className="hover:text-primary text-sm font-medium">
           Products ▾
         </a>
-        <a href="#" className="text-sm font-medium hover:text-primary">
+        <a href="#" className="hover:text-primary text-sm font-medium">
           Solutions ▾
         </a>
-        <a href="#" className="text-sm font-medium hover:text-primary">
+        <a href="#" className="hover:text-primary text-sm font-medium">
           Resources
         </a>
       </nav>

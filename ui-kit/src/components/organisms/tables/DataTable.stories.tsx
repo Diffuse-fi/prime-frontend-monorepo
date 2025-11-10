@@ -12,7 +12,13 @@ type Person = {
 
 const sampleData: Person[] = [
   { id: 1, name: "John Doe", email: "john@example.com", role: "Admin", status: "Active" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "User", status: "Active" },
+  {
+    id: 2,
+    name: "Jane Smith",
+    email: "jane@example.com",
+    role: "User",
+    status: "Active",
+  },
   {
     id: 3,
     name: "Bob Johnson",
@@ -20,7 +26,13 @@ const sampleData: Person[] = [
     role: "User",
     status: "Inactive",
   },
-  { id: 4, name: "Alice Brown", email: "alice@example.com", role: "Admin", status: "Active" },
+  {
+    id: 4,
+    name: "Alice Brown",
+    email: "alice@example.com",
+    role: "Admin",
+    status: "Active",
+  },
 ];
 
 const columns: ColumnDef<Person>[] = [
@@ -124,7 +136,12 @@ export const CryptoAssets: Story = () => {
       cell: info => {
         const value = info.getValue<number>();
         const color = value >= 0 ? "text-success" : "text-error";
-        return <span className={color}>{value > 0 ? "+" : ""}{value}%</span>;
+        return (
+          <span className={color}>
+            {value > 0 ? "+" : ""}
+            {value}%
+          </span>
+        );
       },
       enableSorting: true,
     },

@@ -24,11 +24,11 @@ export const TabsVariant: Story = () => (
 export const WithActiveItem: Story = () => (
   <div className="space-y-8">
     <div>
-      <p className="text-sm text-muted mb-2">Active: Home</p>
+      <p className="text-muted mb-2 text-sm">Active: Home</p>
       <Nav items={defaultItems} pathname="/" aria-label="Navigation" />
     </div>
     <div>
-      <p className="text-sm text-muted mb-2">Active: About</p>
+      <p className="text-muted mb-2 text-sm">Active: About</p>
       <Nav items={defaultItems} pathname="/about" aria-label="Navigation" />
     </div>
   </div>
@@ -51,8 +51,20 @@ export const WithExternalLinks: Story = () => (
   <Nav
     items={[
       { href: "/", label: "Home" },
-      { href: "/docs", label: "Docs", external: true, target: "_blank", rel: "noopener noreferrer" },
-      { href: "/blog", label: "Blog", external: true, target: "_blank", rel: "noopener noreferrer" },
+      {
+        href: "/docs",
+        label: "Docs",
+        external: true,
+        target: "_blank",
+        rel: "noopener noreferrer",
+      },
+      {
+        href: "/blog",
+        label: "Blog",
+        external: true,
+        target: "_blank",
+        rel: "noopener noreferrer",
+      },
       { href: "/contact", label: "Contact" },
     ]}
     pathname="/"
@@ -65,7 +77,7 @@ export const CustomStyling: Story = () => (
     items={defaultItems}
     pathname="/about"
     aria-label="Navigation"
-    className="bg-fg border border-border rounded-lg p-2"
+    className="bg-fg border-border rounded-lg border p-2"
   />
 );
 

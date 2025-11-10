@@ -3,7 +3,7 @@ import { AssetCard } from "./AssetCard";
 
 const MockImage = ({ alt, className }: { alt: string; className: string }) => (
   <div
-    className={`w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center ${className}`}
+    className={`bg-primary/20 flex h-8 w-8 items-center justify-center rounded-full ${className}`}
   >
     {alt.charAt(0)}
   </div>
@@ -16,14 +16,14 @@ export const Default: Story = () => (
 );
 
 export const Variants: Story = () => (
-  <div className="flex flex-col gap-4 max-w-xs">
+  <div className="flex max-w-xs flex-col gap-4">
     <AssetCard symbol="ETH" renderImage={MockImage} variant="default" />
     <AssetCard symbol="USDC" renderImage={MockImage} variant="accented" />
   </div>
 );
 
 export const DifferentTokens: Story = () => (
-  <div className="flex flex-col gap-4 max-w-xs">
+  <div className="flex max-w-xs flex-col gap-4">
     <AssetCard symbol="ETH" renderImage={MockImage} />
     <AssetCard symbol="USDC" renderImage={MockImage} />
     <AssetCard symbol="DAI" renderImage={MockImage} />
@@ -36,12 +36,12 @@ export const WithRealImage: Story = () => {
     <img
       src={`https://via.placeholder.com/32x32/41ca00/ffffff?text=${alt}`}
       alt={alt}
-      className={`w-8 h-8 rounded-full ${className}`}
+      className={`h-8 w-8 rounded-full ${className}`}
     />
   );
 
   return (
-    <div className="flex flex-col gap-4 max-w-xs">
+    <div className="flex max-w-xs flex-col gap-4">
       <AssetCard symbol="ETH" renderImage={ImageWithSrc} />
       <AssetCard symbol="USDC" renderImage={ImageWithSrc} />
     </div>
@@ -49,7 +49,7 @@ export const WithRealImage: Story = () => {
 };
 
 export const InGrid: Story = () => (
-  <div className="grid grid-cols-2 gap-4 max-w-md">
+  <div className="grid max-w-md grid-cols-2 gap-4">
     <AssetCard symbol="ETH" renderImage={MockImage} />
     <AssetCard symbol="USDC" renderImage={MockImage} />
     <AssetCard symbol="DAI" renderImage={MockImage} />

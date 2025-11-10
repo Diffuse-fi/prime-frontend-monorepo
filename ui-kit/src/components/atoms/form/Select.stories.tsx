@@ -21,7 +21,7 @@ export const Default: Story = () => (
 );
 
 export const Sizes: Story = () => (
-  <div className="flex flex-col gap-4 max-w-md">
+  <div className="flex max-w-md flex-col gap-4">
     <Select options={options} placeholder="Small select" size="sm" />
     <Select options={options} placeholder="Medium select" size="md" />
     <Select options={options} placeholder="Large select" size="lg" />
@@ -31,14 +31,14 @@ export const Sizes: Story = () => (
 export const Controlled: Story = () => {
   const [value, setValue] = useState("banana");
   return (
-    <div className="flex flex-col gap-4 max-w-md">
+    <div className="flex max-w-md flex-col gap-4">
       <Select
         options={options}
         value={value}
         onValueChange={setValue}
         placeholder="Select..."
       />
-      <p className="text-sm text-muted">Selected: {value}</p>
+      <p className="text-muted text-sm">Selected: {value}</p>
     </div>
   );
 };
@@ -48,7 +48,7 @@ export const WithIcons: Story = () => (
 );
 
 export const States: Story = () => (
-  <div className="flex flex-col gap-4 max-w-md">
+  <div className="flex max-w-md flex-col gap-4">
     <Select options={options} placeholder="Default state" />
     <Select options={options} placeholder="Error state" error />
     <Select options={options} placeholder="Disabled state" disabled />

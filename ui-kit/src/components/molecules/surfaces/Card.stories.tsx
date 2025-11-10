@@ -8,7 +8,7 @@ export const Default: Story = () => (
 );
 
 export const WithHeader: Story = () => (
-  <div className="grid gap-4 max-w-md">
+  <div className="grid max-w-md gap-4">
     <Card header="Card Title">
       <p>This is a card with a simple string header</p>
     </Card>
@@ -19,8 +19,8 @@ export const WithCustomHeader: Story = () => (
   <Card
     header={
       <div className="flex items-center justify-between">
-        <span className="font-bold text-lg">Custom Header</span>
-        <span className="text-sm text-muted">Action</span>
+        <span className="text-lg font-bold">Custom Header</span>
+        <span className="text-muted text-sm">Action</span>
       </div>
     }
   >
@@ -31,24 +31,24 @@ export const WithCustomHeader: Story = () => (
 export const WithComplexContent: Story = () => (
   <Card header="Statistics">
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <span className="text-muted">Total Value</span>
-        <span className="font-semibold text-lg">$1,234.56</span>
+        <span className="text-lg font-semibold">$1,234.56</span>
       </div>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <span className="text-muted">APY</span>
-        <span className="font-semibold text-lg text-success">12.5%</span>
+        <span className="text-success text-lg font-semibold">12.5%</span>
       </div>
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <span className="text-muted">Risk Level</span>
-        <span className="font-semibold text-lg text-warning">Medium</span>
+        <span className="text-warning text-lg font-semibold">Medium</span>
       </div>
     </div>
   </Card>
 );
 
 export const MultipleCards: Story = () => (
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
     <Card header="Card 1">
       <p>First card content</p>
     </Card>

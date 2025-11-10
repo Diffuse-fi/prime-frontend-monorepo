@@ -41,7 +41,7 @@ export const WithManyRows: Story = () => {
   ]);
 
   return (
-    <div className="overflow-x-auto max-h-96">
+    <div className="max-h-96 overflow-x-auto">
       <SimpleTable columns={sampleData.columns} rows={manyRows} />
     </div>
   );
@@ -68,7 +68,7 @@ export const WithCustomContent: Story = () => {
   const rows = [
     [
       <div key="1" className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded-full bg-primary/20" />
+        <div className="bg-primary/20 h-6 w-6 rounded-full" />
         <span>ETH</span>
       </div>,
       "1.234",
@@ -79,7 +79,7 @@ export const WithCustomContent: Story = () => {
     ],
     [
       <div key="2" className="flex items-center gap-2">
-        <div className="w-6 h-6 rounded-full bg-primary/20" />
+        <div className="bg-primary/20 h-6 w-6 rounded-full" />
         <span>USDC</span>
       </div>,
       "5,000.00",
