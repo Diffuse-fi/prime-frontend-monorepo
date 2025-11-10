@@ -1,0 +1,109 @@
+import type { Story } from "@ladle/react";
+import { TextWithTooltip } from "./TextWithTooltip";
+import { TooltipProvider } from "./Tooltip";
+
+export const Default: Story = () => (
+  <TooltipProvider>
+    <div className="p-20 flex justify-center">
+      <p className="text-body">
+        This text has a <TextWithTooltip text="tooltip" tooltip="Additional information" />{" "}
+        word.
+      </p>
+    </div>
+  </TooltipProvider>
+);
+
+export const InParagraph: Story = () => (
+  <TooltipProvider>
+    <div className="p-20 max-w-2xl">
+      <p className="text-body">
+        The{" "}
+        <TextWithTooltip
+          text="Annual Percentage Yield"
+          tooltip="APY represents the real rate of return on your investment over one year, taking into account the effect of compounding interest"
+        />{" "}
+        (APY) is calculated based on your deposits and the current lending rate. Your{" "}
+        <TextWithTooltip
+          text="health factor"
+          tooltip="A numeric representation of the safety of your deposited assets against the borrowed assets. If it falls below 1.0, your position may be liquidated."
+        />{" "}
+        should always remain above 1.0 to avoid liquidation.
+      </p>
+    </div>
+  </TooltipProvider>
+);
+
+export const Sides: Story = () => (
+  <TooltipProvider>
+    <div className="p-20 space-y-4">
+      <p>
+        Tooltip on <TextWithTooltip text="top" tooltip="Top tooltip" side="top" />
+      </p>
+      <p>
+        Tooltip on <TextWithTooltip text="right" tooltip="Right tooltip" side="right" />
+      </p>
+      <p>
+        Tooltip on <TextWithTooltip text="bottom" tooltip="Bottom tooltip" side="bottom" />
+      </p>
+      <p>
+        Tooltip on <TextWithTooltip text="left" tooltip="Left tooltip" side="left" />
+      </p>
+    </div>
+  </TooltipProvider>
+);
+
+export const LongTooltip: Story = () => (
+  <TooltipProvider>
+    <div className="p-20">
+      <p className="text-body">
+        Hover over{" "}
+        <TextWithTooltip
+          text="this term"
+          tooltip="This is a much longer explanation that provides detailed information about the concept. It wraps to multiple lines and can contain comprehensive details about what the term means and how it's used in the context of the application."
+        />{" "}
+        for more info.
+      </p>
+    </div>
+  </TooltipProvider>
+);
+
+export const MultipleInLine: Story = () => (
+  <TooltipProvider>
+    <div className="p-20 max-w-2xl">
+      <p className="text-body">
+        The{" "}
+        <TextWithTooltip
+          text="liquidation threshold"
+          tooltip="The percentage at which your loan will be eligible for liquidation"
+        />{" "}
+        is different from the{" "}
+        <TextWithTooltip
+          text="loan-to-value ratio"
+          tooltip="The ratio of your borrowed amount to the value of your collateral"
+        />
+        , and both affect your{" "}
+        <TextWithTooltip
+          text="risk level"
+          tooltip="A measure of how close you are to liquidation"
+        />
+        .
+      </p>
+    </div>
+  </TooltipProvider>
+);
+
+export const WithCustomStyling: Story = () => (
+  <TooltipProvider>
+    <div className="p-20">
+      <p className="text-body">
+        This has a{" "}
+        <TextWithTooltip
+          text="custom styled"
+          tooltip="Custom styling applied"
+          className="text-primary font-semibold"
+        />{" "}
+        tooltip text.
+      </p>
+    </div>
+  </TooltipProvider>
+);
