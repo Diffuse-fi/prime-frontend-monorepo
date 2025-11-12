@@ -124,7 +124,7 @@ src/components/atoms/buttons/Button.stories.tsx
 Each story file should export multiple story examples demonstrating different use cases:
 
 ```tsx
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Button } from "./Button";
 
 export default {
