@@ -127,6 +127,10 @@ Each story file should export multiple story examples demonstrating different us
 import type { Story } from "@ladle/react";
 import { Button } from "./Button";
 
+export default {
+  title: "Atoms/Buttons/Button",
+} satisfies StoryDefault;
+
 export const Default: Story = () => <Button>Click me</Button>;
 
 export const Variants: Story = () => (
