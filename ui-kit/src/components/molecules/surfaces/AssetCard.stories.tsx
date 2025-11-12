@@ -38,7 +38,7 @@ export const DifferentTokens: Story = () => (
 export const WithRealImage: Story = () => {
   const ImageWithSrc = ({ alt, className }: { alt: string; className: string }) => (
     <img
-      src={`https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png?text=${alt}`}
+      src="https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
       alt={alt}
       className={`h-8 w-8 rounded-full ${className}`}
     />
