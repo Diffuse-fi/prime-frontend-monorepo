@@ -82,3 +82,62 @@ npm run dev
 ```
 
 This will start a local development server and rebuild the package on any source code changes.
+
+### Component Development with Ladle
+
+This package uses [Ladle](https://ladle.dev/) as a lightweight component playground for developing and testing UI components in isolation.
+
+#### Running Ladle
+
+To start the Ladle development server:
+
+```bash
+npm run ladle
+```
+
+This will open Ladle at [http://localhost:61000/](http://localhost:61000/) where you can:
+
+- Browse all components organized by atomic design structure (atoms, molecules, organisms)
+- View different variants and states of each component
+- Toggle between light and dark themes
+- Test components interactively
+
+#### Building Ladle
+
+To build a static version of the component playground:
+
+```bash
+npm run ladle:build
+```
+
+The build output will be in the `build-ladle` directory.
+
+#### Adding Component Stories
+
+Component stories are located next to their respective components with a `.stories.tsx` extension. For example:
+
+```
+src/components/atoms/buttons/Button.tsx
+src/components/atoms/buttons/Button.stories.tsx
+```
+
+Each story file should export multiple story examples demonstrating different use cases:
+
+```tsx
+import type { Story, StoryDefault } from "@ladle/react";
+import { Button } from "./Button";
+
+export default {
+  title: "Atoms/Buttons/Button",
+} satisfies StoryDefault;
+
+export const Default: Story = () => <Button>Click me</Button>;
+
+export const Variants: Story = () => (
+  <div className="flex flex-col gap-4">
+    <Button variant="solid">Solid</Button>
+    <Button variant="ghost">Ghost</Button>
+    <Button variant="link">Link</Button>
+  </div>
+);
+```

@@ -21,6 +21,7 @@ out
 build
 dist
 !.github/**/build
+build-ladle
 
 # misc
 .DS_Store

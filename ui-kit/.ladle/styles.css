@@ -1,0 +1,6 @@
+@import "tailwindcss" source("./");
+
+@import "../src/theme/preset.css";
+
+@source "../src";
+@source "./**/*.{ts,tsx}";
