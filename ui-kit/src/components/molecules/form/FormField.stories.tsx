@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { FormField } from "./FormField";
 import { Input } from "@/atoms";
+
+export default {
+  title: "Molecules/Form/FormField",
+} satisfies StoryDefault;
 
 export const Default: Story = () => (
   <FormField label="Email">

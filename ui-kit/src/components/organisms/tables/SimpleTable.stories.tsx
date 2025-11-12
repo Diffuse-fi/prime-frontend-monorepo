@@ -1,5 +1,9 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { SimpleTable } from "./SimpleTable";
+
+export default {
+  title: "Organisms/Tables/SimpleTable",
+} satisfies StoryDefault;
 
 const sampleData = {
   columns: ["Name", "Email", "Role", "Status"],
@@ -24,11 +28,7 @@ export const DensityCompact: Story = () => (
 
 export const DensityComfortable: Story = () => (
   <div className="overflow-x-auto">
-    <SimpleTable
-      columns={sampleData.columns}
-      rows={sampleData.rows}
-      density="comfortable"
-    />
+    <SimpleTable columns={sampleData.columns} rows={sampleData.rows} density="comfy" />
   </div>
 );
 

@@ -1,7 +1,11 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Dialog } from "./Dialog";
 import { Button } from "@/atoms";
 import { useState } from "react";
+
+export default {
+  title: "Organisms/Dialog",
+} satisfies StoryDefault;
 
 export const Default: Story = () => (
   <Dialog title="Dialog Title" trigger={<Button>Open Dialog</Button>}>

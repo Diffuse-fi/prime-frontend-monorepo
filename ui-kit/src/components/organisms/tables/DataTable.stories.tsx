@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { DataTable } from "./DataTable";
 import { ColumnDef } from "@tanstack/react-table";
+
+export default {
+  title: "Organisms/Tables/DataTable",
+} satisfies StoryDefault;
 
 type Person = {
   id: number;
@@ -99,7 +103,7 @@ export const DensityCompact: Story = () => (
 
 export const DensityComfortable: Story = () => (
   <div className="overflow-x-auto">
-    <DataTable columns={columns} data={sampleData} density="comfortable" />
+    <DataTable columns={columns} data={sampleData} density="comfy" />
   </div>
 );
 

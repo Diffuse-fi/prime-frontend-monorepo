@@ -1,5 +1,9 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Skeleton } from "./Skeleton";
+
+export default {
+  title: "Atoms/Feedback/Skeleton",
+} satisfies StoryDefault;
 
 export const Default: Story = () => <Skeleton className="h-4 w-48" />;
 

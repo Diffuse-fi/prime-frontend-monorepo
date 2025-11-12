@@ -1,5 +1,9 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Nav, NavItem } from "./Nav";
+
+export default {
+  title: "Organisms/Nav",
+} satisfies StoryDefault;
 
 const defaultItems: NavItem[] = [
   { href: "/", label: "Home" },

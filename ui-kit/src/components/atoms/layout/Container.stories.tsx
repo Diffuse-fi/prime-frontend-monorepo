@@ -1,5 +1,9 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Container } from "./Container";
+
+export default {
+  title: "Atoms/Layout/Container",
+} satisfies StoryDefault;
 
 export const Default: Story = () => (
   <Container>

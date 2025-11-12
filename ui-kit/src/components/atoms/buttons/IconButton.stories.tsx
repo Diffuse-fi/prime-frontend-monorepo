@@ -1,5 +1,9 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { IconButton } from "./IconButton";
+
+export default {
+  title: "Atoms/Buttons/IconButton",
+} satisfies StoryDefault;
 
 export const Default: Story = () => <IconButton icon="🏠" aria-label="Home" />;
 

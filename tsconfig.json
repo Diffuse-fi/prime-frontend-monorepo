@@ -22,7 +22,8 @@
     "**/*.config.js",
     "**/.next/**",
     "**/.vercel/**",
-    "**/e2e/output"
+    "**/e2e/output",
+    "**/build-ladle/**"
   ],
   "references": [
     { "path": "sdk-js" },

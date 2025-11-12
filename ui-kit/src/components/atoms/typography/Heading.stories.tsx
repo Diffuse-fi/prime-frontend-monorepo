@@ -1,5 +1,9 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Heading } from "./Heading";
+
+export default {
+  title: "Atoms/Typography/Heading",
+} satisfies StoryDefault;
 
 export const Levels: Story = () => (
   <div className="space-y-4">

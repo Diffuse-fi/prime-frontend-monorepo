@@ -6,6 +6,7 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import packageJson from "./package.json" with { type: "json" };
 import fg from "fast-glob";
 import { readFileSync } from "node:fs";
+import tailwind from "@tailwindcss/vite";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -107,6 +108,7 @@ export default defineConfig(() => {
       tsconfigPath: resolve(__dirname, "tsconfig.build.json"),
     }),
     presetCssAsset(),
+    tailwind(),
   ];
 
   return {

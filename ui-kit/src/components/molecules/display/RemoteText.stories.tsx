@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { RemoteText } from "./RemoteText";
 import { useState } from "react";
+
+export default {
+  title: "Molecules/Display/RemoteText",
+} satisfies StoryDefault;
 
 export const Default: Story = () => <RemoteText text="Loaded text" />;
 

@@ -1,5 +1,9 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { CopyButton } from "./CopyButton";
+
+export default {
+  title: "Atoms/Buttons/CopyButton",
+} satisfies StoryDefault;
 
 export const Default: Story = () => <CopyButton textToCopy="Hello, World!" />;
 

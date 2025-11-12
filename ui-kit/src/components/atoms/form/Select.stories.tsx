@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Select } from "./Select";
 import { useState } from "react";
+
+export default {
+  title: "Atoms/Form/Select",
+} satisfies StoryDefault;
 
 const options = [
   { value: "apple", label: "Apple" },

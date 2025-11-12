@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { AssetInput } from "./AssetInput";
 import { useState } from "react";
+
+export default {
+  title: "Molecules/Form/AssetInput",
+} satisfies StoryDefault;
 
 const MockAssetImage = ({ size }: { size: "sm" | "md" | "lg" }) => {
   const sizeClass = size === "sm" ? "w-4 h-4" : size === "lg" ? "w-8 h-8" : "w-6 h-6";

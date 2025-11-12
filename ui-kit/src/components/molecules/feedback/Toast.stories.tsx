@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Toast } from "./Toast";
 import { useState } from "react";
+
+export default {
+  title: "Molecules/Feedback/Toast",
+} satisfies StoryDefault;
 
 export const Default: Story = () => {
   const [open, setOpen] = useState(true);

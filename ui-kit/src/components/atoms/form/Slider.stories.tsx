@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Slider } from "./Slider";
 import { useState } from "react";
+
+export default {
+  title: "Atoms/Form/Slider",
+} satisfies StoryDefault;
 
 export const Default: Story = () => <Slider defaultValue={[50]} max={100} step={1} />;
 

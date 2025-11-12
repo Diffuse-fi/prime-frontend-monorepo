@@ -1,5 +1,16 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Button } from "./Button";
+
+export default {
+  title: "Atoms/Buttons/Button",
+  decorators: [
+    Component => (
+      <div className="flex justify-center">
+        <Component />
+      </div>
+    ),
+  ],
+} satisfies StoryDefault;
 
 export const Default: Story = () => <Button>Default Button</Button>;
 

@@ -1,5 +1,9 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Badge } from "./Badge";
+
+export default {
+  title: "Atoms/Display/Badge",
+} satisfies StoryDefault;
 
 export const Default: Story = () => <Badge>Default</Badge>;
 

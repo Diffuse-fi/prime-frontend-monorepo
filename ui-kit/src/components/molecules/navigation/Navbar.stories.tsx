@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Navbar } from "./Navbar";
 import { Button } from "@/atoms";
+
+export default {
+  title: "Molecules/Navigation/Navbar",
+} satisfies StoryDefault;
 
 export const Default: Story = () => (
   <Navbar

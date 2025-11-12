@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { RadioGroup } from "./RadioGroup";
 import { useState } from "react";
+
+export default {
+  title: "Organisms/RadioGroup",
+} satisfies StoryDefault;
 
 export const Default: Story = () => (
   <RadioGroup defaultValue="option1">

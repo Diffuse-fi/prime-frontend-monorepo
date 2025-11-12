@@ -1,5 +1,9 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { ButtonLike } from "./ButtonLike";
+
+export default {
+  title: "Atoms/Buttons/ButtonLike",
+} satisfies StoryDefault;
 
 export const AsButton: Story = () => <ButtonLike>Default Button</ButtonLike>;
 

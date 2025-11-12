@@ -12,7 +12,8 @@
     "src/**/__tests__/**",
     "tests/**",
     "**/*.test-d.ts",
-    "**/*.vitest.*"
+    "**/*.vitest.*",
+    "**/*.stories.*"
   ],
   "extends": "./tsconfig.json"
 }

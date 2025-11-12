@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { TabsRoot, TabsList, TabsTrigger, TabsContent } from "./Tabs";
 import { useState } from "react";
+
+export default {
+  title: "Molecules/Navigation/Tabs",
+} satisfies StoryDefault;
 
 export const Default: Story = () => (
   <TabsRoot defaultValue="tab1">

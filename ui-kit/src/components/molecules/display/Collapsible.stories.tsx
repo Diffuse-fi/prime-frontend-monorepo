@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { UncontrolledCollapsible, ControlledCollapsible } from "./Collapsible";
 import { useState } from "react";
+
+export default {
+  title: "Molecules/Display/Collapsible",
+} satisfies StoryDefault;
 
 export const Uncontrolled: Story = () => (
   <UncontrolledCollapsible summary="Click to expand">

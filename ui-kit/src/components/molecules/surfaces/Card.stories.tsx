@@ -1,5 +1,9 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Card } from "./Card";
+
+export default {
+  title: "Molecules/Surfaces/Card",
+} satisfies StoryDefault;
 
 export const Default: Story = () => (
   <Card>

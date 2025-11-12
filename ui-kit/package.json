@@ -45,7 +45,7 @@
   ],
   "scripts": {
     "build": "concurrently \"vite build\" \"ladle build\" --success all",
-    "dev": "cross-env BUILD_WATCH=1 && vite build --watch",
+    "dev": "cross-env BUILD_WATCH=1 && concurrently \"vite build --watch\" \"ladle serve\" --kill-others --success last",
     "ladle": "ladle serve",
     "ladle:build": "ladle build",
     "test:unit": "vitest run --coverage",
@@ -53,7 +53,8 @@
   },
   "devDependencies": {
     "@ladle/react": "^5.1.1",
-    "@tailwindcss/cli": "^4.1.12",
+    "@tailwindcss/cli": "4.1.12",
+    "@tailwindcss/vite": "^4.1.12",
     "fast-glob": "^3.3.3",
     "jsdom-testing-mocks": "^1.15.2",
     "vite": "^7.1.2",

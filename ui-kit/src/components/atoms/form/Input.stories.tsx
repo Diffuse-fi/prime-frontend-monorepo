@@ -1,6 +1,10 @@
-import type { Story } from "@ladle/react";
+import type { Story, StoryDefault } from "@ladle/react";
 import { Input } from "./Input";
 import { useState } from "react";
+
+export default {
+  title: "Atoms/Form/Input",
+} satisfies StoryDefault;
 
 export const Default: Story = () => <Input placeholder="Enter text..." />;
 
