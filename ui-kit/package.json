@@ -44,7 +44,7 @@
     "NOTICE"
   ],
   "scripts": {
-    "build": "concurrently \"vite build\" \"ladle build\" --success all",
+    "build": "vite build && npm run ladle:build",
     "dev": "concurrently \"cross-env BUILD_WATCH=1 vite build --watch\" \"ladle serve\" --kill-others --success last",
     "ladle": "ladle serve",
     "ladle:build": "ladle build",
