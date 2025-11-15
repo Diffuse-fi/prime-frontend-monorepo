@@ -19,7 +19,7 @@ describe("<Dialog />", () => {
     expect(screen.getByText("Desc")).toBeInTheDocument();
     expect(screen.getByText("Body")).toBeInTheDocument();
 
-    expect(dlg).toHaveClass("max-w-xl");
+    expect(dlg).toHaveClass("fixed z-100");
   });
 
   it("uncontrolled: trigger opens and close button closes", async () => {

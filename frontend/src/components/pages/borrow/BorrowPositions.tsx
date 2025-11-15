@@ -113,7 +113,7 @@ export function BorrowPositions() {
             refetch();
           }}
           title={
-            <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center justify-between gap-3 sm:gap-4">
               <Heading level="3" className="font-semibold">
                 Manage position
               </Heading>
@@ -136,8 +136,10 @@ export function BorrowPositions() {
                   href={explorerUrl}
                   className="text-text-dimmed bg-muted/15 hover:bg-muted/20 flex h-8 items-center gap-3 rounded-md p-2 text-sm text-nowrap transition-colors"
                 >
-                  {formatEvmAddress(selectedPosition.vault.address)}
-                  <ExternalLink size={20} className="" />
+                  <div className="hidden sm:block">
+                    {formatEvmAddress(selectedPosition.vault.address)}
+                  </div>
+                  <ExternalLink size={20} />
                 </AppLink>
               )}
             </div>
