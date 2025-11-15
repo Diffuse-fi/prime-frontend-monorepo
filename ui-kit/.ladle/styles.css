@@ -4,3 +4,13 @@
 
 @source "../src";
 @source "./**/*.{ts,tsx}";
+
+@layer base {
+  html,
+  body {
+    background: var(--color-bg);
+    color: var(--color-text-primary);
+    position: relative;
+    cursor: default;
+  }
+}
