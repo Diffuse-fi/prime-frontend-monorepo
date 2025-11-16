@@ -29,6 +29,8 @@ const qKeys = {
       opt(ownerAddr),
       "pending-positions",
     ]),
+  closed: (chainId: number, ownerAddr?: string) =>
+    qk([ROOT, version, chainId, opt(ownerAddr), "closed-positions"]),
 };
 
 const LIMIT = pLimit(6);
@@ -120,6 +122,29 @@ export function useBorrowerPositions(allVaults: VaultFullInfo[]) {
     refetchIntervalInBackground: somePending,
   });
 
+  const closedQuery = useQuery({
+    enabled,
+    queryKey: qKeys.closed(chainId!, borrower),
+    queryFn: async () => {
+      // 1) Read closed positions from indexer DB
+      const { getClosedPositionsForUser } = await import("@diffuse/indexer/src/db/reads");
+      const rawPositions = await getClosedPositionsForUser(
+        borrower as Address,
+        100,
+        undefined,
+        chainId!
+      );
+
+      // 2) Map to frontend type
+      const { mapClosedPositions } = await import(
+        "@diffuse/indexer/src/api/mapClosedPosition"
+      );
+      return rawPositions.map(p => mapClosedPositions(p));
+    },
+    staleTime: 60_000,
+    gcTime: 10 * 60_000,
+  });
+
   return {
     positions: positionsQuery.data || [],
     pending: pendingQuery.data || [],
@@ -129,5 +154,10 @@ export function useBorrowerPositions(allVaults: VaultFullInfo[]) {
     refetchPositions: positionsQuery.refetch,
     error: positionsQuery.error as Error | null,
     pendingError: pendingQuery.error as Error | null,
+    closedPositions: closedQuery.data || [],
+    isClosedLoading: closedQuery.isLoading,
+    isClosedPending: closedQuery.isPending,
+    refetchClosed: closedQuery.refetch,
+    closedError: closedQuery.error as Error | null,
   };
 }

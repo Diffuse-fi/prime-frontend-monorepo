@@ -23,7 +23,8 @@
     "**/.next/**",
     "**/.vercel/**",
     "**/e2e/output",
-    "**/build-ladle/**"
+    "**/build-ladle/**",
+    "**/drizzle/**"
   ],
   "references": [
     { "path": "sdk-js" },

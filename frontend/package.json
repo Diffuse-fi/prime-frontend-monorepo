@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "npm run check:env && npm run build:safe-manifest && next build",
-    "build:deps": "npm run build -w ../ui-kit && npm run build -w ../sdk-js",
+    "build:deps": "concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" --success last && npm run build -w indexer",
     "build:safe-manifest": "tsx ./scripts/buildSafeManifest.ts",
     "check:env": "tsx ./scripts/validateEnv",
     "dev": "npm run build:safe-manifest && next dev --turbopack",
@@ -17,7 +17,11 @@
     "test:unit": "vitest run --coverage",
     "test:unit:watch": "vitest"
   },
+  "overrides": {
+    "@playwright/test": "1.56.1"
+  },
   "dependencies": {
+    "@diffuse/indexer": "0.1.0",
     "@diffuse/sdk-js": "0.2.0",
     "@diffuse/ui-kit": "0.1.0",
     "@next/third-parties": "15.5.3",

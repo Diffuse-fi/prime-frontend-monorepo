@@ -1,0 +1,47 @@
+{
+  "name": "@diffuse/indexer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Diffuse Prime indexer service",
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/diffuse-prime-indexer.mjs"
+      }
+    },
+    "./package.json": "./package.json",
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "import": "./dist/*.mjs"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config=drizzle.config.ts",
+    "db:push": "drizzle-kit push --config=drizzle.config.ts",
+    "db:studio": "drizzle-kit studio --config=drizzle.config.ts",
+    "dev:backfill": "tsx scripts/backfill-once.ts",
+    "dev:smoke": "tsx scripts/smoke.ts"
+  },
+  "devDependencies": {
+    "vite": "^7.1.2",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-tsconfig-paths": "^5.1.4"
+  },
+  "peerDependencies": {
+    "dotenv": "^16.6.1",
+    "drizzle-kit": "0.31.7",
+    "drizzle-orm": "0.44.7",
+    "pg": "8.16.3",
+    "viem": "2.33.3",
+    "zod": "4.1.8"
+  },
+  "engines": {
+    "node": "22.x"
+  }
+}

@@ -15,4 +15,6 @@ export enum SdkErrorCode {
 
   UNKNOWN = "UNKNOWN",
   ABORTED = "ABORTED",
+
+  ABI_ITEM_NOT_FOUND = "ABI_ITEM_NOT_FOUND",
 }
