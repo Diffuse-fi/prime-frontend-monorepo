@@ -1,44 +1,24 @@
-import { Address, getContract } from "viem";
+import { Address } from "viem";
 import { vaultAbi } from "./abi";
-import { resolveAddress } from "../../addresses/resolve";
 import { Init } from "@/types";
 import { normalizeError } from "@/errors/normalize";
 import { WalletRequiredError } from "@/errors/errors";
-import { ContractBase, GenericContractType, SdkRequestOptions } from "../shared";
+import { ContractBase, getContractInstance, SdkRequestOptions } from "../shared";
 import { raceSignal as abortable } from "race-signal";
-
-/** @internal */
-type VaultContract = GenericContractType<typeof vaultAbi>;
+import { getEvent } from "../events";
 
 const contractName = "Vault";
-
-/** @internal */
-function _addr(init: Init): Address {
-  return resolveAddress({
-    chainId: init.chainId,
-    contract: contractName,
-    addressOverride: init.address,
-  });
-}
-
-/** @internal */
-export function getVaultContract(init: Init): VaultContract {
-  const address = _addr(init);
-
-  const client = init.client.wallet
-    ? { public: init.client.public, wallet: init.client.wallet }
-    : { public: init.client.public };
-
-  return getContract({ address, abi: vaultAbi, client }) as VaultContract;
-}
+const EV_BORROWER_POSITION_ACTIVATED = getEvent(vaultAbi, "BorrowerPositionActivated");
 
 export class Vault extends ContractBase {
   constructor(init: Init) {
     super(init);
   }
 
-  private getContract(): VaultContract {
-    return getVaultContract(this.init);
+  private _contract = getContractInstance(this.init, contractName, vaultAbi);
+
+  getContract() {
+    return this._contract;
   }
 
   async deposit(args: [bigint, Address], { signal }: SdkRequestOptions = {}) {
@@ -452,4 +432,4 @@ export class Vault extends ContractBase {
   }
 }
 
-export { vaultAbi };
+export { vaultAbi, EV_BORROWER_POSITION_ACTIVATED };

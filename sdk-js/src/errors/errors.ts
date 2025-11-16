@@ -174,3 +174,13 @@ export class AbortedError extends SdkError {
     });
   }
 }
+
+export class AbiItemNotFoundError extends SdkError {
+  constructor(itemName: string, ctx?: ErrorCtx) {
+    super(SdkErrorCode.ABI_ITEM_NOT_FOUND, `ABI item "${itemName}" not found in ABI.`, {
+      userMessage: `ABI item "${itemName}" not found.`,
+      context: ctx,
+      name: "AbiItemNotFoundError",
+    });
+  }
+}

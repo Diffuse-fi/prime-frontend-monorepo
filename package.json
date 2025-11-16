@@ -7,7 +7,8 @@
   "workspaces": [
     "frontend",
     "ui-kit",
-    "sdk-js"
+    "sdk-js",
+    "indexer"
   ],
   "scripts": {
     "build": "concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" --success last && npm run build -w frontend",

@@ -44,3 +44,8 @@ eslint:
       - any-glob-to-any-file:
           - "eslint.config.*"
           - ".eslintignore"
+
+indexer:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "indexer/**"

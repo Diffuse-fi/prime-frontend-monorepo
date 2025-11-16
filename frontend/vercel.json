@@ -1,5 +1,11 @@
 {
   "buildCommand": "npm run build:deps && npm run build",
+  "crons": [
+    {
+      "path": "/api/indexer/sync",
+      "schedule": "*/10 * * * *"
+    }
+  ],
   "installCommand": "npm --prefix .. ci --audit=false",
   "$schema": "https://openapi.vercel.sh/vercel.json"
 }

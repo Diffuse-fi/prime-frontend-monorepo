@@ -1,41 +1,21 @@
-import { Address, getContract } from "viem";
+import { Address } from "viem";
 import { viewerAbi } from "./abi";
-import { resolveAddress } from "../../addresses/resolve";
 import { InitReadonly } from "@/types";
 import { normalizeError } from "@/errors/normalize";
-import { ContractBase, GenericContractType, SdkRequestOptions } from "../shared";
+import { ContractBase, getContractInstance, SdkRequestOptions } from "../shared";
 import { raceSignal as abortable } from "race-signal";
 
-/** @internal */
-type ViewerContract = GenericContractType<typeof viewerAbi>;
-
 const contractName = "Viewer";
-
-/** @internal */
-function _addr(init: InitReadonly): Address {
-  return resolveAddress({
-    chainId: init.chainId,
-    contract: contractName,
-    addressOverride: init.address,
-  });
-}
-
-/** @internal */
-export function getViewerContract(init: InitReadonly): ViewerContract {
-  const address = _addr(init);
-
-  const client = { public: init.client.public };
-
-  return getContract({ address, abi: viewerAbi, client }) as ViewerContract;
-}
 
 export class Viewer extends ContractBase {
   constructor(init: InitReadonly) {
     super(init);
   }
 
-  private getContract() {
-    return getViewerContract(this.init);
+  private _contract = getContractInstance(this.init, contractName, viewerAbi);
+
+  getContract() {
+    return this._contract;
   }
 
   async getVaults({ signal }: SdkRequestOptions = {}) {
@@ -82,7 +62,7 @@ export class Viewer extends ContractBase {
     try {
       const sim = await abortable(
         this.init.client.public.simulateContract({
-          address: _addr(this.init),
+          address: this.getContract().address,
           abi: viewerAbi,
           functionName: "previewEnterStrategy",
           args: [vault, strategyId],

@@ -77,3 +77,7 @@
 - name: eslint
   description: "Changes related to ESLint configuration or rules"
   color: "f0feff"
+
+- name: indexer
+  description: "Changes related to the indexer"
+  color: "34a853"
