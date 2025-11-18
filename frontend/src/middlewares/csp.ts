@@ -1,6 +1,6 @@
 import { type Finalizer } from "./utils";
 import { env } from "@/env";
-import { RPCs } from "@/lib/chains/config";
+import { RPCs } from "@/lib/chains/rpc";
 
 const isProd = process.env.NODE_ENV === "production";
 const httpsSecurityEnabled = !!env.ENABLE_HTTPS_SECURITY_HEADERS;

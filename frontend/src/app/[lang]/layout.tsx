@@ -27,6 +27,7 @@ import { JsonLd } from "@/components/misc/JsonLd";
 import { org, site } from "../jsonld";
 import { ReadonlyChainProvider } from "@/components/chains/ReadonlyChainProvider";
 import { ChainSyncEffects } from "@/components/chains/ChainSyncEffects";
+import { GlobalErrorTestHelper } from "@/components/misc/GlobalErrorTestHelper";
 
 export const dynamic = "force-static";
 export const revalidate = 600;
@@ -82,6 +83,7 @@ export default async function RootLayout({
             "@graph": [org, site],
           }}
         />
+        <GlobalErrorTestHelper />
         <TooltipProvider delayDuration={200}>
           <NextIntlClientProvider messages={messages} locale={lang}>
             <ConnectionStatusTracker />
