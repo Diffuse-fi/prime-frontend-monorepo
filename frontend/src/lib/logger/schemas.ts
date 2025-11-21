@@ -10,6 +10,7 @@ export const NamespaceSchema = z.enum([
   "app:borrow",
   "wallet",
   "chain",
+  "location",
 ]);
 
 export const LogLevelSchema = z.enum([

@@ -30,7 +30,7 @@ export function ManagePositionModal({
         onOpenChange(false);
       }}
       title={title}
-      size="lg"
+      size="md"
     >
       <Tabs defaultValue="close">
         <Tabs.List align="start">

@@ -8,3 +8,5 @@ export const loggerQry = createLogger("rq:query");
 
 export const walletLogger = createLogger("wallet");
 export const chainLogger = createLogger("chain");
+
+export const locationLogger = createLogger("location");

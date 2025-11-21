@@ -7,7 +7,7 @@ export function getEvent<ContractAbi extends Abi>(
 ) {
   const item = abi.find(item => item.type === "event" && item.name === name);
 
-  if (!item || item.type !== "event") {
+  if (!item) {
     throw new AbiItemNotFoundError(name, { abi });
   }
 
