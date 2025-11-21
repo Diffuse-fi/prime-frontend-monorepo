@@ -28,6 +28,7 @@ import { org, site } from "../jsonld";
 import { ReadonlyChainProvider } from "@/components/chains/ReadonlyChainProvider";
 import { ChainSyncEffects } from "@/components/chains/ChainSyncEffects";
 import { GlobalErrorTestHelper } from "@/components/misc/GlobalErrorTestHelper";
+import { LocationLogger } from "@/components/misc/LocationLogger";
 
 export const dynamic = "force-static";
 export const revalidate = 600;
@@ -87,6 +88,7 @@ export default async function RootLayout({
         <TooltipProvider delayDuration={200}>
           <NextIntlClientProvider messages={messages} locale={lang}>
             <ConnectionStatusTracker />
+            {env.NEXT_PUBLIC_DEBUG && <LocationLogger />}
             <ToastProvider
               maxToastsToShow={3}
               defaultPosition="bottom-right"
