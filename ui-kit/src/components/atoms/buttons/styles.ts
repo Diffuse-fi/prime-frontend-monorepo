@@ -18,7 +18,7 @@ export const button = tv({
     size: {
       xs: "text-xs px-2 py-1 rounded-xs",
       sm: "text-sm px-3 py-1.5 rounded-sm",
-      md: "rounded-md text-body px-4 py-2",
+      md: "rounded-md px-4 py-2",
       lg: "rounded-lg text-[18px] px-5 py-2.5 h-13",
     },
     icon: {

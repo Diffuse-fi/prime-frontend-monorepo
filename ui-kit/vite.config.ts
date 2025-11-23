@@ -7,6 +7,7 @@ import packageJson from "./package.json" with { type: "json" };
 import fg from "fast-glob";
 import { readFileSync } from "node:fs";
 import tailwind from "@tailwindcss/vite";
+import { externalizeDeps } from "vite-plugin-externalize-deps";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -57,6 +58,8 @@ const discoverComponentEntries = () => {
       "**/*.spec.*",
       "**/index.ts",
       "**/index.tsx",
+      "**/types.ts",
+      "**/*.stories.tsx",
     ],
   });
 
@@ -109,6 +112,10 @@ export default defineConfig(() => {
     }),
     presetCssAsset(),
     tailwind(),
+    externalizeDeps({
+      deps: true,
+      peerDeps: true,
+    }),
   ];
 
   return {
@@ -132,9 +139,6 @@ export default defineConfig(() => {
             return chunk.isEntry ? banner : "";
           },
         },
-        external: [
-          ...Object.keys(packageJson.peerDependencies || {}),
-        ],
         onwarn(warning, warn) {
           if (warning.code === "MODULE_LEVEL_DIRECTIVE") {
             return;

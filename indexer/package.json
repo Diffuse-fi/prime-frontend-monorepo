@@ -19,22 +19,24 @@
       "import": "./dist/*.mjs"
     }
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "NOTICE",
+    "migrations"
+  ],
   "scripts": {
     "build": "vite build",
+    "db:check": "drizzle-kit check --config=drizzle.config.ts",
     "db:generate": "drizzle-kit generate --config=drizzle.config.ts",
     "db:migrate": "drizzle-kit migrate --config=drizzle.config.ts",
-    "db:push": "drizzle-kit push --config=drizzle.config.ts",
     "db:studio": "drizzle-kit studio --config=drizzle.config.ts",
-    "dev:backfill": "tsx scripts/backfill-once.ts",
-    "dev:smoke": "tsx scripts/smoke.ts"
-  },
-  "devDependencies": {
-    "vite": "^7.1.2",
-    "vite-plugin-dts": "^4.5.4",
-    "vite-tsconfig-paths": "^5.1.4"
+    "dev": "vite build --watch",
+    "test:unit": "vitest run --coverage",
+    "test:unit:watch": "vitest"
   },
   "peerDependencies": {
-    "dotenv": "^16.6.1",
+    "@diffuse/sdk-js": "0.2.0",
     "drizzle-kit": "0.31.7",
     "drizzle-orm": "0.44.7",
     "pg": "8.16.3",

@@ -120,3 +120,20 @@ jobs:
       - name: Run UI Kit unit tests
         working-directory: ui-kit
         run: npm run test:unit
+
+  indexer-unit-tests:
+    name: Unit Tests / Indexer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v5
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          setup-node: true
+          audit: false
+
+      - name: Run Indexer unit tests
+        working-directory: indexer
+        run: npm run test:unit

@@ -1,3 +1,5 @@
+# Diffuse Prime JavaScript SDK
+
 ## Description
 
 This library serves as a ESM-only JavaScript wrapper for the Diffuse protocol, enabling developers to interact with the protocol's smart contracts and functionalities in a straightforward manner.

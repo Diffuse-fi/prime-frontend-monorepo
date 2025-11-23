@@ -3,21 +3,33 @@ import { vaultAbi } from "./abi";
 import { Init } from "@/types";
 import { normalizeError } from "@/errors/normalize";
 import { WalletRequiredError } from "@/errors/errors";
-import { ContractBase, getContractInstance, SdkRequestOptions } from "../shared";
+import {
+  ContractBase,
+  GenericContractType,
+  getContractInstance,
+  SdkRequestOptions,
+} from "../shared";
 import { raceSignal as abortable } from "race-signal";
 import { getEvent } from "../events";
 
 const contractName = "Vault";
-const EV_BORROWER_POSITION_ACTIVATED = getEvent(vaultAbi, "BorrowerPositionActivated");
+const EV_BORROWER_POSITION_ACTIVATED = getEvent(
+  vaultAbi,
+  "BorrowerPositionActivated",
+  contractName
+);
 
 export class Vault extends ContractBase {
   constructor(init: Init) {
     super(init);
   }
 
-  private _contract = getContractInstance(this.init, contractName, vaultAbi);
+  private _contract?: GenericContractType<typeof vaultAbi>;
 
-  getContract() {
+  private getContract() {
+    if (!this._contract) {
+      this._contract = getContractInstance(this.init, contractName, vaultAbi);
+    }
     return this._contract;
   }
 
