@@ -84,7 +84,7 @@ export default async function RootLayout({
             "@graph": [org, site],
           }}
         />
-        <GlobalErrorTestHelper />
+        {process.env.NODE_ENV !== "production" && <GlobalErrorTestHelper />}
         <TooltipProvider delayDuration={200}>
           <NextIntlClientProvider messages={messages} locale={lang}>
             <ConnectionStatusTracker />

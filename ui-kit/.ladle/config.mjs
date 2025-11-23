@@ -8,5 +8,5 @@ export default {
       defaultState: "dark",
     },
   },
-  viteConfig: "./vite.config.ts",
+  viteConfig: "./ladle.vite.config.ts",
 };

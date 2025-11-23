@@ -1,13 +1,8 @@
-# Diffuse Prime Frontend
+# Diffuse Prime Frontend App
 
 ## Description
 
-This is the frontend application for the Diffuse Prime protocol. It provides a user interface for interacting with the protocol's features, such as lending, borrowing, and managing positions. The application is built using Next.js and TypeScript. It utilizes the `@diffuse/sdk-js` library to interact with the Diffuse protocol's smart contracts and `@diffuse/ui-kit` for UI components.
-
-You can find more information about sdk and ui-kit in their respective directories:
-
-- [sdk-js](../sdk-js/README.md)
-- [ui-kit](../ui-kit/README.md)
+This is the frontend application for the Diffuse Prime protocol. It provides a user interface for interacting with the protocol's features, such as lending, borrowing, and managing positions. The application is built using Next.js and TypeScript.
 
 ## Environment setup
 

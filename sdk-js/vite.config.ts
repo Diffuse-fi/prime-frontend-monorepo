@@ -4,6 +4,7 @@ import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 import tsconfigPaths from "vite-tsconfig-paths";
 import packageJson from "./package.json" with { type: "json" };
+import { externalizeDeps } from "vite-plugin-externalize-deps";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -19,6 +20,10 @@ export default defineConfig(() => {
       rollupTypes: true,
       insertTypesEntry: true,
       tsconfigPath: resolve(__dirname, "tsconfig.build.json"),
+    }),
+    externalizeDeps({
+      deps: true,
+      peerDeps: true,
     }),
   ];
 
@@ -41,9 +46,6 @@ export default defineConfig(() => {
             return chunk.isEntry ? banner : "";
           },
         },
-        external: [
-          ...Object.keys(packageJson.peerDependencies || {}),
-        ],
       },
       terserOptions: {
         keep_classnames: true,

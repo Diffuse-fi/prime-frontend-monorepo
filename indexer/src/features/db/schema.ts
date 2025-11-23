@@ -10,6 +10,7 @@ import {
   pgEnum,
   primaryKey,
 } from "drizzle-orm/pg-core";
+import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 export const positionStatus = pgEnum("position_status", ["open", "closed"]);
 
@@ -25,9 +26,9 @@ export const vaults = pgTable(
     discoveredAt: timestamp("discovered_at", { withTimezone: false }).notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: false }).notNull(),
   },
-  t => ({
-    byChain: index("vaults_chain_idx").on(t.chainId),
-  })
+  t => [
+    index("vaults_chain_idx").on(t.chainId),
+  ]
 );
 
 export const events = pgTable(
@@ -44,10 +45,10 @@ export const events = pgTable(
     ts: timestamp("ts", { withTimezone: false }).notNull(),
     args: jsonb("args").notNull(),
   },
-  t => ({
-    byContractBlock: index("events_contract_block_idx").on(t.contract, t.blockNumber),
-    byNameTs: index("events_name_ts_idx").on(t.name, t.ts),
-  })
+  t => [
+    index("events_contract_block_idx").on(t.contract, t.blockNumber),
+    index("events_name_ts_idx").on(t.name, t.ts),
+  ]
 );
 
 export const checkpoints = pgTable(
@@ -57,9 +58,9 @@ export const checkpoints = pgTable(
     address: varchar("address", { length: 42 }).notNull(),
     lastProcessedBlock: bigint("last_processed_block", { mode: "number" }).notNull(),
   },
-  t => ({
-    pk: primaryKey({ columns: [t.chainId, t.address] }),
-  })
+  t => [
+    primaryKey({ columns: [t.chainId, t.address] }),
+  ]
 );
 
 export const positions = pgTable(
@@ -70,25 +71,21 @@ export const positions = pgTable(
     vault: varchar("vault", { length: 42 }).notNull(),
     user: varchar("user", { length: 42 }).notNull(),
     strategyId: bigint("strategy_id", { mode: "bigint" }).notNull(),
-
     asset: varchar("asset", { length: 42 }).notNull(),
     assetDecimals: integer("asset_decimals").notNull(),
-
     status: positionStatus("status").notNull().default("open"),
     openedAt: timestamp("opened_at", { withTimezone: false }).notNull(),
     closedAt: timestamp("closed_at", { withTimezone: false }),
-
     amountInRaw: numeric("amount_in_raw", { precision: 78, scale: 0 }),
     amountOutRaw: numeric("amount_out_raw", { precision: 78, scale: 0 }),
-
     closeTx: varchar("close_tx", { length: 66 }),
     closePriceUsd: numeric("close_price_usd", { precision: 38, scale: 18 }),
     pnlUsd: numeric("pnl_usd", { precision: 38, scale: 6 }),
   },
-  t => ({
-    byUserClosed: index("positions_user_closed_idx").on(t.user, t.status, t.closedAt),
-    byVaultUser: index("positions_vault_user_idx").on(t.vault, t.user),
-  })
+  t => [
+    index("positions_chain_vault_user_idx").on(t.chainId, t.vault, t.user),
+    index("positions_chain_vault_user_idx").on(t.chainId, t.vault, t.user),
+  ]
 );
 
 export const prices = pgTable(
@@ -99,7 +96,19 @@ export const prices = pgTable(
     tsMinute: timestamp("ts_minute", { withTimezone: false }).notNull(),
     priceUsd: numeric("price_usd", { precision: 38, scale: 18 }).notNull(),
   },
-  t => ({
-    pk: primaryKey({ columns: [t.asset, t.source, t.tsMinute] }),
-  })
+  t => [
+    index("prices_asset_source_tsmin_idx").on(t.asset, t.source, t.tsMinute),
+  ]
 );
+
+export const schema = {
+  positionStatus,
+  vaults,
+  events,
+  checkpoints,
+  positions,
+  prices,
+};
+
+export type IndexerSchema = typeof schema;
+export type IndexerDb = NodePgDatabase<IndexerSchema>;

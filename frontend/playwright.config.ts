@@ -75,7 +75,7 @@ export default defineConfig({
     ["list"],
   ],
   webServer: {
-    command: "npm run start",
+    command: "npm run dev",
     url: BASE_URL,
     reuseExistingServer: !isCI,
     stdout: "ignore",

@@ -11,19 +11,19 @@
     "indexer"
   ],
   "scripts": {
-    "build": "concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" --success last && npm run build -w frontend",
+    "build": "concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" \"npm run build -w indexer\" --success last && npm run build -w frontend",
     "check:format": "prettier --check .",
     "check:licenses": "tsx ./scripts/checkLicenses.ts",
     "check:packages-sync": "tsx ./scripts/checkPackagesSync.ts",
     "check:syncpack": "syncpack list-mismatches && syncpack lint-semver-ranges",
-    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w sdk-js\" \"npm run dev -w ui-kit\" --kill-others --success last",
+    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w sdk-js\" \"npm run dev -w ui-kit\" \"npm run dev -w indexer\" --kill-others --success last",
     "fix:syncpack": "syncpack fix-mismatches && syncpack set-semver-ranges",
     "format": "prettier --write .",
     "knip": "knip --production",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "setup": "npx --no-install allow-scripts && simple-git-hooks && npm run build",
     "syncpack:list": "syncpack list",
-    "test:unit": "concurrently \"npm run test:unit -w frontend\" \"npm run test:unit -w ui-kit\" \"npm run test:unit -w sdk-js\" --success all"
+    "test:unit": "concurrently \"npm run test:unit -w frontend\" \"npm run test:unit -w ui-kit\" \"npm run test:unit -w sdk-js\" \"npm run test:unit -w indexer\" --success all"
   },
   "simple-git-hooks": {
     "pre-commit": "npx --no-install lint-staged",
@@ -51,6 +51,7 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitest/coverage-v8": "^3.2.4",
     "@vitest/eslint-plugin": "^1.4.2",
     "concurrently": "^9.2.0",
     "cross-env": "^10.0.0",
@@ -72,6 +73,10 @@
     "syncpack": "13.0.4",
     "tsx": "^4.20.5",
     "typescript": "5.8.2",
+    "vite": "^7.1.2",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-externalize-deps": "^0.10.0",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
   },
   "engines": {

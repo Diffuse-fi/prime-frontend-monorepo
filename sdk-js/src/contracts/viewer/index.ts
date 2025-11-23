@@ -2,7 +2,12 @@ import { Address } from "viem";
 import { viewerAbi } from "./abi";
 import { InitReadonly } from "@/types";
 import { normalizeError } from "@/errors/normalize";
-import { ContractBase, getContractInstance, SdkRequestOptions } from "../shared";
+import {
+  ContractBase,
+  GenericContractType,
+  getContractInstance,
+  SdkRequestOptions,
+} from "../shared";
 import { raceSignal as abortable } from "race-signal";
 
 const contractName = "Viewer";
@@ -12,9 +17,12 @@ export class Viewer extends ContractBase {
     super(init);
   }
 
-  private _contract = getContractInstance(this.init, contractName, viewerAbi);
+  private _contract?: GenericContractType<typeof viewerAbi>;
 
-  getContract() {
+  private getContract() {
+    if (!this._contract) {
+      this._contract = getContractInstance(this.init, contractName, viewerAbi);
+    }
     return this._contract;
   }
 

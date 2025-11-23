@@ -7,10 +7,11 @@
   "type": "module",
   "scripts": {
     "build": "npm run check:env && npm run build:safe-manifest && next build",
-    "build:deps": "concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" --success last && npm run build -w indexer",
+    "build:deps": "concurrently \"npm run build -w ../ui-kit\" \"npm run build -w ../sdk-js\" --success last && npm run build -w ../indexer",
     "build:safe-manifest": "tsx ./scripts/buildSafeManifest.ts",
     "check:env": "tsx ./scripts/validateEnv",
     "dev": "npm run build:safe-manifest && next dev --turbopack",
+    "indexer:migrate": "tsx ./scripts/indexerMigrate.ts",
     "start": "npm run check:env && next start",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",

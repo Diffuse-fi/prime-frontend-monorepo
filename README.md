@@ -15,6 +15,7 @@ A monorepo for the **Diffuse Prime** frontend stack:
 - `frontend/`: The main frontend application built with Next.js.
 - `ui-kit/`: A shared UI component library built with React, Radix UI, and Tailwind CSS preset.
 - `sdk-js/`: A JavaScript SDK for interacting with the Diffuse Prime smart contracts.
+- `indexer/`: A backend service for indexing blockchain data.
 
 Each package has its own `README.md` file with more details about the specific package.
 
