@@ -29,6 +29,7 @@ const ROOT = "borrowPreview" as const;
 const version = QV.borrow;
 
 const WAD = 10n ** 18n;
+const LTV_WAD = 950_000_000_000_000_000n; // const 95%
 const mulWad = (x: bigint, y: bigint) => (x * y) / WAD;
 const divWad = (x: bigint, y: bigint) => (x * WAD) / y;
 
