@@ -4,6 +4,15 @@ description: "Builds the code in the repo"
 runs:
   using: "composite"
   steps:
+    - name: Restore Next.js cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ${{ github.workspace }}/frontend/.next/cache
+        key: ${{ runner.os }}-nextjs-frontend-${{ hashFiles('package-lock.json') }}-${{ hashFiles('frontend/**/*.ts', 'frontend/**/*.tsx', 'ui-kit/**/*.ts', 'ui-kit/**/*.tsx', 'sdk-js/**/*.ts', 'indexer/**/*.ts') }}
+        restore-keys: |
+          ${{ runner.os }}-nextjs-frontend-${{ hashFiles('package-lock.json') }}-
+
     - name: Build
       run: npm run build
       shell: bash
