@@ -1,8 +1,6 @@
-import { DbConfig, DbConfigSchema } from "./config";
+import { DbConfig } from "./config";
 
 export function buildConnectionString(dbConfig: DbConfig): string {
-  DbConfigSchema.parse(dbConfig);
-
   const user = encodeURIComponent(dbConfig.user);
   const password = encodeURIComponent(dbConfig.password);
   const host = dbConfig.host;

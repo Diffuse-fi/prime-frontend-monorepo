@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { IndexerDb, checkpoints, events, vaults, positions, prices } from "./schema";
 
 export class IndexerStorage {
@@ -49,12 +49,12 @@ export class IndexerStorage {
       .onConflictDoUpdate({
         target: vaults.id,
         set: {
-          chainId: vaults.chainId,
-          vault: vaults.vault,
-          asset: vaults.asset,
-          symbol: vaults.symbol,
-          decimals: vaults.decimals,
-          updatedAt: vaults.updatedAt,
+          chainId: sql`EXCLUDED.chain_id`,
+          vault: sql`EXCLUDED.vault`,
+          asset: sql`EXCLUDED.asset`,
+          symbol: sql`EXCLUDED.symbol`,
+          decimals: sql`EXCLUDED.decimals`,
+          updatedAt: sql`EXCLUDED.updated_at`,
         },
       });
   }
@@ -67,13 +67,13 @@ export class IndexerStorage {
       .onConflictDoUpdate({
         target: positions.id,
         set: {
-          status: positions.status,
-          closedAt: positions.closedAt,
-          amountInRaw: positions.amountInRaw,
-          amountOutRaw: positions.amountOutRaw,
-          closeTx: positions.closeTx,
-          closePriceUsd: positions.closePriceUsd,
-          pnlUsd: positions.pnlUsd,
+          status: sql`EXCLUDED.status`,
+          closedAt: sql`EXCLUDED.closed_at`,
+          amountInRaw: sql`EXCLUDED.amount_in_raw`,
+          amountOutRaw: sql`EXCLUDED.amount_out_raw`,
+          closeTx: sql`EXCLUDED.close_tx`,
+          closePriceUsd: sql`EXCLUDED.close_price_usd`,
+          pnlUsd: sql`EXCLUDED.pnl_usd`,
         },
       });
   }
@@ -121,7 +121,7 @@ export class IndexerStorage {
       .values(rows)
       .onConflictDoUpdate({
         target: [prices.asset, prices.source, prices.tsMinute],
-        set: { priceUsd: prices.priceUsd },
+        set: { priceUsd: sql`EXCLUDED.price_usd` },
       });
   }
 

@@ -84,7 +84,6 @@ export const positions = pgTable(
   },
   t => [
     index("positions_chain_vault_user_idx").on(t.chainId, t.vault, t.user),
-    index("positions_chain_vault_user_idx").on(t.chainId, t.vault, t.user),
   ]
 );
 
@@ -97,7 +96,7 @@ export const prices = pgTable(
     priceUsd: numeric("price_usd", { precision: 38, scale: 18 }).notNull(),
   },
   t => [
-    index("prices_asset_source_tsmin_idx").on(t.asset, t.source, t.tsMinute),
+    primaryKey({ columns: [t.asset, t.source, t.tsMinute] }),
   ]
 );
 

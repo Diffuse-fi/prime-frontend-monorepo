@@ -1,9 +1,12 @@
-import path from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { createDb, DbConfig } from "./features/db";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 function getMigrationsFolder(): string {
-  return path.join(__dirname, "../migrations");
+  return join(__dirname, "../migrations");
 }
 
 export async function runIndexerMigrations(config: DbConfig) {

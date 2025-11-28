@@ -1,4 +1,3 @@
-import "server-only";
 import { mainnet, sonic } from "viem/chains";
 import { createIndexer } from "@diffuse/indexer";
 import { env } from "@/env";

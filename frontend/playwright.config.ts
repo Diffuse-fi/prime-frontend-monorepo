@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
-import dotenvFlow from "dotenv-flow";
+import dotenv from "dotenv";
 
-dotenvFlow.config({ node_env: "e2e" });
+dotenv.config({ path: ".env.e2e" });
 
 const isCI = /^(1|true)$/i.test(process.env.CI ?? "");
 
@@ -75,7 +75,7 @@ export default defineConfig({
     ["list"],
   ],
   webServer: {
-    command: "npm run dev",
+    command: isCI ? "npm run start" : "npm run dev",
     url: BASE_URL,
     reuseExistingServer: !isCI,
     stdout: "ignore",

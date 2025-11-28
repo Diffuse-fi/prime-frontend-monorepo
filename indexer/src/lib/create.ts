@@ -20,11 +20,11 @@ const IndexerConfigSchema = z.object({
           id: z.number(),
           name: z.string(),
         })
-        .loose()
+        .passthrough()
     )
     .nonempty(),
-  rpcUrls: z.record(z.number(), z.string()),
-  startBlocks: z.record(z.number(), z.union([z.bigint(), z.number()])).optional(),
+  rpcUrls: z.record(z.coerce.number(), z.string()),
+  startBlocks: z.record(z.coerce.number(), z.union([z.bigint(), z.number()])).optional(),
   db: DbConfigSchema,
 });
 
@@ -32,7 +32,7 @@ export function createIndexer(config: IndexerConfig): Indexer {
   IndexerConfigSchema.parse(config);
 
   const { db: dbConfig, chains, rpcUrls, startBlocks } = config;
-  const { db } = createDb(dbConfig);
+  const { db, pool } = createDb(dbConfig);
   const storage = new IndexerStorage(db);
 
   const runtimes = new Map<number, ChainRuntime>();
@@ -53,5 +53,6 @@ export function createIndexer(config: IndexerConfig): Indexer {
     db,
     storage,
     runtimes,
+    pool,
   });
 }
