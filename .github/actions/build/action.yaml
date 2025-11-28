@@ -9,7 +9,7 @@ runs:
       with:
         path: |
           ${{ github.workspace }}/frontend/.next/cache
-        key: ${{ runner.os }}-nextjs-frontend-${{ hashFiles('package-lock.json') }}-${{ hashFiles('frontend/**/*.ts', 'frontend/**/*.tsx', 'ui-kit/**/*.ts', 'ui-kit/**/*.tsx', 'sdk-js/**/*.ts', 'indexer/**/*.ts') }}
+        key: ${{ runner.os }}-nextjs-frontend-${{ hashFiles('package-lock.json') }}-${{ hashFiles('frontend/**/*.ts', 'frontend/**/*.tsx', 'frontend/next.config.ts', 'ui-kit/**/*.ts', 'ui-kit/**/*.tsx', 'sdk-js/**/*.ts', 'indexer/**/*.ts') }}
         restore-keys: |
           ${{ runner.os }}-nextjs-frontend-${{ hashFiles('package-lock.json') }}-
 

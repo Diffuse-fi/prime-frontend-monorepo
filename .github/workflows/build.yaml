@@ -3,7 +3,9 @@ name: Build
 on:
   pull_request:
   workflow_dispatch:
-  # push: we actully don't need to test it on main because Vercel won't update prod without building
+  push:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
