@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenMetaList } from "@/lib/assets/assetsMeta";
 import { QuerySchema } from "./validations";
+import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "edge";
 
@@ -31,6 +32,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (err) {
+    Sentry.captureException(err);
     return NextResponse.json({ error: (err as Error).message }, { status: 500 });
   }
 }

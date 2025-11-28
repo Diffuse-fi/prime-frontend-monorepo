@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { indexer } from "@/lib/indexer";
 import { env } from "@/env";
+import * as Sentry from "@sentry/nextjs";
+import { safeEqual } from "@/lib/security/constantTime";
 
 export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
-  if (!env.CRON_SECRET || authHeader !== `Bearer ${env.CRON_SECRET}`) {
-    return new Response("Unauthorized", {
-      status: 401,
-    });
+
+  if (!env.CRON_SECRET) {
+    return new Response("Server misconfigured", { status: 500 });
+  }
+
+  const expected = `Bearer ${env.CRON_SECRET}`;
+  if (!safeEqual(authHeader, expected)) {
+    return new Response("Unauthorized", { status: 401 });
   }
 
   const isVercelProd = env.VERCEL_ENV === "production";
@@ -22,10 +28,9 @@ export async function GET(req: NextRequest) {
   }
 
   if (!indexer) {
-    return NextResponse.json(
-      { status: "error", message: "Indexer not initialized" },
-      { status: 500 }
-    );
+    const message = "Indexer not initialized";
+    Sentry.captureMessage(message);
+    return NextResponse.json({ status: "error", message }, { status: 500 });
   }
 
   try {
@@ -33,6 +38,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ status: "ok" });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
+    Sentry.captureException(e);
     return NextResponse.json({ status: "error", message }, { status: 500 });
   }
 }

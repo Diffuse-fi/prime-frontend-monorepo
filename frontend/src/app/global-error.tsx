@@ -49,7 +49,9 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               {process.env.NODE_ENV !== "production" && (
                 <div className="border-border bg-fg/5 text-muted-foreground w-full max-w-lg rounded-xl border px-4 py-3 text-left font-mono text-xs">
                   <div className="mb-1 font-semibold">Debug info:</div>
-                  {error.message && <p className="mb-1 break-words">{error.message}</p>}
+                  {error.message?.trim() && (
+                    <p className="mb-1 break-words">{error.message}</p>
+                  )}
                   {error.digest && (
                     <p className="text-muted text-sm">Error ID: {error.digest}</p>
                   )}

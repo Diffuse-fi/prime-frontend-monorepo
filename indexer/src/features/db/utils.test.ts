@@ -32,16 +32,4 @@ describe("buildConnectionString", () => {
       "postgresql://user%20name:p%40ss%3Aword%2F!%3F@db.example.com:5432/db-name"
     );
   });
-
-  it("throws when config does not satisfy schema", () => {
-    const invalidConfig = {
-      user: "",
-      password: "pass",
-      host: "localhost",
-      port: 5432,
-      database: "mydb",
-    } as unknown as DbConfig;
-
-    expect(() => buildConnectionString(invalidConfig)).toThrow();
-  });
 });

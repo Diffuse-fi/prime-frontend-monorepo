@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { runIndexerMigrations } from "@diffuse/indexer";
 import { indexerDbConfig } from "@/lib/indexer";
 

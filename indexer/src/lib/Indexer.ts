@@ -1,26 +1,44 @@
 import type { IndexerDb, IndexerStorage } from "@/features/db";
 import type { ChainRuntime } from "@/features/runtime";
+import { Pool } from "pg";
 
 export type IndexerInit = {
   db: IndexerDb;
   storage: IndexerStorage;
   runtimes: Map<number, ChainRuntime>;
+  pool?: Pool;
 };
 
 export class Indexer {
   readonly db: IndexerDb;
   readonly storage: IndexerStorage;
   readonly runtimes: Map<number, ChainRuntime>;
+  private readonly pool?: Pool;
 
   constructor(init: IndexerInit) {
     this.db = init.db;
     this.storage = init.storage;
     this.runtimes = init.runtimes;
+    this.pool = init.pool;
   }
 
   async syncAll() {
-    for (const runtime of this.runtimes.values()) {
-      await this.syncChain(runtime);
+    const runtimes = Array.from(this.runtimes.values());
+
+    const results = await Promise.allSettled(
+      runtimes.map(runtime => this.syncChain(runtime))
+    );
+
+    for (let i = 0; i < results.length; i++) {
+      const result = results[i];
+      const runtime = runtimes[i];
+
+      if (result.status === "rejected") {
+        console.error(
+          `[Indexer] Failed to sync chain ${runtime.chain.id}`,
+          result.reason
+        );
+      }
     }
   }
 
@@ -35,7 +53,7 @@ export class Indexer {
 
     const fromBlock =
       checkpoint && typeof checkpoint.lastProcessedBlock === "number"
-        ? BigInt(checkpoint.lastProcessedBlock + 1)
+        ? BigInt(checkpoint.lastProcessedBlock) + 1n
         : runtime.startBlock;
 
     const toBlock = latestBlock;
@@ -62,5 +80,11 @@ export class Indexer {
       checkpointAddress,
       Number(toBlock)
     );
+  }
+
+  async shutdown() {
+    if (this.pool) {
+      await this.pool.end();
+    }
   }
 }

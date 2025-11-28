@@ -2,6 +2,7 @@ import type { NextRequest, ImageResponseOptions } from "next/server";
 import { ImageResponse } from "next/og";
 import { QuerySchema } from "./validations";
 import { env } from "@/env";
+import * as Sentry from "@sentry/nextjs";
 
 export const runtime = "edge";
 
@@ -109,7 +110,7 @@ export async function GET(req: NextRequest) {
       }
     );
   } catch (e) {
-    console.error(e);
+    Sentry.captureException(e);
     return new Response(`Failed to generate the image`, {
       status: 500,
     });

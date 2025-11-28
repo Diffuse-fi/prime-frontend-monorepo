@@ -1,0 +1,439 @@
+{
+  "dialect": "postgresql",
+  "enums": {
+    "public.position_status": {
+      "name": "position_status",
+      "schema": "public",
+      "values": [
+        "open",
+        "closed"
+      ]
+    }
+  },
+  "id": "a0e0b63e-1e37-4be8-bc9d-0b15101fa4cc",
+  "policies": {},
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "roles": {},
+  "schemas": {},
+  "sequences": {},
+  "tables": {
+    "public.checkpoints": {
+      "checkConstraints": {},
+      "columns": {
+        "address": {
+          "name": "address",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "varchar(42)"
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "last_processed_block": {
+          "name": "last_processed_block",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "bigint"
+        }
+      },
+      "compositePrimaryKeys": {
+        "checkpoints_chain_id_address_pk": {
+          "columns": [
+            "chain_id",
+            "address"
+          ],
+          "name": "checkpoints_chain_id_address_pk"
+        }
+      },
+      "foreignKeys": {},
+      "indexes": {},
+      "isRLSEnabled": false,
+      "name": "checkpoints",
+      "policies": {},
+      "schema": "",
+      "uniqueConstraints": {}
+    },
+    "public.events": {
+      "checkConstraints": {},
+      "columns": {
+        "args": {
+          "name": "args",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "jsonb"
+        },
+        "block_hash": {
+          "name": "block_hash",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "varchar(66)"
+        },
+        "block_number": {
+          "name": "block_number",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "bigint"
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "contract": {
+          "name": "contract",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "varchar(42)"
+        },
+        "id": {
+          "name": "id",
+          "notNull": true,
+          "primaryKey": true,
+          "type": "varchar(128)"
+        },
+        "log_index": {
+          "name": "log_index",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "name": {
+          "name": "name",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "varchar(64)"
+        },
+        "ts": {
+          "name": "ts",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "timestamp"
+        },
+        "tx_hash": {
+          "name": "tx_hash",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "varchar(66)"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "foreignKeys": {},
+      "indexes": {
+        "events_contract_block_idx": {
+          "columns": [
+            {
+              "asc": true,
+              "expression": "contract",
+              "isExpression": false,
+              "nulls": "last"
+            },
+            {
+              "asc": true,
+              "expression": "block_number",
+              "isExpression": false,
+              "nulls": "last"
+            }
+          ],
+          "concurrently": false,
+          "isUnique": false,
+          "method": "btree",
+          "name": "events_contract_block_idx",
+          "with": {}
+        },
+        "events_name_ts_idx": {
+          "columns": [
+            {
+              "asc": true,
+              "expression": "name",
+              "isExpression": false,
+              "nulls": "last"
+            },
+            {
+              "asc": true,
+              "expression": "ts",
+              "isExpression": false,
+              "nulls": "last"
+            }
+          ],
+          "concurrently": false,
+          "isUnique": false,
+          "method": "btree",
+          "name": "events_name_ts_idx",
+          "with": {}
+        }
+      },
+      "isRLSEnabled": false,
+      "name": "events",
+      "policies": {},
+      "schema": "",
+      "uniqueConstraints": {}
+    },
+    "public.positions": {
+      "checkConstraints": {},
+      "columns": {
+        "amount_in_raw": {
+          "name": "amount_in_raw",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "numeric(78, 0)"
+        },
+        "amount_out_raw": {
+          "name": "amount_out_raw",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "numeric(78, 0)"
+        },
+        "asset": {
+          "name": "asset",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "varchar(42)"
+        },
+        "asset_decimals": {
+          "name": "asset_decimals",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "close_price_usd": {
+          "name": "close_price_usd",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "numeric(38, 18)"
+        },
+        "close_tx": {
+          "name": "close_tx",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "varchar(66)"
+        },
+        "closed_at": {
+          "name": "closed_at",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "timestamp"
+        },
+        "id": {
+          "name": "id",
+          "notNull": true,
+          "primaryKey": true,
+          "type": "varchar(160)"
+        },
+        "opened_at": {
+          "name": "opened_at",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "timestamp"
+        },
+        "pnl_usd": {
+          "name": "pnl_usd",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "numeric(38, 6)"
+        },
+        "status": {
+          "default": "'open'",
+          "name": "status",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "position_status",
+          "typeSchema": "public"
+        },
+        "strategy_id": {
+          "name": "strategy_id",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "bigint"
+        },
+        "user": {
+          "name": "user",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "varchar(42)"
+        },
+        "vault": {
+          "name": "vault",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "varchar(42)"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "foreignKeys": {},
+      "indexes": {
+        "positions_chain_vault_user_idx": {
+          "columns": [
+            {
+              "asc": true,
+              "expression": "chain_id",
+              "isExpression": false,
+              "nulls": "last"
+            },
+            {
+              "asc": true,
+              "expression": "vault",
+              "isExpression": false,
+              "nulls": "last"
+            },
+            {
+              "asc": true,
+              "expression": "user",
+              "isExpression": false,
+              "nulls": "last"
+            }
+          ],
+          "concurrently": false,
+          "isUnique": false,
+          "method": "btree",
+          "name": "positions_chain_vault_user_idx",
+          "with": {}
+        }
+      },
+      "isRLSEnabled": false,
+      "name": "positions",
+      "policies": {},
+      "schema": "",
+      "uniqueConstraints": {}
+    },
+    "public.prices": {
+      "checkConstraints": {},
+      "columns": {
+        "asset": {
+          "name": "asset",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "varchar(42)"
+        },
+        "price_usd": {
+          "name": "price_usd",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "numeric(38, 18)"
+        },
+        "source": {
+          "name": "source",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "varchar(32)"
+        },
+        "ts_minute": {
+          "name": "ts_minute",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "timestamp"
+        }
+      },
+      "compositePrimaryKeys": {
+        "prices_asset_source_ts_minute_pk": {
+          "columns": [
+            "asset",
+            "source",
+            "ts_minute"
+          ],
+          "name": "prices_asset_source_ts_minute_pk"
+        }
+      },
+      "foreignKeys": {},
+      "indexes": {},
+      "isRLSEnabled": false,
+      "name": "prices",
+      "policies": {},
+      "schema": "",
+      "uniqueConstraints": {}
+    },
+    "public.vaults": {
+      "checkConstraints": {},
+      "columns": {
+        "asset": {
+          "name": "asset",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "varchar(42)"
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "decimals": {
+          "name": "decimals",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "integer"
+        },
+        "discovered_at": {
+          "name": "discovered_at",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "timestamp"
+        },
+        "id": {
+          "name": "id",
+          "notNull": true,
+          "primaryKey": true,
+          "type": "varchar(66)"
+        },
+        "symbol": {
+          "name": "symbol",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "varchar(16)"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "notNull": true,
+          "primaryKey": false,
+          "type": "timestamp"
+        },
+        "vault": {
+          "name": "vault",
+          "notNull": false,
+          "primaryKey": false,
+          "type": "varchar(42)"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "foreignKeys": {},
+      "indexes": {
+        "vaults_chain_idx": {
+          "columns": [
+            {
+              "asc": true,
+              "expression": "chain_id",
+              "isExpression": false,
+              "nulls": "last"
+            }
+          ],
+          "concurrently": false,
+          "isUnique": false,
+          "method": "btree",
+          "name": "vaults_chain_idx",
+          "with": {}
+        }
+      },
+      "isRLSEnabled": false,
+      "name": "vaults",
+      "policies": {},
+      "schema": "",
+      "uniqueConstraints": {}
+    }
+  },
+  "version": "7",
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
