@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as SelectpPimitive from "@radix-ui/react-select";
+import { Select as SelectpPimitive } from "radix-ui";
 import { ChevronDown } from "lucide-react";
 import { cn, tv } from "@/lib";
 import { inputRoot } from "./inputStyles";

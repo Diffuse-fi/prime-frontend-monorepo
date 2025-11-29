@@ -27,7 +27,7 @@ const GTM_OR_GA_ID = /^(GTM-[A-Z0-9]+|G-[A-Z0-9]+)$/i;
 export const env = createEnv({
   emptyStringAsUndefined: true,
   server: {
-    ORIGIN: z.url(),
+    ORIGIN: z.string().url(),
 
     SENTRY_AUTH_TOKEN: z.string().min(1).optional(),
     SENTRY_ORGANIZATION: z.string().min(1).optional(),
@@ -60,7 +60,7 @@ export const env = createEnv({
 
     NEXT_PUBLIC_ENABLE_TRACKING: zBool.optional(),
 
-    NEXT_PUBLIC_SENTRY_DSN: z.url().optional(),
+    NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
     NEXT_PUBLIC_ENABLE_SENTRY: zBool.optional(),
 
     NEXT_PUBLIC_APP_DESCRIPTION: z.string().min(1),

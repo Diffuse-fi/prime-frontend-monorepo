@@ -26,7 +26,7 @@
     "@diffuse/sdk-js": "0.2.0",
     "@diffuse/ui-kit": "0.1.0",
     "@next/third-parties": "15.5.3",
-    "@rainbow-me/rainbowkit": "2.2.8",
+    "@rainbow-me/rainbowkit": "2.2.9",
     "@sentry/nextjs": "10.5.0",
     "@t3-oss/env-nextjs": "0.13.8",
     "@tailwindcss/postcss": "4.1.12",
@@ -54,8 +54,8 @@
     "truncate-eth-address": "1.0.2",
     "ts-pattern": "5.8.0",
     "use-is-mounted-ref": "1.5.0",
-    "viem": "2.33.3",
-    "wagmi": "2.16.3",
+    "viem": "2.38.5",
+    "wagmi": "2.19.4",
     "zod": "3.25.76"
   },
   "devDependencies": {

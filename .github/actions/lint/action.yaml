@@ -5,7 +5,7 @@ runs:
   using: "composite"
   steps:
     - name: Lint
-      run: npm run lint
+      run: npm run lint -- --debug
       shell: bash
 
     - name: Check code formatting

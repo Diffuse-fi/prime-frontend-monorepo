@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as TabsPrimitive from "@radix-ui/react-tabs";
+import { Tabs as TabsPrimitive } from "radix-ui";
 import { tv, type VariantProps } from "@/lib";
 import { cn } from "@/lib";
 
