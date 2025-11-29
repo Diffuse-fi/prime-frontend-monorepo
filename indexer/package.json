@@ -42,7 +42,7 @@
   },
   "peerDependencies": {
     "@diffuse/sdk-js": "0.2.0",
-    "viem": "2.33.3",
+    "viem": "2.38.5",
     "zod": "3.25.76"
   },
   "engines": {
