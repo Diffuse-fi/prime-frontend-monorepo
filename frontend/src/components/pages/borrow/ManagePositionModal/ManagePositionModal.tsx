@@ -3,6 +3,7 @@
 import { AssetInfo } from "@/lib/assets/validations";
 import { BorrowerPosition } from "@/lib/core/types";
 import { Dialog, Tabs } from "@diffuse/ui-kit";
+import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 import { CancelPosition } from "./CancelPosition";
 
@@ -23,6 +24,7 @@ export function ManagePositionModal({
   onPositionClosure,
   selectedPosition,
 }: ManagePositionModalProps) {
+  const t = useTranslations("borrow.managePositionModal");
   return (
     <Dialog
       open={open}
@@ -35,12 +37,12 @@ export function ManagePositionModal({
       <Tabs defaultValue="close">
         <Tabs.List align="start">
           <Tabs.Trigger value="collateral" disabled>
-            Collateral
+            {t("collateral")}
           </Tabs.Trigger>
           <Tabs.Trigger value="leverage" disabled>
-            Leverage
+            {t("leverage")}
           </Tabs.Trigger>
-          <Tabs.Trigger value="close">Close Position</Tabs.Trigger>
+          <Tabs.Trigger value="close">{t("closePosition")}</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="close" inset>
           <CancelPosition

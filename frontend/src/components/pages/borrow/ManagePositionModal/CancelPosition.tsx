@@ -4,6 +4,7 @@ import { useLocalStorage } from "@/lib/misc/useLocalStorage";
 import { toast } from "@/lib/toast";
 import { Button, Heading } from "@diffuse/ui-kit";
 import { TriangleAlert } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { SlippageInput } from "../SlippageInput";
 
 interface CancelPositionProps {
@@ -15,6 +16,7 @@ export function CancelPosition({
   onPositionClosure,
   selectedPosition,
 }: CancelPositionProps) {
+  const t = useTranslations("borrow.managePositionModal");
   const [slippage, setSlippage] = useLocalStorage(
     "slippage-manage-position-modal",
     "0.1",
@@ -33,10 +35,10 @@ export function CancelPosition({
     txState,
   } = useUnborrow(useUnborrowInput, selectedPosition.vault, {
     onUnborrowSuccess: () => {
-      toast("Borrow position closed");
+      toast(t("positionClosed"));
       onPositionClosure?.();
     },
-    onUnborrowError: e => toast(`Error closing borrow position: ${e}`),
+    onUnborrowError: e => toast(t("positionClosedError", { error: e })),
   });
 
   const confirmingInWallet = Object.values(txState).some(
@@ -49,19 +51,18 @@ export function CancelPosition({
         <div className="flex gap-4 px-5">
           <TriangleAlert className="text-err h-6 w-6 flex-shrink-0" aria-hidden />
           <Heading level="5" className="text-text-dimmed">
-            Position closure
+            {t("positionClosure")}
           </Heading>
         </div>
         <p className="text-err px-5">
-          This action will close your entire position and cannot be undone. Please review
-          the details carefully before proceeding.
+          {t("positionClosureWarning")}
         </p>
         <div className="bg-muted/15 gap-4 rounded-md px-6 py-4">
           <Heading level="5" className="text-text-dimmed">
-            Estimated fees are currently unavailable. Please proceed with caution.
+            {t("estimatedFeesUnavailable")}
           </Heading>
           <p className="text-muted mt-4 text-sm">
-            Estimated fees are currently unavailable. Please proceed with caution.
+            {t("estimatedFeesUnavailable")}
           </p>
         </div>
         <SlippageInput
@@ -83,10 +84,10 @@ export function CancelPosition({
           }}
         >
           {confirmingInWallet
-            ? "Confirming in wallet..."
+            ? t("confirmingInWallet")
             : isUnborrowPending
-              ? "Closing position..."
-              : "Close position"}
+              ? t("closingPosition")
+              : t("closePosition")}
         </Button>
       </div>
     </div>

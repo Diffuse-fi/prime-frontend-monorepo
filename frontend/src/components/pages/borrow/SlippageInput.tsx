@@ -1,4 +1,5 @@
 import { cn, RadioGroup, RadioGroupItem, RadioGroupProps } from "@diffuse/ui-kit";
+import { useTranslations } from "next-intl";
 
 interface SlippageInputProps {
   value: string;
@@ -15,15 +16,16 @@ export function SlippageInput({
   dir,
   options,
 }: SlippageInputProps) {
+  const t = useTranslations("borrow.slippage");
   return (
     <div className={cn("flex flex-col px-4", className)}>
       <div className="flex items-center justify-between">
-        <span className="font-medium">Slippage up to</span>
+        <span className="font-medium">{t("slippageUpTo")}</span>
         <span className="text-md font-bold">{value + "%"}</span>
       </div>
       <RadioGroup
         className="mt-4 flex justify-end gap-4"
-        aria-label="Select an asset"
+        aria-label={t("selectAsset")}
         dir={dir}
         value={value}
         onValueChange={value => {

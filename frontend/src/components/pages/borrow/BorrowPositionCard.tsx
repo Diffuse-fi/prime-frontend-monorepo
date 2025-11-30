@@ -19,6 +19,7 @@ import {
   UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
 import { ExternalLink } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useChainId } from "wagmi";
 import { PositionDetails } from "./PositionDetails";
 
@@ -54,6 +55,7 @@ export function BorrowerPositionCard({
   const explorerUrl = getContractExplorerUrl(chainId, position.vault.address);
   const { iconUrl, iconBackground } = getStableChainMeta(chainId);
   const collateralAsset = collateralType === 0 ? selectedAsset : strategyAsset;
+  const t = useTranslations("borrow.borrowPositions");
 
   return (
     <Card
@@ -101,45 +103,45 @@ export function BorrowerPositionCard({
     >
       <div className="bg-muted/15 flex justify-between gap-4 rounded-md px-10 py-5">
         <div className="flex flex-col gap-4">
-          <p>Health factor</p>
+          <p>{t("healthFactor")}</p>
           <p className="text-lg">-</p>
         </div>
         <div className="flex flex-col gap-4">
-          <p>Leverage</p>
+          <p>{t("leverage")}</p>
           <p className="text-lg">{`x${(Number(leverage) / 100).toFixed(2)}`}</p>
         </div>
         <div className="flex flex-col gap-4">
-          <p>APY</p>
+          <p>{t("apy")}</p>
           <p className="text-lg">{formatAprToPercent(apr).text}</p>
         </div>
       </div>
       <SimpleTable
         className="px-10"
         density="comfy"
-        aria-label="Position details"
+        aria-label={t("positionDetails")}
         columns={[
           <div key="key" className="font-mono text-xs">
-            Position
+            {t("position")}
           </div>,
           <div key="key2"></div>,
         ]}
         rows={[
           [
-            <div key="row-1-1">Total balance</div>,
+            <div key="row-1-1">{t("totalBalance")}</div>,
             <div key="row-1-2" className="text-right">
               {formatUnits(strategyBalance, strategyAsset.decimals).text}{" "}
               {strategyAsset.symbol}
             </div>,
           ],
           [
-            <div key="row-1-1">Total debt</div>,
+            <div key="row-1-1">{t("totalDebt")}</div>,
             <div key="row-1-2" className="text-right">
               {formatUnits(assetsBorrowed, selectedAsset.decimals).text}{" "}
               {selectedAsset.symbol}
             </div>,
           ],
           [
-            <div key="row-1-1">Collateral</div>,
+            <div key="row-1-1">{t("collateral")}</div>,
             <div key="row-1-2" className="text-right">
               {formatUnits(collateralGiven, collateralAsset.decimals).text}{" "}
               {collateralAsset.symbol}
@@ -147,7 +149,7 @@ export function BorrowerPositionCard({
           ],
         ]}
       />
-      <UncontrolledCollapsible summary="Position details" className="mt-2 px-10 md:mt-4">
+      <UncontrolledCollapsible summary={t("positionDetails")} className="mt-2 px-10 md:mt-4">
         <PositionDetails
           strategy={strategy}
           selectedAsset={selectedAsset}
@@ -167,7 +169,7 @@ export function BorrowerPositionCard({
         className="mx-auto mt-6"
         onClick={onManagePositionBtnClick}
       >
-        Manage position
+        {t("managePosition")}
       </Button>
     </Card>
   );

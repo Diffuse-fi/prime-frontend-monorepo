@@ -13,6 +13,7 @@ import { Strategy, VaultFullInfo } from "@/lib/core/types";
 import { useAccount } from "wagmi";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useBorrowerPositions } from "@/lib/core/hooks/useBorrowerPositions";
+import { useTranslations } from "next-intl";
 
 export type SelectedStartegy = {
   vault: VaultFullInfo;
@@ -26,6 +27,7 @@ export default function Borrow() {
   const { dir } = useLocalization();
   const { isConnected } = useAccount();
   const { refetchPending } = useBorrowerPositions(vaults);
+  const t = useTranslations("borrow");
   const strategies = vaults
     .filter(v => v.assets?.some(a => a.address === selectedAsset?.address))
     .flatMap(v => v.strategies)
@@ -39,7 +41,7 @@ export default function Borrow() {
   return (
     <div className="mt-9 flex flex-col gap-3 md:gap-8">
       <div className="row-start-1 flex flex-col gap-3">
-        <Heading level="5">Filter by asset</Heading>
+        <Heading level="5">{t("filterByAsset")}</Heading>
         <AssetsList
           onSelectAsset={setSelectedAsset}
           selectedAsset={selectedAsset}

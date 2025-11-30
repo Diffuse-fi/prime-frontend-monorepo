@@ -2,6 +2,7 @@ import { AssetImage } from "@/components/misc/images/AssetImage";
 import { AssetInfo } from "@/lib/assets/validations";
 import { Skeleton, AssetCard, RadioGroup, RadioGroupItem, cn } from "@diffuse/ui-kit";
 import { RadioGroupProps } from "@diffuse/ui-kit/RadioGroup";
+import { useTranslations } from "next-intl";
 
 type Option = AssetInfo;
 
@@ -24,10 +25,11 @@ export function AssetsList({
   direction,
   className,
 }: AssetsListProps) {
+  const t = useTranslations("common.accessibility");
   return (
     <RadioGroup
       className={cn("grid-cols-4", className)}
-      aria-label="Select an asset"
+      aria-label={t("selectAsset")}
       dir={direction}
       value={selectedAsset?.address}
       onValueChange={value => {

@@ -47,6 +47,7 @@ export default function Lend() {
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const { dir } = useLocalization();
   const t = useTranslations("lend");
+  const tCommon = useTranslations("common.accessibility");
   const router = useRouter();
   const onSuccessAllowance = useCallback(() => {
     toast(t("toasts.approveSuccessToast"));
@@ -82,9 +83,11 @@ export default function Lend() {
     },
     onDepositBatchSomeError: e => {
       toast(
-        `Error depositing to some vaults: ${Object.values(e)
-          .map(err => err.message)
-          .join(", ")}`
+        t("toasts.someVaultsErrorToast", {
+          errors: Object.values(e)
+            .map(err => err.message)
+            .join(", "),
+        })
       );
     },
     onDepositBatchComplete: () => {
@@ -135,7 +138,7 @@ export default function Lend() {
     if (allAllowed) {
       if (confirmingInWallet) {
         return {
-          text: "Confirming...",
+          text: t("confirming"),
           disabled: true,
           onClick: undefined,
         };
@@ -244,18 +247,18 @@ export default function Lend() {
             cardBodyClassName="items-center gap-4"
           >
             <SimpleTable
-              aria-label="Selected assets summary"
+              aria-label={tCommon("selectedAssetsSummary")}
               density="comfy"
               className={selectedVaults.length === 0 ? "mb-10" : undefined}
               columns={[
                 <div key="key1" className="text-left font-mono text-xs">
-                  Asset
+                  {t("asset")}
                 </div>,
                 <div key="key2" className="text-right font-mono text-xs">
-                  Sum to lend
+                  {t("sumToLend")}
                 </div>,
                 <div key="key3" className="text-right font-mono text-xs">
-                  Target APY
+                  {t("targetApy")}
                 </div>,
               ]}
               rows={selectedVaults.map(v => {
@@ -284,7 +287,7 @@ export default function Lend() {
             >
               {actionButtonMeta.text}
             </Button>
-            <p className="font-mono text-xs">{`Step ${stepText}`}</p>
+            <p className="font-mono text-xs">{t("step", { step: stepText })}</p>
           </Card>
         </div>
       )}
