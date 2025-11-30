@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { getAddress, type Address, type Hash } from "viem";
+import { getAddress, type Address, type Hash, formatUnits as formatUnitsViem } from "viem";
 import { useClients } from "../../wagmi/useClients";
 import type { TxInfo, TxState, VaultFullInfo, VaultLimits } from "../types";
 import { useMutation } from "@tanstack/react-query";
@@ -9,6 +9,11 @@ import { produce } from "immer";
 import { formatUnits } from "../../formatters/asset";
 import { isUserRejectedError } from "../utils/errors";
 import { lendLogger, loggerMut } from "../utils/loggers";
+import {
+  trackWithdrawAttempt,
+  trackWithdrawSuccess,
+  trackWithdrawError,
+} from "../../analytics";
 
 export type UseWithdrawParams = {
   onWithdrawSuccess?: (vaultAddress: Address, hash: Hash) => void;
@@ -144,6 +149,14 @@ export function useWithdraw(
         setKeyPending(idemKey);
         setPhase(address, { phase: "awaiting-signature" });
 
+        // Track withdraw attempt
+        trackWithdrawAttempt({
+          vaultAddress: address,
+          chainId: chainId!,
+          assetSymbol: vault!.assets[0].symbol,
+          amount: formatUnitsViem(assets, vault!.assets[0].decimals),
+        });
+
         const hash = await vault!.contract.withdraw([assets, receiver, owner]);
 
         setPhase(address, { phase: "pending", hash });
@@ -157,11 +170,31 @@ export function useWithdraw(
 
         if (receipt.status === "success") {
           setPhase(address, { phase: "success", hash: receipt.transactionHash });
+
+          // Track withdraw success
+          trackWithdrawSuccess({
+            vaultAddress: address,
+            chainId: chainId!,
+            assetSymbol: vault!.assets[0].symbol,
+            amount: formatUnitsViem(assets, vault!.assets[0].decimals),
+            txHash: receipt.transactionHash,
+          });
+
           onWithdrawSuccess?.(address, receipt.transactionHash);
           return receipt.transactionHash;
         } else {
           const err = new Error("Transaction reverted");
           setPhase(address, { phase: "error", errorMessage: err.message });
+
+          // Track withdraw error
+          trackWithdrawError({
+            vaultAddress: address,
+            chainId: chainId!,
+            assetSymbol: vault!.assets[0].symbol,
+            amount: formatUnitsViem(assets, vault!.assets[0].decimals),
+            errorMessage: err.message,
+          });
+
           onWithdrawError?.(err.message, address);
           lendLogger.error("withdraw failed: transaction reverted", {
             vault: address,
@@ -178,6 +211,16 @@ export function useWithdraw(
 
         const err = error instanceof Error ? error : new Error("Unknown error");
         setPhase(address, { phase: "error", errorMessage: err.message });
+
+        // Track withdraw error
+        trackWithdrawError({
+          vaultAddress: address,
+          chainId: chainId!,
+          assetSymbol: vault!.assets[0].symbol,
+          amount: formatUnitsViem(assets, vault!.assets[0].decimals),
+          errorMessage: err.message,
+        });
+
         onWithdrawError?.(err.message, address);
         loggerMut.error("mutation error (withdraw)", {
           mutationKey: qKeys.mutation(chainId, address, wallet),

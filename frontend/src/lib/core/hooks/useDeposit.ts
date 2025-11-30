@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import pLimit from "p-limit";
-import { getAddress, type Address, type Hash } from "viem";
+import { getAddress, type Address, type Hash, formatUnits as formatUnitsViem } from "viem";
 import { useClients } from "../../wagmi/useClients";
 import type {
   SelectedVault,
@@ -16,6 +16,11 @@ import { produce } from "immer";
 import { formatUnits } from "../../formatters/asset";
 import { isUserRejectedError } from "../utils/errors";
 import { lendLogger, loggerMut } from "../utils/loggers";
+import {
+  trackLendAttempt,
+  trackLendSuccess,
+  trackLendError,
+} from "../../analytics";
 
 export type UseLendParams = {
   txConcurrency?: number;
@@ -172,6 +177,14 @@ export function useDeposit(
               setKeyPending(idemKey);
               setPhase(address, { phase: "awaiting-signature" });
 
+              // Track lend attempt
+              trackLendAttempt({
+                vaultAddress: address,
+                chainId,
+                assetSymbol: v.assetSymbol,
+                amount: formatUnitsViem(amount, v.assetDecimals),
+              });
+
               const hash = await vault!.contract.deposit([amount, receiver]);
 
               setPhase(address, { phase: "pending", hash });
@@ -191,11 +204,29 @@ export function useDeposit(
               if (receipt.status === "success") {
                 setPhase(address, { phase: "success", hash: receipt.transactionHash });
 
+                // Track lend success
+                trackLendSuccess({
+                  vaultAddress: address,
+                  chainId,
+                  assetSymbol: v.assetSymbol,
+                  amount: formatUnitsViem(amount, v.assetDecimals),
+                  txHash: receipt.transactionHash,
+                });
+
                 onDepositSuccess?.(address, receipt.transactionHash);
               } else {
                 const e = new Error("Transaction reverted");
                 setPhase(address, { phase: "error", errorMessage: e.message });
                 result.errors[address] = e;
+
+                // Track lend error
+                trackLendError({
+                  vaultAddress: address,
+                  chainId,
+                  assetSymbol: v.assetSymbol,
+                  amount: formatUnitsViem(amount, v.assetDecimals),
+                  errorMessage: e.message,
+                });
 
                 onDepositError?.(e.message, address);
                 lendLogger.warn("deposit error", { address, reason: e.message });
@@ -211,6 +242,15 @@ export function useDeposit(
 
               setPhase(address, { phase: "error", errorMessage: e.message });
               result.errors[address] = e;
+
+              // Track lend error
+              trackLendError({
+                vaultAddress: address,
+                chainId,
+                assetSymbol: v.assetSymbol,
+                amount: formatUnitsViem(amount, v.assetDecimals),
+                errorMessage: e.message,
+              });
 
               onDepositError?.(e.message, address);
               loggerMut.error("mutation error (deposit)", {

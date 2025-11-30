@@ -9,6 +9,11 @@ import { produce } from "immer";
 import { getSlippageBps } from "@/lib/formulas/slippage";
 import { isUserRejectedError } from "../utils/errors";
 import { borrowLogger, loggerMut } from "../utils/loggers";
+import {
+  trackCancelBorrowAttempt,
+  trackCancelBorrowSuccess,
+  trackCancelBorrowError,
+} from "../../analytics";
 
 export type SelectedUnborrow = {
   chainId: number;
@@ -125,6 +130,13 @@ export function useUnborrow(
         setPendingKey(idemKey);
         setPhase(addr, { phase: "awaiting-signature" });
 
+        // Track cancel borrow attempt
+        trackCancelBorrowAttempt({
+          vaultAddress: addr,
+          chainId: chainId!,
+          positionId: selected.positionId.toString(),
+        });
+
         const hash = await vault!.contract.unborrow([
           selected.positionId,
           selected.deadline,
@@ -145,11 +157,29 @@ export function useUnborrow(
         if (receipt.status === "success") {
           setPhase(addr, { phase: "success", hash: receipt.transactionHash });
           result.hash = receipt.transactionHash;
+
+          // Track cancel borrow success
+          trackCancelBorrowSuccess({
+            vaultAddress: addr,
+            chainId: chainId!,
+            positionId: selected.positionId.toString(),
+            txHash: receipt.transactionHash,
+          });
+
           onUnborrowSuccess?.(addr, receipt.transactionHash);
         } else {
           const e = new Error("Transaction reverted");
           setPhase(addr, { phase: "error", errorMessage: e.message });
           result.error = e;
+
+          // Track cancel borrow error
+          trackCancelBorrowError({
+            vaultAddress: addr,
+            chainId: chainId!,
+            positionId: selected.positionId.toString(),
+            errorMessage: e.message,
+          });
+
           onUnborrowError?.(e.message, addr);
           borrowLogger.error("unborrow failed: transaction reverted", {
             vault: addr,
@@ -166,6 +196,15 @@ export function useUnborrow(
         const e = error instanceof Error ? error : new Error("Unknown error");
         setPhase(addr, { phase: "error", errorMessage: e.message });
         result.error = e;
+
+        // Track cancel borrow error
+        trackCancelBorrowError({
+          vaultAddress: addr,
+          chainId: chainId!,
+          positionId: selected.positionId.toString(),
+          errorMessage: e.message,
+        });
+
         onUnborrowError?.(e.message, addr);
         loggerMut.error("mutation error (unborrow)", {
           mutationKey: qKeys.unborrow(chainId, addr),

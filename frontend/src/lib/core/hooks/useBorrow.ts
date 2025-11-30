@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { getAddress, type Address, type Hash } from "viem";
+import { getAddress, type Address, type Hash, formatUnits as formatUnitsViem } from "viem";
 import { useClients } from "../../wagmi/useClients";
 import type { TxInfo, TxState, VaultFullInfo } from "../types";
 import { useMutation } from "@tanstack/react-query";
@@ -10,6 +10,11 @@ import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 import { applySlippage } from "@/lib/formulas/slippage";
 import { isUserRejectedError } from "../utils/errors";
 import { borrowLogger, loggerMut } from "../utils/loggers";
+import {
+  trackBorrowAttempt,
+  trackBorrowSuccess,
+  trackBorrowError,
+} from "../../analytics";
 
 export type SelectedBorrow = {
   chainId: number;
@@ -199,6 +204,16 @@ export function useBorrow(
           selected.slippage
         );
 
+        // Track borrow attempt
+        trackBorrowAttempt({
+          vaultAddress: addr,
+          chainId: chainId!,
+          strategyId: selected.strategyId.toString(),
+          assetSymbol: selected.assetSymbol ?? vault.assets[0].symbol,
+          collateralAmount: formatUnitsViem(selected.collateralAmount, assetDec),
+          borrowAmount: formatUnitsViem(selected.assetsToBorrow, assetDec),
+        });
+
         const hash = await vault.contract.borrowRequest([
           selected.strategyId,
           selected.collateralType,
@@ -223,11 +238,35 @@ export function useBorrow(
         if (receipt.status === "success") {
           setPhase(addr, { phase: "success", hash: receipt.transactionHash });
           result.hash = receipt.transactionHash;
+
+          // Track borrow success
+          trackBorrowSuccess({
+            vaultAddress: addr,
+            chainId: chainId!,
+            strategyId: selected.strategyId.toString(),
+            assetSymbol: selected.assetSymbol ?? vault.assets[0].symbol,
+            collateralAmount: formatUnitsViem(selected.collateralAmount, assetDec),
+            borrowAmount: formatUnitsViem(selected.assetsToBorrow, assetDec),
+            txHash: receipt.transactionHash,
+          });
+
           onBorrowSuccess?.(addr, receipt.transactionHash);
         } else {
           const e = new Error("Transaction reverted");
           setPhase(addr, { phase: "error", errorMessage: e.message });
           result.error = e;
+
+          // Track borrow error
+          trackBorrowError({
+            vaultAddress: addr,
+            chainId: chainId!,
+            strategyId: selected.strategyId.toString(),
+            assetSymbol: selected.assetSymbol ?? vault.assets[0].symbol,
+            collateralAmount: formatUnitsViem(selected.collateralAmount, assetDec),
+            borrowAmount: formatUnitsViem(selected.assetsToBorrow, assetDec),
+            errorMessage: e.message,
+          });
+
           onBorrowError?.(e.message, addr);
           borrowLogger.warn("borrow error", { address: addr, reason: e.message });
         }
@@ -241,6 +280,24 @@ export function useBorrow(
         const e = error instanceof Error ? error : new Error("Unknown error");
         setPhase(addr, { phase: "error", errorMessage: e.message });
         result.error = e;
+
+        // Track borrow error
+        trackBorrowError({
+          vaultAddress: addr,
+          chainId: chainId!,
+          strategyId: selected.strategyId.toString(),
+          assetSymbol: selected.assetSymbol ?? vault.assets[0].symbol,
+          collateralAmount: formatUnitsViem(
+            selected.collateralAmount,
+            selected.assetDecimals ?? vault.assets[0].decimals
+          ),
+          borrowAmount: formatUnitsViem(
+            selected.assetsToBorrow,
+            selected.assetDecimals ?? vault.assets[0].decimals
+          ),
+          errorMessage: e.message,
+        });
+
         onBorrowError?.(e.message, addr);
         loggerMut.error("mutation error (borrow)", {
           mutationKey: qKeys.borrow(chainId, addr),
