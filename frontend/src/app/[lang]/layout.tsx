@@ -15,7 +15,7 @@ import ThemeSwitcher from "@/components/misc/ThemeSwitcher";
 import Image from "next/image";
 import { ClientNavigation } from "@/components/misc/ClientNavigation";
 import { Navbar } from "@diffuse/ui-kit/Navbar";
-import ToastProvider from "@/components/toast";
+import ToastProvider from "@/components/toast/ToastProvider";
 import { TooltipProvider } from "@diffuse/ui-kit/Tooltip";
 import { env } from "@/env";
 import { Locale, NextIntlClientProvider } from "next-intl";

@@ -18,7 +18,7 @@ const nextCompat = compat.config({
 });
 
 const nextScoped = nextCompat.map(c => ({
-  files: ["frontend/**/*.{ts,tsx}"],
+  files: ["frontend/src/**/*.{ts,tsx}"],
   ...c,
 }));
 

@@ -40,14 +40,8 @@ export const env = createEnv({
 
     GOOGLE_ANALYTICS_ID: z.string().regex(GTM_OR_GA_ID).optional(),
 
-    INDEXER_DATABASE_HOST: z.string().min(1),
-    INDEXER_DATABASE_PORT: zInt.optional().default(5432),
-    INDEXER_DATABASE_NAME: z.string().min(1),
-    INDEXER_DATABASE_USER: z.string().min(1),
-    INDEXER_DATABASE_PASSWORD: z.string(),
-
+    INDEXER_DATABASE_URL: z.string().min(1),
     INDEXER_DATABASE_MAX_CONNECTIONS: zInt.optional(),
-    INDEXER_DATABASE_SSL: zBool.optional().default(false),
 
     CRON_SECRET: z.string().min(1),
     VERCEL_ENV: z.enum(["development", "preview", "production"]).optional(),
