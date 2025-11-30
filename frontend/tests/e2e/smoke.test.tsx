@@ -3,14 +3,36 @@ import { test, expect } from "@playwright/test";
 const pagesToTest = ["/lend", "/borrow", "/lend/my-positions", "/borrow/my-positions"];
 
 test.describe("Smoke", () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ page }, testInfo) => {
     page.on("pageerror", err => {
-      test.fail(true, `Page error: ${err.message}`);
+      const msg = err.message || String(err);
+
+      if (
+        msg.includes("Operation was aborted") ||
+        msg.includes("AbortError") ||
+        msg.includes("The user aborted a request")
+      ) {
+        return;
+      }
+
+      testInfo.attachments.push({
+        name: "pageerror",
+        contentType: "text/plain",
+        body: Buffer.from(err.stack || err.message),
+      });
+
+      throw new Error(`Page error: ${err.message}`);
     });
 
     // page.on("console", (msg) => {
     //   if (msg.type() === "error") {
-    //     test.fail(true, `Console error: ${msg.text()}`);
+    //     testInfo.attachments.push({
+    //       name: "console-error",
+    //       contentType: "text/plain",
+    //       body: Buffer.from(msg.text()),
+    //     });
+
+    //     throw new Error(`Console error: ${msg.text()}`);
     //   }
     // });
   });

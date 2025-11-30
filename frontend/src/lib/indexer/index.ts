@@ -4,12 +4,7 @@ import { env } from "@/env";
 import { RPCs } from "../chains/rpc";
 
 export const indexerDbConfig = {
-  user: env.INDEXER_DATABASE_USER,
-  password: env.INDEXER_DATABASE_PASSWORD,
-  host: env.INDEXER_DATABASE_HOST,
-  port: env.INDEXER_DATABASE_PORT,
-  database: env.INDEXER_DATABASE_NAME,
-  ssl: env.INDEXER_DATABASE_SSL,
+  connectionString: env.INDEXER_DATABASE_URL,
   maxConnections: env.INDEXER_DATABASE_MAX_CONNECTIONS,
 };
 

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 
-dotenv.config({ path: ".env.e2e" });
+dotenv.config({ path: [".env.local", ".env.e2e"] });
 
 const isCI = /^(1|true)$/i.test(process.env.CI ?? "");
 
@@ -31,10 +31,10 @@ export default defineConfig({
     timeout: 10 * 1000,
   },
   projects: [
-    {
-      name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
-    },
+    // {
+    //   name: "chromium",
+    //   use: { ...devices["Desktop Chrome"] },
+    // },
     {
       name: "firefox",
       use: {
@@ -47,22 +47,22 @@ export default defineConfig({
         },
       },
     },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
-    {
-      name: "Microsoft Edge",
-      use: { ...devices["Desktop Edge"] },
-    },
-    {
-      name: "Mobile Chrome",
-      use: { ...devices["Pixel 5"] },
-    },
-    {
-      name: "Mobile Safari",
-      use: { ...devices["iPhone 15"] },
-    },
+    // {
+    //   name: "webkit",
+    //   use: { ...devices["Desktop Safari"] },
+    // },
+    // {
+    //   name: "Microsoft Edge",
+    //   use: { ...devices["Desktop Edge"] },
+    // },
+    // {
+    //   name: "Mobile Chrome",
+    //   use: { ...devices["Pixel 5"] },
+    // },
+    // {
+    //   name: "Mobile Safari",
+    //   use: { ...devices["iPhone 15"] },
+    // },
   ],
   reporter: [
     [

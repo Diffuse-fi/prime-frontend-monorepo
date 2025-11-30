@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, ReactElement, useState } from "react";
+import React, { createContext, ReactElement, useEffect, useState } from "react";
 import uniqueId from "lodash/uniqueId";
 import {
   CreateToastData,
@@ -37,46 +37,78 @@ export default function ToastProvider({
   appearOnTop = true,
 }: ToastProviderProps): ReactElement {
   const [queue, setQueue] = useState<RenderToastData[]>([]);
+  const [mounted, setMounted] = useState(false);
 
-  toastActions.actions = {
-    create: ({ message }: CreateToastData): void =>
-      setQueue(
-        produce(draft => {
-          if (appearOnTop) {
-            while (draft.length >= maxToastsToShow) {
-              draft.pop();
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    toastActions.actions = {
+      create: ({ message, ...rest }: CreateToastData): void =>
+        setQueue(prev =>
+          produce(prev, draft => {
+            if (appearOnTop) {
+              while (draft.length >= maxToastsToShow) {
+                draft.pop();
+              }
+
+              draft.unshift({
+                id: uniqueId("toast-"),
+                message,
+                open: true,
+                ...rest,
+              });
+
+              return;
             }
 
-            draft.unshift({
+            while (draft.length >= maxToastsToShow) {
+              draft.shift();
+            }
+
+            draft.push({
               id: uniqueId("toast-"),
               message,
               open: true,
+              ...rest,
             });
+          })
+        ),
 
-            return;
-          }
+      remove: (id: string) => setQueue(prev => prev.filter(x => x.id !== id)),
+    };
 
-          while (draft.length >= maxToastsToShow) {
-            draft.shift();
-          }
+    return () => {
+      toastActions.actions = {
+        create: () => {},
+        remove: () => {},
+      };
+    };
+  }, [mounted, appearOnTop, maxToastsToShow]);
 
-          draft.push({
-            id: uniqueId("toast-"),
-            message,
-            open: true,
-          });
-        })
-      ),
+  useHotkeys(
+    "esc",
+    () => {
+      if (!mounted) return;
 
-    remove: (id: string) => setQueue(queue.filter(x => x.id !== id)),
-  };
+      setQueue(prev => {
+        if (prev.length === 0) return prev;
 
-  useHotkeys("esc", () => {
-    if (queue.length > 0) {
-      const item = appearOnTop ? queue[0] : queue[queue.length - 1];
-      toastActions.actions.remove(item.id);
-    }
-  });
+        const index = appearOnTop ? 0 : prev.length - 1;
+        const id = prev[index].id;
+
+        return prev.filter(x => x.id !== id);
+      });
+    },
+    [mounted, appearOnTop]
+  );
+
+  if (!mounted) {
+    return <></>;
+  }
 
   return (
     <ToastProviderContext.Provider value={{ queue }}>
