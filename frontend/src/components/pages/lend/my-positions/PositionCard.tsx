@@ -88,7 +88,7 @@ export function PositionCard({
             {tLend("strategiesList.apr")}
           </div>,
           <div key="key" className="text-right font-mono text-xs">
-            {tLend("rewards")}
+            {tLend("reward")}
           </div>,
         ]}
         rows={[

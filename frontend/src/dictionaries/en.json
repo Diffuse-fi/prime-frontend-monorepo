@@ -157,7 +157,7 @@
       "description": "No strategies available for the selected asset. Please choose a different asset or change your wallet network.",
       "title": "No Strategies Available"
     },
-    "rewards": "Reward",
+    "reward": "Reward",
     "rewardsType": "Rewards type",
     "risks": {
       "protocol": {
