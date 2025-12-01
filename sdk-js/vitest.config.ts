@@ -14,12 +14,10 @@ export default defineConfig({
       reportsDirectory: "coverage",
       exclude: ["**/index.{ts,tsx}", "**/types.{ts,tsx}", "**/abi.ts"],
       thresholds: {
-        global: {
-          statements: 90,
-          branches: 90,
-          functions: 90,
-          lines: 90,
-        },
+        statements: 90,
+        branches: 90,
+        functions: 90,
+        lines: 90,
       },
       reportOnFailure: true,
     },

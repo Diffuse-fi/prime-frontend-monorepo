@@ -67,4 +67,60 @@ describe("<DataTable />", () => {
 
     expect(onRowClick).toHaveBeenCalledWith(data[0]);
   });
+
+  it("toggles sorting when clicking on a sortable header and updates aria-sort + row order", async () => {
+    const user = userEvent.setup();
+
+    render(<DataTable<Row> columns={columns} data={data} />);
+
+    const table = screen.getByRole("table");
+    const headerRow = within(table).getAllByRole("row")[0];
+    const aprHeader = within(headerRow).getByRole("columnheader", { name: "APR" });
+
+    expect(aprHeader).toHaveAttribute("aria-sort", "none");
+
+    const getBodyRows = () => {
+      const tbody = within(table).getAllByRole("rowgroup")[1];
+      return within(tbody).getAllByRole("row");
+    };
+
+    await user.click(aprHeader);
+    expect(aprHeader).toHaveAttribute("aria-sort", "descending");
+    let rows = getBodyRows();
+    expect(within(rows[0]).getByText("BTC")).toBeInTheDocument();
+    expect(within(rows[1]).getByText("ETH")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("USDC")).toBeInTheDocument();
+
+    await user.click(aprHeader);
+    expect(aprHeader).toHaveAttribute("aria-sort", "ascending");
+    rows = getBodyRows();
+    expect(within(rows[0]).getByText("USDC")).toBeInTheDocument();
+    expect(within(rows[1]).getByText("ETH")).toBeInTheDocument();
+    expect(within(rows[2]).getByText("BTC")).toBeInTheDocument();
+  });
+
+  it("calls onRowClick with the correct row after sorting has been applied", async () => {
+    const user = userEvent.setup();
+    const onRowClick = vi.fn();
+
+    render(
+      <DataTable<Row>
+        columns={columns}
+        data={data}
+        initialSorting={[{ id: "apr", desc: true }]}
+        onRowClick={onRowClick}
+      />
+    );
+
+    const table = screen.getByRole("table");
+    const tbody = within(table).getAllByRole("rowgroup")[1];
+    const rows = within(tbody).getAllByRole("row");
+
+    await user.click(rows[0]);
+
+    expect(onRowClick).toHaveBeenCalledTimes(1);
+    expect(onRowClick).toHaveBeenCalledWith(
+      expect.objectContaining({ asset: "BTC", apr: 0.06 })
+    );
+  });
 });
