@@ -110,7 +110,7 @@ To explore your database with Drizzle Studio:
 npm run db:studio
 ```
 
-This will open a web interface at `http://local.drizzle.studio` to browse and manage your data.
+This will open a web interface (typically at `https://local.drizzle.studio`) to browse and manage your data.
 
 ### Check Schema
 
@@ -257,19 +257,13 @@ To run the test suite:
 npm run test:unit
 ```
 
+This runs tests with coverage enabled. Coverage reports will be generated in the `coverage/` directory.
+
 To run tests in watch mode during development:
 
 ```bash
 npm run test:unit:watch
 ```
-
-To run tests with coverage:
-
-```bash
-npm run test:unit
-```
-
-Coverage reports will be generated in the `coverage/` directory.
 
 ## Database Migrations
 
@@ -332,6 +326,4 @@ When deploying the indexer in production:
 
 ## License
 
-This package is licensed under the Apache License 2.0. See the LICENSE file included in the package for details.
-
-For attribution notices, see the NOTICE file included in the package.
+This package is licensed under the Apache License 2.0.
