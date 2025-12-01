@@ -110,7 +110,7 @@ To explore your database with Drizzle Studio:
 npm run db:studio
 ```
 
-This will open a web interface at `https://local.drizzle.studio` to browse and manage your data.
+This will open a web interface at `http://local.drizzle.studio` to browse and manage your data.
 
 ### Check Schema
 
@@ -280,7 +280,7 @@ This package uses Drizzle Kit for database migrations. The migration workflow is
 3. **Review migration**: Check the generated SQL in `migrations/` directory
 4. **Apply migration**: Run `npm run db:migrate` to apply to your database
 
-Migration files are included in the package distribution and should be version controlled.
+Migration files should be version controlled to track schema changes over time.
 
 ## API Reference
 
@@ -332,6 +332,6 @@ When deploying the indexer in production:
 
 ## License
 
-This package is licensed under the Apache License 2.0. See the [LICENSE](./LICENSE) file for details.
+This package is licensed under the Apache License 2.0. See the LICENSE file included in the package for details.
 
-For attribution notices, see the [NOTICE](./NOTICE) file.
+For attribution notices, see the NOTICE file included in the package.
