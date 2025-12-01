@@ -1,6 +1,11 @@
 import { useMemo, useState } from "react";
 import pLimit from "p-limit";
-import { getAddress, type Address, type Hash, formatUnits as formatUnitsViem } from "viem";
+import {
+  getAddress,
+  type Address,
+  type Hash,
+  formatUnits as formatUnitsViem,
+} from "viem";
 import { useClients } from "../../wagmi/useClients";
 import type {
   SelectedVault,
@@ -16,11 +21,7 @@ import { produce } from "immer";
 import { formatUnits } from "../../formatters/asset";
 import { isUserRejectedError } from "../utils/errors";
 import { lendLogger, loggerMut } from "../utils/loggers";
-import {
-  trackLendAttempt,
-  trackLendSuccess,
-  trackLendError,
-} from "../../analytics";
+import { trackLendAttempt, trackLendSuccess, trackLendError } from "../../analytics";
 
 export type UseLendParams = {
   txConcurrency?: number;

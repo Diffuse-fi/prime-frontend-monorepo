@@ -1,5 +1,10 @@
 import { useMemo, useState } from "react";
-import { getAddress, type Address, type Hash, formatUnits as formatUnitsViem } from "viem";
+import {
+  getAddress,
+  type Address,
+  type Hash,
+  formatUnits as formatUnitsViem,
+} from "viem";
 import { useClients } from "../../wagmi/useClients";
 import type { TxInfo, TxState, VaultFullInfo } from "../types";
 import { useMutation } from "@tanstack/react-query";

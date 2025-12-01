@@ -68,9 +68,7 @@ export function trackLendAttempt(params: LendEventParams): void {
 /**
  * Track when a lend (deposit) operation completes successfully.
  */
-export function trackLendSuccess(
-  params: LendEventParams & { txHash: string }
-): void {
+export function trackLendSuccess(params: LendEventParams & { txHash: string }): void {
   trackEvent("lend_success", {
     vault_address: params.vaultAddress,
     chain_id: params.chainId,
@@ -83,9 +81,7 @@ export function trackLendSuccess(
 /**
  * Track when a lend (deposit) operation fails.
  */
-export function trackLendError(
-  params: LendEventParams & { errorMessage: string }
-): void {
+export function trackLendError(params: LendEventParams & { errorMessage: string }): void {
   trackEvent("lend_error", {
     vault_address: params.vaultAddress,
     chain_id: params.chainId,
@@ -188,9 +184,7 @@ export function trackBorrowAttempt(params: BorrowEventParams): void {
 /**
  * Track when a borrow operation completes successfully.
  */
-export function trackBorrowSuccess(
-  params: BorrowEventParams & { txHash: string }
-): void {
+export function trackBorrowSuccess(params: BorrowEventParams & { txHash: string }): void {
   trackEvent("borrow_success", {
     vault_address: params.vaultAddress,
     chain_id: params.chainId,
