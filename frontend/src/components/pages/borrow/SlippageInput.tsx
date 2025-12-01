@@ -25,7 +25,7 @@ export function SlippageInput({
       </div>
       <RadioGroup
         className="mt-4 flex justify-end gap-4"
-        aria-label={t("selectAsset")}
+        aria-label={t("selectSlippage")}
         dir={dir}
         value={value}
         onValueChange={value => {

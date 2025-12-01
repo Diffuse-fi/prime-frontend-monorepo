@@ -83,7 +83,7 @@
       "yield": "Yield"
     },
     "slippage": {
-      "selectAsset": "Select an asset",
+      "selectSlippage": "Select slippage tolerance",
       "slippageUpTo": "Slippage up to"
     },
     "title": "Borrow"
@@ -226,7 +226,7 @@
     "withdrawDeposit": "Withdraw deposit",
     "withdrawing": "Withdrawing...",
     "withdrawModal": {
-      "availableForWithdraw": "Available for Withdraw {assetSymbol}: "
+      "availableForWithdraw": "Available for Withdraw {assetSymbol}"
     }
   },
   "not-found": {

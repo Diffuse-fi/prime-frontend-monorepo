@@ -123,6 +123,7 @@ export function WithdrawModal({
             {t("withdrawModal.availableForWithdraw", {
               assetSymbol: selectedAsset.symbol,
             })}
+            :{" "}
             <Tooltip content={t("withdrawAll")} side="bottom">
               <Button
                 size="sm"

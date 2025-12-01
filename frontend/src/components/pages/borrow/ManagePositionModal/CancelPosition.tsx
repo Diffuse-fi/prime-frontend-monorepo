@@ -59,7 +59,6 @@ export function CancelPosition({
           <Heading level="5" className="text-text-dimmed">
             {t("estimatedFeesUnavailable")}
           </Heading>
-          <p className="text-muted mt-4 text-sm">{t("estimatedFeesUnavailable")}</p>
         </div>
         <SlippageInput
           className="px-5"
