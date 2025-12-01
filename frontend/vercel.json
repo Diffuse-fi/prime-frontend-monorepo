@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/indexer/sync",
-      "schedule": "*/10 * * * *"
+      "schedule": "0 * * * *"
     }
   ],
   "installCommand": "npm --prefix .. ci --audit=false",

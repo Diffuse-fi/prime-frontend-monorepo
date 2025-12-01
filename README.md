@@ -1,7 +1,5 @@
 <div align="center">
   <h1 style="margin: 0; padding: 0;">Prime Frontend Monorepo</h1>
-  <br />
-  <img src="https://raw.githubusercontent.com/Diffuse-fi/prime-frontend-monorepo/main/frontend/public/logo.svg" alt="Diffuse Prime Logo" width="76" />
 </div>
 <br />
 <div align="center">

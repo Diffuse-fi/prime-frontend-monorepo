@@ -3,3 +3,6 @@ public/manifest.json
 
 # E2E tests outputs
 tests/e2e/output
+
+# lighthouse
+.lighthouseci/
