@@ -149,7 +149,10 @@ export function BorrowerPositionCard({
           ],
         ]}
       />
-      <UncontrolledCollapsible summary={t("positionDetails")} className="mt-2 px-10 md:mt-4">
+      <UncontrolledCollapsible
+        summary={t("positionDetails")}
+        className="mt-2 px-10 md:mt-4"
+      >
         <PositionDetails
           strategy={strategy}
           selectedAsset={selectedAsset}

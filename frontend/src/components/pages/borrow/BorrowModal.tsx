@@ -371,7 +371,12 @@ export function BorrowModal({
                 aria-label={t("selectCollateralAsset")}
               />
             </div>
-            <div className="text-muted pl-2 text-left font-mono text-xs whitespace-nowrap">{t("balance", { assetSymbol: collateralAsset.symbol, amount: balanceDisplay ? balanceDisplay.text : "N/A" })}</div>
+            <div className="text-muted pl-2 text-left font-mono text-xs whitespace-nowrap">
+              {t("balance", {
+                assetSymbol: collateralAsset.symbol,
+                amount: balanceDisplay ? balanceDisplay.text : "N/A",
+              })}
+            </div>
           </div>
           <Card
             className="bg-preset-gray-50 border-none"
@@ -412,7 +417,10 @@ export function BorrowModal({
                 )}
               />
               <p className="text-muted font-mono text-xs">
-                {t("availableForBorrow", { assetSymbol: selectedAsset.symbol, amount: availableLiquidityFormatted.text })}
+                {t("availableForBorrow", {
+                  assetSymbol: selectedAsset.symbol,
+                  amount: availableLiquidityFormatted.text,
+                })}
               </p>
             </div>
           </Card>

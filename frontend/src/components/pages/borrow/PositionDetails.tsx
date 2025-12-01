@@ -61,7 +61,9 @@ export function PositionDetails({
     <div className="text-text-dimmed mt-2 flex flex-col gap-4 text-sm">
       <UncontrolledCollapsible
         defaultOpen
-        summary={<span className="text-muted font-mono text-xs">{t("positionHealth")}</span>}
+        summary={
+          <span className="text-muted font-mono text-xs">{t("positionHealth")}</span>
+        }
       >
         <div className="flex flex-col gap-2 border-l border-[#FF4800] px-2 py-1">
           <div className="flex items-center justify-between">

@@ -120,7 +120,9 @@ export function WithdrawModal({
             )}
           />
           <div className="text-muted flex flex-nowrap items-center gap-2 pl-2 font-mono text-xs">
-            {t("withdrawModal.availableForWithdraw", { assetSymbol: selectedAsset.symbol })}
+            {t("withdrawModal.availableForWithdraw", {
+              assetSymbol: selectedAsset.symbol,
+            })}
             <Tooltip content={t("withdrawAll")} side="bottom">
               <Button
                 size="sm"
@@ -141,7 +143,9 @@ export function WithdrawModal({
         </div>
         <UncontrolledCollapsible
           defaultOpen
-          summary={<span className="text-text-dimmed font-mono text-sm">{t("position")}</span>}
+          summary={
+            <span className="text-text-dimmed font-mono text-sm">{t("position")}</span>
+          }
         >
           <div className="border-primary flex flex-col gap-2 border-l px-2 py-1">
             <div className="flex items-center justify-between text-sm">

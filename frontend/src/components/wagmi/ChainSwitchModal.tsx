@@ -56,7 +56,12 @@ export function ChainSwitchModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} title={title ?? t("switchNetwork")} size="sm">
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title={title ?? t("switchNetwork")}
+      size="sm"
+    >
       <ul className="space-y-2">
         {chains.map(c => {
           const isActive = currentChain?.id === c.id;
@@ -90,7 +95,10 @@ export function ChainSwitchModal({
                 <span className="flex-1 text-left">{c.name}</span>
 
                 {isThisPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" aria-label={tCommon("switching")} />
+                  <Loader2
+                    className="h-4 w-4 animate-spin"
+                    aria-label={tCommon("switching")}
+                  />
                 ) : isActive ? (
                   <div className="flex items-center gap-1">
                     <span className="text-sm">{t("connected")}</span>
