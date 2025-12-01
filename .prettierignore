@@ -6,3 +6,8 @@ pnpm-lock.yaml
 yarn.lock
 *.log
 *.tsbuildinfo
+.next
+out
+.lighthouseci/
+drizzle
+e2e/output

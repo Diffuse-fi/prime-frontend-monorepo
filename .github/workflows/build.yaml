@@ -141,3 +141,23 @@ jobs:
       - name: Run Indexer unit tests
         working-directory: indexer
         run: npm run test:unit
+
+  lighthouse:
+    name: Lighthouse CI for Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v5
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          setup-node: true
+          audit: false
+
+      - name: Build
+        uses: ./.github/actions/build
+
+      - name: Run Lighthouse CI
+        working-directory: frontend
+        run: npm run test:lh

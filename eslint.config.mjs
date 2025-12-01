@@ -67,6 +67,9 @@ export default [
       "**/public",
       "**/frontend/src/dictionaries/*.json",
       "**/.next/**",
+      "**/.lighthouseci/**",
+      "**/drizzle/**",
+      "**/e2e/output/**",
     ],
   },
 ];

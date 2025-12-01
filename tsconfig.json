@@ -24,7 +24,8 @@
     "**/.vercel/**",
     "**/e2e/output",
     "**/build-ladle/**",
-    "**/drizzle/**"
+    "**/drizzle/**",
+    "**/lighthouseci/**"
   ],
   "references": [
     { "path": "sdk-js" },
