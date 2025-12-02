@@ -81,3 +81,7 @@
 - name: indexer
   description: "Changes related to the indexer"
   color: "34a853"
+
+- name: config
+  description: "Changes related to configuration files"
+  color: "ffab70"

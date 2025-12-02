@@ -47,8 +47,6 @@ function reasonOf(err: unknown): string | undefined {
     return err.cause?.shortMessage || err.shortMessage;
   if (err instanceof EstimateGasExecutionError) return err.shortMessage;
   if (err instanceof CallExecutionError) return err.shortMessage;
-
-  return undefined;
 }
 
 function isUserRejected(err: unknown): boolean {

@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "useUnknownInCatchVariables": false
+  },
+  "extends": "../tsconfig.json",
+  "include": [
+    "src/**/*.ts",
+    "scripts/**/*.ts"
+  ]
+}

@@ -47,3 +47,7 @@ npm run dev
 ```
 
 This will start the development server and watch for changes in the source files.
+
+## License
+
+This package is licensed under the Apache License 2.0. See the [LICENSE](./LICENSE) file for details.

@@ -14,7 +14,7 @@
   "extends": "../tsconfig.json",
   "include": [
     "package.json",
-    "src/addresses/**/*.json",
+    "src/resolve/**/*.json",
     "src/**/*.ts",
     "src/**/*.d.ts"
   ],

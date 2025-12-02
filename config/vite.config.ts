@@ -18,11 +18,8 @@ export default defineConfig(() => {
     tsconfigPaths(),
     dts({
       rollupTypes: true,
-      insertTypesEntry: true,
-      tsconfigPath: resolve(__dirname, "tsconfig.build.json"),
     }),
     externalizeDeps({
-      nodeBuiltins: true,
       deps: true,
       peerDeps: true,
     }),
@@ -32,7 +29,6 @@ export default defineConfig(() => {
     tsconfig: "tsconfig.json",
     plugins,
     build: {
-      target: "node20",
       outDir: "dist",
       minify: true,
       sourcemap: true,
@@ -40,7 +36,7 @@ export default defineConfig(() => {
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
         formats: ["es"],
-        fileName: () => "diffuse-prime-indexer.mjs",
+        fileName: () => "diffuse-prime-config.mjs",
       },
       rollupOptions: {
         output: {

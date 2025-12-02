@@ -86,6 +86,7 @@ jobs:
         with:
           setup-node: true
           audit: false
+          build-config: true
 
       - name: Run frontend unit tests
         working-directory: frontend
@@ -103,6 +104,7 @@ jobs:
         with:
           setup-node: true
           audit: false
+          build-config: true
 
       - name: Run SDK unit tests
         working-directory: sdk-js
@@ -120,6 +122,7 @@ jobs:
         with:
           setup-node: true
           audit: false
+          build-config: true
 
       - name: Run UI Kit unit tests
         working-directory: ui-kit
@@ -137,6 +140,7 @@ jobs:
         with:
           setup-node: true
           audit: false
+          build-config: true
 
       - name: Run Indexer unit tests
         working-directory: indexer

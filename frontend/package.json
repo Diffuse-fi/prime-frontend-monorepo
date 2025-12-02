@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "build": "npm run check:env && npm run build:safe-manifest && next build",
-    "build:deps": "concurrently \"npm run build -w ../ui-kit\" \"npm run build -w ../sdk-js\" --success last && npm run build -w ../indexer",
+    "build:deps": "npm run check -w ../config && npm run build -w ../config && concurrently \"npm run build -w ../ui-kit\" \"npm run build -w ../sdk-js\" --success last && npm run build -w ../indexer",
     "build:safe-manifest": "tsx ./scripts/buildSafeManifest.ts",
     "check:env": "tsx ./scripts/validateEnv.ts",
     "dev": "npm run build:safe-manifest && next dev --turbopack",
@@ -23,6 +23,7 @@
     "@playwright/test": "1.56.1"
   },
   "dependencies": {
+    "@diffuse/config": "0.1.0",
     "@diffuse/indexer": "0.1.0",
     "@diffuse/sdk-js": "0.2.0",
     "@diffuse/ui-kit": "0.1.0",
@@ -68,6 +69,7 @@
     "@types/react-portal": "^4.0.7",
     "baseline-browser-mapping": "^2.8.31",
     "schema-dts": "^1.1.5",
+    "typescript": "5.8.2",
     "utility-types": "^3.11.0"
   },
   "engines": {
