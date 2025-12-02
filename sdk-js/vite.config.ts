@@ -38,7 +38,7 @@ export default defineConfig(() => {
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
         formats: ["es"],
-        fileName: "diffuse-prime-sdk-js.mjs",
+        fileName: () => "diffuse-prime-sdk-js.mjs",
       },
       rollupOptions: {
         output: {

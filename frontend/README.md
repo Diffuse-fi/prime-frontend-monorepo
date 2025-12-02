@@ -89,3 +89,7 @@ This will build the `sdk-js` and `ui-kit` packages and prepare them for producti
 `vercel.json` file contains configuration for deploying the frontend on Vercel platform. It specifies the build command, install command, and other settings required for deployment.
 
 This app can be deployed on any platform that supports nodejs applications, not only on Vercel.
+
+## License
+
+This package is licensed under PolyForm Noncommercial License 1.0.0. See the [LICENSE](./LICENSE) file for details.

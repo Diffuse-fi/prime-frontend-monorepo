@@ -141,3 +141,7 @@ export const Variants: Story = () => (
   </div>
 );
 ```
+
+## License
+
+This package is licensed under the Apache License 2.0. See the [LICENSE](./LICENSE) file for details.

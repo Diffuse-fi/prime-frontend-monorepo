@@ -13,6 +13,10 @@ inputs:
     description: "Run npm audit after installation"
     default: false
     required: false
+  build-config:
+    description: "Run config setup after installation"
+    default: false
+    required: false
 
 runs:
   using: "composite"
@@ -31,4 +35,10 @@ runs:
     - name: Run npm audit
       if: ${{ inputs.audit == 'true' }}
       run: npm audit --audit-level=high --omit=dev
+      shell: bash
+
+    - name: Run config setup
+      if: ${{ inputs.build-config == 'true' }}
+      working-directory: ./config
+      run: npm run build
       shell: bash

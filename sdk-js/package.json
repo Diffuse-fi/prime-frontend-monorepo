@@ -39,7 +39,11 @@
     "test:unit": "vitest run --coverage",
     "test:unit:watch": "vitest"
   },
+  "devDependencies": {
+    "typescript": "5.8.2"
+  },
   "peerDependencies": {
+    "@diffuse/config": "0.1.0",
     "race-signal": "2.0.0",
     "viem": "2.38.5"
   }

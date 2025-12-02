@@ -49,3 +49,8 @@ indexer:
   - changed-files:
       - any-glob-to-any-file:
           - "indexer/**"
+
+config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "config/**"

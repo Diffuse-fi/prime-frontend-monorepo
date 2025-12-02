@@ -2,21 +2,22 @@
   "name": "diffuse-monorepo-js",
   "version": "0.1.0",
   "private": true,
-  "description": "Monorepo for Diffuse Prime JavaScript projects, including frontend, UI kit, and js SDK.",
+  "description": "Monorepo for Diffuse Prime JavaScript projects",
   "license": "SEE LICENSE IN LICENSE.md",
   "workspaces": [
     "frontend",
     "ui-kit",
     "sdk-js",
-    "indexer"
+    "indexer",
+    "config"
   ],
   "scripts": {
-    "build": "concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" --success last && npm run build -w indexer && npm run build -w frontend",
+    "build": "npm run build -w config && concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" --success last && npm run build -w indexer && npm run build -w frontend",
     "check:format": "prettier --check .",
     "check:licenses": "tsx ./scripts/checkLicenses.ts",
     "check:packages-sync": "tsx ./scripts/checkPackagesSync.ts",
     "check:syncpack": "syncpack list-mismatches && syncpack lint-semver-ranges",
-    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w sdk-js\" \"npm run dev -w ui-kit\" \"npm run dev -w indexer\" --kill-others --success last",
+    "dev": "concurrently \"npm run dev -w config\" \"npm run dev -w frontend\" \"npm run dev -w sdk-js\" \"npm run dev -w ui-kit\" \"npm run dev -w indexer\" --kill-others --success last",
     "fix:syncpack": "syncpack fix-mismatches && syncpack set-semver-ranges",
     "format": "prettier --write .",
     "knip": "knip --production",

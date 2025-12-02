@@ -1,4 +1,4 @@
-import { resolveAddress } from "@/addresses";
+import { resolveAddress } from "../../resolve";
 import { Init } from "@/types";
 import {
   Abi,

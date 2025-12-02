@@ -1,7 +1,8 @@
 {
   "dependencyTypes": [
     "peer",
-    "prod"
+    "prod",
+    "dev"
   ],
   "filter": ".",
   "indent": "  ",
@@ -42,6 +43,19 @@
         "peer"
       ],
       "label": "All peer dependencies",
+      "packages": [
+        "**"
+      ],
+      "range": ""
+    },
+    {
+      "dependencies": [
+        "typescript"
+      ],
+      "dependencyTypes": [
+        "dev"
+      ],
+      "label": "TypeScript dev dependency",
       "packages": [
         "**"
       ],
@@ -97,6 +111,18 @@
       "packages": [
         "**"
       ]
+    },
+    {
+      "dependencies": [
+        "typescript"
+      ],
+      "dependencyTypes": [
+        "dev"
+      ],
+      "packages": [
+        "**"
+      ],
+      "version": "5.8.2"
     }
   ],
   "$schema": "https://unpkg.com/syncpack@13.0.4/dist/schema.json"

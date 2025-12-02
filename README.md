@@ -14,6 +14,7 @@ A monorepo for the **Diffuse Prime** frontend stack:
 - `ui-kit/`: A shared UI component library built with React, Radix UI, and Tailwind CSS preset.
 - `sdk-js/`: A JavaScript SDK for interacting with the Diffuse Prime smart contracts.
 - `indexer/`: A backend service for indexing blockchain data.
+- `config/`: Shared configuration and settings for the monorepo.
 
 Each package has its own `README.md` file with more details about the specific package.
 
@@ -25,8 +26,12 @@ Each package has its own `README.md` file with more details about the specific p
 ## Workspaces
 
 This repository uses [npm workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) to manage multiple packages within a single repository.
-
 But all general scripts you may need are defined in the root `package.json` "scripts" section.
+
+## Configuration
+
+All shared configuration and settings are located in the `config/` package. To edit or extend shared configurations, like chain, assets, and addresses configurations, you can modify the files in this package.
+For more details please refer to the [config README](./config/README.md).
 
 ## Development
 
@@ -53,7 +58,7 @@ This will start the development servers for all packages and all the source code
 
 #### Env variables for local development
 
-You may want to override some env variables for local development. You can do this by creating a `.env.local` file. For more details please refer to frontend's [README](./frontend/README.md) development section.
+You may want to override some env variables for local development. You can do this by creating a `frontend/.env.local` file. For more details please refer to frontend's [README](./frontend/README.md) development section.
 
 #### Commitlint
 
@@ -82,6 +87,7 @@ This project implements security measures to protect against common vulnerabilit
 First off, it uses `@lavamoat/allow-scripts` with combination of `ignore-scripts=true` in `.npmrc` to prevent running arbitrary scripts during installation. This is a safeguard against common vector of supply chain attacks. A developer still can run all required scripts on project setup by running `npm run setup` (see [setup](#setup) section).
 
 In addition, all **dependencies** versions (not dev dependencies) are pinned to specific versions in `package.json` to avoid unexpected changes in behavior due to updates of dependencies (or prevent an update to a version with a known vulnerability).
+
 Typically, versions are specified with a caret (`^`) or tilde (`~`) prefix, which allows for minor or patch updates, respectively. However, in this project, we have opted to pin the versions without any prefix (e.g., `"package-name": "1.2.3"`).
 This means that only the exact version specified will be used, and no automatic updates will occur.
 This is a common practice to ensure stability and security of the project. Alas, this means that you will need to update dependencies manually when needed.

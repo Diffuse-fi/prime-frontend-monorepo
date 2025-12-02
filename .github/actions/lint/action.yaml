@@ -4,6 +4,11 @@ description: "Lints the code in the repo"
 runs:
   using: "composite"
   steps:
+    - name: Validate config
+      working-directory: ./config
+      run: npm run check
+      shell: bash
+
     - name: Lint
       run: npm run lint -- --debug
       shell: bash
