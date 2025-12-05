@@ -1,10 +1,10 @@
 "use client";
 
-import { AssetInfo } from "@/lib/assets/validations";
 import { BorrowerPosition } from "@/lib/core/types";
 import { Dialog, Tabs } from "@diffuse/ui-kit";
 import { ReactNode } from "react";
 import { CancelPosition } from "./CancelPosition";
+import { AssetInfo } from "@diffuse/config";
 
 type ManagePositionModalProps = {
   open: boolean;

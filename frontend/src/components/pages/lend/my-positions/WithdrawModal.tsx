@@ -1,10 +1,10 @@
 import { AssetImage } from "@/components/misc/images/AssetImage";
-import { AssetInfo } from "@/lib/assets/validations";
 import { useVaults } from "@/lib/core/hooks/useVaults";
 import { useWithdraw } from "@/lib/core/hooks/useWithdraw";
 import { LenderPosition } from "@/lib/core/types";
 import { formatAsset, formatUnits } from "@/lib/formatters/asset";
 import { formatNumberToKMB } from "@/lib/formatters/number";
+import { AssetInfo } from "@diffuse/config";
 import {
   AssetInput,
   Button,

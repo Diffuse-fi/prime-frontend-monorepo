@@ -3,7 +3,6 @@
 import { AppLink } from "@/components/misc/AppLink";
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
-import { AssetInfo } from "@/lib/assets/validations";
 import { getStableChainMeta } from "@/lib/chains/meta";
 import { getContractExplorerUrl } from "@/lib/chains/rpc";
 import { BorrowerPosition, Strategy } from "@/lib/core/types";
@@ -21,6 +20,7 @@ import {
 import { ExternalLink } from "lucide-react";
 import { useChainId } from "wagmi";
 import { PositionDetails } from "./PositionDetails";
+import { AssetInfo } from "@diffuse/config";
 
 export interface BorrowerPositionCardProps {
   selectedAsset: AssetInfo;

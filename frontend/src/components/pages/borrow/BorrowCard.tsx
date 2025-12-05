@@ -2,13 +2,13 @@
 
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
-import { AssetInfo } from "@/lib/assets/validations";
 import { getStableChainMeta } from "@/lib/chains/meta";
 import { Strategy, VaultFullInfo } from "@/lib/core/types";
 import { formatEvmAddress, formatUnits } from "@/lib/formatters/asset";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { formatNumberToKMB } from "@/lib/formatters/number";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
+import { AssetInfo } from "@diffuse/config";
 import { Button, Card, CopyButton, Heading, SimpleTable } from "@diffuse/ui-kit";
 import { Chain } from "@rainbow-me/rainbowkit";
 import { useTranslations } from "next-intl";

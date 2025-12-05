@@ -1,11 +1,4 @@
-import { AssetInfo, AssetInfoArraySchema } from "./validations";
-
-// should follow offical tokenlist schema format https://tokenlists.org
-import assetsMetaJson from "./meta.json" with { type: "json" };
-
-export async function getTokenMetaList(): Promise<AssetInfo[]> {
-  return AssetInfoArraySchema.parseAsync(assetsMetaJson.chains.flatMap(c => c.assets));
-}
+import { AssetInfo } from "@diffuse/config";
 
 export function populateAssetWithMeta<T extends AssetInfo>({
   asset,

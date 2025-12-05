@@ -11,6 +11,10 @@
       "import": {
         "types": "./dist/index.d.ts",
         "default": "./dist/diffuse-prime-config.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/diffuse-prime-config.cjs"
       }
     },
     "./package.json": "./package.json"

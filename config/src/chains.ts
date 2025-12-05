@@ -18,7 +18,7 @@ export const CHAINS = [
       "https://raw.githubusercontent.com/trustwallet/assets/refs/heads/master/blockchains/ethereum/info/logo.png",
     iconBackground: "transparent",
   }),
-];
+] as const;
 
 const ChainContractSchema = z.object({
   address: z.string(),
@@ -58,7 +58,7 @@ const ChainConfigSchema = z.object({
     })
     .catchall(ChainBlockExplorerSchema)
     .optional(),
-  iconUrl: z.string(),
+  iconUrl: z.string().url().optional(),
   iconBackground: z.string(),
   contracts: z.record(ChainContractSchema).optional(),
   testnet: z.boolean().optional(),

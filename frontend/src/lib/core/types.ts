@@ -1,6 +1,6 @@
+import { AssetInfo } from "@diffuse/config";
 import { type Vault } from "@diffuse/sdk-js";
 import { Address, Hash } from "viem";
-import { AssetInfo } from "../assets/validations";
 
 export type Strategy = {
   id: bigint;

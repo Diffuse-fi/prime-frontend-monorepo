@@ -13,12 +13,12 @@ import {
   UncontrolledCollapsible,
   FormField,
 } from "@diffuse/ui-kit";
-import { AssetInfo } from "@/lib/assets/validations";
 import { formatUnits } from "@/lib/formatters/asset";
 import { RisksNotice } from "./RisksNotice";
 import { getVaultRiskLevelColor } from "@/lib/core/utils/vault";
 import { useTranslations } from "next-intl";
 import { StrategiesList } from "./StrategiesList";
+import { AssetInfo } from "@diffuse/config";
 
 type VaultProps = {
   vault: VaultFullInfo;

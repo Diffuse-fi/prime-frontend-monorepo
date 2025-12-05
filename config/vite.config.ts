@@ -35,8 +35,14 @@ export default defineConfig(() => {
       emptyOutDir: true,
       lib: {
         entry: resolve(__dirname, "src/index.ts"),
-        formats: ["es"],
-        fileName: () => "diffuse-prime-config.mjs",
+        formats: ["es", "cjs"],
+        fileName: format => {
+          if (format === "es") {
+            return "diffuse-prime-config.mjs";
+          }
+
+          return "diffuse-prime-config.cjs";
+        },
       },
       rollupOptions: {
         output: {
