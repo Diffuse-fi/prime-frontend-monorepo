@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useLocalStorage } from "../../misc/useLocalStorage";
-import { AssetInfo, AssetInfoSchema } from "../../assets/validations";
+import { AssetInfo, AssetInfoSchema } from "@diffuse/config";
 
 const validateAssetInfo = (value: AssetInfo | null) => {
   return AssetInfoSchema.safeParse(value).success;

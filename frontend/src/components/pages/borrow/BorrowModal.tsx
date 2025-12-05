@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { AssetInfo, AssetInfoSchema } from "@/lib/assets/validations";
 import {
   AssetInput,
   Button,
@@ -33,6 +32,7 @@ import { useVaults } from "@/lib/core/hooks/useVaults";
 import { useRouter } from "@/lib/localization/navigation";
 import { InfoIcon } from "lucide-react";
 import { useDebounce } from "@/lib/misc/useDebounce";
+import { AssetInfo, AssetInfoSchema } from "@diffuse/config";
 
 type ChainSwitchModalProps = {
   open: boolean;

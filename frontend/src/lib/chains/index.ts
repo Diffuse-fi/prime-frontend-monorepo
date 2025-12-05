@@ -1,43 +1,9 @@
 import { Chain } from "@rainbow-me/rainbowkit";
-import {
-  berachain as beraDefault,
-  mainnet,
-  arbitrum,
-  sonic as sonicDefault,
-} from "viem/chains";
-import { getStableChainMeta } from "./meta";
 import { env } from "@/env";
+import { CHAINS } from "@diffuse/config";
 
-export const berachain = {
-  ...beraDefault,
-  ...getStableChainMeta(beraDefault.id),
-};
-
-export const ethMainnet = {
-  ...mainnet,
-  ...getStableChainMeta(mainnet.id),
-};
-
-export const arbitrumOne = {
-  ...arbitrum,
-  ...getStableChainMeta(arbitrum.id),
-};
-
-export const sonic = {
-  ...sonicDefault,
-  ...getStableChainMeta(sonicDefault.id),
-};
-
-export const chains = {
-  testnets: [] as Chain[],
-  mainnets: [ethMainnet, berachain, arbitrumOne, sonic],
-} as const satisfies Record<"testnets" | "mainnets", readonly Chain[]>;
-
-export function getAvailableChains(): readonly [Chain, ...Chain[]] {
-  return [
-    ...chains.mainnets,
-    ...chains.testnets,
-  ] as [Chain, ...Chain[]];
+export function getAvailableChains() {
+  return CHAINS;
 }
 
 export function getInitialChain(): Chain {

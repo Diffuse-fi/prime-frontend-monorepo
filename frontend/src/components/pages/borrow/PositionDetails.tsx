@@ -1,10 +1,10 @@
-import { AssetInfo } from "@/lib/assets/validations";
 import { Strategy } from "@/lib/core/types";
 import { formatAsset, formatUnits } from "@/lib/formatters/asset";
 import { formatDateTime } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { calcAprInterest } from "@/lib/formulas/apr";
 import { calcDaysInterval } from "@/lib/formulas/date";
+import { AssetInfo } from "@diffuse/config";
 import {
   InfoIcon,
   RemoteText,

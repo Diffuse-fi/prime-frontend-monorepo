@@ -3,16 +3,25 @@ import type { NextConfig } from "next";
 import { getHeaders } from "./headers";
 import createNextIntlPlugin from "next-intl/plugin";
 import localizatiionSettings from "./src/localization.json" with { type: "json" };
+import { getRemotePatternsFromAssetsAndChains } from "@/lib/misc/nextImagePatterns";
 
 const withNextIntl = createNextIntlPlugin({
   requestConfig: "./src/lib/localization/request.ts",
 });
 
 const isProd = process.env.NODE_ENV === "production";
+const isVercelProdDeploy = process.env.VERCEL_ENV === "production";
+
 const enableHSTS = process.env.ENABLE_HTTPS_SECURITY_HEADERS === "true";
 const sentryOrg = process.env.SENTRY_ORGANIZATION;
 const sentryProject = process.env.SENTRY_PROJECT;
 const sentryAuthToken = process.env.SENTRY_AUTH_TOKEN;
+const sentryEnabled = process.env.NEXT_PUBLIC_ENABLE_SENTRY === "true";
+
+const enableSentry =
+  isProd &&
+  isVercelProdDeploy &&
+  Boolean(sentryOrg && sentryProject && sentryAuthToken && sentryEnabled);
 
 const SUPPORTED_LOCALES = localizatiionSettings.supported;
 const DEFAULT_LOCALE = localizatiionSettings.default;
@@ -44,21 +53,7 @@ const nextConfig: NextConfig = {
     // This option enables to fetch those images on the server side and optimize them for
     // better performance.
     remotePatterns: [
-      // Load asset images from smold.app (Bera, etc)
-      {
-        protocol: "https",
-        hostname: "assets.smold.app",
-      },
-      // Load asset images from raw.githubusercontent.com (Trustwallet tokenlist or other)
-      {
-        protocol: "https",
-        hostname: "raw.githubusercontent.com",
-      },
-      // Load PT token images from Pendle storage.googleapis.com
-      {
-        protocol: "https",
-        hostname: "storage.googleapis.com",
-      },
+      ...getRemotePatternsFromAssetsAndChains(),
     ],
   },
   redirects: async () => {
@@ -102,5 +97,5 @@ const sentryBuildOptions = {
 } satisfies SentryBuildOptions;
 
 export default withNextIntl(
-  isProd ? withSentryConfig(nextConfig, sentryBuildOptions) : nextConfig
+  enableSentry ? withSentryConfig(nextConfig, sentryBuildOptions) : nextConfig
 );

@@ -1,5 +1,5 @@
 import { AssetImage } from "@/components/misc/images/AssetImage";
-import { AssetInfo } from "@/lib/assets/validations";
+import { AssetInfo } from "@diffuse/config";
 import { Skeleton, AssetCard, RadioGroup, RadioGroupItem, cn } from "@diffuse/ui-kit";
 import { RadioGroupProps } from "@diffuse/ui-kit/RadioGroup";
 

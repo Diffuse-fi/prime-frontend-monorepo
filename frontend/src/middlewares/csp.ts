@@ -1,24 +1,22 @@
 import { type Finalizer } from "./utils";
 import { env } from "@/env";
-import { RPCs } from "@/lib/chains/rpc";
+import { getAssetsResourcesUrls, getChainsDefaultRpcUrls } from "@diffuse/config";
 
 const isProd = process.env.NODE_ENV === "production";
 const httpsSecurityEnabled = !!env.ENABLE_HTTPS_SECURITY_HEADERS;
 
-// Allowed sources to connect to, e.g. for fetch, WebSocket, etc.
 const allowedSources = [
   "'self'",
   "https://www.google-analytics.com",
-  // Web3Modal API (used by WalletConnect V2)
-  "https://api.web3modal.org",
   // WalletConnect V2
+  "https://api.web3modal.org",
   "wss://relay.walletconnect.org",
   "https://relay.walletconnect.org",
   "https://pulse.walletconnect.org",
   // EUC domain for ENS avatar images
   "https://euc.li",
   // Allowed chains RPC URLs
-  ...Object.values(RPCs).flat(),
+  ...getChainsDefaultRpcUrls(),
 ]
   .filter(Boolean)
   .join(" ");
@@ -31,7 +29,7 @@ const allowedScriptSources = [
 
 const allowedFrameAncestors = [
   // Specify here if a website needs to be embedded in an iframe on a specific domain
-  "https://app.safe.global", // Gnosis Safe
+  "https://app.safe.global", // Gnosis Safe can embed our app in an iframe
 ]
   .filter(Boolean)
   .join(" ");
@@ -44,8 +42,8 @@ const allowedFrameSources = [
   .join(" ");
 
 const allowedImageSources = [
-  "https://euc.li", // EUC domain for ENS avatar images
-  "https://storage.googleapis.com", // Pendle token images
+  "https://euc.li", // EUC domain for ENS avatar images for users with EUC avatars
+  ...getAssetsResourcesUrls(),
 ]
   .filter(Boolean)
   .join(" ");

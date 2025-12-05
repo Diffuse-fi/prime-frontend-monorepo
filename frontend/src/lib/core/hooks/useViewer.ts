@@ -8,12 +8,12 @@ import { usePublicClient } from "wagmi";
 import { useMemo } from "react";
 import { Viewer } from "@diffuse/sdk-js";
 import pLimit from "p-limit";
-import { useAssetsMeta } from "@/lib/assets/useAssetsMeta";
 import {
   populateAssetListWithMeta,
   populateAssetWithMeta,
 } from "@/lib/assets/assetsMeta";
 import { VaultRiskLevel } from "../types";
+import { ASSETS } from "@diffuse/config";
 
 type UseViewerParams = {
   addressOverride?: Address;
@@ -29,6 +29,8 @@ export const viewerQK = {
 };
 
 const limit = pLimit(6);
+
+const meta = ASSETS.chains.flatMap(c => c.assets);
 
 export function viewerAllVaultsQuery(
   viewer: Viewer,
@@ -63,7 +65,6 @@ export function viewerAllVaultsQuery(
 export function useViewer({ addressOverride, chainId }: UseViewerParams) {
   const normalizedAddress = addressOverride ? getAddress(addressOverride) : null;
   const publicClient = usePublicClient({ chainId });
-  const { meta } = useAssetsMeta(chainId);
 
   const viewer = useMemo(() => {
     if (!publicClient) return null;
@@ -81,7 +82,6 @@ export function useViewer({ addressOverride, chainId }: UseViewerParams) {
 
   const allVaults = useMemo(() => {
     if (!query.data) return [];
-    if (!meta) return [];
 
     return query.data.map(v => ({
       ...v,
@@ -109,7 +109,7 @@ export function useViewer({ addressOverride, chainId }: UseViewerParams) {
         meta,
       }),
     }));
-  }, [query.data, meta, chainId]);
+  }, [query.data, chainId]);
 
   return {
     allVaults,

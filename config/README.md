@@ -4,6 +4,8 @@
 
 This package provides shared configuration and settings for the Diffuse Prime frontend monorepo. It includes common chain, assets and addresses configurations used across multiple packages in the monorepo.
 
+It is important to provide esm and cjs builds for compatibility with different module systems, e.g. Next.js which requires cjs for certain imports.
+
 ## Usage
 
 To use this configuration package in your project, install it as a dependency:

@@ -1,7 +1,8 @@
-import { mainnet, sonic } from "viem/chains";
+import { mainnet } from "viem/chains";
 import { createIndexer } from "@diffuse/indexer";
 import { env } from "@/env";
-import { RPCs } from "../chains/rpc";
+import { getAvailableChains } from "../chains";
+import { Chain } from "@rainbow-me/rainbowkit";
 
 export const indexerDbConfig = {
   connectionString: env.INDEXER_DATABASE_URL,
@@ -9,14 +10,17 @@ export const indexerDbConfig = {
 };
 
 export const indexer = createIndexer({
-  chains: [mainnet, sonic],
-  rpcUrls: Object.fromEntries(
-    [mainnet, sonic].map(chain => [chain.id, RPCs[chain.id][0]!])
+  chains: getAvailableChains() as unknown as [Chain, ...Chain[]],
+  rpcUrls: getAvailableChains().reduce(
+    (acc, chain) => {
+      acc[chain.id] = chain.rpcUrls.default.http[0];
+      return acc;
+    },
+    {} as Record<number, string>
   ),
   db: indexerDbConfig,
   // Will be used on the first run when there is no checkpoint in the database
   startBlocks: {
     [mainnet.id]: 23_861_823,
-    [sonic.id]: 56_206_505,
   },
 });
