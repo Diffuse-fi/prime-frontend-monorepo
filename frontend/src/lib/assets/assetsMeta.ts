@@ -1,13 +1,10 @@
 import { AssetInfo } from "@diffuse/config";
+import { ASSETS } from "@diffuse/config";
 
-export function populateAssetWithMeta<T extends AssetInfo>({
-  asset,
-  meta,
-}: {
-  asset: T;
-  meta: AssetInfo[];
-}): T {
-  const metaAsset = meta.find(
+const assetsAllChains = ASSETS.chains.flatMap(c => c.assets);
+
+export function populateAssetWithMeta<T extends AssetInfo>(asset: T): T {
+  const metaAsset = assetsAllChains.find(
     t =>
       t.chainId === asset.chainId &&
       t.address.toLowerCase() === asset.address.toLowerCase()
@@ -30,18 +27,6 @@ export function populateAssetWithMeta<T extends AssetInfo>({
   return asset;
 }
 
-export function populateAssetListWithMeta<T extends AssetInfo>({
-  list,
-  meta,
-}: {
-  list: T[];
-  meta: AssetInfo[];
-}): T[] {
-  const result: T[] = [];
-
-  for (const asset of list) {
-    result.push(populateAssetWithMeta({ asset, meta }));
-  }
-
-  return result;
+export function populateAssetListWithMeta<T extends AssetInfo>(list: T[]): T[] {
+  return list.map(a => populateAssetWithMeta(a));
 }

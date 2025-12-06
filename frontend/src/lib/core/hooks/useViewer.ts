@@ -13,7 +13,6 @@ import {
   populateAssetWithMeta,
 } from "@/lib/assets/assetsMeta";
 import { VaultRiskLevel } from "../types";
-import { ASSETS } from "@diffuse/config";
 
 type UseViewerParams = {
   addressOverride?: Address;
@@ -29,8 +28,6 @@ export const viewerQK = {
 };
 
 const limit = pLimit(6);
-
-const meta = ASSETS.chains.flatMap(c => c.assets);
 
 export function viewerAllVaultsQuery(
   viewer: Viewer,
@@ -88,26 +85,22 @@ export function useViewer({ addressOverride, chainId }: UseViewerParams) {
       strategies: v.strategies.map(s => ({
         ...s,
         token: populateAssetWithMeta({
-          asset: {
-            address: getAddress(s.token.asset),
-            chainId: chainId,
-            name: s.token.symbol,
-            decimals: s.token.decimals,
-            symbol: s.token.symbol,
-          },
-          meta,
+          address: getAddress(s.token.asset),
+          chainId: chainId,
+          name: s.token.symbol,
+          decimals: s.token.decimals,
+          symbol: s.token.symbol,
         }),
       })),
       riskLevel: v.riskLevel as VaultRiskLevel,
-      assets: populateAssetListWithMeta({
-        list: v.assets.map(a => ({
+      assets: populateAssetListWithMeta(
+        v.assets.map(a => ({
           ...a,
           address: getAddress(a.asset),
           chainId: chainId,
           name: a.symbol,
-        })),
-        meta,
-      }),
+        }))
+      ),
     }));
   }, [query.data, chainId]);
 

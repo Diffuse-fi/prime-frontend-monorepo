@@ -73,7 +73,7 @@ export class Viewer extends ContractBase {
           address: this.getContract().address,
           abi: viewerAbi,
           functionName: "previewEnterStrategy",
-          args: [vault, strategyId],
+          args: [vault, strategyId, "0x"], // TODO: fix args
         }),
         signal
       );

@@ -3,6 +3,35 @@ import { Abi } from "viem";
 export const vaultAbi = [
   {
     type: "function",
+    name: "_liquidateSingle",
+    inputs: [
+      {
+        name: "vaultAndPositionId",
+        type: "bytes32",
+        internalType: "bytes32",
+      },
+      {
+        name: "minAssetsOut",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+      {
+        name: "data",
+        type: "bytes",
+        internalType: "bytes",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "accruedLenderYield",
     inputs: [
       {
@@ -36,6 +65,19 @@ export const vaultAbi = [
     inputs: [
       {
         name: "borrower",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "addLenderToWhitelist",
+    inputs: [
+      {
+        name: "lender",
         type: "address",
         internalType: "address",
       },
@@ -98,6 +140,16 @@ export const vaultAbi = [
             internalType: "address",
           },
           {
+            name: "minLeverage",
+            type: "uint24",
+            internalType: "uint24",
+          },
+          {
+            name: "maxLeverage",
+            type: "uint24",
+            internalType: "uint24",
+          },
+          {
             name: "immutableData",
             type: "bytes32[]",
             internalType: "bytes32[]",
@@ -111,6 +163,11 @@ export const vaultAbi = [
             name: "reverseRoute",
             type: "address[]",
             internalType: "address[]",
+          },
+          {
+            name: "minStrategyAssetCollateralAmount",
+            type: "uint256",
+            internalType: "uint256",
           },
         ],
       },
@@ -247,9 +304,9 @@ export const vaultAbi = [
         internalType: "uint256",
       },
       {
-        name: "minStrategyToReceive",
-        type: "uint256",
-        internalType: "uint256",
+        name: "minAssetsOut",
+        type: "uint256[]",
+        internalType: "uint256[]",
       },
       {
         name: "deadline",
@@ -264,6 +321,42 @@ export const vaultAbi = [
         internalType: "uint256",
       },
     ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "changeReverseRoute",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "newReverseRoute",
+        type: "address[]",
+        internalType: "address[]",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "changeRoute",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "newRoute",
+        type: "address[]",
+        internalType: "address[]",
+      },
+    ],
+    outputs: [],
     stateMutability: "nonpayable",
   },
   {
@@ -438,6 +531,11 @@ export const vaultAbi = [
             internalType: "uint256",
           },
           {
+            name: "minAssetsOut",
+            type: "uint256[]",
+            internalType: "uint256[]",
+          },
+          {
             name: "strategyBalance",
             type: "uint256",
             internalType: "uint256",
@@ -461,6 +559,11 @@ export const vaultAbi = [
             name: "liquidationPrice",
             type: "uint256",
             internalType: "uint256",
+          },
+          {
+            name: "cachedRoute",
+            type: "address[]",
+            internalType: "address[]",
           },
         ],
       },
@@ -564,6 +667,11 @@ export const vaultAbi = [
             internalType: "uint256",
           },
           {
+            name: "minAssetsOut",
+            type: "uint256[]",
+            internalType: "uint256[]",
+          },
+          {
             name: "strategyBalance",
             type: "uint256",
             internalType: "uint256",
@@ -587,6 +695,11 @@ export const vaultAbi = [
             name: "liquidationPrice",
             type: "uint256",
             internalType: "uint256",
+          },
+          {
+            name: "cachedRoute",
+            type: "address[]",
+            internalType: "address[]",
           },
         ],
       },
@@ -666,6 +779,19 @@ export const vaultAbi = [
   },
   {
     type: "function",
+    name: "getFirstActualStrategyId",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "getLiquidationFee",
     inputs: [],
     outputs: [
@@ -699,6 +825,19 @@ export const vaultAbi = [
         name: "",
         type: "address",
         internalType: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "getMinBaseAssetCollateralAmount",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     stateMutability: "view",
@@ -846,6 +985,16 @@ export const vaultAbi = [
             internalType: "address",
           },
           {
+            name: "minLeverage",
+            type: "uint24",
+            internalType: "uint24",
+          },
+          {
+            name: "maxLeverage",
+            type: "uint24",
+            internalType: "uint24",
+          },
+          {
             name: "immutableData",
             type: "bytes32[]",
             internalType: "bytes32[]",
@@ -860,6 +1009,11 @@ export const vaultAbi = [
             type: "address[]",
             internalType: "address[]",
           },
+          {
+            name: "minStrategyAssetCollateralAmount",
+            type: "uint256",
+            internalType: "uint256",
+          },
         ],
       },
     ],
@@ -867,7 +1021,7 @@ export const vaultAbi = [
   },
   {
     type: "function",
-    name: "getStrategyLeftPointer",
+    name: "getStrategyLength",
     inputs: [],
     outputs: [
       {
@@ -880,8 +1034,14 @@ export const vaultAbi = [
   },
   {
     type: "function",
-    name: "getStrategyLength",
-    inputs: [],
+    name: "getStrategyOutstandingYield",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
     outputs: [
       {
         name: "",
@@ -932,10 +1092,55 @@ export const vaultAbi = [
   },
   {
     type: "function",
+    name: "getWhitelistedLenders",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "address[]",
+        internalType: "address[]",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     name: "isBorrowerWhitelisted",
     inputs: [
       {
         name: "borrower",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "isLenderWhitelistDisabled",
+    inputs: [],
+    outputs: [
+      {
+        name: "",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "isLenderWhitelisted",
+    inputs: [
+      {
+        name: "lender",
         type: "address",
         internalType: "address",
       },
@@ -964,24 +1169,29 @@ export const vaultAbi = [
         internalType: "bytes32[]",
       },
       {
+        name: "minAssetsOut",
+        type: "uint256[][]",
+        internalType: "uint256[][]",
+      },
+      {
         name: "proof",
         type: "bytes",
         internalType: "bytes",
       },
+      {
+        name: "datas",
+        type: "bytes[]",
+        internalType: "bytes[]",
+      },
     ],
     outputs: [
       {
-        name: "liquidationCount",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
         name: "assetsReceived",
-        type: "uint256[]",
-        internalType: "uint256[]",
+        type: "uint256[][]",
+        internalType: "uint256[][]",
       },
     ],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
   },
   {
     type: "function",
@@ -1124,6 +1334,30 @@ export const vaultAbi = [
   },
   {
     type: "function",
+    name: "previewActivatePosition",
+    inputs: [
+      {
+        name: "positionId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "data",
+        type: "bytes",
+        internalType: "bytes",
+      },
+    ],
+    outputs: [
+      {
+        name: "assetsReceived",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "previewBorrow",
     inputs: [
       {
@@ -1151,12 +1385,17 @@ export const vaultAbi = [
         type: "uint256",
         internalType: "uint256",
       },
+      {
+        name: "data",
+        type: "bytes",
+        internalType: "bytes",
+      },
     ],
     outputs: [
       {
-        name: "strategyAmount",
-        type: "uint256",
-        internalType: "uint256",
+        name: "assetsReceived",
+        type: "uint256[]",
+        internalType: "uint256[]",
       },
     ],
     stateMutability: "nonpayable",
@@ -1194,6 +1433,11 @@ export const vaultAbi = [
         type: "uint256[]",
         internalType: "uint256[]",
       },
+      {
+        name: "datas",
+        type: "bytes[]",
+        internalType: "bytes[]",
+      },
     ],
     outputs: [
       {
@@ -1203,8 +1447,8 @@ export const vaultAbi = [
       },
       {
         name: "assetsReceived",
-        type: "uint256[]",
-        internalType: "uint256[]",
+        type: "uint256[][]",
+        internalType: "uint256[][]",
       },
     ],
     stateMutability: "nonpayable",
@@ -1222,6 +1466,11 @@ export const vaultAbi = [
         name: "positions",
         type: "uint256[]",
         internalType: "uint256[]",
+      },
+      {
+        name: "datas",
+        type: "bytes[]",
+        internalType: "bytes[]",
       },
     ],
     outputs: [],
@@ -1341,6 +1590,19 @@ export const vaultAbi = [
   },
   {
     type: "function",
+    name: "removeLenderFromWhitelist",
+    inputs: [
+      {
+        name: "lender",
+        type: "address",
+        internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "reverseRoute",
     inputs: [
       {
@@ -1357,6 +1619,19 @@ export const vaultAbi = [
       },
     ],
     stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "revokeLiquidationRequests",
+    inputs: [
+      {
+        name: "positions",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
   },
   {
     type: "function",
@@ -1444,6 +1719,19 @@ export const vaultAbi = [
   },
   {
     type: "function",
+    name: "setLenderWhitelistStatus",
+    inputs: [
+      {
+        name: "_isLenderWhitelistDisabled",
+        type: "bool",
+        internalType: "bool",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "setLiquidationFee",
     inputs: [
       {
@@ -1476,6 +1764,19 @@ export const vaultAbi = [
         name: "liquidator",
         type: "address",
         internalType: "address",
+      },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "setMinBaseAssetCollateralAmount",
+    inputs: [
+      {
+        name: "minBaseAssetCollateralAmount",
+        type: "uint256",
+        internalType: "uint256",
       },
     ],
     outputs: [],
@@ -1544,15 +1845,20 @@ export const vaultAbi = [
         type: "bytes",
         internalType: "bytes",
       },
+      {
+        name: "data",
+        type: "bytes",
+        internalType: "bytes",
+      },
     ],
     outputs: [
       {
-        name: "strategyAmount",
-        type: "uint256",
-        internalType: "uint256",
+        name: "assetsReceived",
+        type: "uint256[]",
+        internalType: "uint256[]",
       },
     ],
-    stateMutability: "nonpayable",
+    stateMutability: "payable",
   },
   {
     type: "function",
@@ -1718,20 +2024,35 @@ export const vaultAbi = [
       },
       {
         name: "minAssetsOut",
-        type: "uint256",
-        internalType: "uint256",
+        type: "uint256[]",
+        internalType: "uint256[]",
       },
       {
         name: "deadline",
         type: "uint256",
         internalType: "uint256",
       },
+      {
+        name: "data",
+        type: "bytes",
+        internalType: "bytes",
+      },
     ],
     outputs: [
       {
-        name: "",
+        name: "returned",
+        type: "uint256[]",
+        internalType: "uint256[]",
+      },
+      {
+        name: "borrowerGets",
         type: "uint256",
         internalType: "uint256",
+      },
+      {
+        name: "finished",
+        type: "bool",
+        internalType: "bool",
       },
     ],
     stateMutability: "nonpayable",
@@ -1786,6 +2107,11 @@ export const vaultAbi = [
         name: "strategyIds",
         type: "uint256[]",
         internalType: "uint256[]",
+      },
+      {
+        name: "user",
+        type: "address",
+        internalType: "address",
       },
     ],
     outputs: [
@@ -2053,6 +2379,19 @@ export const vaultAbi = [
   },
   {
     type: "event",
+    name: "BorrowerPositionNotSubjectToLiquidation",
+    inputs: [
+      {
+        name: "id",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "BorrowerPositionSubjectToLiquidation",
     inputs: [
       {
@@ -2180,6 +2519,25 @@ export const vaultAbi = [
   },
   {
     type: "event",
+    name: "FirstActualStrategyIdSet",
+    inputs: [
+      {
+        name: "prev",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "current",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "LenderYieldWithdrawn",
     inputs: [
       {
@@ -2220,10 +2578,29 @@ export const vaultAbi = [
         internalType: "address",
       },
       {
-        name: "returned",
-        type: "uint256",
+        name: "assetsReceived",
+        type: "uint256[]",
         indexed: false,
+        internalType: "uint256[]",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "LiquidationFailed",
+    inputs: [
+      {
+        name: "id",
+        type: "uint256",
+        indexed: true,
         internalType: "uint256",
+      },
+      {
+        name: "reason",
+        type: "bytes",
+        indexed: false,
+        internalType: "bytes",
       },
     ],
     anonymous: false,
@@ -2259,22 +2636,29 @@ export const vaultAbi = [
     name: "LiquidationRequest",
     inputs: [
       {
-        name: "vaultsAndPositions",
-        type: "tuple[]",
+        name: "vault",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "positions",
+        type: "uint256[]",
         indexed: false,
-        internalType: "struct TypeLib.VaultAndPositions[]",
-        components: [
-          {
-            name: "vault",
-            type: "address",
-            internalType: "address",
-          },
-          {
-            name: "positions",
-            type: "uint256[]",
-            internalType: "uint256[]",
-          },
-        ],
+        internalType: "uint256[]",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "MinBaseAssetCollateralAmountSet",
+    inputs: [
+      {
+        name: "minBaseAssetCollateralAmount",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
       },
     ],
     anonymous: false,
@@ -2320,16 +2704,54 @@ export const vaultAbi = [
         internalType: "uint256",
       },
       {
-        name: "minStrategyBalance",
-        type: "uint256",
+        name: "minAssetsOut",
+        type: "uint256[]",
         indexed: false,
-        internalType: "uint256",
+        internalType: "uint256[]",
       },
       {
         name: "liquidationPrice",
         type: "uint256",
         indexed: false,
         internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "ReverseRouteChanged",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "newReverseRoute",
+        type: "address[]",
+        indexed: false,
+        internalType: "address[]",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "RouteChanged",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "newRoute",
+        type: "address[]",
+        indexed: false,
+        internalType: "address[]",
       },
     ],
     anonymous: false,
@@ -2356,25 +2778,6 @@ export const vaultAbi = [
         type: "address",
         indexed: true,
         internalType: "contract IAutomataDcapAttestationFee",
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "SetBorrowApr",
-    inputs: [
-      {
-        name: "strategyId",
-        type: "uint256",
-        indexed: true,
-        internalType: "uint256",
-      },
-      {
-        name: "borrowApr",
-        type: "uint256",
-        indexed: true,
-        internalType: "uint256",
       },
     ],
     anonymous: false,
@@ -2453,6 +2856,25 @@ export const vaultAbi = [
         type: "address",
         indexed: true,
         internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "SetRiskLevel",
+    inputs: [
+      {
+        name: "vault",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "riskLevel",
+        type: "uint8",
+        indexed: true,
+        internalType: "uint8",
       },
     ],
     anonymous: false,
@@ -2585,6 +3007,50 @@ export const vaultAbi = [
   },
   {
     type: "event",
+    name: "UnfinishedSwap",
+    inputs: [
+      {
+        name: "positionId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "UnpaidYieldChange",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
+      },
+      {
+        name: "lender",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "amount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+      {
+        name: "newAmount",
+        type: "uint256",
+        indexed: false,
+        internalType: "uint256",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
     name: "VaultDeployed",
     inputs: [
       {
@@ -2616,19 +3082,6 @@ export const vaultAbi = [
         type: "uint8",
         indexed: false,
         internalType: "uint8",
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "VaultRemoved",
-    inputs: [
-      {
-        name: "vault",
-        type: "address",
-        indexed: true,
-        internalType: "contract IVaultProxy",
       },
     ],
     anonymous: false,
@@ -2777,6 +3230,11 @@ export const vaultAbi = [
   },
   {
     type: "error",
+    name: "BorrowerPositionOverflow",
+    inputs: [],
+  },
+  {
+    type: "error",
     name: "BorrowersNotFinished",
     inputs: [
       {
@@ -2788,13 +3246,29 @@ export const vaultAbi = [
   },
   {
     type: "error",
-    name: "ContractIsPaused",
+    name: "CallAlreadyPending",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "CallNotReady",
     inputs: [
       {
-        name: "paused",
-        type: "bool",
-        internalType: "bool",
+        name: "unlockTime",
+        type: "uint256",
+        internalType: "uint256",
       },
+    ],
+  },
+  {
+    type: "error",
+    name: "CallNotRequested",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "ContractIsPaused",
+    inputs: [
       {
         name: "reason",
         type: "string",
@@ -2824,6 +3298,38 @@ export const vaultAbi = [
   },
   {
     type: "error",
+    name: "FailedCall",
+    inputs: [
+      {
+        name: "target",
+        type: "address",
+        internalType: "address",
+      },
+      {
+        name: "data",
+        type: "bytes",
+        internalType: "bytes",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "InsufficientAmountOut",
+    inputs: [
+      {
+        name: "amountOut",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "minAmountOut",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
     name: "InsufficientAssets",
     inputs: [
       {
@@ -2840,25 +3346,14 @@ export const vaultAbi = [
   },
   {
     type: "error",
-    name: "InsufficientAssetsReceived",
-    inputs: [
-      {
-        name: "returned",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "minAssetsOut",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-  },
-  {
-    type: "error",
     name: "InsufficientAssetsReceivedForPosition",
     inputs: [
       {
+        name: "token",
+        type: "address",
+        internalType: "address",
+      },
+      {
         name: "returned",
         type: "uint256",
         internalType: "uint256",
@@ -2867,11 +3362,6 @@ export const vaultAbi = [
         name: "minAssetsOut",
         type: "uint256",
         internalType: "uint256",
-      },
-      {
-        name: "vault",
-        type: "address",
-        internalType: "address",
       },
       {
         name: "positionId",
@@ -2887,17 +3377,12 @@ export const vaultAbi = [
   },
   {
     type: "error",
-    name: "InsufficientStrategyBalance",
+    name: "InterceptedAdapterNotInRoute",
     inputs: [
       {
-        name: "strategyBalance",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "expectedStrategyBalance",
-        type: "uint256",
-        internalType: "uint256",
+        name: "interceptedOnAdapter",
+        type: "address",
+        internalType: "address",
       },
     ],
   },
@@ -2959,6 +3444,11 @@ export const vaultAbi = [
   },
   {
     type: "error",
+    name: "InvalidContract",
+    inputs: [],
+  },
+  {
+    type: "error",
     name: "InvalidCurator",
     inputs: [],
   },
@@ -2994,38 +3484,7 @@ export const vaultAbi = [
   },
   {
     type: "error",
-    name: "InvalidEventEmitter",
-    inputs: [],
-  },
-  {
-    type: "error",
     name: "InvalidFeeReceiver",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "InvalidFinalTokenOutBalance",
-    inputs: [
-      {
-        name: "tokenOutBalanceAfter",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "tokenOutBalanceBefore",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-  },
-  {
-    type: "error",
-    name: "InvalidImmutableData",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "InvalidInput",
     inputs: [],
   },
   {
@@ -3035,7 +3494,7 @@ export const vaultAbi = [
   },
   {
     type: "error",
-    name: "InvalidLastToken",
+    name: "InvalidInputTokenIndex",
     inputs: [],
   },
   {
@@ -3057,7 +3516,13 @@ export const vaultAbi = [
   {
     type: "error",
     name: "InvalidLeverage",
-    inputs: [],
+    inputs: [
+      {
+        name: "leverage",
+        type: "uint24",
+        internalType: "uint24",
+      },
+    ],
   },
   {
     type: "error",
@@ -3097,7 +3562,12 @@ export const vaultAbi = [
   },
   {
     type: "error",
-    name: "InvalidMinStrategyToReceive",
+    name: "InvalidMinBaseAssetCollateralAmount",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidMinter",
     inputs: [],
   },
   {
@@ -3144,13 +3614,24 @@ export const vaultAbi = [
   },
   {
     type: "error",
+    name: "InvalidOutputTokenIndex",
+    inputs: [],
+  },
+  {
+    type: "error",
     name: "InvalidPool",
     inputs: [],
   },
   {
     type: "error",
     name: "InvalidRoute",
-    inputs: [],
+    inputs: [
+      {
+        name: "_type",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
   },
   {
     type: "error",
@@ -3179,7 +3660,17 @@ export const vaultAbi = [
   },
   {
     type: "error",
+    name: "InvalidStrategyOrder",
+    inputs: [],
+  },
+  {
+    type: "error",
     name: "InvalidStrategyType",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "InvalidToken",
     inputs: [],
   },
   {
@@ -3204,28 +3695,22 @@ export const vaultAbi = [
   },
   {
     type: "error",
-    name: "InvalidYtIndex",
-    inputs: [
-      {
-        name: "positionId",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "realYtIndex",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "ytIndex",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
+    name: "LenderAlreadyWhitelisted",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "LenderNotWhitelisted",
+    inputs: [],
   },
   {
     type: "error",
     name: "LiquidatorOnly",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "NoStrategies",
     inputs: [],
   },
   {
@@ -3246,33 +3731,12 @@ export const vaultAbi = [
   },
   {
     type: "error",
-    name: "NotEnoughStrategyReceived",
-    inputs: [
-      {
-        name: "actual",
-        type: "uint256",
-        internalType: "uint256",
-      },
-      {
-        name: "minimal",
-        type: "uint256",
-        internalType: "uint256",
-      },
-    ],
-  },
-  {
-    type: "error",
     name: "OnlyCallsAllowed",
     inputs: [],
   },
   {
     type: "error",
     name: "OnlyVaultAllowed",
-    inputs: [],
-  },
-  {
-    type: "error",
-    name: "OnlyVaultRegistryAllowed",
     inputs: [],
   },
   {
@@ -3354,8 +3818,19 @@ export const vaultAbi = [
       },
       {
         name: "assetsToReceive",
-        type: "uint256[]",
-        internalType: "uint256[]",
+        type: "uint256[][]",
+        internalType: "uint256[][]",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "ProofAlreadyUsed",
+    inputs: [
+      {
+        name: "proof",
+        type: "bytes",
+        internalType: "bytes",
       },
     ],
   },
@@ -3368,6 +3843,17 @@ export const vaultAbi = [
     type: "error",
     name: "SelectorNotFound",
     inputs: [],
+  },
+  {
+    type: "error",
+    name: "StrategyArchived",
+    inputs: [
+      {
+        name: "strategyId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
   },
   {
     type: "error",
@@ -3419,6 +3905,11 @@ export const vaultAbi = [
   {
     type: "error",
     name: "StrategyNotFinished",
+    inputs: [],
+  },
+  {
+    type: "error",
+    name: "SwapNotFinished",
     inputs: [],
   },
   {
@@ -3483,6 +3974,11 @@ export const vaultAbi = [
         type: "uint256",
         internalType: "uint256",
       },
+      {
+        name: "lenderPointsDebt",
+        type: "uint256",
+        internalType: "uint256",
+      },
     ],
   },
   {
@@ -3513,6 +4009,39 @@ export const vaultAbi = [
   },
   {
     type: "error",
+    name: "UnfinishedSwapAlreadyExists",
+    inputs: [
+      {
+        name: "positionId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "UnfinishedSwapNotExists",
+    inputs: [
+      {
+        name: "positionId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
+    name: "UnfinishedSwapNotFinished",
+    inputs: [
+      {
+        name: "positionId",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
     name: "UnpaidYieldAmountOverflow",
     inputs: [
       {
@@ -3529,6 +4058,22 @@ export const vaultAbi = [
   },
   {
     type: "error",
+    name: "UserDebtOverflow",
+    inputs: [
+      {
+        name: "accruedFromShares",
+        type: "uint256",
+        internalType: "uint256",
+      },
+      {
+        name: "userDebt",
+        type: "uint256",
+        internalType: "uint256",
+      },
+    ],
+  },
+  {
+    type: "error",
     name: "VaultNotFound",
     inputs: [
       {
@@ -3537,6 +4082,11 @@ export const vaultAbi = [
         internalType: "address",
       },
     ],
+  },
+  {
+    type: "error",
+    name: "VaultNotWhitelisted",
+    inputs: [],
   },
   {
     type: "error",

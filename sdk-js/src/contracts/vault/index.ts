@@ -189,7 +189,7 @@ export class Vault extends ContractBase {
       collateralAmount,
       assetsToBorrow,
       liquidationPrice,
-      minStrategyToReceive,
+      minAssetsOut,
       deadline,
     ]: [
       bigint,
@@ -197,7 +197,7 @@ export class Vault extends ContractBase {
       bigint,
       bigint,
       bigint,
-      bigint,
+      bigint[],
       bigint,
     ],
     { signal }: SdkRequestOptions = {}
@@ -218,7 +218,7 @@ export class Vault extends ContractBase {
             collateralAmount,
             assetsToBorrow,
             liquidationPrice,
-            minStrategyToReceive,
+            minAssetsOut,
             deadline,
           ],
           account: this.init.client.wallet.account!,
@@ -238,7 +238,7 @@ export class Vault extends ContractBase {
           collateralAmount,
           assetsToBorrow,
           liquidationPrice,
-          minStrategyToReceive,
+          minAssetsOut,
           deadline,
         ],
         contract: contractName,
@@ -312,7 +312,14 @@ export class Vault extends ContractBase {
           address: this.getContract().address,
           abi: vaultAbi,
           functionName: "previewBorrow",
-          args: [forUser, strategyId, collateralType, collateralAmount, assetsToBorrow],
+          args: [
+            forUser,
+            strategyId,
+            collateralType,
+            collateralAmount,
+            assetsToBorrow,
+            "0x",
+          ], // TODO: fix args
         }),
         signal
       );
@@ -343,22 +350,24 @@ export class Vault extends ContractBase {
     if (!this.init.client.wallet) throw new WalletRequiredError("unborrow");
 
     try {
-      const minAssetsOutForPreview = 0n;
+      const minAssetsOutForPreview = [0n];
       const sim = await abortable(
         this.init.client.public.simulateContract({
           address: this.getContract().address,
           abi: vaultAbi,
           functionName: "unborrow",
-          args: [positionId, minAssetsOutForPreview, deadline],
+          args: [positionId, minAssetsOutForPreview, deadline, "0x"], // TODO: fix args
           account: this.init.client.wallet.account!,
         }),
         signal
       );
 
+      const [returned, _borrowerGets, _finished] = sim.result;
+
       const denominator = 10_000n;
-      const strategyTokensAmount = sim.result;
       const num = denominator - slippage;
-      const adjustedTokensAmount = (strategyTokensAmount * num) / denominator;
+
+      const adjustedMinAssetsOut = returned.map(amount => (amount * num) / denominator);
 
       const gas =
         sim.request.gas ??
@@ -366,7 +375,7 @@ export class Vault extends ContractBase {
           address: this.getContract().address,
           abi: vaultAbi,
           functionName: "unborrow",
-          args: [positionId, adjustedTokensAmount, deadline],
+          args: [positionId, adjustedMinAssetsOut, deadline, "0x"],
           account: this.init.client.wallet.account!,
         }));
 
@@ -376,7 +385,7 @@ export class Vault extends ContractBase {
 
       return await this.init.client.wallet.writeContract({
         ...sim.request,
-        args: [positionId, adjustedTokensAmount, deadline],
+        args: [positionId, adjustedMinAssetsOut, deadline, "0x"],
         gas: gasAdj,
       });
     } catch (e) {
@@ -401,7 +410,16 @@ export class Vault extends ContractBase {
     }
   }
 
-  async withdrawYield([strategyIds]: [bigint[]], { signal }: SdkRequestOptions = {}) {
+  async withdrawYield(
+    [
+      strategyIds,
+      user,
+    ]: [
+      bigint[],
+      Address,
+    ],
+    { signal }: SdkRequestOptions = {}
+  ) {
     if (!this.init.client.wallet) throw new WalletRequiredError("withdrawYield");
 
     const c = this.getContract();
@@ -412,7 +430,7 @@ export class Vault extends ContractBase {
           address: c.address,
           abi: vaultAbi,
           functionName: "withdrawYield",
-          args: [strategyIds],
+          args: [strategyIds, user],
           account: this.init.client.wallet.account!,
         }),
         signal

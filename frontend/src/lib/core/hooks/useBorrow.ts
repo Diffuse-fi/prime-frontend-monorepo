@@ -185,18 +185,24 @@ export function useBorrow(
 
         const borrowedShareWad = divWad(selected.assetsToBorrow, denom);
 
+        const totalPredictedTokensToReceive = predictedTokensToReceive.reduce(
+          (acc, value) => acc + value,
+          0n
+        );
+
         const depositPriceWad =
-          (predictedTokensToReceive * WAD * 10n ** BigInt(assetDec)) /
-          (denom * 10n ** BigInt(stratDec));
+          totalPredictedTokensToReceive === 0n
+            ? 0n
+            : (totalPredictedTokensToReceive * WAD * 10n ** BigInt(assetDec)) /
+              (denom * 10n ** BigInt(stratDec));
 
         const resultWad =
           depositPriceWad === 0n
             ? 0n
             : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
 
-        const minStrategyToReceive = applySlippage(
-          predictedTokensToReceive,
-          selected.slippage
+        const minStrategyToReceive = predictedTokensToReceive.map(amount =>
+          applySlippage(amount, selected.slippage)
         );
 
         const hash = await vault.contract.borrowRequest([

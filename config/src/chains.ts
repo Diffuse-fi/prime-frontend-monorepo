@@ -59,7 +59,7 @@ const ChainConfigSchema = z.object({
     .catchall(ChainBlockExplorerSchema)
     .optional(),
   iconUrl: z.string().url().optional(),
-  iconBackground: z.string(),
+  iconBackground: z.string().optional(),
   contracts: z.record(ChainContractSchema).optional(),
   testnet: z.boolean().optional(),
   sourceId: z.number().int().optional(),

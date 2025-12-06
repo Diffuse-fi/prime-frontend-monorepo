@@ -1,6 +1,6 @@
 "use client";
 
-import { getAvailableChainsIds } from "@/lib/chains";
+import { getAvailableChainsIds, getInitialChain } from "@/lib/chains";
 import {
   ActionsCtx,
   ReadonlyChainActions,
@@ -20,7 +20,7 @@ export function ReadonlyChainProvider({ children }: ReadonlyChainProviderProps) 
   const [state, setState] = useLocalStorage<ReadonlyChainState>(
     "readonly-chain:v1",
     {
-      readonlyChainId: getAvailableChainsIds()[0],
+      readonlyChainId: getInitialChain().id,
     },
     ({ readonlyChainId }) =>
       Number.isInteger(readonlyChainId) && availableChainIds.includes(readonlyChainId)

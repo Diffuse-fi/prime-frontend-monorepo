@@ -17,7 +17,7 @@ export function LayoutWithTabsNav({ children, navConfig }: LayoutWithTabsNavProp
           variant="tabs"
         />
       </Container>
-      <Container as="main" className="grow pb-5">
+      <Container as="main" className="grow pb-10">
         {children}
       </Container>
     </div>

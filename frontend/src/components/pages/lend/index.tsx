@@ -78,6 +78,7 @@ export default function Lend() {
         reset();
         refetchTotalAssets();
         refetchLimits();
+        refetchAllowances();
       }, 0);
     },
     onDepositBatchSomeError: e => {

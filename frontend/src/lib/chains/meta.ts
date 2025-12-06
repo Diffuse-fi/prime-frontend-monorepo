@@ -1,29 +1,20 @@
-import { berachain, mainnet, arbitrum, sonic } from "viem/chains";
+import { CHAINS } from "@diffuse/config";
 
-export const chainLogos: Record<
-  number,
-  {
-    iconUrl?: string;
-    iconBackground?: string;
-  }
-> = {
-  [mainnet.id]: {
-    iconUrl: "/ethereum-logo.svg?v=1",
-    iconBackground: "transparent",
-  },
-  [berachain.id]: {
-    iconUrl: "/berachain-logo.svg?v=1",
-    iconBackground: "#814626",
-  },
-  [arbitrum.id]: {
-    iconUrl: "/arbitrum-logo.svg?v=1",
-    iconBackground: "#28a0f0",
-  },
-  [sonic.id]: {
-    iconUrl: "/sonic-logo.svg?v=1",
-    iconBackground: "transparent",
-  },
+type ChainMeta = {
+  iconUrl?: string;
+  iconBackground?: string;
 };
+
+export const chainLogos: Record<number, ChainMeta> = CHAINS.reduce(
+  (acc, chain) => {
+    acc[chain.id] = {
+      iconUrl: chain.iconUrl,
+      iconBackground: chain.iconBackground,
+    };
+    return acc;
+  },
+  {} as Record<number, ChainMeta>
+);
 
 export function getStableChainMeta(chainId: number) {
   return (
