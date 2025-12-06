@@ -1,5 +1,5 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { fallback, http } from "wagmi";
+import { http } from "wagmi";
 import {
   metaMaskWallet,
   trustWallet,
@@ -10,8 +10,9 @@ import { getAvailableChains } from "../chains";
 import { env } from "@/env";
 
 const chains = getAvailableChains();
-const transports = chains.map(chain =>
-  fallback([
+const transports = Object.fromEntries(
+  chains.map(chain => [
+    chain.id,
     http(chain.rpcUrls.default.http[0]),
   ])
 );

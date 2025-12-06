@@ -47,7 +47,7 @@ export function CancelPosition({
     <div className="grid grid-cols-1 gap-6">
       <div className="flex flex-col gap-6">
         <div className="flex gap-4 px-5">
-          <TriangleAlert className="text-err h-6 w-6 flex-shrink-0" aria-hidden />
+          <TriangleAlert className="text-err h-6 w-6 shrink-0" aria-hidden />
           <Heading level="5" className="text-text-dimmed">
             Position closure
           </Heading>

@@ -131,7 +131,7 @@ export function useWithdrawYield(
           a < b ? -1 : a > b ? 1 : 0
         );
 
-        const hash = await vault!.contract.withdrawYield([sortedStrategyIds]);
+        const hash = await vault!.contract.withdrawYield([sortedStrategyIds, receiver]);
 
         setPhase(address, { phase: "pending", hash });
 

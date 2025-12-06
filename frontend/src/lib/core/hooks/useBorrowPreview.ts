@@ -93,6 +93,8 @@ export function useBorrowPreview(
         { signal }
       );
 
+      console.log("previewEnterStrategy", baseAssetAmount, strategyAssetAmount);
+
       const baseAssetUnits =
         (baseAssetAmount * 1000000n) / 10n ** BigInt(selected.assetDecimals);
       const strategyAssetUnits =

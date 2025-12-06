@@ -27,14 +27,14 @@ export const ASSETS: Assets = {
             "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png",
         },
         {
-          address: "0x01d6dafa8B3bD04bDf7bA6Ff76104d15E2B7485c",
+          address: "0x545A490f9ab534AdF409A2E682bc4098f49952e3",
           chainId: 1,
           decimals: 18,
           legacyAllowance: false,
           logoURI:
             "https://storage.googleapis.com/prod-pendle-bucket-a/images/uploads/57a4f9fc-a935-433b-8648-daa034e65bfe.svg",
-          name: "PT-ghUSDC-18DEC2025",
-          symbol: "PT-ghUSDC-18DEC2025",
+          name: "PT-cUSD-29JAN2026",
+          symbol: "PT-cUSD-29JAN2026",
         },
       ],
       chainId: 1,

@@ -1,6 +1,6 @@
 import { AssetInfo } from "@diffuse/config";
 import { type Vault } from "@diffuse/sdk-js";
-import { Address, Hash } from "viem";
+import { Address, Hash, Hex } from "viem";
 
 export type Strategy = {
   id: bigint;
@@ -8,7 +8,7 @@ export type Strategy = {
   apr: bigint;
   endDate: bigint;
   balance: bigint;
-  pool: `0x${string}`;
+  pool: Hex;
   isDisabled: boolean;
   name: string;
 };
