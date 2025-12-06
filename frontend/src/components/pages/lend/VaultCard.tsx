@@ -36,6 +36,7 @@ export function VaultCard({
   isConnected,
 }: VaultProps) {
   const t = useTranslations("lend");
+  const tCommon = useTranslations("common.accessibility");
   const vaultAprFormatted = formatAprToPercent(vault.targetApr);
 
   return (
@@ -73,12 +74,12 @@ export function VaultCard({
         </FormField>
       </div>
       <SimpleTable
-        aria-label="Vault rewards based on input amount and target APR"
+        aria-label={tCommon("vaultRewardsAriaLabel")}
         density="comfy"
         columns={[
-          "Rewards type",
+          t("rewardsType"),
           <div key="key" className="text-right font-mono text-xs">
-            APR
+            {t("strategiesList.apr")}
           </div>,
         ]}
         rows={[
@@ -91,7 +92,7 @@ export function VaultCard({
                 className="mr-1"
                 size={20}
               />
-              Target APY
+              {t("targetApy")}
             </div>,
             <div key="2" className="text-right">
               {vaultAprFormatted.text}
@@ -100,11 +101,11 @@ export function VaultCard({
         ]}
       />
       <div className="flex flex-col gap-2">
-        <UncontrolledCollapsible summary="List of strategies" defaultOpen={false}>
+        <UncontrolledCollapsible summary={t("listOfStrategies")} defaultOpen={false}>
           <StrategiesList strategies={vault.strategies} />
         </UncontrolledCollapsible>
         <UncontrolledCollapsible
-          summary="Risks"
+          summary={t("risks.risks")}
           defaultOpen={false}
           summaryClassName="text-err"
         >

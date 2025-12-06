@@ -78,12 +78,12 @@ export default function MyPositions() {
     txState: withdrawYieldTxState,
   } = useWithdrawYield(vaults, {
     onWithdrawYieldSuccess: () => {
-      toast("Yield withdrawn successfully");
+      toast(t("toasts.yieldWithdrawSuccess"));
       refetch();
       refetchTotalAssets();
     },
     onWithdrawYieldError: e => {
-      toast(`Error withdrawing yield: ${e}`);
+      toast(t("toasts.yieldWithdrawError", { error: e }));
     },
   });
 
@@ -172,10 +172,10 @@ export default function MyPositions() {
                 }
               >
                 {confirmingInWalletWithdrawYield
-                  ? "Confirming..."
+                  ? t("confirmingInWallet")
                   : isPendingWithdrawYield
-                    ? "Withdrawing..."
-                    : "Claim rewards"}
+                    ? t("withdrawing")
+                    : t("claimRewards")}
               </Button>
             );
 
@@ -196,7 +196,7 @@ export default function MyPositions() {
                   !rewardsClaimable ? (
                     <Tooltip
                       className="max-w-75 text-center"
-                      content="Rewards will be available when at least one strategy ends."
+                      content={t("rewardsAvailableWhenStrategyEnds")}
                     >
                       {button}
                     </Tooltip>
@@ -224,7 +224,7 @@ export default function MyPositions() {
               setSelectedPosition(null);
             }
           }}
-          title="Withdraw deposit"
+          title={t("withdrawDeposit")}
           selectedAsset={selectedAsset}
           selectedPosition={selectedPosition}
           onWithdrawSuccess={onWithdrawSuccess}

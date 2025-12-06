@@ -3,12 +3,14 @@
 import { usePathname } from "next/navigation";
 import localizationSettings from "../../localization.json" with { type: "json" };
 import { Locale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { AppLink } from "../misc/AppLink";
 
 const SUPPORTED_LOCALES = localizationSettings.supported;
 
 export default function LocaleSwitcher() {
   const pathname = usePathname();
+  const t = useTranslations("common.localization");
   const getPathnameWithoutLocale = (locale: Locale) => {
     const localePrefix = `/${locale}`;
     return pathname.startsWith(localePrefix)
@@ -18,7 +20,7 @@ export default function LocaleSwitcher() {
 
   return (
     <div>
-      <p>Locale switcher:</p>
+      <p>{t("localeSwitcher")}</p>
       <ul>
         {SUPPORTED_LOCALES.map(locale => {
           return (

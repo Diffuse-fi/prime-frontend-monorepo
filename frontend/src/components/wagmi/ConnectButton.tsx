@@ -35,7 +35,7 @@ export default function ConnectButton() {
                 aria-label={
                   !connected
                     ? t("navbar.walletConnect")
-                    : `Account settings for ${account.displayName}`
+                    : t("navbar.accountSettings", { displayName: account.displayName })
                 }
               >
                 <Wallet className="mr-2 h-4 w-4" />
@@ -52,7 +52,7 @@ export default function ConnectButton() {
                 aria-label={
                   !connected
                     ? t("navbar.walletConnect")
-                    : `Account settings for ${account.displayName}`
+                    : t("navbar.accountSettings", { displayName: account.displayName })
                 }
               />
             </MobileOnly>

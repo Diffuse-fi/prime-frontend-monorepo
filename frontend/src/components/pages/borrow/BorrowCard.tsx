@@ -41,6 +41,7 @@ export function BorrowCard({
     Number(availableLiquidityUnits.meta!.rawViem)
   );
   const t = useTranslations("common");
+  const tBorrow = useTranslations("borrow.card");
   const onBtnClick = () => {
     if (!isConnected) {
       onConnectWallet?.();
@@ -72,17 +73,17 @@ export function BorrowCard({
       }
     >
       <SimpleTable
-        aria-label="Strategy details"
+        aria-label={tBorrow("strategyDetails")}
         density="comfy"
         columns={[
           <div key="key" className="font-mono text-xs">
-            Details
+            {tBorrow("details")}
           </div>,
           <div key="key2"></div>,
         ]}
         rows={[
           [
-            <div key="1">Chain</div>,
+            <div key="1">{tBorrow("chain")}</div>,
             <div key="2" className="flex items-center justify-end gap-2">
               <ImageWithJazziconFallback
                 alt={chain.name}
@@ -98,13 +99,13 @@ export function BorrowCard({
             </div>,
           ],
           [
-            <div key="1">APR</div>,
+            <div key="1">{tBorrow("apr")}</div>,
             <div key="2" className="text-right">
               {formatAprToPercent(strategy.apr).text}
             </div>,
           ],
           [
-            <div key="1">Curator</div>,
+            <div key="1">{tBorrow("curator")}</div>,
             <div key="2" className="text-right">
               {vault.curator ? (
                 <div className="-my-1 -mr-1 flex items-center justify-end gap-1">
@@ -117,7 +118,7 @@ export function BorrowCard({
             </div>,
           ],
           [
-            <div key="1">Collateral</div>,
+            <div key="1">{tBorrow("collateral")}</div>,
             <div key="2" className="text-right">
               <div className="flex flex-col items-end gap-2">
                 <div className="flex items-center justify-end gap-2">
@@ -142,7 +143,7 @@ export function BorrowCard({
             </div>,
           ],
           [
-            <div key="1">Liquidity</div>,
+            <div key="1">{tBorrow("liquidity")}</div>,
             <div key="2" className="text-right">
               {availableLiquidityFormatted.text} {selectedAsset.symbol}
             </div>,
@@ -150,7 +151,7 @@ export function BorrowCard({
         ]}
       />
       <Button size="lg" className="mt-3 w-2/3 md:mt-6" onClick={onBtnClick}>
-        {isConnected ? "Borrow" : t("connectWallet")}
+        {isConnected ? tBorrow("borrow") : t("connectWallet")}
       </Button>
     </Card>
   );

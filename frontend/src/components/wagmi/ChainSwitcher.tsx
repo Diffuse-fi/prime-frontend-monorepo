@@ -30,9 +30,9 @@ export function ChainSwitcher() {
   return (
     <>
       <IconButton
-        aria-label={`Switch between supported networks. Currently ${
-          chain ? chain.name : "Not connected"
-        }`}
+        aria-label={t("switchBetweenNetworks", {
+          chainName: chain ? chain.name : t("notConnected"),
+        })}
         aria-busy={isPendingConnection || isPending || undefined}
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
