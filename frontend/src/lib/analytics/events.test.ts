@@ -6,21 +6,15 @@ vi.mock("@next/third-parties/google", () => ({
   sendGAEvent: mockSendGAEvent,
 }));
 
-describe("Analytics Events", () => {
+describe("Analytics Flow Modules", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Reset all modules to get fresh imports
     vi.resetModules();
   });
 
-  describe("when tracking is disabled (default env)", () => {
-    it("isTrackingEnabled returns false", async () => {
-      const { isTrackingEnabled } = await import("./events");
-      expect(isTrackingEnabled()).toBe(false);
-    });
-
-    it("trackLendAttempt does not send event", async () => {
-      const { trackLendAttempt } = await import("./events");
+  describe("Lend Flow", () => {
+    it("trackLendAttempt does not send event when tracking is disabled", async () => {
+      const { trackLendAttempt } = await import("./lend");
 
       trackLendAttempt({
         vaultAddress: "0x1234567890abcdef",
@@ -32,8 +26,8 @@ describe("Analytics Events", () => {
       expect(mockSendGAEvent).not.toHaveBeenCalled();
     });
 
-    it("trackLendSuccess does not send event", async () => {
-      const { trackLendSuccess } = await import("./events");
+    it("trackLendSuccess does not send event when tracking is disabled", async () => {
+      const { trackLendSuccess } = await import("./lend");
 
       trackLendSuccess({
         vaultAddress: "0x1234567890abcdef",
@@ -46,8 +40,8 @@ describe("Analytics Events", () => {
       expect(mockSendGAEvent).not.toHaveBeenCalled();
     });
 
-    it("trackLendError does not send event", async () => {
-      const { trackLendError } = await import("./events");
+    it("trackLendError does not send event when tracking is disabled", async () => {
+      const { trackLendError } = await import("./lend");
 
       trackLendError({
         vaultAddress: "0x1234567890abcdef",
@@ -59,9 +53,11 @@ describe("Analytics Events", () => {
 
       expect(mockSendGAEvent).not.toHaveBeenCalled();
     });
+  });
 
-    it("trackWithdrawAttempt does not send event", async () => {
-      const { trackWithdrawAttempt } = await import("./events");
+  describe("Withdraw Flow", () => {
+    it("trackWithdrawAttempt does not send event when tracking is disabled", async () => {
+      const { trackWithdrawAttempt } = await import("./withdraw");
 
       trackWithdrawAttempt({
         vaultAddress: "0xabcdef1234567890",
@@ -73,8 +69,8 @@ describe("Analytics Events", () => {
       expect(mockSendGAEvent).not.toHaveBeenCalled();
     });
 
-    it("trackWithdrawSuccess does not send event", async () => {
-      const { trackWithdrawSuccess } = await import("./events");
+    it("trackWithdrawSuccess does not send event when tracking is disabled", async () => {
+      const { trackWithdrawSuccess } = await import("./withdraw");
 
       trackWithdrawSuccess({
         vaultAddress: "0xabcdef1234567890",
@@ -87,8 +83,8 @@ describe("Analytics Events", () => {
       expect(mockSendGAEvent).not.toHaveBeenCalled();
     });
 
-    it("trackWithdrawError does not send event", async () => {
-      const { trackWithdrawError } = await import("./events");
+    it("trackWithdrawError does not send event when tracking is disabled", async () => {
+      const { trackWithdrawError } = await import("./withdraw");
 
       trackWithdrawError({
         vaultAddress: "0xabcdef1234567890",
@@ -100,9 +96,11 @@ describe("Analytics Events", () => {
 
       expect(mockSendGAEvent).not.toHaveBeenCalled();
     });
+  });
 
-    it("trackBorrowAttempt does not send event", async () => {
-      const { trackBorrowAttempt } = await import("./events");
+  describe("Borrow Flow", () => {
+    it("trackBorrowAttempt does not send event when tracking is disabled", async () => {
+      const { trackBorrowAttempt } = await import("./borrow");
 
       trackBorrowAttempt({
         vaultAddress: "0x9876543210fedcba",
@@ -116,8 +114,8 @@ describe("Analytics Events", () => {
       expect(mockSendGAEvent).not.toHaveBeenCalled();
     });
 
-    it("trackBorrowSuccess does not send event", async () => {
-      const { trackBorrowSuccess } = await import("./events");
+    it("trackBorrowSuccess does not send event when tracking is disabled", async () => {
+      const { trackBorrowSuccess } = await import("./borrow");
 
       trackBorrowSuccess({
         vaultAddress: "0x9876543210fedcba",
@@ -132,8 +130,8 @@ describe("Analytics Events", () => {
       expect(mockSendGAEvent).not.toHaveBeenCalled();
     });
 
-    it("trackBorrowError does not send event", async () => {
-      const { trackBorrowError } = await import("./events");
+    it("trackBorrowError does not send event when tracking is disabled", async () => {
+      const { trackBorrowError } = await import("./borrow");
 
       trackBorrowError({
         vaultAddress: "0x9876543210fedcba",
@@ -147,9 +145,11 @@ describe("Analytics Events", () => {
 
       expect(mockSendGAEvent).not.toHaveBeenCalled();
     });
+  });
 
-    it("trackCancelBorrowAttempt does not send event", async () => {
-      const { trackCancelBorrowAttempt } = await import("./events");
+  describe("Cancel Borrow Flow", () => {
+    it("trackCancelBorrowAttempt does not send event when tracking is disabled", async () => {
+      const { trackCancelBorrowAttempt } = await import("./cancelBorrow");
 
       trackCancelBorrowAttempt({
         vaultAddress: "0xfedcba9876543210",
@@ -160,8 +160,8 @@ describe("Analytics Events", () => {
       expect(mockSendGAEvent).not.toHaveBeenCalled();
     });
 
-    it("trackCancelBorrowSuccess does not send event", async () => {
-      const { trackCancelBorrowSuccess } = await import("./events");
+    it("trackCancelBorrowSuccess does not send event when tracking is disabled", async () => {
+      const { trackCancelBorrowSuccess } = await import("./cancelBorrow");
 
       trackCancelBorrowSuccess({
         vaultAddress: "0xfedcba9876543210",
@@ -173,8 +173,8 @@ describe("Analytics Events", () => {
       expect(mockSendGAEvent).not.toHaveBeenCalled();
     });
 
-    it("trackCancelBorrowError does not send event", async () => {
-      const { trackCancelBorrowError } = await import("./events");
+    it("trackCancelBorrowError does not send event when tracking is disabled", async () => {
+      const { trackCancelBorrowError } = await import("./cancelBorrow");
 
       trackCancelBorrowError({
         vaultAddress: "0xfedcba9876543210",

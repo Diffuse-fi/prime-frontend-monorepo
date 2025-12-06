@@ -1,22 +1,27 @@
+// Core utilities
+export { isTrackingEnabled, trackEvent, createTransactionTracker } from "./core";
+export type { BaseEventParams, TransactionResultParams } from "./core";
+
+// Lend flow
+export { trackLendAttempt, trackLendSuccess, trackLendError } from "./lend";
+export type { LendEventParams } from "./lend";
+
+// Withdraw flow
 export {
-  isTrackingEnabled,
-  trackLendAttempt,
-  trackLendSuccess,
-  trackLendError,
   trackWithdrawAttempt,
   trackWithdrawSuccess,
   trackWithdrawError,
-  trackBorrowAttempt,
-  trackBorrowSuccess,
-  trackBorrowError,
+} from "./withdraw";
+export type { WithdrawEventParams } from "./withdraw";
+
+// Borrow flow
+export { trackBorrowAttempt, trackBorrowSuccess, trackBorrowError } from "./borrow";
+export type { BorrowEventParams } from "./borrow";
+
+// Cancel borrow flow
+export {
   trackCancelBorrowAttempt,
   trackCancelBorrowSuccess,
   trackCancelBorrowError,
-} from "./events";
-
-export type {
-  LendEventParams,
-  WithdrawEventParams,
-  BorrowEventParams,
-  CancelBorrowEventParams,
-} from "./events";
+} from "./cancelBorrow";
+export type { CancelBorrowEventParams } from "./cancelBorrow";
