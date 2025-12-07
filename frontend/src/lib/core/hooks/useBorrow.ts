@@ -7,9 +7,10 @@ import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { produce } from "immer";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
-import { applySlippage } from "@/lib/formulas/slippage";
+import { getSlippageBpsFromKey } from "@/lib/formulas/slippage";
 import { isUserRejectedError } from "../utils/errors";
 import { borrowLogger, loggerMut } from "../utils/loggers";
+import { applySlippageBpsArray } from "@diffuse/sdk-js";
 
 export type SelectedBorrow = {
   chainId: number;
@@ -201,8 +202,11 @@ export function useBorrow(
             ? 0n
             : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
 
-        const minStrategyToReceive = predictedTokensToReceive.map(amount =>
-          applySlippage(amount, selected.slippage)
+        const bps = getSlippageBpsFromKey(selected.slippage);
+        const minStrategyToReceive = applySlippageBpsArray(
+          predictedTokensToReceive,
+          bps,
+          "down"
         );
 
         const hash = await vault.contract.borrowRequest([
