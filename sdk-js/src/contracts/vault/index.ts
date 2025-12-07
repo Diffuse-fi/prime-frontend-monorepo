@@ -11,6 +11,7 @@ import {
 } from "../shared";
 import { raceSignal as abortable } from "race-signal";
 import { getEvent } from "../events";
+import { applySlippageBpsArray } from "../../slippage";
 
 const contractName = "Vault";
 const EV_BORROWER_POSITION_ACTIVATED = getEvent(
@@ -362,12 +363,8 @@ export class Vault extends ContractBase {
         signal
       );
 
-      const [returned, _borrowerGets, _finished] = sim.result;
-
-      const denominator = 10_000n;
-      const num = denominator - slippage;
-
-      const adjustedMinAssetsOut = returned.map(amount => (amount * num) / denominator);
+      const [returned] = sim.result;
+      const adjustedMinAssetsOut = applySlippageBpsArray(returned, slippage, "down");
 
       const gas =
         sim.request.gas ??
@@ -375,7 +372,7 @@ export class Vault extends ContractBase {
           address: this.getContract().address,
           abi: vaultAbi,
           functionName: "unborrow",
-          args: [positionId, adjustedMinAssetsOut, deadline, "0x"],
+          args: [positionId, adjustedMinAssetsOut, deadline, "0x"], // TODO: fix args
           account: this.init.client.wallet.account!,
         }));
 
@@ -385,7 +382,7 @@ export class Vault extends ContractBase {
 
       return await this.init.client.wallet.writeContract({
         ...sim.request,
-        args: [positionId, adjustedMinAssetsOut, deadline, "0x"],
+        args: [positionId, adjustedMinAssetsOut, deadline, "0x"], // TODO: fix args
         gas: gasAdj,
       });
     } catch (e) {

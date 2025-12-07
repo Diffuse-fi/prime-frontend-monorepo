@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { produce } from "immer";
-import { getSlippageBps } from "@/lib/formulas/slippage";
+import { getSlippageBpsFromKey } from "@/lib/formulas/slippage";
 import { isUserRejectedError } from "../utils/errors";
 import { borrowLogger, loggerMut } from "../utils/loggers";
 
@@ -128,7 +128,7 @@ export function useUnborrow(
         const hash = await vault!.contract.unborrow([
           selected.positionId,
           selected.deadline,
-          getSlippageBps(selected.slippage),
+          getSlippageBpsFromKey(selected.slippage),
         ]);
 
         setPhase(addr, { phase: "pending", hash });
