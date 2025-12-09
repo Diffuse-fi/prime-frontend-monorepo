@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import { Address, zeroAddress, createPublicClient, http } from "viem";
 import { vaultAbi } from "./abi";
 import { Init } from "@/types";
 import { normalizeError } from "@/errors/normalize";
@@ -12,6 +12,7 @@ import {
 import { raceSignal as abortable } from "race-signal";
 import { getEvent } from "../events";
 import { applySlippageBpsArray } from "../../slippage";
+import { mainnet } from "viem/chains";
 
 const contractName = "Vault";
 const EV_BORROWER_POSITION_ACTIVATED = getEvent(
@@ -308,8 +309,33 @@ export class Vault extends ContractBase {
     { signal }: SdkRequestOptions = {}
   ) {
     try {
+      /**
+       * TODO : use the client's public client when OnlyCallsAllowed revert bug is fixed
+       *
+       * simulateContract error message: The contract function "previewBorrow" reverted.
+        Contract Call:
+          address:   0x76D3F72a7fBBa7f8Ba22FE0E9bEC2cA692Ca79C8
+          function:  previewBorrow(address forUser, uint256 strategyId, uint8 collateralType, uint256 collateralAmount, uint256 assetsToBorrow, bytes data)
+          args:                   (0x71911698C2a865227829421364DfC808c76424b6, 0, 0, 1000000, 1000000, 0x)
+          sender:    0x0000000000000000000000000000000000000000
+
+        Docs: https://viem.sh/docs/contract/simulateContract
+        Version: viem@2.38.5
+       */
+
+      if (this.init.client.public.chain?.id !== mainnet.id) {
+        throw new Error(
+          "previewBorrow is only supported on mainnet due to viem OnlyCallsAllowed revert bug."
+        );
+      }
+
+      const flashbotsClient = createPublicClient({
+        chain: mainnet,
+        transport: http("https://rpc.flashbots.net"),
+      });
+
       const sim = await abortable(
-        this.init.client.public.simulateContract({
+        flashbotsClient.simulateContract({
           address: this.getContract().address,
           abi: vaultAbi,
           functionName: "previewBorrow",
@@ -319,8 +345,9 @@ export class Vault extends ContractBase {
             collateralType,
             collateralAmount,
             assetsToBorrow,
-            "0x",
-          ], // TODO: fix args
+            "0x", // TODO: fix args
+          ],
+          account: zeroAddress,
         }),
         signal
       );
@@ -363,8 +390,12 @@ export class Vault extends ContractBase {
         signal
       );
 
-      const [returned] = sim.result;
-      const adjustedMinAssetsOut = applySlippageBpsArray(returned, slippage, "down");
+      const [assetsReceived] = sim.result;
+      const adjustedMinAssetsOut = applySlippageBpsArray(
+        assetsReceived,
+        slippage,
+        "down"
+      );
 
       const gas =
         sim.request.gas ??
