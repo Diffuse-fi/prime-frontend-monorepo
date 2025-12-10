@@ -1,5 +1,6 @@
 import { type Finalizer } from "./utils";
 import { env } from "@/env";
+import { getCustomRpcUrls } from "@/lib/chains/rpc";
 import { getAssetsResourcesUrls, getChainsDefaultRpcUrls } from "@diffuse/config";
 
 const isProd = process.env.NODE_ENV === "production";
@@ -17,6 +18,7 @@ const allowedSources = [
   "https://euc.li",
   // Allowed chains RPC URLs
   ...getChainsDefaultRpcUrls(),
+  ...getCustomRpcUrls(),
 ]
   .filter(Boolean)
   .join(" ");
