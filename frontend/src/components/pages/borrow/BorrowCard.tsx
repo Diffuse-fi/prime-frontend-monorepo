@@ -49,6 +49,7 @@ export function BorrowCard({
 
     onBorrow?.();
   };
+  const disabled = vault.availableLiquidity === 0n;
 
   return (
     <Card
@@ -149,7 +150,12 @@ export function BorrowCard({
           ],
         ]}
       />
-      <Button size="lg" className="mt-3 w-2/3 md:mt-6" onClick={onBtnClick}>
+      <Button
+        size="lg"
+        className="mt-3 w-2/3 md:mt-6"
+        onClick={onBtnClick}
+        disabled={disabled}
+      >
         {isConnected ? "Borrow" : t("connectWallet")}
       </Button>
     </Card>

@@ -7,6 +7,11 @@ export const customRpcMap: Record<number, string[]> = {
   ],
 };
 
+export function getCustomRpcUrls(): string[] {
+  const urls = Object.values(customRpcMap).flat();
+  return Array.from(new Set(urls));
+}
+
 export function getContractExplorerUrl(chainId: number, contractAddress: string) {
   const normalized = getAddress(contractAddress);
 
