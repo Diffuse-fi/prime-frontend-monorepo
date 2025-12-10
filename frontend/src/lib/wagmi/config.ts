@@ -8,12 +8,17 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { getAvailableChains } from "../chains";
 import { env } from "@/env";
+import { fallback } from "viem";
+import { customRpcMap } from "../chains/rpc";
 
 const chains = getAvailableChains();
 const transports = Object.fromEntries(
   chains.map(chain => [
     chain.id,
-    http(chain.rpcUrls.default.http[0]),
+    fallback([
+      ...(customRpcMap[chain.id] ?? []).map(url => http(url)),
+      http(chain.rpcUrls.default.http[0]),
+    ]),
   ])
 );
 
