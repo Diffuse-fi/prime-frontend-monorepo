@@ -41,6 +41,7 @@ export function PositionCard({
     ? `${formatUnits(accruedYield, asset.decimals).text} ${asset.symbol}`
     : "-";
   const t = useTranslations("myPositions");
+  const tLend = useTranslations("lend");
 
   return (
     <Card
@@ -78,12 +79,12 @@ export function PositionCard({
         </div>
       </div>
       <SimpleTable
-        aria-label={t("ariaLabels.vaultRewards", { ns: "lend" })}
+        aria-label={tLend("ariaLabels.vaultRewards")}
         density="comfy"
         columns={[
-          t("rewardsType", { ns: "lend" }),
+          tLend("rewardsType"),
           <div key="key" className="text-right font-mono text-xs">
-            {t("apr", { ns: "lend" })}
+            {tLend("apr")}
           </div>,
           <div key="key" className="text-right font-mono text-xs">
             {t("reward")}
@@ -99,7 +100,7 @@ export function PositionCard({
                 className="mr-1"
                 size={20}
               />
-              {t("targetApy", { ns: "lend" })}
+              {tLend("targetApy")}
             </div>,
             <div key="2" className="text-right">
               {vaultAprFormatted.text}
@@ -110,7 +111,7 @@ export function PositionCard({
           ],
         ]}
       />
-      <UncontrolledCollapsible summary={t("listOfStrategies", { ns: "lend" })} defaultOpen={false}>
+      <UncontrolledCollapsible summary={tLend("listOfStrategies")} defaultOpen={false}>
         <StrategiesList strategies={vault.strategies} />
       </UncontrolledCollapsible>
       <div className="flex justify-between gap-2">

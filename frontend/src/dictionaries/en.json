@@ -52,7 +52,6 @@
       "positionClosure": "Position closure",
       "closureWarning": "This action will close your entire position and cannot be undone. Please review the details carefully before proceeding.",
       "feesUnavailable": "Estimated fees are currently unavailable. Please proceed with caution.",
-      "feesUnavailableDescription": "Estimated fees are currently unavailable. Please proceed with caution.",
       "confirmingInWallet": "Confirming in wallet...",
       "closingPosition": "Closing position...",
       "closePositionButton": "Close position",

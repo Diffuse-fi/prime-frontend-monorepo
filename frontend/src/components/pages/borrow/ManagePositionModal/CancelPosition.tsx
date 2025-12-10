@@ -62,7 +62,7 @@ export function CancelPosition({
             {t("feesUnavailable")}
           </Heading>
           <p className="text-muted mt-4 text-sm">
-            {t("feesUnavailableDescription")}
+            {t("feesUnavailable")}
           </p>
         </div>
         <SlippageInput
