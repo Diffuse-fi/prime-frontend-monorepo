@@ -1,7 +1,65 @@
 {
   "borrow": {
     "borrowModal": {
-      "title": "Borrow {assetSymbol}"
+      "title": "Borrow {assetSymbol}",
+      "collateral": "Collateral",
+      "leverage": "Leverage",
+      "maxLeverage": "Max 10x",
+      "minLeverage": "1.00x",
+      "availableForBorrow": "Available for borrow {symbol}: {amount}",
+      "balance": "Balance {symbol}: {amount}",
+      "step": "Step {step}",
+      "positionDetails": "Position details",
+      "totalBalance": "Total balance",
+      "selectCollateralAsset": "Select collateral asset",
+      "enterAmount": "Enter amount",
+      "insufficientBalance": "Insufficient balance",
+      "exceedsLiquidity": "Exceeds available liquidity",
+      "confirming": "Confirming...",
+      "requestPending": "Request pending...",
+      "borrow": "Borrow",
+      "approving": "Approving...",
+      "approve": "Approve",
+      "toasts": {
+        "approveSuccess": "Approval successful",
+        "borrowSuccess": "Borrow request made successfully",
+        "borrowError": "Borrow request failed: {error}"
+      }
+    },
+    "borrowCard": {
+      "borrow": "Borrow",
+      "liquidity": "Liquidity"
+    },
+    "positionDetails": {
+      "positionHealth": "Position health",
+      "liquidationPrice": "Liquidation price",
+      "liquidationPenalty": "Liquidation penalty",
+      "apr": "APR",
+      "borrowApr": "Borrow APR",
+      "leverage": "Leverage",
+      "spreadFee": "Spread fee",
+      "spreadFeeTooltip": "The fee charged by the platform for facilitating the borrowing process.",
+      "spreadFeeAriaLabel": "Spread fee information",
+      "yield": "Yield",
+      "daysUntilMaturity": "Days until maturity",
+      "maturityYield": "Maturity yield",
+      "until": "Until {date}"
+    },
+    "managePositionModal": {
+      "collateral": "Collateral",
+      "leverage": "Leverage",
+      "closePosition": "Close Position",
+      "positionClosure": "Position closure",
+      "closureWarning": "This action will close your entire position and cannot be undone. Please review the details carefully before proceeding.",
+      "feesUnavailable": "Estimated fees are currently unavailable. Please proceed with caution.",
+      "feesUnavailableDescription": "Estimated fees are currently unavailable. Please proceed with caution.",
+      "confirmingInWallet": "Confirming in wallet...",
+      "closingPosition": "Closing position...",
+      "closePositionButton": "Close position",
+      "toasts": {
+        "positionClosed": "Borrow position closed",
+        "closeError": "Error closing borrow position: {error}"
+      }
     },
     "description": "Borrow against collateral or multiply your exposure by looping",
     "metadata": {
@@ -53,6 +111,26 @@
     "enterAmountButtonText": "Enter amount to lend",
     "insufficientFundsButtonText": "Insufficient balance",
     "listOfStrategies": "List of Strategies",
+    "confirming": "Confirming...",
+    "rewardsType": "Rewards type",
+    "targetApy": "Target APY",
+    "apr": "APR",
+    "strategiesList": {
+      "asset": "Asset",
+      "apr": "APR",
+      "endDate": "End date"
+    },
+    "risks": {
+      "title": "Risks",
+      "protocol": {
+        "description": "Strategies may interact with external protocols such as Aave, Pendle, Spectra, Ethena, Resolv, etc. Smart contract bugs, economic design flaws, governance failures, or insolvency in any of these protocols could lead to partial or total loss of deposited funds.",
+        "title": "Underlying Protocol Risk"
+      },
+      "utilization": {
+        "description": "If borrower demand is high, your funds may be fully utilized in active strategies. This limits the ability to withdraw early or rebalance.",
+        "title": "Utilization & Liquidity Risk"
+      }
+    },
     "metadata": {
       "description": "Explore Diffuse Prime and access high-yield strategies used by institutions",
       "keywords": "Diffuse, Prime, Lend, Borrow, Vaults, Strategies",
@@ -66,18 +144,6 @@
       "description": "No strategies available for the selected asset. Please choose a different asset or change your wallet network.",
       "title": "No Strategies Available"
     },
-    "rewards": "Reward",
-    "rewardsType": "Rewards type",
-    "risks": {
-      "protocol": {
-        "description": "Strategies may interact with external protocols such as Aave, Pendle, Spectra, Ethena, Resolv, etc. Smart contract bugs, economic design flaws, governance failures, or insolvency in any of these protocols could lead to partial or total loss of deposited funds.",
-        "title": "Underlying Protocol Risk"
-      },
-      "utilization": {
-        "description": "If borrower demand is high, your funds may be fully utilized in active strategies. This limits the ability to withdraw early or rebalance.",
-        "title": "Utilization & Liquidity Risk"
-      }
-    },
     "title": "Explore Prime Broker",
     "toasts": {
       "approveSuccessToast": "Approval successful!",
@@ -89,12 +155,34 @@
       "toggleTheme": "Toggle Theme",
       "walletNotConnected": "Wallet not connected"
     },
-    "vault": "Vault"
+    "vault": "Vault",
+    "ariaLabels": {
+      "vaultRewards": "Vault rewards based on input amount and target APR",
+      "selectedAssets": "Selected assets summary"
+    }
   },
   "myPositions": {
     "averageAPY": "Average APY",
     "description": "Track your lending positions and earnings across all pools",
     "interestEarned": "Interest earned",
+    "deposited": "Deposited",
+    "profit": "Profit",
+    "reward": "Reward",
+    "withdraw": "Withdraw",
+    "withdrawing": "Withdrawing...",
+    "confirmingInWallet": "Confirming in wallet...",
+    "confirming": "Confirming...",
+    "claimRewards": "Claim rewards",
+    "openInExplorer": "Open in explorer",
+    "openInExplorerAriaLabel": "Open vault smart contract in explorer",
+    "withdrawModal": {
+      "title": "Withdraw deposit",
+      "withdraw": "Withdraw",
+      "withdrawAll": "Withdraw all",
+      "availableForWithdraw": "Available for Withdraw {symbol}: ",
+      "position": "Position",
+      "supplied": "Supplied"
+    },
     "metadata": {
       "description": "Check out the state of your active positions on Diffuse Prime",
       "keywords": "Diffuse, Prime, Lending, Positions, Dashboard",
@@ -107,11 +195,12 @@
     "title": "My Lending Positions",
     "toasts": {
       "withdrawErrorToast": "An error occurred.",
-      "withdrawSuccessToast": "Withdrawal successful!"
+      "withdrawSuccessToast": "Withdrawal successful!",
+      "yieldWithdrawn": "Yield withdrawn successfully",
+      "yieldWithdrawError": "Error withdrawing yield: {error}"
     },
     "totalSupplied": "Total supplied",
-    "withdraw": "Withdraw",
-    "withdrawing": "Withdrawing..."
+    "rewardsAvailableTooltip": "Rewards will be available when at least one strategy ends."
   },
   "not-found": {
     "cta": "Go to Lend page",

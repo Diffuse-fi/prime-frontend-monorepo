@@ -136,7 +136,7 @@ export default function Lend() {
     if (allAllowed) {
       if (confirmingInWallet) {
         return {
-          text: "Confirming...",
+          text: t("confirming"),
           disabled: true,
           onClick: undefined,
         };
@@ -245,7 +245,7 @@ export default function Lend() {
             cardBodyClassName="items-center gap-4"
           >
             <SimpleTable
-              aria-label="Selected assets summary"
+              aria-label={t("ariaLabels.selectedAssets")}
               density="comfy"
               className={selectedVaults.length === 0 ? "mb-10" : undefined}
               columns={[

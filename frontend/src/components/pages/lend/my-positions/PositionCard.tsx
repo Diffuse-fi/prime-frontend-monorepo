@@ -18,6 +18,7 @@ import { ExternalLink } from "lucide-react";
 import { ReactNode } from "react";
 import { useChainId } from "wagmi";
 import { StrategiesList } from "../StrategiesList";
+import { useTranslations } from "next-intl";
 
 export interface PositionCardProps {
   position: LenderPosition;
@@ -39,6 +40,7 @@ export function PositionCard({
   const profitDisplay = !!accruedYield
     ? `${formatUnits(accruedYield, asset.decimals).text} ${asset.symbol}`
     : "-";
+  const t = useTranslations("myPositions");
 
   return (
     <Card
@@ -65,26 +67,26 @@ export function PositionCard({
     >
       <div className="flex justify-between">
         <div>
-          <span className="font-mono text-xs">Deposited</span>
+          <span className="font-mono text-xs">{t("deposited")}</span>
           <p className="text-lg">
             {formatAsset(balance, asset.decimals, asset.symbol).text}
           </p>
         </div>
         <div>
-          <span className="text-right font-mono text-xs">Profit</span>
+          <span className="text-right font-mono text-xs">{t("profit")}</span>
           <p className="text-secondary text-lg">{profitDisplay}</p>
         </div>
       </div>
       <SimpleTable
-        aria-label="Vault rewards based on input amount and target APR"
+        aria-label={t("ariaLabels.vaultRewards", { ns: "lend" })}
         density="comfy"
         columns={[
-          "Rewards type",
+          t("rewardsType", { ns: "lend" }),
           <div key="key" className="text-right font-mono text-xs">
-            APR
+            {t("apr", { ns: "lend" })}
           </div>,
           <div key="key" className="text-right font-mono text-xs">
-            Reward
+            {t("reward")}
           </div>,
         ]}
         rows={[
@@ -97,7 +99,7 @@ export function PositionCard({
                 className="mr-1"
                 size={20}
               />
-              Target APY
+              {t("targetApy", { ns: "lend" })}
             </div>,
             <div key="2" className="text-right">
               {vaultAprFormatted.text}
@@ -108,17 +110,17 @@ export function PositionCard({
           ],
         ]}
       />
-      <UncontrolledCollapsible summary="List of strategies" defaultOpen={false}>
+      <UncontrolledCollapsible summary={t("listOfStrategies", { ns: "lend" })} defaultOpen={false}>
         <StrategiesList strategies={vault.strategies} />
       </UncontrolledCollapsible>
       <div className="flex justify-between gap-2">
         {claimRewardsButton}
         {withdrawButton}
-        <Tooltip side="top" content="Open in explorer">
+        <Tooltip side="top" content={t("openInExplorer")}>
           <ButtonLike
             href={explorerUrl || ""}
             component={AppLink}
-            aria-label="Open vault smart contract in explorer"
+            aria-label={t("openInExplorerAriaLabel")}
             variant="ghost"
             size="lg"
             className="text-secondary"

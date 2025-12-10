@@ -5,6 +5,7 @@ import { Dialog, Tabs } from "@diffuse/ui-kit";
 import { ReactNode } from "react";
 import { CancelPosition } from "./CancelPosition";
 import { AssetInfo } from "@diffuse/config";
+import { useTranslations } from "next-intl";
 
 type ManagePositionModalProps = {
   open: boolean;
@@ -23,6 +24,8 @@ export function ManagePositionModal({
   onPositionClosure,
   selectedPosition,
 }: ManagePositionModalProps) {
+  const t = useTranslations("borrow.managePositionModal");
+  
   return (
     <Dialog
       open={open}
@@ -35,12 +38,12 @@ export function ManagePositionModal({
       <Tabs defaultValue="close">
         <Tabs.List align="start">
           <Tabs.Trigger value="collateral" disabled>
-            Collateral
+            {t("collateral")}
           </Tabs.Trigger>
           <Tabs.Trigger value="leverage" disabled>
-            Leverage
+            {t("leverage")}
           </Tabs.Trigger>
-          <Tabs.Trigger value="close">Close Position</Tabs.Trigger>
+          <Tabs.Trigger value="close">{t("closePosition")}</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="close" inset>
           <CancelPosition
