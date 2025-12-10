@@ -44,6 +44,9 @@ type ChainSwitchModalProps = {
   onBorrowRequestSuccess?: () => void;
 };
 
+const defaultMinLeverage = 100;
+const defaultMaxLeverage = 1000;
+
 const LEVERAGE_RATE = 100;
 type BorrowState = { collateral: bigint; borrow: bigint; leverage: number };
 
@@ -388,9 +391,9 @@ export function BorrowModal({
             <Slider
               value={[leverage]}
               onValueChange={onLeverageChange}
-              min={100}
+              min={selectedStrategy.minLeverage || defaultMinLeverage}
               step={10}
-              max={1000}
+              max={selectedStrategy.maxLeverage || defaultMaxLeverage}
             />
             <div className="flex justify-between font-mono text-xs">
               <span>1.00x</span>

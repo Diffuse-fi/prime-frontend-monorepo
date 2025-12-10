@@ -11,6 +11,8 @@ export type Strategy = {
   pool: Hex;
   isDisabled: boolean;
   name: string;
+  maxLeverage: number;
+  minLeverage: number;
 };
 
 export type VaultFullInfo = {
