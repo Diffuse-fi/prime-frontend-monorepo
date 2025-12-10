@@ -40,6 +40,7 @@ export function WithdrawModal({
   const [amountToWithdraw, setAmountToWithdraw] = useState<bigint>(0n);
   const { vaults, vaultLimits } = useVaults();
   const t = useTranslations("myPositions.withdrawModal");
+  const tMyPositions = useTranslations("myPositions");
   const maxWithdrawable =
     vaultLimits.find(
       v => getAddress(v.address) === getAddress(selectedPosition.vault.address)
@@ -166,9 +167,9 @@ export function WithdrawModal({
           size="lg"
         >
           {confirmingInWalletWithdraw
-            ? t("confirmingInWallet", { ns: "myPositions" })
+            ? tMyPositions("confirmingInWallet")
             : isPending
-              ? t("withdrawing", { ns: "myPositions" })
+              ? tMyPositions("withdrawing")
               : t("withdraw")}
         </Button>
       </div>

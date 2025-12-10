@@ -139,7 +139,7 @@ export function BorrowModal({
     : "";
   const onSuccessAllowance = useCallback(() => {
     toast(t("toasts.approveSuccess"));
-  }, [t]);
+  }, [t, toast]);
   const allowanceInput = {
     address: selectedStrategy.vault.address,
     assetAddress: collateralAsset.address,
