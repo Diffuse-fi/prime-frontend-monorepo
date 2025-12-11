@@ -1,13 +1,10 @@
-import qs from "qs";
-import { usePathname, useRouter } from "../localization/navigation";
-import { useSearchParams } from "next/navigation";
-import omitBy from "lodash/omitBy";
 import isNil from "lodash/isNil";
+import omitBy from "lodash/omitBy";
+import { useSearchParams } from "next/navigation";
+import qs from "qs";
 import { useMemo } from "react";
 
-function cleanUpObj(query: Record<string, unknown>) {
-  return omitBy(query, isNil);
-}
+import { usePathname, useRouter } from "../localization/navigation";
 
 export function useQueryWriter() {
   const router = useRouter();
@@ -36,4 +33,8 @@ export function useQueryWriter() {
   }
 
   return { queryObj, searchParams, setQuery };
+}
+
+function cleanUpObj(query: Record<string, unknown>) {
+  return omitBy(query, isNil);
 }

@@ -1,5 +1,6 @@
 import { Container } from "@diffuse/ui-kit/Container";
 import { ReactNode } from "react";
+
 import { ClientNavigation, NavigationConfig } from "./ClientNavigation";
 
 interface LayoutWithTabsNavProps {

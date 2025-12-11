@@ -1,39 +1,43 @@
-import { Link as IntlLink } from "@/lib/localization/navigation";
 import { cn } from "@diffuse/ui-kit/cn";
 import { AnchorHTMLAttributes, ComponentProps, ReactNode } from "react";
 
-type AppLinkProps = ComponentProps<typeof IntlLink> &
-  AnchorHTMLAttributes<HTMLAnchorElement> & {
-    disabled?: boolean;
+import { Link as IntlLink } from "@/lib/localization/navigation";
+
+type AppLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> &
+  ComponentProps<typeof IntlLink> & {
     children: ReactNode;
+    disabled?: boolean;
   };
 
-const isUrlExternal = (url: string) => {
-  return typeof url === "string" && /^(https?:)?\/\//.test(url);
+const isUrlExternal = (href: AppLinkProps["href"]) => {
+  if (typeof href !== "string") return false;
+  return (
+    href.startsWith("http://") || href.startsWith("https://") || href.startsWith("//")
+  );
 };
 
-export function AppLink({ href, children, disabled, className, ...p }: AppLinkProps) {
+export function AppLink({ children, className, disabled, href, ...p }: AppLinkProps) {
   if (disabled) {
     return (
       <span
         aria-disabled="true"
-        tabIndex={-1}
-        inert
         className={cn("cursor-not-allowed opacity-60", className)}
+        inert
         role="link"
+        tabIndex={-1}
       >
         {children}
       </span>
     );
   }
 
-  if (isUrlExternal(href || "")) {
+  if (isUrlExternal(href)) {
     return (
       <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
         className={className}
+        href={typeof href === "string" ? href : undefined}
+        rel="noopener noreferrer"
+        target="_blank"
         {...p}
       >
         {children}

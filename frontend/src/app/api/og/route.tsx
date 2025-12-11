@@ -1,8 +1,11 @@
-import type { NextRequest, ImageResponseOptions } from "next/server";
-import { ImageResponse } from "next/og";
-import { QuerySchema } from "./validations";
-import { env } from "@/env";
+import type { ImageResponseOptions, NextRequest } from "next/server";
+
 import * as Sentry from "@sentry/nextjs";
+import { ImageResponse } from "next/og";
+
+import { env } from "@/env";
+
+import { QuerySchema } from "./validations";
 
 export const runtime = "edge";
 
@@ -21,7 +24,7 @@ const memoLoadRetryOnUndefined = (url: URL) => {
     if (!p) {
       p = fetch(url)
         .then(r => (r.ok ? r.arrayBuffer() : Promise.reject(r.status)))
-        .catch(() => undefined);
+        .catch(() => {});
     }
 
     const result = await p;
@@ -34,7 +37,7 @@ const memoLoadRetryOnUndefined = (url: URL) => {
 const loadFontRegular = memoLoadRetryOnUndefined(fontRegularURL);
 const loadFontSemiBold = memoLoadRetryOnUndefined(fontSemiBoldURL);
 
-const standardOgSize = { width: 1200, height: 630 };
+const standardOgSize = { height: 630, width: 1200 };
 const BRAND = env.NEXT_PUBLIC_APP_NAME;
 
 export async function GET(req: NextRequest) {
@@ -59,16 +62,16 @@ export async function GET(req: NextRequest) {
 
     const fonts = [
       regular && {
-        name: "DM Sans",
         data: regular,
-        weight: 400,
+        name: "DM Sans",
         style: "normal" as const,
+        weight: 400,
       },
       semibold && {
-        name: "DM Sans",
         data: semibold,
-        weight: 600,
+        name: "DM Sans",
         style: "normal" as const,
+        weight: 600,
       },
     ].filter(Boolean) as ImageResponseOptions["fonts"];
 
@@ -76,18 +79,18 @@ export async function GET(req: NextRequest) {
       (
         <div
           style={{
-            width: standardOgSize.width,
-            height: standardOgSize.height,
             display: "flex",
             fontFamily: "DM Sans, sans-serif",
+            height: standardOgSize.height,
+            width: standardOgSize.width,
           }}
         >
           <div
             style={{
-              fontSize: 28,
-              opacity: 0.9,
-              fontWeight: 600,
               display: "flex",
+              fontSize: 28,
+              fontWeight: 600,
+              opacity: 0.9,
             }}
           >
             {BRAND}
@@ -100,17 +103,17 @@ export async function GET(req: NextRequest) {
         ...standardOgSize,
         ...(fonts?.length ? { fonts } : {}),
         headers: {
-          "Content-Type": "image/png",
           "Cache-Control": dev
             ? "no-store"
             : "public, max-age=31536000, s-maxage=31536000, immutable",
+          "Content-Type": "image/png",
           "Cross-Origin-Resource-Policy": "cross-origin",
           "X-OG-Version": preset.version,
         },
       }
     );
-  } catch (e) {
-    Sentry.captureException(e);
+  } catch (error) {
+    Sentry.captureException(error);
     return new Response(`Failed to generate the image`, {
       status: 500,
     });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { AssetInfo, AssetInfoSchema } from "@diffuse/config";
 import {
   AssetInput,
   Button,
@@ -13,99 +13,71 @@ import {
   Slider,
   Tooltip,
 } from "@diffuse/ui-kit";
-import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
-import { useERC20TokenBalance } from "@/lib/wagmi/useERC20TokenBalance";
-import { formatUnits, getPartialAllowanceText } from "@/lib/formatters/asset";
-import { AssetImage } from "@/components/misc/images/AssetImage";
-import { getAddress, parseUnits } from "viem";
-import { useBorrow } from "@/lib/core/hooks/useBorrow";
-import { toast } from "@/lib/toast";
-import { SelectedStartegy } from ".";
-import { ReactNode, useCallback, useMemo, useReducer } from "react";
-import { SlippageInput } from "./SlippageInput";
-import { useLocalStorage } from "@/lib/misc/useLocalStorage";
-import { PositionDetails } from "./PositionDetails";
 import now from "lodash/now";
-import { formatNumberToKMB } from "@/lib/formatters/number";
-import { useBorrowPreview } from "@/lib/core/hooks/useBorrowPreview";
-import { useVaults } from "@/lib/core/hooks/useVaults";
-import { useRouter } from "@/lib/localization/navigation";
 import { InfoIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { ReactNode, useCallback, useMemo, useReducer } from "react";
+import { getAddress, parseUnits } from "viem";
+
+import { AssetImage } from "@/components/misc/images/AssetImage";
+import { useBorrow } from "@/lib/core/hooks/useBorrow";
+import { useBorrowPreview } from "@/lib/core/hooks/useBorrowPreview";
+import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
+import { useVaults } from "@/lib/core/hooks/useVaults";
+import { formatUnits, getPartialAllowanceText } from "@/lib/formatters/asset";
+import { formatNumberToKMB } from "@/lib/formatters/number";
+import { useRouter } from "@/lib/localization/navigation";
 import { useDebounce } from "@/lib/misc/useDebounce";
-import { AssetInfo, AssetInfoSchema } from "@diffuse/config";
+import { useLocalStorage } from "@/lib/misc/useLocalStorage";
+import { toast } from "@/lib/toast";
+import { useERC20TokenBalance } from "../../../lib/wagmi/useErc20TokenBalance.js";
+
+import { SelectedStartegy } from ".";
+import { PositionDetails } from "./PositionDetails";
+import { SlippageInput } from "./SlippageInput";
 
 type ChainSwitchModalProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title?: ReactNode;
   description?: React.ReactNode;
+  onBorrowRequestSuccess?: () => void;
+  onOpenChange: (open: boolean) => void;
+  open: boolean;
   selectedAsset: AssetInfo;
   selectedStrategy: SelectedStartegy;
-  onBorrowRequestSuccess?: () => void;
+  title?: ReactNode;
 };
 
 const defaultMinLeverage = 100;
 const defaultMaxLeverage = 1000;
 
 const LEVERAGE_RATE = 100;
-type BorrowState = { collateral: bigint; borrow: bigint; leverage: number };
-
 type BorrowAction =
-  | { type: "SET_COLLATERAL"; collateral: bigint }
-  | { type: "SET_BORROW"; borrow: bigint }
-  | { type: "SET_LEVERAGE"; leverage: number }
+  | { borrow: bigint; type: "SET_BORROW" }
+  | { collateral: bigint; type: "SET_COLLATERAL" }
+  | { leverage: number; type: "SET_LEVERAGE" }
   | { type: "RESET" };
 
-function computeBorrow(collateral: bigint, leverage: number) {
-  return (collateral * BigInt(leverage)) / BigInt(LEVERAGE_RATE);
-}
-function computeCollateral(borrow: bigint, leverage: number) {
-  if (leverage <= 0) return 0n;
-  return (borrow * BigInt(LEVERAGE_RATE)) / BigInt(leverage);
-}
-
-function borrowReducer(state: BorrowState, action: BorrowAction): BorrowState {
-  switch (action.type) {
-    case "SET_COLLATERAL": {
-      const collateral = action.collateral;
-      const borrow = computeBorrow(collateral, state.leverage);
-      return { ...state, collateral, borrow };
-    }
-    case "SET_BORROW": {
-      const borrow = action.borrow;
-      const collateral = computeCollateral(borrow, state.leverage);
-      return { ...state, borrow, collateral };
-    }
-    case "SET_LEVERAGE": {
-      const leverage = action.leverage;
-      const borrow = computeBorrow(state.collateral, leverage);
-      return { ...state, leverage, borrow };
-    }
-    case "RESET":
-      return { collateral: 0n, borrow: 0n, leverage: 100 };
-  }
-}
+type BorrowState = { borrow: bigint; collateral: bigint; leverage: number };
 
 export function BorrowModal({
-  open,
+  onBorrowRequestSuccess,
   onOpenChange,
+  open,
   selectedAsset,
   selectedStrategy,
-  onBorrowRequestSuccess,
 }: ChainSwitchModalProps) {
   const t = useTranslations("borrow.borrowModal");
   const tCommon = useTranslations("common");
-  const { refetchTotalAssets, refetchLimits } = useVaults();
+  const { refetchLimits, refetchTotalAssets } = useVaults();
   const availableLiquidity = selectedStrategy.vault.availableLiquidity;
   const title = t("title", { assetSymbol: selectedAsset.symbol });
   const [collateralAsset, setCollateralAsset] = useLocalStorage<AssetInfo>(
     "borrow-collateral-asset",
     {
-      symbol: selectedAsset.symbol,
       address: selectedAsset.address,
-      decimals: selectedAsset.decimals,
       chainId: selectedAsset.chainId,
+      decimals: selectedAsset.decimals,
       name: selectedAsset.name,
+      symbol: selectedAsset.symbol,
     },
     v => AssetInfoSchema.safeParse(v).success
   );
@@ -114,11 +86,11 @@ export function BorrowModal({
   );
   const router = useRouter();
   const [state, dispatch] = useReducer(borrowReducer, {
-    collateral: 0n,
     borrow: 0n,
+    collateral: 0n,
     leverage: 100,
   });
-  const { collateral: collateralAmount, borrow: amountToBorrow, leverage } = state;
+  const { borrow: amountToBorrow, collateral: collateralAmount, leverage } = state;
   const debouncedCollateral = useDebounce(collateralAmount, 200);
   const debouncedBorrow = useDebounce(amountToBorrow, 200);
   const collateralText = state.collateral
@@ -126,14 +98,14 @@ export function BorrowModal({
     : "";
   function onCollateralInput(valueStr: string) {
     const next = parseUnits(valueStr || "0", selectedAsset.decimals);
-    dispatch({ type: "SET_COLLATERAL", collateral: next });
+    dispatch({ collateral: next, type: "SET_COLLATERAL" });
   }
   function onBorrowInput(valueStr: string) {
     const next = parseUnits(valueStr || "0", selectedAsset.decimals);
-    dispatch({ type: "SET_BORROW", borrow: next });
+    dispatch({ borrow: next, type: "SET_BORROW" });
   }
   function onLeverageChange(val: number[]) {
-    dispatch({ type: "SET_LEVERAGE", leverage: val[0] });
+    dispatch({ leverage: val[0], type: "SET_LEVERAGE" });
   }
   const borrowText = state.borrow
     ? formatUnits(state.borrow, selectedAsset.decimals).text
@@ -143,19 +115,19 @@ export function BorrowModal({
   }, [t]);
   const allowanceInput = {
     address: selectedStrategy.vault.address,
-    assetAddress: collateralAsset.address,
-    assetSymbol: collateralAsset.symbol,
-    assetDecimals: collateralAsset.decimals,
     amount: collateralAmount,
-    legacyAllowance: false,
+    assetAddress: collateralAsset.address,
+    assetDecimals: collateralAsset.decimals,
+    assetSymbol: collateralAsset.symbol,
     chainId: selectedStrategy.vault.contract.chainId,
+    legacyAllowance: false,
   };
   const {
-    allAllowed,
-    isPendingApprovals,
-    approveMissing,
-    allowances,
     ableToRequest,
+    allAllowed,
+    allowances,
+    approveMissing,
+    isPendingApprovals,
     refetchAllowances,
   } = useEnsureAllowances([allowanceInput], {
     onSuccess: onSuccessAllowance,
@@ -182,17 +154,17 @@ export function BorrowModal({
 
   const borrowInput = useMemo(
     () => ({
-      chainId: selectedStrategy.vault.contract.chainId,
-      strategyId: selectedStrategy.id,
       address: selectedStrategy.vault.address,
+      assetDecimals: selectedAsset.decimals,
       assetsToBorrow: debouncedBorrow,
+      assetSymbol: selectedAsset.symbol,
+      chainId: selectedStrategy.vault.contract.chainId,
+      collateralAmount: debouncedCollateral,
       collateralType:
         getAddress(collateralAsset.address) === getAddress(selectedAsset.address) ? 0 : 1,
-      collateralAmount: debouncedCollateral,
       deadline: BigInt(Math.floor(Date.now() / 1000) + 3600),
       slippage,
-      assetDecimals: selectedAsset.decimals,
-      assetSymbol: selectedAsset.symbol,
+      strategyId: selectedStrategy.id,
     }),
     [
       debouncedBorrow,
@@ -214,6 +186,9 @@ export function BorrowModal({
     reset: resetBorrow,
     txState,
   } = useBorrow(borrowInput, selectedStrategy.vault, {
+    onBorrowError: error => {
+      toast(t("toasts.borrowError", { error }));
+    },
     onBorrowSuccess: () => {
       toast(t("toasts.borrowSuccess"));
       onBorrowRequestSuccess?.();
@@ -221,9 +196,6 @@ export function BorrowModal({
       refetchTotalAssets();
       refetchLimits();
       router.push("/borrow/my-positions");
-    },
-    onBorrowError: error => {
-      toast(t("toasts.borrowError", { error }));
     },
   });
   const totalAmountToBorrow = BigInt(amountToBorrow || "0");
@@ -240,54 +212,56 @@ export function BorrowModal({
   const actionButtonMeta = (() => {
     if (
       collateralAmount === undefined ||
-      collateralAmount === BigInt(0) ||
+      collateralAmount === 0n ||
       totalAmountToBorrow === 0n
     ) {
       return {
-        text: t("enterAmount"),
         disabled: true,
         onClick: undefined,
+        text: t("enterAmount"),
       };
     }
 
     if (isAmountExceedsBalance) {
       return {
-        text: t("insufficientBalance"),
         disabled: true,
         onClick: undefined,
+        text: t("insufficientBalance"),
       };
     }
 
     if (collateralAmount > availableLiquidity) {
       return {
-        text: t("exceedsLiquidity"),
         disabled: true,
         onClick: undefined,
+        text: t("exceedsLiquidity"),
       };
     }
 
     if (allAllowed) {
       if (confirmingInWallet) {
         return {
-          text: t("confirming"),
           disabled: true,
           onClick: undefined,
+          text: t("confirming"),
         };
       }
 
       return {
-        text: isPending ? t("requestPending") : t("borrow"),
         disabled:
           isPending ||
           isAmountExceedsBalance ||
           collateralAmount === 0n ||
           amountToBorrow === 0n,
         onClick: () => borrow(),
+        text: isPending ? t("requestPending") : t("borrow"),
       };
     }
 
     if (ableToRequest) {
       return {
+        disabled: isPendingApprovals,
+        onClick: () => approveMissing({ mode: "exact" }),
         text: isPendingApprovals ? (
           t("approving")
         ) : (
@@ -308,15 +282,13 @@ export function BorrowModal({
             ) : null}
           </div>
         ),
-        disabled: isPendingApprovals,
-        onClick: () => approveMissing({ mode: "exact" }),
       };
     }
 
     return {
-      text: t("enterAmount"),
       disabled: true,
       onClick: undefined,
+      text: t("enterAmount"),
     };
   })();
 
@@ -333,7 +305,7 @@ export function BorrowModal({
     },
   ];
 
-  const { isLoading, isFetching, predictedTokensToReceive, liquidationPriceWad, error } =
+  const { error, isFetching, isLoading, liquidationPriceWad, predictedTokensToReceive } =
     useBorrowPreview(borrowInput, selectedStrategy.vault);
   const borrowPreviewLoadingDisplayed = isLoading || isFetching;
 
@@ -344,14 +316,14 @@ export function BorrowModal({
 
   return (
     <Dialog
-      open={open}
       onOpenChange={() => {
         onOpenChange(false);
         dispatch({ type: "RESET" });
         resetBorrow();
       }}
-      title={title}
+      open={open}
       size="lg"
+      title={title}
     >
       <div className="grid grid-cols-1 gap-10 pb-2 md:grid-cols-2 md:pb-6">
         <div className="flex flex-col gap-4 text-center">
@@ -360,31 +332,31 @@ export function BorrowModal({
             <div className="flex flex-nowrap items-center gap-2">
               <AssetInput
                 className="flex-1"
+                onValueChange={evt => onCollateralInput(evt.value)}
                 placeholder="0.0"
                 value={collateralText}
-                onValueChange={evt => onCollateralInput(evt.value)}
               />
               <Select
-                value={getAddress(collateralAsset.address)}
-                options={selectOptions}
+                aria-label={t("selectCollateralAsset")}
                 onValueChange={val =>
                   getAddress(val) === getAddress(selectedAsset.address)
                     ? setCollateralAsset(selectedAsset)
                     : setCollateralAsset(selectedStrategy.token as AssetInfo)
                 }
-                aria-label={t("selectCollateralAsset")}
+                options={selectOptions}
+                value={getAddress(collateralAsset.address)}
               />
             </div>
             <div className="text-muted pl-2 text-left font-mono text-xs whitespace-nowrap">
               {t("balance", {
-                symbol: collateralAsset.symbol,
                 amount: balanceDisplay ? balanceDisplay.text : "N/A",
+                symbol: collateralAsset.symbol,
               })}
             </div>
           </div>
           <Card
-            className="bg-preset-gray-50 border-none"
             cardBodyClassName="gap-2"
+            className="bg-preset-gray-50 border-none"
             header={
               <div className="flex items-center justify-between">
                 <Heading level="5">{tCommon("leverage")}</Heading>
@@ -395,11 +367,11 @@ export function BorrowModal({
             }
           >
             <Slider
-              value={[leverage]}
-              onValueChange={onLeverageChange}
-              min={selectedStrategy.minLeverage || defaultMinLeverage}
-              step={10}
               max={selectedStrategy.maxLeverage || defaultMaxLeverage}
+              min={selectedStrategy.minLeverage || defaultMinLeverage}
+              onValueChange={onLeverageChange}
+              step={10}
+              value={[leverage]}
             />
             <div className="flex justify-between font-mono text-xs">
               <span>{t("minLeverage")}</span>
@@ -407,42 +379,42 @@ export function BorrowModal({
             </div>
             <div className="flex flex-col gap-2 text-left">
               <AssetInput
-                placeholder="0.0"
-                value={borrowText}
-                onValueChange={evt => onBorrowInput(evt.value)}
                 assetSymbol={selectedAsset?.symbol}
+                onValueChange={evt => onBorrowInput(evt.value)}
+                placeholder="0.0"
                 renderAssetImage={() => (
                   <AssetImage
-                    alt=""
                     address={selectedAsset.address}
+                    alt=""
                     imgURI={selectedAsset.logoURI}
                     size={24}
                   />
                 )}
+                value={borrowText}
               />
               <p className="text-muted font-mono text-xs">
                 {t("availableForBorrow", {
-                  symbol: selectedAsset.symbol,
                   amount: availableLiquidityFormatted.text,
+                  symbol: selectedAsset.symbol,
                 })}
               </p>
             </div>
           </Card>
           <SlippageInput
             className="mt-3 md:mt-6"
-            value={slippage}
             onChange={setSlippage}
             options={[
               { label: "0.1%", value: "0.1" },
               { label: "0.5%", value: "0.5" },
               { label: "1.0%", value: "1.0" },
             ]}
+            value={slippage}
           />
           <Button
-            onClick={actionButtonMeta.onClick}
-            disabled={actionButtonMeta.disabled}
-            size="lg"
             className="mx-auto mt-6 lg:w-2/3"
+            disabled={actionButtonMeta.disabled}
+            onClick={actionButtonMeta.onClick}
+            size="lg"
           >
             {actionButtonMeta.text}
           </Button>
@@ -451,10 +423,11 @@ export function BorrowModal({
         <div className="flex flex-col gap-8">
           <Heading level="5">{t("positionDetails")}</Heading>
           <div className="flex flex-nowrap justify-between gap-4 pr-2 overflow-ellipsis">
-            <Heading level="6" className="text-text-dimmed">
+            <Heading className="text-text-dimmed" level="6">
               {t("totalBalance")}
             </Heading>
             <RemoteText
+              error={error?.message}
               isLoading={borrowPreviewLoadingDisplayed}
               text={
                 predictedTokensToReceive
@@ -466,23 +439,53 @@ export function BorrowModal({
                     } ${selectedStrategy.token.symbol}`
                   : "N/A"
               }
-              error={error?.message}
             />
           </div>
           <PositionDetails
-            strategy={selectedStrategy}
-            selectedAsset={selectedAsset}
             collateralGiven={collateralAmount}
-            leverage={BigInt(leverage)}
-            liquidationPrice={liquidationPriceWad}
             enterTimeOrDeadline={now()}
-            loadingLiquidationPrice={borrowPreviewLoadingDisplayed}
-            liquidationPriceLoadingError={error?.message}
-            spreadFee={selectedStrategy.vault.feeData.spreadFee}
+            leverage={BigInt(leverage)}
             liquidationPenalty={selectedStrategy.vault.feeData.liquidationFee}
+            liquidationPrice={liquidationPriceWad}
+            liquidationPriceLoadingError={error?.message}
+            loadingLiquidationPrice={borrowPreviewLoadingDisplayed}
+            selectedAsset={selectedAsset}
+            spreadFee={selectedStrategy.vault.feeData.spreadFee}
+            strategy={selectedStrategy}
           />
         </div>
       </div>
     </Dialog>
   );
+}
+function borrowReducer(state: BorrowState, action: BorrowAction): BorrowState {
+  switch (action.type) {
+    case "RESET": {
+      return { borrow: 0n, collateral: 0n, leverage: 100 };
+    }
+    case "SET_BORROW": {
+      const borrow = action.borrow;
+      const collateral = computeCollateral(borrow, state.leverage);
+      return { ...state, borrow, collateral };
+    }
+    case "SET_COLLATERAL": {
+      const collateral = action.collateral;
+      const borrow = computeBorrow(collateral, state.leverage);
+      return { ...state, borrow, collateral };
+    }
+    case "SET_LEVERAGE": {
+      const leverage = action.leverage;
+      const borrow = computeBorrow(state.collateral, leverage);
+      return { ...state, borrow, leverage };
+    }
+  }
+}
+
+function computeBorrow(collateral: bigint, leverage: number) {
+  return (collateral * BigInt(leverage)) / BigInt(LEVERAGE_RATE);
+}
+
+function computeCollateral(borrow: bigint, leverage: number) {
+  if (leverage <= 0) return 0n;
+  return (borrow * BigInt(LEVERAGE_RATE)) / BigInt(leverage);
 }

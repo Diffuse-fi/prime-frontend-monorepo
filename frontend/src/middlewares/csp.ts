@@ -1,7 +1,9 @@
-import { type Finalizer } from "./utils";
+import { getAssetsResourcesUrls, getChainsDefaultRpcUrls } from "@diffuse/config";
+
 import { env } from "@/env";
 import { getCustomRpcUrls } from "@/lib/chains/rpc";
-import { getAssetsResourcesUrls, getChainsDefaultRpcUrls } from "@diffuse/config";
+
+import { type Finalizer } from "./utils";
 
 const isProd = process.env.NODE_ENV === "production";
 const httpsSecurityEnabled = !!env.ENABLE_HTTPS_SECURITY_HEADERS;
@@ -50,12 +52,12 @@ const allowedImageSources = [
   .filter(Boolean)
   .join(" ");
 
-function mergeCsp(existing: string | null, extra: string) {
-  return existing && existing.length ? `${existing}; ${extra}` : extra;
+function mergeCsp(existing: null | string, extra: string) {
+  return existing && existing.length > 0 ? `${existing}; ${extra}` : extra;
 }
 
 function normalizeTemplateString(str: string) {
-  return str.replace(/\s+/g, " ").trim();
+  return str.replaceAll(/\s+/g, " ").trim();
 }
 
 export const cspMiddleware: Finalizer = (_req, _ev, _ctx, res) => {
@@ -70,7 +72,7 @@ export const cspMiddleware: Finalizer = (_req, _ev, _ctx, res) => {
           font-src 'self';
           frame-src 'self' ${allowedFrameSources};
           frame-ancestors ${allowedFrameAncestors || "'none'"};
-          object-src 'none';
+          https://sonarsource.github.io/rspec/#/rspec/S3358/javascriptobject-src 'none';
           base-uri 'self';
           form-action 'self';
           ${httpsSecurityEnabled ? "upgrade-insecure-requests;" : ""}

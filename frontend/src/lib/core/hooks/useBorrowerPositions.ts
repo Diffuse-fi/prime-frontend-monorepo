@@ -1,26 +1,21 @@
-import pLimit from "p-limit";
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useClients } from "../../wagmi/useClients";
-import { opt, qk } from "../../query/helpers";
-import { QV } from "../../query/versions";
-import { type Address } from "viem";
 import type { VaultFullInfo } from "../types";
 import type { BorrowerPosition } from "../types";
+
+import { useQuery } from "@tanstack/react-query";
+import pLimit from "p-limit";
+import { useMemo } from "react";
+import { type Address } from "viem";
+
+import { opt, qk } from "../../query/helpers";
+import { QV } from "../../query/versions";
+import { useClients } from "../../wagmi/useClients";
 
 const ROOT = "borrower-positions";
 const version = QV.borrowerPositions;
 const qKeys = {
-  positions: (vaultsAddrKey: string | null, chainId: number, ownerAddr?: string) =>
-    qk([
-      ROOT,
-      version,
-      opt(vaultsAddrKey),
-      chainId,
-      opt(ownerAddr),
-      "positions",
-    ]),
-  pending: (vaultsAddrKey: string | null, chainId: number, ownerAddr?: string) =>
+  closed: (chainId: number, ownerAddr?: string) =>
+    qk([ROOT, version, chainId, opt(ownerAddr), "closed-positions"]),
+  pending: (vaultsAddrKey: null | string, chainId: number, ownerAddr?: string) =>
     qk([
       ROOT,
       version,
@@ -29,14 +24,21 @@ const qKeys = {
       opt(ownerAddr),
       "pending-positions",
     ]),
-  closed: (chainId: number, ownerAddr?: string) =>
-    qk([ROOT, version, chainId, opt(ownerAddr), "closed-positions"]),
+  positions: (vaultsAddrKey: null | string, chainId: number, ownerAddr?: string) =>
+    qk([
+      ROOT,
+      version,
+      opt(vaultsAddrKey),
+      chainId,
+      opt(ownerAddr),
+      "positions",
+    ]),
 };
 
 const LIMIT = pLimit(6);
 
 export function useBorrowerPositions(allVaults: VaultFullInfo[]) {
-  const { chainId, address: borrower, publicClient } = useClients();
+  const { address: borrower, chainId, publicClient } = useClients();
   const vaultsConsistency = allVaults.every(v => v.contract.chainId === chainId);
   const addressKey = useMemo(() => {
     if (!allVaults?.length) return null;
@@ -54,7 +56,7 @@ export function useBorrowerPositions(allVaults: VaultFullInfo[]) {
 
   const pendingQuery = useQuery({
     enabled,
-    queryKey: qKeys.pending(addressKey, chainId!, borrower),
+    gcTime: 10 * 60_000,
     queryFn: async ({ signal }) => {
       const tasks = allVaults.map(vault =>
         LIMIT(async () => {
@@ -63,16 +65,16 @@ export function useBorrowerPositions(allVaults: VaultFullInfo[]) {
             { signal }
           );
 
-          return { vault, positionIds: ids as bigint[] };
+          return { positionIds: ids as bigint[], vault };
         })
       );
 
       return Promise.all(tasks);
     },
-    staleTime: 30_000,
-    gcTime: 10 * 60_000,
+    queryKey: qKeys.pending(addressKey, chainId!, borrower),
     refetchInterval: 5000,
     refetchIntervalInBackground: true,
+    staleTime: 30_000,
   });
 
   const somePending = pendingQuery.data
@@ -81,7 +83,7 @@ export function useBorrowerPositions(allVaults: VaultFullInfo[]) {
 
   const positionsQuery = useQuery({
     enabled,
-    queryKey: qKeys.positions(addressKey, chainId!, borrower),
+    gcTime: 10 * 60_000,
     queryFn: async ({ signal }) => {
       const tasks = allVaults.map(vault =>
         LIMIT(async () => {
@@ -94,20 +96,20 @@ export function useBorrowerPositions(allVaults: VaultFullInfo[]) {
 
           return raw.map(
             (p): BorrowerPosition => ({
-              vault,
               asset: vault.strategies.find(s => s.id === p.strategyId)!.token,
-              user: p.user as Address,
-              collateralType: Number(p.collateralType),
-              subjectToLiquidation: p.subjectToLiquidation,
-              strategyId: p.strategyId,
               assetsBorrowed: p.assetsBorrowed,
-              collateralGiven: p.collateralGiven,
-              leverage: p.leverage,
-              strategyBalance: p.strategyBalance,
-              id: p.id,
-              enterTimeOrDeadline: p.enterTimeOrDeadline,
               blockNumber: p.blockNumber,
+              collateralGiven: p.collateralGiven,
+              collateralType: Number(p.collateralType),
+              enterTimeOrDeadline: p.enterTimeOrDeadline,
+              id: p.id,
+              leverage: p.leverage,
               liquidationPrice: p.liquidationPrice,
+              strategyBalance: p.strategyBalance,
+              strategyId: p.strategyId,
+              subjectToLiquidation: p.subjectToLiquidation,
+              user: p.user as Address,
+              vault,
             })
           );
         })
@@ -116,20 +118,20 @@ export function useBorrowerPositions(allVaults: VaultFullInfo[]) {
       const perVault = await Promise.all(tasks);
       return perVault.flat();
     },
-    staleTime: 30_000,
-    gcTime: 10 * 60_000,
+    queryKey: qKeys.positions(addressKey, chainId!, borrower),
     refetchInterval: somePending ? 2000 : false,
     refetchIntervalInBackground: somePending,
+    staleTime: 30_000,
   });
 
   return {
-    positions: positionsQuery.data || [],
-    pending: pendingQuery.data || [],
+    error: positionsQuery.error as Error | null,
     isLoading: positionsQuery.isLoading || pendingQuery.isLoading,
     isPending: positionsQuery.isPending || pendingQuery.isPending,
+    pending: pendingQuery.data || [],
+    pendingError: pendingQuery.error as Error | null,
+    positions: positionsQuery.data || [],
     refetchPending: pendingQuery.refetch,
     refetchPositions: positionsQuery.refetch,
-    error: positionsQuery.error as Error | null,
-    pendingError: pendingQuery.error as Error | null,
   };
 }

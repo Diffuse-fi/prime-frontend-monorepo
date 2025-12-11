@@ -1,9 +1,14 @@
-import { Chain } from "@rainbow-me/rainbowkit";
-import { env } from "@/env";
 import { CHAINS } from "@diffuse/config";
+import { Chain } from "@rainbow-me/rainbowkit";
+
+import { env } from "@/env";
 
 export function getAvailableChains() {
   return CHAINS;
+}
+
+export function getAvailableChainsIds(): number[] {
+  return getAvailableChains().map(c => c.id);
 }
 
 export function getInitialChain(): Chain {
@@ -11,10 +16,6 @@ export function getInitialChain(): Chain {
     c => c.id === env.NEXT_PUBLIC_INITIAL_CHAIN_ID
   );
   return foundChain ?? getAvailableChains()[0];
-}
-
-export function getAvailableChainsIds(): number[] {
-  return getAvailableChains().map(c => c.id);
 }
 
 const chainsById: Record<number, Chain> = Object.fromEntries(

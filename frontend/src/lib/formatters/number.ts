@@ -2,28 +2,41 @@ import type { FormatResult } from "./types";
 
 const THIN_NBSP = "\u202F";
 
-export function formatThousandsSpace(
-  n: number | bigint,
-  opts: Intl.NumberFormatOptions = {}
-): FormatResult<number | bigint> {
-  // We want to have a unified format so we ignore locale and always use en-US
-  const nf = new Intl.NumberFormat("en-US", { useGrouping: true, ...opts });
-  const res = nf
-    .formatToParts(n)
-    .map(p => (p.type === "group" ? THIN_NBSP : p.value))
-    .join("");
+const stripTrailingFractionZeros = (str: string) => {
+  const dotIndex = str.indexOf(".");
+  if (dotIndex === -1) return str;
+  let end = str.length;
+  while (end > dotIndex && str.codePointAt(end - 1) === 48) {
+    end -= 1;
+  }
+  if (end === dotIndex + 1) return str.slice(0, dotIndex);
+  return str.slice(0, end);
+};
 
-  return {
-    text: res,
-    value: n,
-    meta: {
-      formatter: Intl.NumberFormat,
-      options: opts,
-    },
-  };
-}
+const trimTrailingZeros = (str: string) => {
+  let end = str.length;
+  while (end > 0 && str.codePointAt(end - 1) === 48) {
+    end -= 1;
+  }
+  return str.slice(0, end);
+};
 
-export function formatNumberToKMB<T extends number | bigint>(
+const toFixedBig = (value: bigint, divisor: bigint, frac: number) => {
+  const sign = value < 0n ? "-" : "";
+  const v = value < 0n ? -value : value;
+  const intPart = v / divisor;
+  const rem = v % divisor;
+  if (frac === 0) return `${sign}${intPart.toString()}`;
+  let scale = 1n;
+  for (let i = 0; i < frac; i++) scale *= 10n;
+  const dec = (rem * scale) / divisor;
+  let decStr = dec.toString();
+  decStr = trimTrailingZeros(decStr);
+  if (decStr.length === 0) return `${sign}${intPart.toString()}`;
+  return `${sign}${intPart.toString()}.${decStr}`;
+};
+
+export function formatNumberToKMB<T extends bigint | number>(
   n: T,
   opts?: {
     maxFractionCompact?: number;
@@ -35,28 +48,28 @@ export function formatNumberToKMB<T extends number | bigint>(
 
   const isBig = typeof n === "bigint";
   const absBig = isBig ? (n >= 0n ? (n as bigint) : -(n as bigint)) : null;
-  const absNum = !isBig ? Math.abs(n as number) : null;
+  const absNum = isBig ? null : Math.abs(n as number);
 
   type Suf = {
-    suffix: "K" | "M" | "B";
     div: bigint;
     divNum: number;
+    suffix: "B" | "K" | "M";
     threshold: bigint | number;
   };
   const table: Suf[] = [
     {
-      suffix: "B",
       div: 1_000_000_000n,
       divNum: 1_000_000_000,
+      suffix: "B",
       threshold: isBig ? 1_000_000_000n : 1_000_000_000,
     },
     {
-      suffix: "M",
       div: 1_000_000n,
       divNum: 1_000_000,
+      suffix: "M",
       threshold: isBig ? 1_000_000n : 1_000_000,
     },
-    { suffix: "K", div: 1_000n, divNum: 1_000, threshold: isBig ? 1_000n : 1_000 },
+    { div: 1000n, divNum: 1000, suffix: "K", threshold: isBig ? 1000n : 1000 },
   ];
 
   const pick = () => {
@@ -78,48 +91,54 @@ export function formatNumberToKMB<T extends number | bigint>(
 
   const chosen = pick();
 
-  const toFixedBig = (value: bigint, divisor: bigint, frac: number) => {
-    const sign = value < 0n ? "-" : "";
-    const v = value < 0n ? -value : value;
-    const intPart = v / divisor;
-    const rem = v % divisor;
-    if (frac === 0) return `${sign}${intPart.toString()}`;
-    let scale = 1n;
-    for (let i = 0; i < frac; i++) scale *= 10n;
-    const dec = (rem * scale) / divisor;
-    let decStr = dec.toString();
-    decStr = decStr.replace(/0+$/, "");
-    if (decStr.length === 0) return `${sign}${intPart.toString()}`;
-    return `${sign}${intPart.toString()}.${decStr}`;
-  };
-
   if (chosen) {
     const text = isBig
       ? toFixedBig(n as bigint, chosen.div, maxFractionCompact)
       : (() => {
           const v = (n as number) / chosen.divNum;
           const s = v.toFixed(maxFractionCompact);
-          return s.replace(/\.?0+$/, "");
+          return stripTrailingFractionZeros(s);
         })();
 
     return {
+      meta: { compact: true, maxFractionCompact, suffix: chosen.suffix },
       text: `${text}${chosen.suffix}`,
       value: n,
-      meta: { compact: true, suffix: chosen.suffix, maxFractionCompact },
     };
   }
 
   const formatted = new Intl.NumberFormat("en-US", {
-    useGrouping: true,
-    minimumFractionDigits: smallNumberFraction,
     maximumFractionDigits: smallNumberFraction,
+    minimumFractionDigits: smallNumberFraction,
+    useGrouping: true,
   }).format(Number(n));
 
-  const withThinSpaces = formatted.replace(/,/g, THIN_NBSP);
+  const withThinSpaces = formatted.replaceAll(",", THIN_NBSP);
 
   return {
+    meta: { compact: false, maxFractionCompact, suffix: null },
     text: withThinSpaces,
     value: n,
-    meta: { compact: false, suffix: null, maxFractionCompact },
+  };
+}
+
+export function formatThousandsSpace(
+  n: bigint | number,
+  opts: Intl.NumberFormatOptions = {}
+): FormatResult<bigint | number> {
+  // We want to have a unified format so we ignore locale and always use en-US
+  const nf = new Intl.NumberFormat("en-US", { useGrouping: true, ...opts });
+  const res = nf
+    .formatToParts(n)
+    .map(p => (p.type === "group" ? THIN_NBSP : p.value))
+    .join("");
+
+  return {
+    meta: {
+      formatter: Intl.NumberFormat,
+      options: opts,
+    },
+    text: res,
+    value: n,
   };
 }

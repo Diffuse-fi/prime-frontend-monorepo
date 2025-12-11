@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/nextjs";
+
 import { isSentryEnabled } from "./lib/sentry";
 
 export async function register() {

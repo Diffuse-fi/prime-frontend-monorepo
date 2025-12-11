@@ -2,19 +2,19 @@ import { Card, cn, Heading } from "@diffuse/ui-kit";
 import { ReactNode } from "react";
 
 export interface InfoCardProps {
-  header: string;
-  info: ReactNode;
   className?: string;
+  header: string;
   icon: ReactNode;
   iconBgClassName?: string;
+  info: ReactNode;
 }
 
 export function InfoCard({
-  header,
-  info,
   className,
+  header,
   icon,
   iconBgClassName,
+  info,
 }: InfoCardProps) {
   return (
     <Card
@@ -22,7 +22,7 @@ export function InfoCard({
       className={cn("rounded-[128px] p-5", className)}
     >
       <div>
-        <Heading level="5" className="text-text-dimmed">
+        <Heading className="text-text-dimmed" level="5">
           {header}
         </Heading>
         {info}

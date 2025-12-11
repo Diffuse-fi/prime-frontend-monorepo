@@ -15,15 +15,15 @@ const borrowerPositionVersion = `v1-${borrowVersion}`;
 const withdrawYieldVersion = `v1-${lendVersion}`;
 
 export const QV = {
-  lend: lendVersion,
-  assetsMeta: assetsMetaVersion,
-  viewerData: viewerDataVersion,
-  vault: vaultVersion,
   allowance: allowanceVersion,
-  deposit: depositVersion,
-  withdraw: withdrawVersion,
-  lenderPositions: lenderPositionVersion,
+  assetsMeta: assetsMetaVersion,
   borrow: borrowVersion,
   borrowerPositions: borrowerPositionVersion,
+  deposit: depositVersion,
+  lend: lendVersion,
+  lenderPositions: lenderPositionVersion,
+  vault: vaultVersion,
+  viewerData: viewerDataVersion,
+  withdraw: withdrawVersion,
   withdrawYield: withdrawYieldVersion,
 } as const;

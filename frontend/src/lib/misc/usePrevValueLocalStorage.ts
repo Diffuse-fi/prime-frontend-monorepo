@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+
 import { useLocalStorage } from "./useLocalStorage";
 
 export function usePrevValueLocalStorage<T>(value: T, defaultValue: T, lsKey: string) {

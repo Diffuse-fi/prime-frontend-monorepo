@@ -2,7 +2,7 @@ import { VaultRiskLevel } from "../types";
 
 const vaultriskLevelColorMap: Record<
   VaultRiskLevel,
-  "success" | "warning" | "error" | "muted"
+  "error" | "muted" | "success" | "warning"
 > = {
   0: "muted",
   1: "success",

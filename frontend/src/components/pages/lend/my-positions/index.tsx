@@ -1,35 +1,37 @@
 "use client";
 
-import { useVaults } from "@/lib/core/hooks/useVaults";
-import { useLocalization } from "@/lib/localization/useLocalization";
-import { DollarSign, Percent, TrendingUp } from "lucide-react";
-import { AssetsList } from "../../../AssetsList";
-import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
 import { Button, Heading, Tooltip } from "@diffuse/ui-kit";
-import { useLenderPositions } from "@/lib/core/hooks/useLenderPositions";
-import { toast } from "@/lib/toast";
-import { InfoCard, InfoCardProps } from "./InfoCard";
-import { PositionCard } from "./PositionCard";
-import { formatAsset, formatUnits } from "@/lib/formatters/asset";
+import { DollarSign, Percent, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+
+import { useLenderPositions } from "@/lib/core/hooks/useLenderPositions";
+import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
+import { useVaults } from "@/lib/core/hooks/useVaults";
+import { useWithdrawYield } from "@/lib/core/hooks/useWithdrawYield";
+import { LenderPosition } from "@/lib/core/types";
+import { formatAsset, formatUnits } from "@/lib/formatters/asset";
+import { compareDatish } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { calcAprByInterestEarned } from "@/lib/formulas/apr";
+import { useLocalization } from "@/lib/localization/useLocalization";
 import { showSkeletons } from "@/lib/misc/ui";
-import { useWithdrawYield } from "@/lib/core/hooks/useWithdrawYield";
-import { compareDatish } from "@/lib/formatters/date";
-import { useState } from "react";
-import { LenderPosition } from "@/lib/core/types";
+import { toast } from "@/lib/toast";
+
+import { AssetsList } from "../../../AssetsList";
+import { InfoCard, InfoCardProps } from "./InfoCard";
+import { PositionCard } from "./PositionCard";
 import { WithdrawModal } from "./WithdrawModal";
 
 export default function MyPositions() {
   const {
-    vaults,
-    vaultsAssetsList,
     isLoading: isLoadingVaults,
     isPending: isPendingVaults,
-    refetchTotalAssets,
-    refetchLimits,
     refetch: refetchVaults,
+    refetchLimits,
+    refetchTotalAssets,
+    vaults,
+    vaultsAssetsList,
   } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const [selectedPosition, setSelectedPosition] = useState<LenderPosition | null>(null);
@@ -41,8 +43,8 @@ export default function MyPositions() {
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
     : vaults;
   const {
-    positions,
     isLoading: isLoadingPositions,
+    positions,
     refetch,
   } = useLenderPositions(vaultsForSelectedAsset);
   const totalSupplied =
@@ -73,17 +75,17 @@ export default function MyPositions() {
   };
 
   const {
-    withdrawYield,
     isPending: isPendingWithdrawYield,
     txState: withdrawYieldTxState,
+    withdrawYield,
   } = useWithdrawYield(vaults, {
+    onWithdrawYieldError: e => {
+      toast(t("toasts.yieldWithdrawError", { error: e }));
+    },
     onWithdrawYieldSuccess: () => {
       toast(t("toasts.yieldWithdrawn"));
       refetch();
       refetchTotalAssets();
-    },
-    onWithdrawYieldError: e => {
-      toast(t("toasts.yieldWithdrawError", { error: e }));
     },
   });
 
@@ -99,6 +101,7 @@ export default function MyPositions() {
             {
               header: t("totalSupplied"),
               icon: <DollarSign aria-hidden={true} />,
+              iconBgClassName: "bg-primary/20",
               info:
                 totalSupplied && selectedAsset
                   ? formatAsset(
@@ -107,45 +110,46 @@ export default function MyPositions() {
                       selectedAsset.symbol
                     ).text
                   : "--",
-              iconBgClassName: "bg-primary/20",
             },
             {
               header: t("averageAPY"),
-              icon: <TrendingUp className="text-blue-500" aria-hidden={true} />,
-              info: vaults.length
-                ? formatAprToPercent(calcAprByInterestEarned(totalAccrued, totalSupplied))
-                    .text
-                : "--",
+              icon: <TrendingUp aria-hidden={true} className="text-blue-500" />,
               iconBgClassName: "bg-blue-100",
+              info:
+                vaults.length > 0
+                  ? formatAprToPercent(
+                      calcAprByInterestEarned(totalAccrued, totalSupplied)
+                    ).text
+                  : "--",
             },
             {
               header: t("interestEarned"),
-              icon: <Percent className="text-purple-500" aria-hidden={true} />,
+              icon: <Percent aria-hidden={true} className="text-purple-500" />,
+              iconBgClassName: "bg-purple-100",
               info:
                 totalAccrued !== undefined && selectedAsset
                   ? `${formatUnits(totalAccrued, selectedAsset.decimals).text} ${selectedAsset.symbol}`
                   : "--",
-              iconBgClassName: "bg-purple-100",
             },
           ] satisfies InfoCardProps[]
         ).map(i => (
           <InfoCard
-            key={i.header}
             header={i.header}
             icon={i.icon}
-            info={i.info}
             iconBgClassName={i.iconBgClassName}
+            info={i.info}
+            key={i.header}
           />
         ))}
       </div>
       <AssetsList
-        skeletonsToShow={1}
-        options={vaultsAssetsList}
-        direction={dir}
-        selectedAsset={selectedAsset}
-        onSelectAsset={setSelectedAsset}
-        isLoading={isLoadingVaults}
         className="w-1/2"
+        direction={dir}
+        isLoading={isLoadingVaults}
+        onSelectAsset={setSelectedAsset}
+        options={vaultsAssetsList}
+        selectedAsset={selectedAsset}
+        skeletonsToShow={1}
       />
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
         {isLoadingPositions || isPendingVaults ? (
@@ -159,16 +163,16 @@ export default function MyPositions() {
             const button = (
               <Button
                 className="flex-1"
-                onClick={() =>
-                  withdrawYield({
-                    vaultAddress: position.vault.address,
-                    strategyIds: position.vault.strategies.map(s => s.id),
-                  })
-                }
                 disabled={
                   isPendingWithdrawYield ||
                   position.accruedYield === 0n ||
                   !rewardsClaimable
+                }
+                onClick={() =>
+                  withdrawYield({
+                    strategyIds: position.vault.strategies.map(s => s.id),
+                    vaultAddress: position.vault.address,
+                  })
                 }
               >
                 {confirmingInWalletWithdrawYield
@@ -181,35 +185,35 @@ export default function MyPositions() {
 
             return (
               <PositionCard
-                position={position}
-                key={position.vault.address}
-                withdrawButton={
-                  <Button
-                    className="flex-1"
-                    onClick={() => setSelectedPosition(position)}
-                    disabled={position.balance === 0n}
-                  >
-                    {t("withdraw")}
-                  </Button>
-                }
                 claimRewardsButton={
-                  !rewardsClaimable ? (
+                  rewardsClaimable ? (
+                    button
+                  ) : (
                     <Tooltip
                       className="max-w-75 text-center"
                       content={t("rewardsAvailableTooltip")}
                     >
                       {button}
                     </Tooltip>
-                  ) : (
-                    button
                   )
+                }
+                key={position.vault.address}
+                position={position}
+                withdrawButton={
+                  <Button
+                    className="flex-1"
+                    disabled={position.balance === 0n}
+                    onClick={() => setSelectedPosition(position)}
+                  >
+                    {t("withdraw")}
+                  </Button>
                 }
               />
             );
           })
         ) : (
           <div className="sm:col-span-3">
-            <Heading level="5" className="pt-2 font-semibold">
+            <Heading className="pt-2 font-semibold" level="5">
               {t("noPositions.title")}
             </Heading>
             <p className="">{t("noPositions.description")}</p>
@@ -218,17 +222,17 @@ export default function MyPositions() {
       </div>
       {selectedPosition && selectedAsset && (
         <WithdrawModal
-          open={Boolean(selectedPosition)}
           onOpenChange={open => {
             if (!open) {
               setSelectedPosition(null);
             }
           }}
-          title={t("withdrawModal.title")}
+          onWithdrawError={onWithdrawError}
+          onWithdrawSuccess={onWithdrawSuccess}
+          open={Boolean(selectedPosition)}
           selectedAsset={selectedAsset}
           selectedPosition={selectedPosition}
-          onWithdrawSuccess={onWithdrawSuccess}
-          onWithdrawError={onWithdrawError}
+          title={t("withdrawModal.title")}
         />
       )}
     </div>

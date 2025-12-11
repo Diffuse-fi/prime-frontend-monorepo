@@ -21,6 +21,15 @@ export const LogLevelSchema = z.enum([
   "trace",
 ]);
 
+function isValidToken(t: string) {
+  if (t === "*") return true;
+
+  const neg = t.startsWith("!") || t.startsWith("-");
+  const core = neg ? t.slice(1) : t;
+
+  return NamespaceSchema.safeParse(core).success;
+}
+
 export const NamespacesCsvSchema = z
   .string()
   .trim()
@@ -32,15 +41,6 @@ export const NamespacesCsvSchema = z
       .map(s => s.trim())
       .filter(Boolean);
 
-    const isValidToken = (t: string) => {
-      if (t === "*") return true;
-
-      const neg = t.startsWith("!") || t.startsWith("-");
-      const core = neg ? t.slice(1) : t;
-
-      return NamespaceSchema.safeParse(core).success;
-    };
-
     for (const t of tokens) {
       if (!isValidToken(t)) {
         ctx.addIssue({
@@ -51,5 +51,5 @@ export const NamespacesCsvSchema = z
     }
   });
 
-export type Namespace = z.infer<typeof NamespaceSchema>;
 export type LogLevel = z.infer<typeof LogLevelSchema>;
+export type Namespace = z.infer<typeof NamespaceSchema>;

@@ -1,18 +1,18 @@
 import { ToastProps } from "@diffuse/ui-kit";
 
-export type ToastPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right";
-
-export type RenderToastData = {
-  id: string;
-} & ToastProps;
-
 export type CreateToastData = {
+  closeable?: boolean;
+  duration?: number;
   message: string;
   position?: ToastPosition;
-  duration?: number;
-  closeable?: boolean;
   title?: string;
 };
+
+export type RenderToastData = ToastProps & {
+  id: string;
+};
+
+export type ToastPosition = "bottom-left" | "bottom-right" | "top-left" | "top-right";
 
 type NotificationActions = {
   create: (data: CreateToastData) => void;
@@ -26,7 +26,7 @@ export const toastActions: { actions: NotificationActions } = {
   },
 };
 
-export function toast(data: string | CreateToastData) {
+export function toast(data: CreateToastData | string) {
   if (typeof data === "string") {
     toastActions.actions.create({ message: data });
     return;

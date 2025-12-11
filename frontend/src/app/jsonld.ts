@@ -1,6 +1,7 @@
+import { BreadcrumbList, Graph, Organization, WebPage, WebSite } from "schema-dts";
+
 import { env } from "@/env";
 import { localizedPath } from "@/lib/localization/locale";
-import { BreadcrumbList, Graph, Organization, WebPage, WebSite } from "schema-dts";
 
 const origin = env.ORIGIN;
 const twitterAccount = env.ORG_TWITTER_ACCOUNT;
@@ -12,44 +13,44 @@ const siteId = `${origin}#website`;
 const logoId = `${origin}#logo`;
 
 export const org: Organization = {
-  "@type": "Organization",
   "@id": orgId,
-  name: env.NEXT_PUBLIC_APP_NAME,
-  url: origin,
+  "@type": "Organization",
   logo: {
-    "@type": "ImageObject",
     "@id": logoId,
-    url: `${origin}/logo.svg?v=1`,
+    "@type": "ImageObject",
     caption: env.NEXT_PUBLIC_APP_NAME,
+    url: `${origin}/logo.svg?v=1`,
   },
+  name: env.NEXT_PUBLIC_APP_NAME,
   sameAs: [
     twitterAccount
       ? `https://twitter.com/${twitterAccount.replace(/^@/, "")}`
       : undefined,
     ghAccountName ? `https://github.com/${ghAccountName}` : undefined,
   ].filter(Boolean) as string[],
+  url: origin,
 };
 
 export const site: WebSite = {
-  "@type": "WebSite",
   "@id": siteId,
-  url: origin,
+  "@type": "WebSite",
   name: env.NEXT_PUBLIC_APP_NAME,
   publisher: { "@id": orgId },
+  url: origin,
 };
 
 type GetWebPageLdOptions = {
-  title: string;
   description: string;
-  path: string;
   lang: string;
+  path: string;
+  title: string;
 };
 
 export function getWebPageGraph({
-  lang,
   description,
-  title,
+  lang,
   path,
+  title,
 }: GetWebPageLdOptions): Graph {
   const trailParts = path.split("/").filter(Boolean);
   const normalizedPath = localizedPath(lang, path);
@@ -57,22 +58,22 @@ export function getWebPageGraph({
   const webPageId = `${url}#webpage`;
 
   const webPage: WebPage = {
-    "@type": "WebPage",
     "@id": webPageId,
-    url,
-    name: title,
+    "@type": "WebPage",
+    about: { "@id": orgId },
     description,
     inLanguage: lang,
     isPartOf: { "@id": siteId },
-    about: { "@id": orgId },
+    name: title,
     publisher: { "@id": orgId },
+    url,
   };
 
   const trail = [
-    { name: appName, item: origin },
+    { item: origin, name: appName },
     ...trailParts.map((part, index) => ({
-      name: part.charAt(0).toUpperCase() + part.slice(1).replace(/-/g, " "),
       item: `${origin}/${localizedPath(lang, trailParts.slice(0, index + 1).join("/"))}`,
+      name: part.charAt(0).toUpperCase() + part.slice(1).replaceAll("-", " "),
     })),
   ];
 
@@ -80,9 +81,9 @@ export function getWebPageGraph({
     "@type": "BreadcrumbList",
     itemListElement: trail.map((item, index) => ({
       "@type": "ListItem",
-      position: index + 1,
-      name: item.name,
       item: item.item,
+      name: item.name,
+      position: index + 1,
     })),
   };
 

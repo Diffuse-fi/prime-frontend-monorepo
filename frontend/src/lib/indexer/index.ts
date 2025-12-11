@@ -1,8 +1,10 @@
-import { mainnet } from "viem/chains";
 import { createIndexer } from "@diffuse/indexer";
-import { env } from "@/env";
-import { customRpcMap } from "../chains/rpc";
 import * as Sentry from "@sentry/nextjs";
+import { mainnet } from "viem/chains";
+
+import { env } from "@/env";
+
+import { customRpcMap } from "../chains/rpc";
 
 export const indexerDbConfig = {
   connectionString: env.INDEXER_DATABASE_URL,
@@ -12,17 +14,17 @@ export const indexerDbConfig = {
 function createIndexerWithSentryReport() {
   try {
     return createIndexer({
-      rpcUrls: customRpcMap,
+      chainIdsToIgnore: [],
       db: indexerDbConfig,
+      rpcUrls: customRpcMap,
       // Will be used on the first run when there is no checkpoint in the database
       startBlocks: {
         [mainnet.id]: 23_861_823,
       },
-      chainIdsToIgnore: [],
     });
-  } catch (e) {
-    Sentry.captureException(e);
-    throw e;
+  } catch (error) {
+    Sentry.captureException(error);
+    throw error;
   }
 }
 

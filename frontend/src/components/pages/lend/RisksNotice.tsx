@@ -8,13 +8,13 @@ function RisksNoticeComponent() {
   return (
     <ul className="bg-err-light list-inside list-none space-y-2 rounded-sm p-4 text-sm">
       <li>
-        <Heading level="4" className="text-err font-semibold">
+        <Heading className="text-err font-semibold" level="4">
           {t("utilization.title")}
         </Heading>
         <p className="inline">{t("utilization.description")}</p>
       </li>
       <li>
-        <Heading level="4" className="text-err font-semibold">
+        <Heading className="text-err font-semibold" level="4">
           {t("protocol.title")}
         </Heading>
         <p className="inline">{t("protocol.description")}</p>

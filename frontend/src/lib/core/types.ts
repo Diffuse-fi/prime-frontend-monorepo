@@ -2,77 +2,94 @@ import { AssetInfo } from "@diffuse/config";
 import { type Vault } from "@diffuse/sdk-js";
 import { Address, Hash, Hex } from "viem";
 
-export type Strategy = {
+export type BorrowerPosition = {
+  asset: AssetInfo;
+  assetsBorrowed: bigint;
+  blockNumber: number;
+  collateralGiven: bigint;
+  collateralType: number;
+  enterTimeOrDeadline: number;
   id: bigint;
-  token: AssetInfo;
-  apr: bigint;
-  endDate: bigint;
+  leverage: bigint;
+  liquidationPrice: bigint;
+  strategyBalance: bigint;
+  strategyId: bigint;
+  subjectToLiquidation: boolean;
+  user: Address;
+  vault: VaultFullInfo;
+};
+
+export type LenderPosition = {
+  accruedYield: bigint;
+  asset: AssetInfo;
   balance: bigint;
-  pool: Hex;
-  isDisabled: boolean;
-  name: string;
-  maxLeverage: number;
-  minLeverage: number;
-};
-
-export type VaultFullInfo = {
-  assets: AssetInfo[];
-  name: string;
-  address: Address;
-  targetApr: bigint;
-  strategies: Strategy[];
-  contract: Vault;
-  feeData: {
-    spreadFee: number;
-    earlyWithdrawalFee: number;
-    liquidationFee: number;
-  };
-  totalAssets?: bigint;
-  riskLevel: VaultRiskLevel;
-  availableLiquidity: bigint;
-  curator?: Address;
-};
-
-export type VaultLimits = {
-  maxDeposit?: bigint;
-  maxWithdraw?: bigint;
-  address: Address;
-  chainId: number;
+  vault: VaultFullInfo;
 };
 
 export type SelectedVault = {
   address: Address;
-  assetAddress: Address;
-  assetSymbol: string;
-  assetDecimals: number;
   amount: bigint;
-  legacyAllowance: boolean;
+  assetAddress: Address;
+  assetDecimals: number;
+  assetSymbol: string;
   chainId: number;
+  legacyAllowance: boolean;
+};
+
+export type Strategy = {
+  apr: bigint;
+  balance: bigint;
+  endDate: bigint;
+  id: bigint;
+  isDisabled: boolean;
+  maxLeverage: number;
+  minLeverage: number;
+  name: string;
+  pool: Hex;
+  token: AssetInfo;
+};
+
+export type TxInfo = {
+  errorMessage?: string;
+  hash?: Hash;
+  phase: TxPhase;
 };
 
 export type TxPhase =
-  | "idle"
-  | "checking"
   | "awaiting-signature"
   | "broadcasting"
+  | "checking"
+  | "error"
+  | "idle"
   | "pending"
   | "replaced"
-  | "success"
-  | "error";
-
-export type TxInfo = {
-  phase: TxPhase;
-  hash?: Hash;
-  errorMessage?: string;
-};
+  | "success";
 
 export type TxState = Record<Address, TxInfo>;
 
-export type LenderPosition = {
-  vault: VaultFullInfo;
-  asset: AssetInfo;
-  balance: bigint;
-  accruedYield: bigint;
+export type VaultFullInfo = {
+  address: Address;
+  assets: AssetInfo[];
+  availableLiquidity: bigint;
+  contract: Vault;
+  curator?: Address;
+  feeData: {
+    earlyWithdrawalFee: number;
+    liquidationFee: number;
+    spreadFee: number;
+  };
+  name: string;
+  riskLevel: VaultRiskLevel;
+  strategies: Strategy[];
+  targetApr: bigint;
+  totalAssets?: bigint;
+};
+
+export type VaultLimits = {
+  address: Address;
+  chainId: number;
+  maxDeposit?: bigint;
+  maxWithdraw?: bigint;
 };
 
 export type VaultRiskLevel =
@@ -80,20 +97,3 @@ export type VaultRiskLevel =
   | 1 // low
   | 2 // medium
   | 3; // high
-
-export type BorrowerPosition = {
-  vault: VaultFullInfo;
-  asset: AssetInfo;
-  user: Address;
-  collateralType: number;
-  subjectToLiquidation: boolean;
-  strategyId: bigint;
-  assetsBorrowed: bigint;
-  collateralGiven: bigint;
-  leverage: bigint;
-  strategyBalance: bigint;
-  id: bigint;
-  enterTimeOrDeadline: number;
-  blockNumber: number;
-  liquidationPrice: bigint;
-};

@@ -1,16 +1,18 @@
 import { Metadata } from "next";
-import localizationSettings from "../localization.json" with { type: "json" };
-import { apiUrl } from "@/lib/api";
-import { env } from "@/env";
 import { Locale } from "next-intl";
+
+import { env } from "@/env";
+import { apiUrl } from "@/lib/api";
 import { normalizeTwitterHandle, toOgLocale } from "@/lib/misc/metadata";
 
+import localizationSettings from "../localization.json" with { type: "json" };
+
 interface PageMetadataOptions {
-  title: string;
   description: string;
-  path: string;
   keywords: string;
   locale: Locale;
+  path: string;
+  title: string;
 }
 
 const SUPPORTED_LOCALES = localizationSettings.supported;
@@ -23,7 +25,7 @@ const ogVersion = env.NEXT_PUBLIC_OG_VERSION || "1";
 
 function generateAlternates(path: string, locale: string) {
   if (!needAlternates) {
-    return undefined;
+    return;
   }
 
   const languages = SUPPORTED_LOCALES.reduce(
@@ -41,73 +43,75 @@ function generateAlternates(path: string, locale: string) {
 }
 
 export const defaultMetadata = {
-  title: appName,
   applicationName: appName,
-  description: env.NEXT_PUBLIC_APP_DESCRIPTION,
   authors: [{ name: "ukorvl", url: "https://github.com/ukorvl" }],
+  description: env.NEXT_PUBLIC_APP_DESCRIPTION,
   metadataBase: new URL(origin),
   openGraph: {
+    siteName: appName,
     title: appName,
     type: "website",
-    siteName: appName,
   },
+  title: appName,
   twitter: {
     card: "summary_large_image",
-    title: appName,
-    site: normalizeTwitterHandle(twitterAccount),
     creator: normalizeTwitterHandle(twitterAccount),
+    site: normalizeTwitterHandle(twitterAccount),
+    title: appName,
   },
 } satisfies Metadata;
 
 export function buildMetadataForPage({
-  title,
-  path,
   description,
   keywords,
   locale,
+  path,
+  title,
 }: PageMetadataOptions): Metadata {
   const ogLocale = toOgLocale(locale);
-  const ogLocaleAlternate = SUPPORTED_LOCALES.map(toOgLocale).filter(l => l !== ogLocale);
+  const ogLocaleAlternate = SUPPORTED_LOCALES.map(element => toOgLocale(element)).filter(
+    l => l !== ogLocale
+  );
 
   return {
     ...defaultMetadata,
-    title: `${title} | ${appName}`,
-    keywords: keywords,
-    description,
     alternates: generateAlternates(path, locale),
+    description,
+    keywords: keywords,
     openGraph: {
       ...defaultMetadata.openGraph,
-      title: `${title} | ${appName}`,
-      description,
-      locale: ogLocale,
       alternateLocale: ogLocaleAlternate,
-      url: locale === DEFAULT_LOCALE ? path : `/${locale}/${path}`,
+      description,
       images: [
         {
+          alt: `${title} | ${appName}`,
+          height: 630,
           url: apiUrl("og", {
-            title: title || appName,
-            path,
             description,
+            path,
+            title: title || appName,
             v: ogVersion,
           }),
           width: 1200,
-          height: 630,
-          alt: `${title} | ${appName}`,
         },
       ],
+      locale: ogLocale,
+      title: `${title} | ${appName}`,
+      url: locale === DEFAULT_LOCALE ? path : `/${locale}/${path}`,
     },
+    title: `${title} | ${appName}`,
     twitter: {
       ...defaultMetadata.twitter,
-      title: `${title} | ${appName}`,
       description,
       images: [
         apiUrl("og", {
-          title: title || appName,
-          path,
           description,
+          path,
+          title: title || appName,
           v: ogVersion,
         }),
       ],
+      title: `${title} | ${appName}`,
     },
   };
 }

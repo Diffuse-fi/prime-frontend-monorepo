@@ -1,30 +1,32 @@
-import { useMemo, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { getAddress, type Address, type Hash } from "viem";
-import { produce } from "immer";
-import { useClients } from "../../wagmi/useClients";
 import type { TxInfo, TxState, VaultFullInfo } from "../types";
+
+import { useMutation } from "@tanstack/react-query";
+import { produce } from "immer";
+import { useMemo, useState } from "react";
+import { type Address, getAddress, type Hash } from "viem";
+
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
+import { useClients } from "../../wagmi/useClients";
 import { isUserRejectedError } from "../utils/errors";
 import { lendLogger, loggerMut } from "../utils/loggers";
 
 export type UseWithdrawYieldParams = {
-  onWithdrawYieldSuccess?: (vaultAddress: Address, hash: Hash) => void;
   onWithdrawYieldError?: (errorMessage: string, address: Address) => void;
+  onWithdrawYieldSuccess?: (vaultAddress: Address, hash: Hash) => void;
 };
 
 export type UseWithdrawYieldResult = {
-  withdrawYield: (params: {
-    vaultAddress: Address;
-    strategyIds: bigint[];
-  }) => Promise<Hash | null>;
-  reset: () => void;
-  txState: TxState;
   allConfirmed: boolean;
-  someError: boolean;
-  someAwaitingSignature: boolean;
   isPending: boolean;
+  reset: () => void;
+  someAwaitingSignature: boolean;
+  someError: boolean;
+  txState: TxState;
+  withdrawYield: (params: {
+    strategyIds: bigint[];
+    vaultAddress: Address;
+  }) => Promise<Hash | null>;
 };
 
 const ROOT = "withdrawYield" as const;
@@ -35,25 +37,13 @@ const qKeys = {
     qk([ROOT, "single", version, opt(chainId), opt(wallet ?? null)]),
 };
 
-function makeIdemKey(
-  chainId: number,
-  vault: Address,
-  owner: Address,
-  receiver: Address,
-  strategyIds: readonly bigint[]
-) {
-  return `${chainId}:${vault.toLowerCase()}:${owner.toLowerCase()}:${receiver.toLowerCase()}:${strategyIds
-    .map(String)
-    .join(",")}`;
-}
-
 export function useWithdrawYield(
   allVaults: VaultFullInfo[],
-  { onWithdrawYieldSuccess, onWithdrawYieldError }: UseWithdrawYieldParams = {}
+  { onWithdrawYieldError, onWithdrawYieldSuccess }: UseWithdrawYieldParams = {}
 ): UseWithdrawYieldResult {
   const [txState, setTxState] = useState<TxState>({});
   const [pendingByKey, setPendingByKey] = useState<Record<string, true>>({});
-  const { chainId, address: wallet, publicClient } = useClients();
+  const { address: wallet, chainId, publicClient } = useClients();
 
   const vaultByAddr = useMemo(() => {
     const m = new Map<Address, VaultFullInfo>();
@@ -83,12 +73,11 @@ export function useWithdrawYield(
   const isKeyPending = (key: string) => Boolean(pendingByKey[key]);
 
   const singleMutation = useMutation({
-    mutationKey: qKeys.single(chainId ?? 0, wallet ?? null),
     mutationFn: async (params: {
-      vaultAddress: Address;
-      strategyIds: bigint[];
-      receiverOverride?: Address;
       ownerOverride?: Address;
+      receiverOverride?: Address;
+      strategyIds: bigint[];
+      vaultAddress: Address;
     }) => {
       if (!wallet || !publicClient || !chainId) return null;
 
@@ -112,14 +101,14 @@ export function useWithdrawYield(
       if (!Array.isArray(strategyIds) || strategyIds.length === 0)
         e = new Error("strategyIds must be a non-empty array");
       if (e) {
-        setPhase(address, { phase: "error", errorMessage: e.message });
+        setPhase(address, { errorMessage: e.message, phase: "error" });
         onWithdrawYieldError?.(e.message, address);
         lendLogger.error("withdraw yield failed: validation error", {
-          vault: address,
-          strategyIds: strategyIds.map(String).join(","),
-          receiver,
-          owner,
           error: e.message,
+          owner,
+          receiver,
+          strategyIds: strategyIds.map(String).join(","),
+          vault: address,
         });
         return null;
       }
@@ -133,26 +122,26 @@ export function useWithdrawYield(
 
         const hash = await vault!.contract.withdrawYield([sortedStrategyIds, receiver]);
 
-        setPhase(address, { phase: "pending", hash });
+        setPhase(address, { hash, phase: "pending" });
 
         const receipt = await publicClient.waitForTransactionReceipt({
           hash,
           onReplaced: r => {
-            setPhase(address, { phase: "replaced", hash: r.transaction.hash });
+            setPhase(address, { hash: r.transaction.hash, phase: "replaced" });
           },
         });
 
         if (receipt.status === "success") {
-          setPhase(address, { phase: "success", hash: receipt.transactionHash });
+          setPhase(address, { hash: receipt.transactionHash, phase: "success" });
           onWithdrawYieldSuccess?.(address, receipt.transactionHash);
           return receipt.transactionHash;
         } else {
           const err = new Error("Transaction reverted");
-          setPhase(address, { phase: "error", errorMessage: err.message });
+          setPhase(address, { errorMessage: err.message, phase: "error" });
           onWithdrawYieldError?.(err.message, address);
           lendLogger.error("withdraw yield failed: transaction reverted", {
-            vault: address,
             hash,
+            vault: address,
           });
 
           return null;
@@ -165,12 +154,12 @@ export function useWithdrawYield(
         }
 
         const err = error instanceof Error ? error : new Error("Unknown error");
-        setPhase(address, { phase: "error", errorMessage: err.message });
+        setPhase(address, { errorMessage: err.message, phase: "error" });
         onWithdrawYieldError?.(err.message, address);
         loggerMut.error("mutation error (withdraw yield)", {
-          mutationKey: qKeys.single(chainId, wallet),
           address,
           error: err,
+          mutationKey: qKeys.single(chainId, wallet),
         });
 
         return null;
@@ -178,6 +167,7 @@ export function useWithdrawYield(
         clearKeyPending(idemKey);
       }
     },
+    mutationKey: qKeys.single(chainId ?? 0, wallet ?? null),
   });
 
   const withdrawYield = singleMutation.mutateAsync;
@@ -197,12 +187,24 @@ export function useWithdrawYield(
   };
 
   return {
-    withdrawYield,
-    reset,
-    txState,
     allConfirmed,
-    someError,
-    someAwaitingSignature,
     isPending: singleMutation.isPending,
+    reset,
+    someAwaitingSignature,
+    someError,
+    txState,
+    withdrawYield,
   };
+}
+
+function makeIdemKey(
+  chainId: number,
+  vault: Address,
+  owner: Address,
+  receiver: Address,
+  strategyIds: readonly bigint[]
+) {
+  return `${chainId}:${vault.toLowerCase()}:${owner.toLowerCase()}:${receiver.toLowerCase()}:${strategyIds
+    .map(String)
+    .join(",")}`;
 }

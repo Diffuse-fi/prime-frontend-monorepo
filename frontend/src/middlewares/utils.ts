@@ -1,25 +1,25 @@
 import { NextFetchEvent, NextRequest, NextResponse } from "next/server";
 
 export type Ctx = Record<string, unknown>;
-export type MW = (
-  req: NextRequest,
-  ev: NextFetchEvent,
-  ctx: Ctx
-) => Promise<NextResponse | void> | NextResponse | void;
-
 export type Finalizer = (
   req: NextRequest,
   ev: NextFetchEvent,
   ctx: Ctx,
   res: NextResponse
-) => Promise<NextResponse> | NextResponse;
+) => NextResponse | Promise<NextResponse>;
 
-export function compose(opts: { stack: MW[]; always?: Finalizer[] }) {
-  const { stack, always = [] } = opts;
+export type MW = (
+  req: NextRequest,
+  ev: NextFetchEvent,
+  ctx: Ctx
+) => NextResponse | Promise<NextResponse | void> | void;
+
+export function compose(opts: { always?: Finalizer[]; stack: MW[] }) {
+  const { always = [], stack } = opts;
 
   return async (req: NextRequest, ev: NextFetchEvent) => {
     const ctx: Ctx = {};
-    let out: NextResponse | void = undefined;
+    let out: NextResponse | void;
 
     for (const mw of stack) {
       out = await mw(req, ev, ctx);

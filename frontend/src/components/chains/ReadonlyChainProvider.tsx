@@ -1,5 +1,7 @@
 "use client";
 
+import { ReactNode, useMemo } from "react";
+
 import { getAvailableChainsIds, getInitialChain } from "@/lib/chains";
 import {
   ActionsCtx,
@@ -8,7 +10,6 @@ import {
   StateCtx,
 } from "@/lib/chains/ReadonlyChainContext";
 import { useLocalStorage } from "@/lib/misc/useLocalStorage";
-import { ReactNode, useMemo } from "react";
 
 type ReadonlyChainProviderProps = {
   children?: ReactNode;

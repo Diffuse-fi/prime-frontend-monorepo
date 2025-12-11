@@ -5,7 +5,7 @@ export function getRemotePatternsFromAssetsAndChains() {
     ...getAssetsResourcesUrls(),
     ...getChainsResourcesUrls(),
   ];
-  const map = new Map<string, { protocol: "http" | "https"; hostname: string }>();
+  const map = new Map<string, { hostname: string; protocol: "http" | "https" }>();
 
   for (const urlString of urls) {
     try {
@@ -16,7 +16,7 @@ export function getRemotePatternsFromAssetsAndChains() {
       const key = `${protocol}://${hostname}`;
 
       if (!map.has(key)) {
-        map.set(key, { protocol, hostname });
+        map.set(key, { hostname, protocol });
       }
     } catch {
       if (process.env.NODE_ENV !== "production") {
@@ -25,5 +25,5 @@ export function getRemotePatternsFromAssetsAndChains() {
     }
   }
 
-  return Array.from(map.values());
+  return [...map.values()];
 }

@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
-import { SelectedVault, VaultFullInfo } from "../types";
 import { produce } from "immer";
+import { useCallback, useState } from "react";
+
+import { SelectedVault, VaultFullInfo } from "../types";
 
 export function useSelectedVaults() {
   const [selectedVaults, setSelectedVaults] = useState<SelectedVault[]>([]);
@@ -12,25 +13,25 @@ export function useSelectedVaults() {
         const vaultNotAdded = index === -1;
 
         if (vaultNotAdded) {
-          if (amount === BigInt(0)) {
+          if (amount === 0n) {
             return;
           }
 
           // TODO - later support multiple assets per vault
           draft.push({
             address: vault.address,
-            assetAddress: vault.assets[0].address,
-            assetSymbol: vault.assets[0].symbol,
-            assetDecimals: vault.assets[0].decimals,
             amount,
-            legacyAllowance: vault.assets[0].legacyAllowance ?? false,
+            assetAddress: vault.assets[0].address,
+            assetDecimals: vault.assets[0].decimals,
+            assetSymbol: vault.assets[0].symbol,
             chainId: vault.contract.chainId,
+            legacyAllowance: vault.assets[0].legacyAllowance ?? false,
           });
 
           return;
         }
 
-        if (amount === BigInt(0)) {
+        if (amount === 0n) {
           draft.splice(index, 1);
           return;
         }
@@ -44,5 +45,5 @@ export function useSelectedVaults() {
     setSelectedVaults([]);
   }, []);
 
-  return { selectedVaults, setSelectedVaults, setAmountForVault, reset };
+  return { reset, selectedVaults, setAmountForVault, setSelectedVaults };
 }

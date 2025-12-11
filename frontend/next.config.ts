@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
   webpack: config => {
     // Shim for @react-native-async-storage/async-storage to make it work in web/Next.js environment
     config.resolve.alias["@react-native-async-storage/async-storage"] = require.resolve(
-      "./src/lib/shims/async-storage-web.ts"
+      "./src/lib/shims/asyncStorageWeb.ts"
     );
     return config;
   },

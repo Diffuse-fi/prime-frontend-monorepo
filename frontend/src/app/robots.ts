@@ -1,12 +1,13 @@
-import { env } from "@/env";
 import type { MetadataRoute } from "next";
+
+import { env } from "@/env";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
-      userAgent: "*",
       allow: "/",
       disallow: "/private/",
+      userAgent: "*",
     },
     sitemap: `${env.ORIGIN}/sitemap.xml`,
   };

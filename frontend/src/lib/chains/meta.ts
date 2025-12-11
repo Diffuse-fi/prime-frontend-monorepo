@@ -1,15 +1,15 @@
 import { CHAINS } from "@diffuse/config";
 
 type ChainMeta = {
-  iconUrl?: string;
   iconBackground?: string;
+  iconUrl?: string;
 };
 
 export const chainLogos: Record<number, ChainMeta> = CHAINS.reduce(
   (acc, chain) => {
     acc[chain.id] = {
-      iconUrl: chain.iconUrl,
       iconBackground: chain.iconBackground,
+      iconUrl: chain.iconUrl,
     };
     return acc;
   },
@@ -19,8 +19,8 @@ export const chainLogos: Record<number, ChainMeta> = CHAINS.reduce(
 export function getStableChainMeta(chainId: number) {
   return (
     chainLogos[chainId] ?? {
-      iconUrl: undefined,
       iconBackground: undefined,
+      iconUrl: undefined,
     }
   );
 }

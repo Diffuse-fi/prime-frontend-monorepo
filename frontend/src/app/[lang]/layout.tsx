@@ -1,33 +1,37 @@
 import type { Viewport } from "next";
-import { Providers } from "../providers";
-import { fonts } from "../fonts/fonts";
+
+import { Navbar } from "@diffuse/ui-kit/Navbar";
+import { TooltipProvider } from "@diffuse/ui-kit/Tooltip";
 import "@rainbow-me/rainbowkit/styles.css";
+
 import "../globals.css";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import { Locale, NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations } from "next-intl/server";
+import { ThemeProvider } from "next-themes";
+import Image from "next/image";
+
+import { ChainSyncEffects } from "@/components/chains/ChainSyncEffects";
+import { ReadonlyChainProvider } from "@/components/chains/ReadonlyChainProvider";
+import { AppLink } from "@/components/misc/AppLink";
+import { ClientNavigation } from "@/components/misc/ClientNavigation";
+import { ConnectionStatusTracker } from "@/components/misc/ConnectionStatusTracker";
+import { JsonLd } from "@/components/misc/JsonLd";
+import { LocationLogger } from "@/components/misc/LocationLogger";
+import ThemeSwitcher from "@/components/misc/ThemeSwitcher";
+import { WebVitals } from "@/components/misc/WebVitals";
+import ToastProvider from "@/components/toast/ToastProvider";
+import WalletBar from "@/components/wagmi/WalletBar";
+import { env } from "@/env";
 import {
   DEFAULT_LOCALE,
   isLocaleRtl,
   SUPPORTED_LOCALES,
 } from "@/lib/localization/locale";
-import { ThemeProvider } from "next-themes";
-import { GoogleAnalytics } from "@next/third-parties/google";
-import { WebVitals } from "@/components/misc/WebVitals";
-import ThemeSwitcher from "@/components/misc/ThemeSwitcher";
-import Image from "next/image";
-import { ClientNavigation } from "@/components/misc/ClientNavigation";
-import { Navbar } from "@diffuse/ui-kit/Navbar";
-import ToastProvider from "@/components/toast/ToastProvider";
-import { TooltipProvider } from "@diffuse/ui-kit/Tooltip";
-import { env } from "@/env";
-import { Locale, NextIntlClientProvider } from "next-intl";
-import { ConnectionStatusTracker } from "@/components/misc/ConnectionStatusTracker";
-import { getMessages, getTranslations } from "next-intl/server";
-import WalletBar from "@/components/wagmi/WalletBar";
-import { AppLink } from "@/components/misc/AppLink";
-import { JsonLd } from "@/components/misc/JsonLd";
+
+import { fonts } from "../fonts/fonts";
 import { org, site } from "../jsonld";
-import { ReadonlyChainProvider } from "@/components/chains/ReadonlyChainProvider";
-import { ChainSyncEffects } from "@/components/chains/ChainSyncEffects";
-import { LocationLogger } from "@/components/misc/LocationLogger";
+import { Providers } from "../providers";
 
 export const dynamic = "force-static";
 export const revalidate = 600;
@@ -37,16 +41,16 @@ export async function generateStaticParams() {
 }
 
 export const viewport: Viewport = {
-  // Makes mobile browser scale to fit screen width instead of making the page 980px wide
-  width: "device-width",
   // Don't scale initially
   initialScale: 1,
+  // Makes sure the viewport resizes correctly when virtual keyboard appears
+  interactiveWidget: "resizes-content",
   // Good for accessibility scaling limit
   maximumScale: 5,
   // makes sure the viewport covers the entire screen on iOS, safe area is needed, make sure to add padding where appropriate
   viewportFit: "cover",
-  // Makes sure the viewport resizes correctly when virtual keyboard appears
-  interactiveWidget: "resizes-content",
+  // Makes mobile browser scale to fit screen width instead of making the page 980px wide
+  width: "device-width",
 };
 
 export default async function RootLayout({
@@ -65,10 +69,10 @@ export default async function RootLayout({
 
   return (
     <html
-      lang={lang}
-      dir={dir}
-      suppressHydrationWarning
       className={`${fonts.DM_Sans.className} ${fonts.DM_mono.variable} h-screen antialiased supports-[height:100dvh]:h-dvh`}
+      dir={dir}
+      lang={lang}
+      suppressHydrationWarning
     >
       <body className="px-safe pb-safe h-full">
         {trackingEnabled && gaId && (
@@ -84,20 +88,20 @@ export default async function RootLayout({
           }}
         />
         <TooltipProvider delayDuration={200}>
-          <NextIntlClientProvider messages={messages} locale={lang}>
+          <NextIntlClientProvider locale={lang} messages={messages}>
             <ConnectionStatusTracker />
             {env.NEXT_PUBLIC_DEBUG && <LocationLogger />}
             <ToastProvider
-              maxToastsToShow={3}
-              defaultPosition="bottom-right"
               appearOnTop
+              defaultPosition="bottom-right"
               duration={1000 * 5}
+              maxToastsToShow={3}
             />
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
-              enableSystem
               disableTransitionOnChange
+              enableSystem
             >
               <ReadonlyChainProvider>
                 <Providers locale={lang}>
@@ -106,15 +110,15 @@ export default async function RootLayout({
                     className="pt-safe sticky top-0 z-50"
                     logo={
                       <AppLink
-                        href="/"
                         className="standard-focus-ring flex items-center gap-2 rounded-md p-1 select-none"
+                        href="/"
                       >
                         <Image
-                          src="/logo.svg?v=1"
                           alt={env.NEXT_PUBLIC_APP_NAME}
-                          width={32}
                           height={32}
                           priority
+                          src="/logo.svg?v=1"
+                          width={32}
                         />
                         <p className="text-secondary hidden text-lg font-bold whitespace-nowrap sm:block">
                           {tCommon("navbar.title")}

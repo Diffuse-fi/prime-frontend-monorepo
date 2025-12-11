@@ -1,22 +1,20 @@
-import { env } from "@/env";
 import { MetadataRoute } from "next";
 
+import { env } from "@/env";
+
 export const dynamic = "force-static";
-export const revalidate = 86400;
+export const revalidate = 86_400;
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: env.NEXT_PUBLIC_APP_NAME,
-    short_name: env.NEXT_PUBLIC_APP_NAME,
     description: env.NEXT_PUBLIC_APP_DESCRIPTION,
-    start_url: "/lend",
     display: "standalone",
     icons: [
       {
-        src: "/icon-512.png?v=1",
-        sizes: "512x512",
-        type: "image/png",
         purpose: "any",
+        sizes: "512x512",
+        src: "/icon-512.png?v=1",
+        type: "image/png",
       },
       // TODO - add when ready
       // {
@@ -27,5 +25,8 @@ export default function manifest(): MetadataRoute.Manifest {
       // },
       // icons for google search display - 48x48, 72x72, 96x96, 144x144, 192x192
     ],
+    name: env.NEXT_PUBLIC_APP_NAME,
+    short_name: env.NEXT_PUBLIC_APP_NAME,
+    start_url: "/lend",
   };
 }

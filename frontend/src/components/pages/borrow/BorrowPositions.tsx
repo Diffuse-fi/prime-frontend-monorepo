@@ -1,41 +1,43 @@
 "use client";
 
+import { Heading } from "@diffuse/ui-kit";
+import { ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { useChainId } from "wagmi";
+
 import { AssetsList } from "@/components/AssetsList";
+import { AppLink } from "@/components/misc/AppLink";
+import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
+import { getStableChainMeta } from "@/lib/chains/meta";
+import { getContractExplorerUrl } from "@/lib/chains/rpc";
 import { useBorrowerPositions } from "@/lib/core/hooks/useBorrowerPositions";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
 import { useVaults } from "@/lib/core/hooks/useVaults";
-import { useLocalization } from "@/lib/localization/useLocalization";
-import { showSkeletons } from "@/lib/misc/ui";
-import { Heading } from "@diffuse/ui-kit";
-import { BorrowerPositionCard } from "./BorrowPositionCard";
 import { BorrowerPosition } from "@/lib/core/types";
-import { useState } from "react";
-import { ManagePositionModal } from "./ManagePositionModal/ManagePositionModal";
-import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
-import { AppLink } from "@/components/misc/AppLink";
-import { ExternalLink } from "lucide-react";
 import { formatEvmAddress } from "@/lib/formatters/asset";
+import { useLocalization } from "@/lib/localization/useLocalization";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
-import { useChainId } from "wagmi";
-import { getStableChainMeta } from "@/lib/chains/meta";
-import { getContractExplorerUrl } from "@/lib/chains/rpc";
+import { showSkeletons } from "@/lib/misc/ui";
+
+import { BorrowerPositionCard } from "./BorrowPositionCard";
+import { ManagePositionModal } from "./ManagePositionModal/ManagePositionModal";
 
 export function BorrowPositions() {
   const {
-    vaults,
-    vaultsAssetsList,
     isLoading: isLoadingVaults,
     isPending: isPendingVaults,
+    refetch,
     refetchLimits,
     refetchTotalAssets,
-    refetch,
+    vaults,
+    vaultsAssetsList,
   } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const [selectedPosition, setSelectedPosition] = useState<BorrowerPosition>();
   const { dir } = useLocalization();
   const strategies = vaults.flatMap(v => v.strategies);
   const chainId = useChainId();
-  const { iconUrl, iconBackground } = getStableChainMeta(chainId);
+  const { iconBackground, iconUrl } = getStableChainMeta(chainId);
   const explorerUrl = selectedPosition
     ? getContractExplorerUrl(chainId, selectedPosition.vault.address)
     : "";
@@ -44,22 +46,22 @@ export function BorrowPositions() {
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
     : vaults;
   const {
-    positions,
     isLoading,
     isPending,
+    positions,
     refetchPositions: refetchBorrowerPositions,
   } = useBorrowerPositions(vaultsForSelectedAsset);
 
   return (
     <div className="mt-4 flex flex-col gap-3 md:gap-8">
       <AssetsList
-        skeletonsToShow={1}
-        options={vaultsAssetsList}
-        direction={dir}
-        selectedAsset={selectedAsset}
-        onSelectAsset={setSelectedAsset}
-        isLoading={isLoadingVaults}
         className="w-1/2"
+        direction={dir}
+        isLoading={isLoadingVaults}
+        onSelectAsset={setSelectedAsset}
+        options={vaultsAssetsList}
+        selectedAsset={selectedAsset}
+        skeletonsToShow={1}
       />
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
         {isLoading ||
@@ -77,8 +79,8 @@ export function BorrowPositions() {
             return (
               <BorrowerPositionCard
                 key={position.id}
-                position={position}
                 onManagePositionBtnClick={() => setSelectedPosition(position)}
+                position={position}
                 selectedAsset={selectedAsset}
                 strategy={strategy}
               />
@@ -86,7 +88,7 @@ export function BorrowPositions() {
           })
         ) : (
           <div className="sm:col-span-3">
-            <Heading level="5" className="pt-2 font-semibold">
+            <Heading className="pt-2 font-semibold" level="5">
               No positions yet
             </Heading>
             <p className="">
@@ -97,9 +99,6 @@ export function BorrowPositions() {
       </div>
       {selectedPosition && selectedAsset && (
         <ManagePositionModal
-          selectedPosition={selectedPosition}
-          selectedAsset={selectedAsset}
-          open={!!selectedPosition}
           onOpenChange={open => {
             if (!open) {
               setSelectedPosition(undefined);
@@ -112,29 +111,32 @@ export function BorrowPositions() {
             setSelectedPosition(undefined);
             refetch();
           }}
+          open={!!selectedPosition}
+          selectedAsset={selectedAsset}
+          selectedPosition={selectedPosition}
           title={
             <div className="flex items-center justify-between gap-3 sm:gap-4">
-              <Heading level="3" className="font-semibold">
+              <Heading className="font-semibold" level="3">
                 Manage position
               </Heading>
               <div className="bg-muted/15 ml-auto flex size-8 items-center justify-center rounded-full">
                 <ImageWithJazziconFallback
-                  src={iconUrl}
                   alt=""
-                  size={20}
                   className="object-cover"
+                  decoding="async"
+                  fetchPriority="low"
+                  jazziconSeed={stableSeedForChainId(chainId)}
+                  size={20}
+                  src={iconUrl}
                   style={{
                     background: iconBackground || "transparent",
                   }}
-                  fetchPriority="low"
-                  decoding="async"
-                  jazziconSeed={stableSeedForChainId(chainId)}
                 />
               </div>
               {explorerUrl && (
                 <AppLink
-                  href={explorerUrl}
                   className="text-text-dimmed bg-muted/15 hover:bg-muted/20 flex h-8 items-center gap-3 rounded-md p-2 text-sm text-nowrap transition-colors"
+                  href={explorerUrl}
                 >
                   <div className="hidden sm:block">
                     {formatEvmAddress(selectedPosition.vault.address)}

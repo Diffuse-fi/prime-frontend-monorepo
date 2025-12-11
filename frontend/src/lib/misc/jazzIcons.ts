@@ -1,7 +1,7 @@
 import { Address } from "viem";
 
 function jsNumberForAddress(addr: Address) {
-  return parseInt(addr.slice(2, 10), 16);
+  return Number.parseInt(addr.slice(2, 10), 16);
 }
 
 const seedPerAddressMap = new Map<Address, number>();

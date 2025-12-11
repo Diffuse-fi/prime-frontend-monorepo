@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const pagesToTest = ["/lend", "/borrow", "/lend/my-positions", "/borrow/my-positions"];
 
@@ -16,9 +16,9 @@ test.describe("Smoke", () => {
       }
 
       testInfo.attachments.push({
-        name: "pageerror",
-        contentType: "text/plain",
         body: Buffer.from(err.stack || err.message),
+        contentType: "text/plain",
+        name: "pageerror",
       });
 
       throw new Error(`Page error: ${err.message}`);
@@ -37,19 +37,19 @@ test.describe("Smoke", () => {
     // });
   });
 
-  test("core pages return 200", async ({ page, baseURL }) => {
+  test("core pages return 200", async ({ baseURL, page }) => {
     for (const path of pagesToTest) {
       const resp = await page.goto(`${baseURL}${path}`);
       expect(resp?.ok()).toBeTruthy();
     }
   });
 
-  test("loads core pages", async ({ page, baseURL }) => {
+  test("loads core pages", async ({ baseURL, page }) => {
     const headingPerPage: Record<string, RegExp> = {
-      "/lend": /lend/i,
       "/borrow": /borrow/i,
-      "/lend/my-positions": /my lending positions/i,
       "/borrow/my-positions": /my borrow positions/i,
+      "/lend": /lend/i,
+      "/lend/my-positions": /my lending positions/i,
     };
 
     for (const path of pagesToTest) {
@@ -60,7 +60,7 @@ test.describe("Smoke", () => {
     }
   });
 
-  test("shows 404 for unknown page", async ({ page, baseURL }) => {
+  test("shows 404 for unknown page", async ({ baseURL, page }) => {
     await page.goto(`${baseURL}/this-page-does-not-exist`);
     await expect(
       page.getByRole("heading", { name: /404 - page not found/i })
@@ -78,7 +78,7 @@ test.describe("Smoke", () => {
     expect(f.ok()).toBeTruthy();
   });
 
-  test("pages have essential meta tags", async ({ page, baseURL }) => {
+  test("pages have essential meta tags", async ({ baseURL, page }) => {
     for (const path of pagesToTest) {
       await page.goto(`${baseURL}${path}`);
 
@@ -115,7 +115,7 @@ test.describe("Smoke", () => {
     }
   });
 
-  test("navigation works", async ({ page, baseURL }) => {
+  test("navigation works", async ({ baseURL, page }) => {
     await page.goto(`${baseURL}/lend`);
 
     await page.getByRole("link", { name: /borrow/i }).click();
@@ -129,7 +129,7 @@ test.describe("Smoke", () => {
     ).toBeVisible();
   });
 
-  test("dark mode toggle works", async ({ page, baseURL }) => {
+  test("dark mode toggle works", async ({ baseURL, page }) => {
     await page.goto(`${baseURL}/lend`);
 
     const darkModeToggle = page.getByLabel("Switch to dark theme");
@@ -145,7 +145,7 @@ test.describe("Smoke", () => {
     await expect(root).not.toHaveClass(/dark/);
   });
 
-  test("dark mode persists across reload", async ({ page, baseURL }) => {
+  test("dark mode persists across reload", async ({ baseURL, page }) => {
     await page.goto(`${baseURL}/lend`);
     await page.getByLabel(/Switch to dark theme/i).click();
 
@@ -154,7 +154,7 @@ test.describe("Smoke", () => {
     await expect(page.locator("html")).toHaveClass(/dark/);
   });
 
-  test("basic a11y roles exist on main pages", async ({ page, baseURL }) => {
+  test("basic a11y roles exist on main pages", async ({ baseURL, page }) => {
     for (const path of pagesToTest) {
       await page.goto(`${baseURL}${path}`);
 

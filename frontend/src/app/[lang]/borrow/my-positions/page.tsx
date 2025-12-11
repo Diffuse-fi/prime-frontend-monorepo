@@ -1,28 +1,12 @@
-import { buildMetadataForPage } from "@/app/metadata";
 import { Heading } from "@diffuse/ui-kit/Heading";
-import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
-import { DEFAULT_LOCALE } from "@/lib/localization/locale";
-import { JsonLd } from "@/components/misc/JsonLd";
+import { getTranslations } from "next-intl/server";
+
 import { getWebPageGraph } from "@/app/jsonld";
+import { buildMetadataForPage } from "@/app/metadata";
+import { JsonLd } from "@/components/misc/JsonLd";
 import { BorrowPositions } from "@/components/pages/borrow/BorrowPositions";
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ lang: string }>;
-}): Promise<Metadata> {
-  const { lang: locale = DEFAULT_LOCALE } = await params;
-  const t = await getTranslations({ locale, namespace: "borrow-positions.metadata" });
-
-  return buildMetadataForPage({
-    title: t("title"),
-    description: t("description"),
-    keywords: t("keywords"),
-    path: "borrow/my-positions",
-    locale,
-  });
-}
+import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 
 export default async function BorrowPositionsPage({
   params,
@@ -36,10 +20,10 @@ export default async function BorrowPositionsPage({
     <section>
       <JsonLd
         graph={getWebPageGraph({
-          title: t("metadata.title"),
           description: t("metadata.description"),
-          path: "borrow/my-positions",
           lang,
+          path: "borrow/my-positions",
+          title: t("metadata.title"),
         })}
       />
       <Heading level="1">{t("title")}</Heading>
@@ -47,4 +31,21 @@ export default async function BorrowPositionsPage({
       <BorrowPositions />
     </section>
   );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang: locale = DEFAULT_LOCALE } = await params;
+  const t = await getTranslations({ locale, namespace: "borrow-positions.metadata" });
+
+  return buildMetadataForPage({
+    description: t("description"),
+    keywords: t("keywords"),
+    locale,
+    path: "borrow/my-positions",
+    title: t("title"),
+  });
 }

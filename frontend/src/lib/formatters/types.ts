@@ -1,31 +1,31 @@
-export type Severity = "ok" | "warn" | "danger" | "muted";
-
-export interface FormatResult<T = unknown> {
-  /** The original value. */
-  value: T;
-  /** Final stringified value for UI rendering. */
-  text: string;
-  /** Optional unit/suffix for UIs that separate value & unit. */
-  unit?: string;
-  /** Long description. */
-  tooltip?: string;
-  /** Optional severity for UI styling. */
-  severity?: Severity;
-  /** Extra data. */
-  meta?: Record<string, unknown>;
+export interface DateFormatOpts {
+  locale?: string;
+  tz?: string;
 }
 
-export interface DateFormatOpts {
-  tz?: string;
-  locale?: string;
+export interface FormatResult<T = unknown> {
+  /** Extra data. */
+  meta?: Record<string, unknown>;
+  /** Optional severity for UI styling. */
+  severity?: Severity;
+  /** Final stringified value for UI rendering. */
+  text: string;
+  /** Long description. */
+  tooltip?: string;
+  /** Optional unit/suffix for UIs that separate value & unit. */
+  unit?: string;
+  /** The original value. */
+  value: T;
 }
 
 export interface HealthFactorThresholds {
-  warnAt?: number;
   dangerAt?: number;
+  warnAt?: number;
 }
 
 export interface LtvThresholds {
-  warnAt?: number;
   dangerAt?: number;
+  warnAt?: number;
 }
+
+export type Severity = "danger" | "muted" | "ok" | "warn";

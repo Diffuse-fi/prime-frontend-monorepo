@@ -1,7 +1,7 @@
 "use client";
 
-import { useReadonlyChainState } from "./ReadonlyChainContext";
 import { getChainById } from ".";
+import { useReadonlyChainState } from "./ReadonlyChainContext";
 
 export function useReadonlyChain() {
   const { readonlyChainId } = useReadonlyChainState();

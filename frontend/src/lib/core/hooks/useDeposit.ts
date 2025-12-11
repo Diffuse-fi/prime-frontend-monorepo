@@ -1,7 +1,3 @@
-import { useMemo, useState } from "react";
-import pLimit from "p-limit";
-import { getAddress, type Address, type Hash } from "viem";
-import { useClients } from "../../wagmi/useClients";
 import type {
   SelectedVault,
   TxInfo,
@@ -9,65 +5,67 @@ import type {
   VaultFullInfo,
   VaultLimits,
 } from "../types";
+
 import { useMutation } from "@tanstack/react-query";
+import { produce } from "immer";
+import pLimit from "p-limit";
+import { useMemo, useState } from "react";
+import { type Address, getAddress, type Hash } from "viem";
+
+import { formatUnits } from "../../formatters/asset";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
-import { produce } from "immer";
-import { formatUnits } from "../../formatters/asset";
+import { useClients } from "../../wagmi/useClients";
 import { isUserRejectedError } from "../utils/errors";
 import { lendLogger, loggerMut } from "../utils/loggers";
 
-export type UseLendParams = {
-  txConcurrency?: number;
-  onDepositBatchComplete?: (result: DepositBatchResult) => void;
-  onDepositBatchSomeError?: (errors: Record<Address, Error>) => void;
-  onDepositBatchAllSuccess?: (hashes: Record<Address, Hash>) => void;
-  onDepositError?: (errorMessage: string, address: Address) => void;
-  onDepositSuccess?: (vaultAddress: Address, hash: Hash) => void;
-};
-
 export type DepositBatchResult = {
-  hashes: Record<Address, Hash>;
   errors: Record<Address, Error>;
+  hashes: Record<Address, Hash>;
 };
 
 export type UseDepositResult = {
-  deposit: () => Promise<DepositBatchResult>;
-  reset: () => void;
-  txState: TxState;
   allConfirmed: boolean;
-  someError: boolean;
-  someAwaitingSignature: boolean;
+  deposit: () => Promise<DepositBatchResult>;
   isPendingBatch: boolean;
+  reset: () => void;
+  someAwaitingSignature: boolean;
+  someError: boolean;
+  txState: TxState;
+};
+
+export type UseLendParams = {
+  onDepositBatchAllSuccess?: (hashes: Record<Address, Hash>) => void;
+  onDepositBatchComplete?: (result: DepositBatchResult) => void;
+  onDepositBatchSomeError?: (errors: Record<Address, Error>) => void;
+  onDepositError?: (errorMessage: string, address: Address) => void;
+  onDepositSuccess?: (vaultAddress: Address, hash: Hash) => void;
+  txConcurrency?: number;
 };
 
 const ROOT = "deposit" as const;
 const version = QV.deposit;
 const qKeys = {
-  deposit: (chainId: number, addresses: string | null) =>
+  deposit: (chainId: number, addresses: null | string) =>
     qk([ROOT, version, opt(chainId), opt(addresses)]),
 };
-
-function makeIdemKey(chainId: number, vault: Address, amount: bigint, receiver: Address) {
-  return `${chainId}:${vault.toLowerCase()}:${amount.toString()}:${receiver.toLowerCase()}`;
-}
 
 export function useDeposit(
   selected: SelectedVault[],
   allVaults: VaultFullInfo[],
   vaultsLimits: VaultLimits[],
   {
-    txConcurrency = 6,
+    onDepositBatchAllSuccess,
     onDepositBatchComplete,
+    onDepositBatchSomeError,
     onDepositError,
     onDepositSuccess,
-    onDepositBatchSomeError,
-    onDepositBatchAllSuccess,
+    txConcurrency = 6,
   }: UseLendParams = {}
 ): UseDepositResult {
   const [txState, setTxState] = useState<TxState>({});
   const [pendingByKey, setPendingByKey] = useState<Record<string, true>>({});
-  const { chainId, address: wallet, publicClient } = useClients();
+  const { address: wallet, chainId, publicClient } = useClients();
   const vaultsConsistency = selected.every(v => v.chainId === chainId);
   const enabled = selected?.length > 0 && !!wallet && !!publicClient && vaultsConsistency;
 
@@ -111,9 +109,8 @@ export function useDeposit(
   const isKeyPending = (key: string) => Boolean(pendingByKey[key]);
 
   const depositMutation = useMutation({
-    mutationKey: qKeys.deposit(chainId, vaultsKey),
     mutationFn: async () => {
-      const result: DepositBatchResult = { hashes: {}, errors: {} };
+      const result: DepositBatchResult = { errors: {}, hashes: {} };
 
       if (!enabled) return result;
 
@@ -162,7 +159,7 @@ export function useDeposit(
             }
 
             if (e) {
-              setPhase(address, { phase: "error", errorMessage: e.message });
+              setPhase(address, { errorMessage: e.message, phase: "error" });
               result.errors[address] = e;
               lendLogger.warn("preflight error", { address, reason: e.message });
               return;
@@ -174,27 +171,27 @@ export function useDeposit(
 
               const hash = await vault!.contract.deposit([amount, receiver]);
 
-              setPhase(address, { phase: "pending", hash });
+              setPhase(address, { hash, phase: "pending" });
               result.hashes[address] = hash;
 
               const receipt = await publicClient.waitForTransactionReceipt({
                 hash,
                 onReplaced: r => {
                   setPhase(address, {
-                    phase: "replaced",
                     hash: r.transaction.hash,
+                    phase: "replaced",
                   });
                   result.hashes[address] = r.transaction.hash;
                 },
               });
 
               if (receipt.status === "success") {
-                setPhase(address, { phase: "success", hash: receipt.transactionHash });
+                setPhase(address, { hash: receipt.transactionHash, phase: "success" });
 
                 onDepositSuccess?.(address, receipt.transactionHash);
               } else {
                 const e = new Error("Transaction reverted");
-                setPhase(address, { phase: "error", errorMessage: e.message });
+                setPhase(address, { errorMessage: e.message, phase: "error" });
                 result.errors[address] = e;
 
                 onDepositError?.(e.message, address);
@@ -209,14 +206,14 @@ export function useDeposit(
 
               const e = error instanceof Error ? error : new Error("Unknown error");
 
-              setPhase(address, { phase: "error", errorMessage: e.message });
+              setPhase(address, { errorMessage: e.message, phase: "error" });
               result.errors[address] = e;
 
               onDepositError?.(e.message, address);
               loggerMut.error("mutation error (deposit)", {
-                mutationKey: qKeys.deposit(chainId, vaultsKey),
                 address,
                 error: e,
+                mutationKey: qKeys.deposit(chainId, vaultsKey),
               });
             } finally {
               clearKeyPending(idemKey);
@@ -240,6 +237,7 @@ export function useDeposit(
 
       return result;
     },
+    mutationKey: qKeys.deposit(chainId, vaultsKey),
   });
 
   const deposit = depositMutation.mutateAsync;
@@ -258,12 +256,16 @@ export function useDeposit(
   };
 
   return {
-    deposit,
-    reset,
-    txState,
     allConfirmed,
-    someError,
-    someAwaitingSignature,
+    deposit,
     isPendingBatch: depositMutation.isPending,
+    reset,
+    someAwaitingSignature,
+    someError,
+    txState,
   };
+}
+
+function makeIdemKey(chainId: number, vault: Address, amount: bigint, receiver: Address) {
+  return `${chainId}:${vault.toLowerCase()}:${amount.toString()}:${receiver.toLowerCase()}`;
 }
