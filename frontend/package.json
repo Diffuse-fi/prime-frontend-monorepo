@@ -48,6 +48,7 @@
     "race-signal": "2.0.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-hook-form": "7.68.0",
     "react-hotkeys-hook": "5.1.0",
     "react-jazzicon": "1.0.4",
     "react-portal": "4.3.0",
