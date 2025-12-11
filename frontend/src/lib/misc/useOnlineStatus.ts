@@ -1,14 +1,14 @@
 "use client";
 
-import { useEffect, useRef } from "react";
 import { onlineManager } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 
 type UseOnlineReconnectParams = {
-  onReconnect: () => void;
   onDisconnect?: () => void;
+  onReconnect: () => void;
 };
 
-export function useOnlineStatus({ onReconnect, onDisconnect }: UseOnlineReconnectParams) {
+export function useOnlineStatus({ onDisconnect, onReconnect }: UseOnlineReconnectParams) {
   const prevOnline = useRef(onlineManager.isOnline());
 
   useEffect(() => {

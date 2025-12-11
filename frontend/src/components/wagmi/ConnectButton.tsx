@@ -4,6 +4,7 @@ import { Button, IconButton } from "@diffuse/ui-kit";
 import { ConnectButton as ConnectButtonComponent } from "@rainbow-me/rainbowkit";
 import { Wallet } from "lucide-react";
 import { useTranslations } from "next-intl";
+
 import { DesktopOnly, MobileOnly } from "../misc/viewports";
 
 export default function ConnectButton() {
@@ -11,7 +12,7 @@ export default function ConnectButton() {
 
   return (
     <ConnectButtonComponent.Custom>
-      {({ account, chain, openAccountModal, openConnectModal, mounted }) => {
+      {({ account, chain, mounted, openAccountModal, openConnectModal }) => {
         const ready = mounted;
         const connected = ready && account && chain;
 
@@ -28,32 +29,32 @@ export default function ConnectButton() {
           >
             <DesktopOnly displayClassName="md:inline-flex">
               <Button
-                size="sm"
-                onClick={!connected ? openConnectModal : openAccountModal}
-                type="button"
                 aria-haspopup="dialog"
                 aria-label={
-                  !connected
-                    ? t("navbar.walletConnect")
-                    : `Account settings for ${account.displayName}`
+                  connected
+                    ? `Account settings for ${account.displayName}`
+                    : t("navbar.walletConnect")
                 }
+                onClick={connected ? openAccountModal : openConnectModal}
+                size="sm"
+                type="button"
               >
                 <Wallet className="mr-2 h-4 w-4" />
-                {!connected ? t("navbar.walletConnect") : account.displayName}
+                {connected ? account.displayName : t("navbar.walletConnect")}
               </Button>
             </DesktopOnly>
             <MobileOnly>
               <IconButton
+                aria-haspopup="dialog"
+                aria-label={
+                  connected
+                    ? `Account settings for ${account.displayName}`
+                    : t("navbar.walletConnect")
+                }
+                icon={<Wallet size={20} />}
+                onClick={connected ? openAccountModal : openConnectModal}
                 size="sm"
                 type="button"
-                aria-haspopup="dialog"
-                onClick={!connected ? openConnectModal : openAccountModal}
-                icon={<Wallet size={20} />}
-                aria-label={
-                  !connected
-                    ? t("navbar.walletConnect")
-                    : `Account settings for ${account.displayName}`
-                }
               />
             </MobileOnly>
           </div>

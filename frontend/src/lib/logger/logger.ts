@@ -1,15 +1,17 @@
-import { env } from "@/env";
 import { matcher } from "matcher";
+
+import { env } from "@/env";
+
 import { LogLevel, Namespace } from "./schemas";
 
-type LogMethod = "error" | "warn" | "info";
+type LogMethod = "error" | "info" | "warn";
 
 const LEVELS: Record<LogLevel, number> = {
-  error: 0,
-  warn: 1,
-  info: 2,
   debug: 3,
+  error: 0,
+  info: 2,
   trace: 4,
+  warn: 1,
 };
 
 function normalizePatterns(patterns: string): string[] {
@@ -32,29 +34,35 @@ function nsMatchFactory(patterns: string) {
 const currentLogLevel = env.NEXT_PUBLIC_LOG_LEVEL ?? "trace";
 const nsMatches = nsMatchFactory(env.NEXT_PUBLIC_LOG_NAMESPACES ?? "*");
 
-function shouldLog(ns: Namespace, level: LogLevel) {
-  if (!env.NEXT_PUBLIC_DEBUG) return false;
-
-  const min = LEVELS[currentLogLevel];
-  const lvl = LEVELS[level];
-
-  if (lvl > min) return false;
-
-  if (!nsMatches(ns)) return false;
-
-  return true;
-}
-
 export type LogFn = (...args: unknown[]) => void;
 
 export type Logger = {
-  ns: string;
-  error: LogFn;
-  warn: LogFn;
-  info: LogFn;
   debug: LogFn;
+  error: LogFn;
+  info: LogFn;
+  ns: string;
   trace: LogFn;
+  warn: LogFn;
 };
+
+export function createLogger(ns: Namespace): Logger {
+  const make =
+    (level: LogLevel, method: LogMethod) =>
+    (...args: unknown[]) => {
+      if (shouldLog(ns, level)) {
+        out(method, ns, level, args);
+      }
+    };
+
+  return {
+    debug: make("debug", "info"),
+    error: make("error", "error"),
+    info: make("info", "info"),
+    ns,
+    trace: make("trace", "info"),
+    warn: make("warn", "warn"),
+  };
+}
 
 function out(method: LogMethod, ns: Namespace, level: LogLevel, args: unknown[]) {
   const prefix = `%c[${ns.toUpperCase()}]%c (${level.toUpperCase()})`; // %c allows adding styles
@@ -71,21 +79,15 @@ function out(method: LogMethod, ns: Namespace, level: LogLevel, args: unknown[])
   ]);
 }
 
-export function createLogger(ns: Namespace): Logger {
-  const make =
-    (level: LogLevel, method: LogMethod) =>
-    (...args: unknown[]) => {
-      if (shouldLog(ns, level)) {
-        out(method, ns, level, args);
-      }
-    };
+function shouldLog(ns: Namespace, level: LogLevel) {
+  if (!env.NEXT_PUBLIC_DEBUG) return false;
 
-  return {
-    ns,
-    error: make("error", "error"),
-    warn: make("warn", "warn"),
-    info: make("info", "info"),
-    debug: make("debug", "info"),
-    trace: make("trace", "info"),
-  };
+  const min = LEVELS[currentLogLevel];
+  const lvl = LEVELS[level];
+
+  if (lvl > min) return false;
+
+  if (!nsMatches(ns)) return false;
+
+  return true;
 }

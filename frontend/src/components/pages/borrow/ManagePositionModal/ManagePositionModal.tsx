@@ -1,53 +1,55 @@
 "use client";
 
-import { BorrowerPosition } from "@/lib/core/types";
-import { Dialog, Tabs } from "@diffuse/ui-kit";
-import { ReactNode } from "react";
-import { CancelPosition } from "./CancelPosition";
 import { AssetInfo } from "@diffuse/config";
+import { Dialog, Tabs } from "@diffuse/ui-kit";
 import { useTranslations } from "next-intl";
+import { ReactNode } from "react";
+
+import { BorrowerPosition } from "@/lib/core/types";
+
+import { CancelPosition } from "./CancelPosition";
 
 type ManagePositionModalProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  title?: ReactNode;
   description?: React.ReactNode;
+  onOpenChange: (open: boolean) => void;
+  onPositionClosure?: () => void;
+  open: boolean;
   selectedAsset: AssetInfo;
   selectedPosition: BorrowerPosition;
-  onPositionClosure?: () => void;
+  title?: ReactNode;
 };
 
 export function ManagePositionModal({
-  open,
   onOpenChange,
-  title,
   onPositionClosure,
+  open,
   selectedPosition,
+  title,
 }: ManagePositionModalProps) {
   const t = useTranslations();
 
   return (
     <Dialog
-      open={open}
       onOpenChange={() => {
         onOpenChange(false);
       }}
-      title={title}
+      open={open}
       size="md"
+      title={title}
     >
       <Tabs defaultValue="close">
         <Tabs.List align="start">
-          <Tabs.Trigger value="collateral" disabled>
+          <Tabs.Trigger disabled value="collateral">
             {t("borrow.managePositionModal.collateral")}
           </Tabs.Trigger>
-          <Tabs.Trigger value="leverage" disabled>
+          <Tabs.Trigger disabled value="leverage">
             {t("common.leverage")}
           </Tabs.Trigger>
           <Tabs.Trigger value="close">
             {t("borrow.managePositionModal.closePosition")}
           </Tabs.Trigger>
         </Tabs.List>
-        <Tabs.Content value="close" inset>
+        <Tabs.Content inset value="close">
           <CancelPosition
             onPositionClosure={onPositionClosure}
             selectedPosition={selectedPosition}

@@ -1,11 +1,26 @@
-import { Children, cloneElement, isValidElement, ReactElement } from "react";
 import { cn } from "@diffuse/ui-kit/cn";
+import { Children, cloneElement, isValidElement, ReactElement } from "react";
 
 type ClassedChild = ReactElement<{ className?: string }>;
 type ViewportComponentProps = {
   children: ClassedChild | ClassedChild[];
   displayClassName?: string;
 };
+
+export function DesktopOnly({
+  children,
+  displayClassName = "md:block",
+}: ViewportComponentProps) {
+  return (
+    <ViewportRenderer classToAssign={`hidden ${displayClassName}`}>
+      {children}
+    </ViewportRenderer>
+  );
+}
+
+export function MobileOnly({ children }: ViewportComponentProps) {
+  return <ViewportRenderer classToAssign="md:hidden">{children}</ViewportRenderer>;
+}
 
 function addClassName(el: ClassedChild, extra: string): ClassedChild {
   const merged = cn(el.props.className, extra);
@@ -21,19 +36,4 @@ function ViewportRenderer({
 
     return addClassName(child as ClassedChild, classToAssign);
   });
-}
-
-export function DesktopOnly({
-  children,
-  displayClassName = "md:block",
-}: ViewportComponentProps) {
-  return (
-    <ViewportRenderer classToAssign={`hidden ${displayClassName}`}>
-      {children}
-    </ViewportRenderer>
-  );
-}
-
-export function MobileOnly({ children }: ViewportComponentProps) {
-  return <ViewportRenderer classToAssign="md:hidden">{children}</ViewportRenderer>;
 }

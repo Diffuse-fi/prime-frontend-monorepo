@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
-import { useLocalStorage } from "../../misc/useLocalStorage";
 import { AssetInfo, AssetInfoSchema } from "@diffuse/config";
+import { useEffect } from "react";
+
+import { useLocalStorage } from "../../misc/useLocalStorage";
 
 const validateAssetInfo = (value: AssetInfo | null) => {
   return AssetInfoSchema.safeParse(value).success;
@@ -20,7 +21,7 @@ export function useSelectedAsset(allowedTokens: AssetInfo[]) {
       setSelectedAsset(allowedTokens[0]);
     }
 
-    if (selectedAsset && !allowedTokens.find(t => t.address === selectedAsset.address)) {
+    if (selectedAsset && !allowedTokens.some(t => t.address === selectedAsset.address)) {
       setSelectedAsset(allowedTokens.length > 0 ? allowedTokens[0] : null);
     }
   }, [allowedTokens, selectedAsset, setSelectedAsset]);

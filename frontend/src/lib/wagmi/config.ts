@@ -1,14 +1,16 @@
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { http } from "wagmi";
 import {
   metaMaskWallet,
+  safeWallet,
   trustWallet,
   walletConnectWallet,
-  safeWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { getAvailableChains } from "../chains";
-import { env } from "@/env";
 import { fallback } from "viem";
+import { http } from "wagmi";
+
+import { env } from "@/env";
+
+import { getAvailableChains } from "../chains";
 import { customRpcMap } from "../chains/rpc";
 
 const chains = getAvailableChains();
@@ -23,13 +25,13 @@ const transports = Object.fromEntries(
 );
 
 export const config = getDefaultConfig({
-  appName: env.NEXT_PUBLIC_APP_NAME,
-  appIcon: "/logo.svg?v=1",
   appDescription: env.NEXT_PUBLIC_APP_DESCRIPTION,
-  projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
+  appIcon: "/logo.svg?v=1",
+  appName: env.NEXT_PUBLIC_APP_NAME,
   chains,
-  transports,
+  projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
   ssr: true,
+  transports,
   wallets: [
     {
       groupName: "Popular",

@@ -1,11 +1,12 @@
-import { buildMetadataForPage } from "@/app/metadata";
-import MyPositions from "@/components/pages/lend/my-positions";
 import { Heading } from "@diffuse/ui-kit/Heading";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { DEFAULT_LOCALE } from "@/lib/localization/locale";
-import { JsonLd } from "@/components/misc/JsonLd";
+
 import { getWebPageGraph } from "@/app/jsonld";
+import { buildMetadataForPage } from "@/app/metadata";
+import { JsonLd } from "@/components/misc/JsonLd";
+import MyPositions from "@/components/pages/lend/my-positions";
+import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 
 export async function generateMetadata({
   params,
@@ -16,11 +17,11 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "myPositions.metadata" });
 
   return buildMetadataForPage({
-    title: t("title"),
     description: t("description"),
     keywords: t("keywords"),
-    path: "lend/my-positions",
     locale,
+    path: "lend/my-positions",
+    title: t("title"),
   });
 }
 
@@ -36,10 +37,10 @@ export default async function MyPositionsPage({
     <section>
       <JsonLd
         graph={getWebPageGraph({
-          title: t("metadata.title"),
           description: t("metadata.description"),
-          path: "lend/my-positions",
           lang,
+          path: "lend/my-positions",
+          title: t("metadata.title"),
         })}
       />
       <Heading level="1">{t("title")}</Heading>

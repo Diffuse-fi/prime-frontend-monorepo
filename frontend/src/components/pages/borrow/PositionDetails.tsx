@@ -1,9 +1,3 @@
-import { Strategy } from "@/lib/core/types";
-import { formatAsset, formatUnits } from "@/lib/formatters/asset";
-import { formatDateTime } from "@/lib/formatters/date";
-import { formatAprToPercent } from "@/lib/formatters/finance";
-import { calcAprInterest } from "@/lib/formulas/apr";
-import { calcDaysInterval } from "@/lib/formulas/date";
 import { AssetInfo } from "@diffuse/config";
 import {
   InfoIcon,
@@ -13,38 +7,45 @@ import {
 } from "@diffuse/ui-kit";
 import { useTranslations } from "next-intl";
 
+import { Strategy } from "@/lib/core/types";
+import { formatAsset, formatUnits } from "@/lib/formatters/asset";
+import { formatDateTime } from "@/lib/formatters/date";
+import { formatAprToPercent } from "@/lib/formatters/finance";
+import { calcAprInterest } from "@/lib/formulas/apr";
+import { calcDaysInterval } from "@/lib/formulas/date";
+
 interface PositionDetailsProps {
-  strategy: Strategy;
-  selectedAsset: AssetInfo;
-  liquidationPrice?: bigint;
-  enterTimeOrDeadline: number;
   collateralGiven: bigint;
+  enterTimeOrDeadline: number;
   leverage: bigint;
-  loadingLiquidationPrice?: boolean;
-  liquidationPriceLoadingError?: string;
-  spreadFee: number;
   liquidationPenalty: number;
+  liquidationPrice?: bigint;
+  liquidationPriceLoadingError?: string;
+  loadingLiquidationPrice?: boolean;
+  selectedAsset: AssetInfo;
+  spreadFee: number;
+  strategy: Strategy;
 }
 
 export function PositionDetails({
-  selectedAsset,
-  strategy,
-  liquidationPrice,
-  enterTimeOrDeadline,
   collateralGiven,
+  enterTimeOrDeadline,
   leverage,
-  loadingLiquidationPrice,
-  liquidationPriceLoadingError,
-  spreadFee,
   liquidationPenalty,
+  liquidationPrice,
+  liquidationPriceLoadingError,
+  loadingLiquidationPrice,
+  selectedAsset,
+  spreadFee,
+  strategy,
 }: PositionDetailsProps) {
   const { apr, endDate, token: strategyAsset } = strategy;
   const daysUntilMaturity = calcDaysInterval({ to: endDate });
   const fullEndDate = formatDateTime(endDate).text;
   const maturityYield = calcAprInterest(apr, collateralGiven, {
     durationInDays: calcDaysInterval({
-      to: endDate,
       from: enterTimeOrDeadline,
+      to: endDate,
     }),
   });
   const leverageDisplay = `x${(Number(leverage) / 100).toFixed(2)}`;
@@ -70,9 +71,9 @@ export function PositionDetails({
           <div className="flex items-center justify-between">
             <span>{t("liquidationPrice")}</span>
             <RemoteText
+              error={liquidationPriceLoadingError}
               isLoading={loadingLiquidationPrice}
               text={liquidationPriceDisplay}
-              error={liquidationPriceLoadingError}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -102,10 +103,10 @@ export function PositionDetails({
             <div className="flex items-center leading-none">
               {t("spreadFee")}
               <InfoIcon
-                text={t("spreadFeeTooltip")}
-                size={14}
-                className="ml-1"
                 ariaLabel={t("spreadFeeAriaLabel")}
+                className="ml-1"
+                size={14}
+                text={t("spreadFeeTooltip")}
               />
             </div>
             <span>{formatAprToPercent(spreadFee, 0).text}</span>
@@ -120,17 +121,17 @@ export function PositionDetails({
           <div className="flex items-center justify-between">
             <span>{t("daysUntilMaturity")}</span>
             <TextWithTooltip
+              className="underline decoration-dashed underline-offset-2"
               text={daysUntilMaturity.toString()}
               tooltip={t("until", { date: fullEndDate })}
-              className="underline decoration-dashed underline-offset-2"
             />
           </div>
           <div className="flex items-center justify-between">
             <span>{t("maturityYield")}</span>
             <span>
-              {maturityYield !== 0n
-                ? `${formatUnits(maturityYield, selectedAsset.decimals).text} ${selectedAsset.symbol}`
-                : "N/A"}
+              {maturityYield === 0n
+                ? "N/A"
+                : `${formatUnits(maturityYield, selectedAsset.decimals).text} ${selectedAsset.symbol}`}
             </span>
           </div>
         </div>

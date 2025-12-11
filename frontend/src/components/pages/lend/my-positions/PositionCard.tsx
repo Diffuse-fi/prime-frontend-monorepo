@@ -1,11 +1,5 @@
 "use client";
 
-import { AppLink } from "@/components/misc/AppLink";
-import { AssetImage } from "@/components/misc/images/AssetImage";
-import { getContractExplorerUrl } from "@/lib/chains/rpc";
-import { LenderPosition } from "@/lib/core/types";
-import { formatAsset, formatUnits } from "@/lib/formatters/asset";
-import { formatAprToPercent } from "@/lib/formatters/finance";
 import {
   ButtonLike,
   Card,
@@ -15,29 +9,37 @@ import {
   UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
 import { ExternalLink } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 import { useChainId } from "wagmi";
+
+import { AppLink } from "@/components/misc/AppLink";
+import { AssetImage } from "@/components/misc/images/AssetImage";
+import { getContractExplorerUrl } from "@/lib/chains/rpc";
+import { LenderPosition } from "@/lib/core/types";
+import { formatAsset, formatUnits } from "@/lib/formatters/asset";
+import { formatAprToPercent } from "@/lib/formatters/finance";
+
 import { StrategiesList } from "../StrategiesList";
-import { useTranslations } from "next-intl";
 
 export interface PositionCardProps {
-  position: LenderPosition;
-  className?: string;
-  withdrawButton?: ReactNode;
   claimRewardsButton?: ReactNode;
+  className?: string;
+  position: LenderPosition;
+  withdrawButton?: ReactNode;
 }
 
 export function PositionCard({
+  claimRewardsButton,
   className,
   position,
   withdrawButton,
-  claimRewardsButton,
 }: PositionCardProps) {
-  const { vault, asset, balance, accruedYield } = position;
+  const { accruedYield, asset, balance, vault } = position;
   const chainId = useChainId();
   const explorerUrl = getContractExplorerUrl(chainId, vault.address);
   const vaultAprFormatted = formatAprToPercent(vault.targetApr);
-  const profitDisplay = !!accruedYield
+  const profitDisplay = accruedYield
     ? `${formatUnits(accruedYield, asset.decimals).text} ${asset.symbol}`
     : "-";
   const t = useTranslations("myPositions");
@@ -46,20 +48,20 @@ export function PositionCard({
 
   return (
     <Card
-      className={className}
       cardBodyClassName="gap-4"
+      className={className}
       header={
         <div className="flex items-center justify-start gap-4">
           {asset && (
             <AssetImage
-              imgURI={asset?.logoURI}
-              size={24}
               address={asset?.address}
               alt=""
+              imgURI={asset?.logoURI}
+              size={24}
             />
           )}
           <div className="flex items-end gap-2">
-            <Heading level="4" className="leading-none">
+            <Heading className="leading-none" level="4">
               {vault.name}
             </Heading>
             <p className="text-text-dimmed leading-none">{asset?.symbol}</p>
@@ -81,53 +83,53 @@ export function PositionCard({
       </div>
       <SimpleTable
         aria-label={tLend("ariaLabels.vaultRewards")}
-        density="comfy"
         columns={[
           tLend("rewardsType"),
-          <div key="key" className="text-right font-mono text-xs">
+          <div className="text-right font-mono text-xs" key="key">
             {tCommon("apr")}
           </div>,
-          <div key="key" className="text-right font-mono text-xs">
+          <div className="text-right font-mono text-xs" key="key">
             {t("reward")}
           </div>,
         ]}
+        density="comfy"
         rows={[
           [
-            <div key="1" className="flex items-center">
+            <div className="flex items-center" key="1">
               <AssetImage
-                alt=""
                 address={vault?.assets?.at(0)!.address}
-                imgURI={vault?.assets?.at(0)!.logoURI}
+                alt=""
                 className="mr-1"
+                imgURI={vault?.assets?.at(0)!.logoURI}
                 size={20}
               />
               {tLend("targetApy")}
             </div>,
-            <div key="2" className="text-right">
+            <div className="text-right" key="2">
               {vaultAprFormatted.text}
             </div>,
-            <div key="3" className="text-right">
+            <div className="text-right" key="3">
               {profitDisplay}
             </div>,
           ],
         ]}
       />
-      <UncontrolledCollapsible summary={tLend("listOfStrategies")} defaultOpen={false}>
+      <UncontrolledCollapsible defaultOpen={false} summary={tLend("listOfStrategies")}>
         <StrategiesList strategies={vault.strategies} />
       </UncontrolledCollapsible>
       <div className="flex justify-between gap-2">
         {claimRewardsButton}
         {withdrawButton}
-        <Tooltip side="top" content={t("openInExplorer")}>
+        <Tooltip content={t("openInExplorer")} side="top">
           <ButtonLike
-            href={explorerUrl || ""}
-            component={AppLink}
             aria-label={t("openInExplorerAriaLabel")}
-            variant="ghost"
-            size="lg"
             className="text-secondary"
+            component={AppLink}
             disabled={!explorerUrl}
+            href={explorerUrl || ""}
             icon
+            size="lg"
+            variant="ghost"
           >
             <ExternalLink aria-hidden={true} size={24} />
           </ButtonLike>

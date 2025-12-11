@@ -1,18 +1,17 @@
-import { localizationMiddleware } from "./middlewares/localization";
 import { cspMiddleware } from "./middlewares/csp";
+import { localizationMiddleware } from "./middlewares/localization";
 import { compose } from "./middlewares/utils";
 
 export default compose({
-  stack: [localizationMiddleware],
   always: [cspMiddleware],
+  stack: [localizationMiddleware],
 });
 
 export const config = {
   matcher: [
     {
       // Skip all internal paths
-      source:
-        "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|.*\\..*).*)",
+      source: String.raw`/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|.*\..*).*)`,
     },
   ],
 };

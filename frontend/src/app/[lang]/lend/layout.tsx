@@ -1,8 +1,9 @@
-import { LayoutWithTabsNav } from "@/components/misc/LayoutWithTabsNav";
-import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 import { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
+
+import { LayoutWithTabsNav } from "@/components/misc/LayoutWithTabsNav";
+import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 
 export default async function LendLayout({
   children,
@@ -17,7 +18,7 @@ export default async function LendLayout({
   return (
     <LayoutWithTabsNav
       navConfig={[
-        { href: "/lend", label: tLend("navigation.lend"), exact: true },
+        { exact: true, href: "/lend", label: tLend("navigation.lend") },
         { href: "/lend/my-positions", label: tLend("navigation.myPositions") },
       ]}
     >

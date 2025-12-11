@@ -1,8 +1,9 @@
-import { LayoutWithTabsNav } from "@/components/misc/LayoutWithTabsNav";
-import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 import { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
+
+import { LayoutWithTabsNav } from "@/components/misc/LayoutWithTabsNav";
+import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 
 export default async function BorrowLayout({
   children,
@@ -17,7 +18,7 @@ export default async function BorrowLayout({
   return (
     <LayoutWithTabsNav
       navConfig={[
-        { href: "/borrow", label: tBorrow("navigation.borrow"), exact: true },
+        { exact: true, href: "/borrow", label: tBorrow("navigation.borrow") },
         {
           href: "/borrow/my-positions",
           label: tBorrow("navigation.borrowPositions"),

@@ -2,15 +2,15 @@ import { Dateish, day } from "../formatters/date";
 import { DateFormatOpts } from "../formatters/types";
 
 type CalcDaysIntervalParams = {
-  to: Dateish;
   from?: Dateish;
   opts?: DateFormatOpts;
+  to: Dateish;
 };
 
 export function calcDaysInterval({
-  to,
   from,
   opts = {},
+  to,
 }: CalcDaysIntervalParams): number {
   const fromD = day(from ?? Date.now(), opts);
   const toD = day(to, opts);

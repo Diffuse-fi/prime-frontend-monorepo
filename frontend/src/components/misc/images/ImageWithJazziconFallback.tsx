@@ -5,18 +5,18 @@ import { useState } from "react";
 
 const Jazzicon = dynamic(() => import("react-jazzicon"), { ssr: false });
 
-type ImageWithJazziconFallbackProps = {
-  size?: number;
+type ImageWithJazziconFallbackProps = Omit<ImageProps, "height" | "src" | "width"> & {
   jazziconSeed?: number;
+  size?: number;
   src?: ImageProps["src"];
-} & Omit<ImageProps, "width" | "height" | "src">;
+};
 
 export function ImageWithJazziconFallback({
+  alt,
   jazziconSeed,
+  onError,
   size = 32,
   src,
-  alt,
-  onError,
   ...props
 }: ImageWithJazziconFallbackProps) {
   const [broken, setBroken] = useState(false);
@@ -27,13 +27,13 @@ export function ImageWithJazziconFallback({
       {showImg ? (
         <Image
           alt={alt}
-          src={src}
-          width={size}
           height={size}
           onError={e => {
             setBroken(true);
             onError?.(e);
           }}
+          src={src}
+          width={size}
           {...props}
         />
       ) : (

@@ -1,5 +1,6 @@
-import { FORMAT_DEFAULTS, SCALES } from "./config";
 import type { FormatResult } from "./types";
+
+import { FORMAT_DEFAULTS, SCALES } from "./config";
 
 export function formatAprToPercent<T extends bigint | number>(
   raw: T,
@@ -8,5 +9,5 @@ export function formatAprToPercent<T extends bigint | number>(
   const percent = Number(raw) / Number(SCALES.PERCENT);
   const res = Number(percent).toFixed(fractionDigits) + "%";
 
-  return { value: raw, text: res, tooltip: res };
+  return { text: res, tooltip: res, value: raw };
 }

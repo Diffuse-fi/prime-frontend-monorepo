@@ -1,17 +1,19 @@
 "use client";
 
-import { QV } from "../../query/versions";
+import { Viewer } from "@diffuse/sdk-js";
 import { queryOptions, useQuery } from "@tanstack/react-query";
-import { opt, qk } from "../../query/helpers";
+import pLimit from "p-limit";
+import { useMemo } from "react";
 import { Address, getAddress } from "viem";
 import { usePublicClient } from "wagmi";
-import { useMemo } from "react";
-import { Viewer } from "@diffuse/sdk-js";
-import pLimit from "p-limit";
+
 import {
   populateAssetListWithMeta,
   populateAssetWithMeta,
 } from "@/lib/assets/assetsMeta";
+
+import { opt, qk } from "../../query/helpers";
+import { QV } from "../../query/versions";
 import { VaultRiskLevel } from "../types";
 
 type UseViewerParams = {
@@ -29,13 +31,67 @@ export const viewerQK = {
 
 const limit = pLimit(6);
 
+export function useViewer({ addressOverride, chainId }: UseViewerParams) {
+  const normalizedAddress = addressOverride ? getAddress(addressOverride) : null;
+  const publicClient = usePublicClient({ chainId });
+
+  const viewer = useMemo(() => {
+    if (!publicClient) return null;
+    return new Viewer({
+      address: normalizedAddress ?? undefined,
+      chainId,
+      client: { public: publicClient },
+    });
+  }, [publicClient, chainId, normalizedAddress]);
+
+  const query = useQuery({
+    ...viewerAllVaultsQuery(viewer as Viewer, normalizedAddress, chainId),
+    enabled: !!viewer && !!chainId,
+  });
+
+  const allVaults = useMemo(() => {
+    if (!query.data) return [];
+
+    return query.data.map(v => ({
+      ...v,
+      assets: populateAssetListWithMeta(
+        v.assets.map(a => ({
+          ...a,
+          address: getAddress(a.asset),
+          chainId: chainId,
+          name: a.symbol,
+        }))
+      ),
+      riskLevel: v.riskLevel as VaultRiskLevel,
+      strategies: v.strategies.map(s => ({
+        ...s,
+        token: populateAssetWithMeta({
+          address: getAddress(s.token.asset),
+          chainId: chainId,
+          decimals: s.token.decimals,
+          name: s.token.symbol,
+          symbol: s.token.symbol,
+        }),
+      })),
+    }));
+  }, [query.data, chainId]);
+
+  return {
+    allVaults,
+    error: query.error,
+    isLoading: query.isLoading,
+    isPending: query.isPending,
+    refetch: query.refetch,
+  };
+}
+
 export function viewerAllVaultsQuery(
   viewer: Viewer,
   normalizedAddress: Address | null,
   chainId: number
 ) {
   return queryOptions({
-    queryKey: viewerQK.allVaults(normalizedAddress, chainId),
+    gcTime: 24 * 60 * 60 * 1000,
     queryFn: async ({ signal }) => {
       const vaults = await viewer.getVaults({ signal });
 
@@ -53,62 +109,8 @@ export function viewerAllVaultsQuery(
         strategies: strategies[i],
       }));
     },
-    staleTime: 60 * 60 * 1000,
-    gcTime: 24 * 60 * 60 * 1000,
+    queryKey: viewerQK.allVaults(normalizedAddress, chainId),
     refetchOnWindowFocus: false,
+    staleTime: 60 * 60 * 1000,
   });
-}
-
-export function useViewer({ addressOverride, chainId }: UseViewerParams) {
-  const normalizedAddress = addressOverride ? getAddress(addressOverride) : null;
-  const publicClient = usePublicClient({ chainId });
-
-  const viewer = useMemo(() => {
-    if (!publicClient) return null;
-    return new Viewer({
-      client: { public: publicClient },
-      chainId,
-      address: normalizedAddress ?? undefined,
-    });
-  }, [publicClient, chainId, normalizedAddress]);
-
-  const query = useQuery({
-    ...viewerAllVaultsQuery(viewer as Viewer, normalizedAddress, chainId),
-    enabled: !!viewer && !!chainId,
-  });
-
-  const allVaults = useMemo(() => {
-    if (!query.data) return [];
-
-    return query.data.map(v => ({
-      ...v,
-      strategies: v.strategies.map(s => ({
-        ...s,
-        token: populateAssetWithMeta({
-          address: getAddress(s.token.asset),
-          chainId: chainId,
-          name: s.token.symbol,
-          decimals: s.token.decimals,
-          symbol: s.token.symbol,
-        }),
-      })),
-      riskLevel: v.riskLevel as VaultRiskLevel,
-      assets: populateAssetListWithMeta(
-        v.assets.map(a => ({
-          ...a,
-          address: getAddress(a.asset),
-          chainId: chainId,
-          name: a.symbol,
-        }))
-      ),
-    }));
-  }, [query.data, chainId]);
-
-  return {
-    allVaults,
-    isPending: query.isPending,
-    isLoading: query.isLoading,
-    error: query.error,
-    refetch: query.refetch,
-  };
 }

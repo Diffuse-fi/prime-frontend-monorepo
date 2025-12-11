@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useAccount, useChainId } from "wagmi";
+
 import { getAvailableChainsIds } from "@/lib/chains";
 import {
   useReadonlyChainActions,
@@ -11,10 +12,6 @@ import { chainLogger } from "@/lib/core/utils/loggers";
 import { installWagmiWatchers } from "@/lib/wagmi/logging";
 
 const SUPPORTED = new Set(getAvailableChainsIds());
-
-function isSupported(chainId: number | undefined): boolean {
-  return typeof chainId === "number" && SUPPORTED.has(chainId);
-}
 
 export function ChainSyncEffects() {
   const { isConnected } = useAccount();
@@ -46,4 +43,8 @@ export function ChainSyncEffects() {
   }, [readonlyChainId]);
 
   return null;
+}
+
+function isSupported(chainId: number | undefined): boolean {
+  return typeof chainId === "number" && SUPPORTED.has(chainId);
 }

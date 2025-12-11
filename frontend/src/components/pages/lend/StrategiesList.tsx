@@ -1,9 +1,10 @@
+import { SimpleTable } from "@diffuse/ui-kit";
+import { useTranslations } from "next-intl";
+
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { Strategy } from "@/lib/core/types";
 import { formatDate } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
-import { SimpleTable } from "@diffuse/ui-kit";
-import { useTranslations } from "next-intl";
 
 export interface StrategiesListProps {
   strategies: Strategy[];
@@ -21,13 +22,13 @@ export function StrategiesList({ strategies }: StrategiesListProps) {
           t("lend.strategiesList.endDate"),
         ]}
         rows={strategies.map(s => [
-          <div key="1" className="flex items-center gap-2">
+          <div className="flex items-center gap-2" key="1">
             <AssetImage
-              alt=""
-              imgURI={s.token.logoURI}
               address={s.token.address}
-              size={20}
+              alt=""
               className="grayscale"
+              imgURI={s.token.logoURI}
+              size={20}
             />
             {s.token.symbol}
           </div>,

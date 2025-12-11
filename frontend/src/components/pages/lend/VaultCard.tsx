@@ -1,39 +1,41 @@
 "use client";
 
-import { AssetImage } from "@/components/misc/images/AssetImage";
-import { VaultFullInfo } from "../../../lib/core/types";
-import { formatAprToPercent } from "@/lib/formatters/finance";
+import { AssetInfo } from "@diffuse/config";
 import {
-  Badge,
-  Card,
-  Heading,
-  SimpleTable,
   AssetInput,
   AssetInputProps,
-  UncontrolledCollapsible,
+  Badge,
+  Card,
   FormField,
+  Heading,
+  SimpleTable,
+  UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
-import { formatUnits } from "@/lib/formatters/asset";
-import { RisksNotice } from "./RisksNotice";
-import { getVaultRiskLevelColor } from "@/lib/core/utils/vault";
 import { useTranslations } from "next-intl";
+
+import { AssetImage } from "@/components/misc/images/AssetImage";
+import { getVaultRiskLevelColor } from "@/lib/core/utils/vault";
+import { formatUnits } from "@/lib/formatters/asset";
+import { formatAprToPercent } from "@/lib/formatters/finance";
+
+import { VaultFullInfo } from "../../../lib/core/types";
+import { RisksNotice } from "./RisksNotice";
 import { StrategiesList } from "./StrategiesList";
-import { AssetInfo } from "@diffuse/config";
 
 type VaultProps = {
-  vault: VaultFullInfo;
-  selectedAsset: AssetInfo;
   amount?: bigint;
-  onAmountChange?: AssetInputProps["onValueChange"];
   isConnected?: boolean;
+  onAmountChange?: AssetInputProps["onValueChange"];
+  selectedAsset: AssetInfo;
+  vault: VaultFullInfo;
 };
 
 export function VaultCard({
-  vault,
   amount,
+  isConnected,
   onAmountChange,
   selectedAsset,
-  isConnected,
+  vault,
 }: VaultProps) {
   const t = useTranslations("lend");
   const tCommon = useTranslations("common");
@@ -44,9 +46,9 @@ export function VaultCard({
       cardBodyClassName="gap-4"
       header={
         <div className="flex items-center justify-start gap-4">
-          <Badge color={getVaultRiskLevelColor(vault.riskLevel)} className="ml-2" />
+          <Badge className="ml-2" color={getVaultRiskLevelColor(vault.riskLevel)} />
           <div className="flex items-center gap-4">
-            <Heading level="4" className="font-semibold">
+            <Heading className="font-semibold" level="4">
               {vault.name}&#65343;
             </Heading>
             <span className="text-secondary text-lg">{vaultAprFormatted.text}</span>
@@ -55,58 +57,58 @@ export function VaultCard({
       }
     >
       <div className="flex gap-4">
-        <FormField label={t("deposit")} className="grow">
+        <FormField className="grow" label={t("deposit")}>
           <AssetInput
-            disabled={!isConnected}
-            placeholder="0.0"
-            value={amount ? formatUnits(amount, selectedAsset?.decimals).text : ""}
-            onValueChange={onAmountChange}
             assetSymbol={selectedAsset?.symbol}
+            disabled={!isConnected}
+            onValueChange={onAmountChange}
+            placeholder="0.0"
             renderAssetImage={() => (
               <AssetImage
+                address={vault?.assets?.at(0)!.address}
                 alt=""
                 imgURI={vault?.assets?.at(0)!.logoURI}
-                address={vault?.assets?.at(0)!.address}
                 size={24}
               />
             )}
+            value={amount ? formatUnits(amount, selectedAsset?.decimals).text : ""}
           />
         </FormField>
       </div>
       <SimpleTable
         aria-label={t("ariaLabels.vaultRewards")}
-        density="comfy"
         columns={[
           t("rewardsType"),
-          <div key="key" className="text-right font-mono text-xs">
+          <div className="text-right font-mono text-xs" key="key">
             {tCommon("apr")}
           </div>,
         ]}
+        density="comfy"
         rows={[
           [
-            <div key="1" className="flex items-center">
+            <div className="flex items-center" key="1">
               <AssetImage
-                alt=""
                 address={vault?.assets?.at(0)!.address}
-                imgURI={vault?.assets?.at(0)!.logoURI}
+                alt=""
                 className="mr-1"
+                imgURI={vault?.assets?.at(0)!.logoURI}
                 size={20}
               />
               {t("targetApy")}
             </div>,
-            <div key="2" className="text-right">
+            <div className="text-right" key="2">
               {vaultAprFormatted.text}
             </div>,
           ],
         ]}
       />
       <div className="flex flex-col gap-2">
-        <UncontrolledCollapsible summary={t("listOfStrategies")} defaultOpen={false}>
+        <UncontrolledCollapsible defaultOpen={false} summary={t("listOfStrategies")}>
           <StrategiesList strategies={vault.strategies} />
         </UncontrolledCollapsible>
         <UncontrolledCollapsible
-          summary={t("risks.title")}
           defaultOpen={false}
+          summary={t("risks.title")}
           summaryClassName="text-err"
         >
           <RisksNotice />

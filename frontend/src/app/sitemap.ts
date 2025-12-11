@@ -1,9 +1,12 @@
 import type { MetadataRoute } from "next";
-import localizatiionSettings from "../localization.json" with { type: "json" };
-import path from "node:path";
+
 import { readdirSync } from "node:fs";
+import path from "node:path";
+
 import { env } from "@/env";
 import { normalizeTrailingSlashes } from "@/lib/misc/metadata";
+
+import localizatiionSettings from "../localization.json" with { type: "json" };
 
 const origin = env.ORIGIN;
 
@@ -11,17 +14,48 @@ const SUPPORTED_LOCALES = localizatiionSettings.supported;
 const DEFAULT_LOCALE = localizatiionSettings.default;
 const needAlternates = SUPPORTED_LOCALES.length > 1;
 const PAGE_FILES = new Set([
-  "page.tsx",
   "page.ts",
+  "page.tsx",
 ]);
 const ROUTING_ROOT_DIR = path.resolve(process.cwd(), "src/app/[lang]");
 
-function isRouteGroup(name: string) {
-  return name.startsWith("(") && name.endsWith(")");
-}
+export default function sitemap(): MetadataRoute.Sitemap {
+  const paths = getPaths();
 
-function isDynamicSegment(name: string) {
-  return name.startsWith("[") && name.endsWith("]");
+  if (paths.length === 0) {
+    return [];
+  }
+
+  if (!needAlternates) {
+    return paths.map(url => ({
+      changeFrequency: "daily",
+      lastModified: new Date().toISOString(),
+      priority: url === "/lend" ? 1 : 0.7,
+      url: `${origin}${normalizeTrailingSlashes(url)}`,
+    }));
+  }
+
+  return paths.map(url => ({
+    alternates: {
+      languages: {
+        ...Object.fromEntries(
+          SUPPORTED_LOCALES.map(lang => {
+            const finalUrl =
+              lang === DEFAULT_LOCALE
+                ? `${origin}${normalizeTrailingSlashes(url)}`
+                : `${origin}/${lang}${normalizeTrailingSlashes(url)}`;
+            return [lang, finalUrl];
+          })
+        ),
+        "x-default": `${origin}${normalizeTrailingSlashes(url)}`,
+      },
+    },
+    changeFrequency: "daily",
+    lastModified: new Date().toISOString(),
+    priority: url === "/lend" ? 1 : 0.7,
+
+    url: `${origin}${normalizeTrailingSlashes(url)}`,
+  }));
 }
 
 function getPaths(rootDir: string = ROUTING_ROOT_DIR): string[] {
@@ -34,7 +68,7 @@ function getPaths(rootDir: string = ROUTING_ROOT_DIR): string[] {
 
     if (hasPage) {
       const url = "/" + segments.join("/");
-      found.push(url === "/" ? "/" : url.replace(/\/+/g, "/"));
+      found.push(url === "/" ? "/" : url.replaceAll(/\/+/g, "/"));
     }
 
     for (const entry of entries) {
@@ -55,44 +89,13 @@ function getPaths(rootDir: string = ROUTING_ROOT_DIR): string[] {
 
   walkSync(rootDir, []);
 
-  return Array.from(new Set(found)).sort();
+  return [...new Set(found)].sort();
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const paths = getPaths();
+function isDynamicSegment(name: string) {
+  return name.startsWith("[") && name.endsWith("]");
+}
 
-  if (paths.length === 0) {
-    return [];
-  }
-
-  if (!needAlternates) {
-    return paths.map(url => ({
-      url: `${origin}${normalizeTrailingSlashes(url)}`,
-      lastModified: new Date().toISOString(),
-      changeFrequency: "daily",
-      priority: url === "/lend" ? 1 : 0.7,
-    }));
-  }
-
-  return paths.map(url => ({
-    url: `${origin}${normalizeTrailingSlashes(url)}`,
-    lastModified: new Date().toISOString(),
-    changeFrequency: "daily",
-    priority: url === "/lend" ? 1 : 0.7,
-
-    alternates: {
-      languages: {
-        ...Object.fromEntries(
-          SUPPORTED_LOCALES.map(lang => {
-            const finalUrl =
-              lang === DEFAULT_LOCALE
-                ? `${origin}${normalizeTrailingSlashes(url)}`
-                : `${origin}/${lang}${normalizeTrailingSlashes(url)}`;
-            return [lang, finalUrl];
-          })
-        ),
-        "x-default": `${origin}${normalizeTrailingSlashes(url)}`,
-      },
-    },
-  }));
+function isRouteGroup(name: string) {
+  return name.startsWith("(") && name.endsWith(")");
 }

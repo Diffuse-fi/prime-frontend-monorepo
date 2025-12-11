@@ -5,11 +5,11 @@ import { toast } from "@/lib/toast";
 
 export function ConnectionStatusTracker() {
   useOnlineStatus({
-    onReconnect: () => {
-      toast("Back online — refreshing data");
-    },
     onDisconnect: () => {
       toast("You are offline");
+    },
+    onReconnect: () => {
+      toast("Back online — refreshing data");
     },
   });
 

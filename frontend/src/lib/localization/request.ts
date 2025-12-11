@@ -1,7 +1,8 @@
-import localizationSettings from "@/localization.json" with { type: "json" };
 import { IntlErrorCode } from "next-intl";
 import { getRequestConfig } from "next-intl/server";
 import { cookies } from "next/headers";
+
+import localizationSettings from "@/localization.json" with { type: "json" };
 
 export default getRequestConfig(async () => {
   const store = await cookies();
@@ -12,17 +13,16 @@ export default getRequestConfig(async () => {
     : localizationSettings.default;
 
   return {
-    locale,
-    messages: (await import(`../../dictionaries/${locale}.json`)).default,
+    getMessageFallback({ error, key, namespace }) {
+      const path = [namespace, key].filter(part => part != undefined).join(".");
 
-    getMessageFallback({ namespace, key, error }) {
-      const path = [namespace, key].filter(part => part != null).join(".");
-
-      if (error.code === IntlErrorCode.MISSING_MESSAGE) {
-        return path + " is not yet translated";
-      } else {
-        return "Dear developer, please fix this message: " + path;
-      }
+      return error.code === IntlErrorCode.MISSING_MESSAGE
+        ? path + " is not yet translated"
+        : "Dear developer, please fix this message: " + path;
     },
+    locale,
+
+    // eslint-disable-next-line unicorn/no-await-expression-member
+    messages: (await import(`../../dictionaries/${locale}.json`)).default,
   };
 });

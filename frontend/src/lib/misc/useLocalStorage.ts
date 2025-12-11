@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
 import { JSONParse, JSONStringify } from "json-with-bigint";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useLocalStorage<T>(
   key: string,
   initialValue: T,
   validate?: (value: T) => boolean
 ) {
-  const isServer = typeof window === "undefined";
+  const isServer = globalThis.window === undefined;
   const prevKeyRef = useRef(key);
   const initialRef = useRef(initialValue);
 
@@ -17,13 +17,13 @@ export function useLocalStorage<T>(
       if (isServer) return initialRef.current;
 
       try {
-        const raw = window.localStorage.getItem(k);
-        if (raw != null) {
+        const raw = globalThis.localStorage.getItem(k);
+        if (raw != undefined) {
           const parsed = JSONParse(raw) as T;
           if (!validate || validate(parsed)) return parsed;
         }
-      } catch (e) {
-        console.error(e);
+      } catch (error) {
+        console.error(error);
       }
       return initialRef.current;
     },
@@ -36,9 +36,9 @@ export function useLocalStorage<T>(
     if (prevKeyRef.current !== key) {
       if (!isServer) {
         try {
-          window.localStorage.removeItem(prevKeyRef.current);
-        } catch (e) {
-          console.error(e);
+          globalThis.localStorage.removeItem(prevKeyRef.current);
+        } catch (error) {
+          console.error(error);
         }
       }
 
@@ -53,9 +53,9 @@ export function useLocalStorage<T>(
     try {
       const valueToStore =
         !validate || validate(storedValue) ? storedValue : initialRef.current;
-      window.localStorage.setItem(key, JSONStringify(valueToStore));
-    } catch (e) {
-      console.error(e);
+      globalThis.localStorage.setItem(key, JSONStringify(valueToStore));
+    } catch (error) {
+      console.error(error);
     }
   }, [key, storedValue, validate, isServer]);
 

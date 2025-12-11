@@ -1,7 +1,9 @@
 import type { FormatResult } from "./types";
-import { Address, formatUnits as formatUnitsViem } from "viem";
-import { formatThousandsSpace } from "./number";
+
 import truncateEthAddress from "truncate-eth-address";
+import { Address, formatUnits as formatUnitsViem } from "viem";
+
+import { formatThousandsSpace } from "./number";
 
 export function formatAsset(
   amount: bigint,
@@ -11,14 +13,18 @@ export function formatAsset(
   const formatted = formatUnitsViem(amount, decimals);
 
   return {
+    meta: { amount, decimals, symbol },
     text: `${
       formatThousandsSpace(Number(formatted), {
         maximumFractionDigits: 2,
       }).text
     } ${symbol}`,
     value: formatted,
-    meta: { amount, decimals, symbol },
   };
+}
+
+export function formatEvmAddress(address: Address): string {
+  return truncateEthAddress(address);
 }
 
 export function formatUnits(
@@ -27,16 +33,12 @@ export function formatUnits(
   const res = formatUnitsViem(...params);
 
   return {
+    meta: { amount: params[0], decimals: params[1], rawViem: res },
     text: formatThousandsSpace(Number(res), {
       maximumFractionDigits: Math.min(params[1], 6) ?? 2,
     }).text,
     value: params[0],
-    meta: { amount: params[0], decimals: params[1], rawViem: res },
   };
-}
-
-export function formatEvmAddress(address: Address): string {
-  return truncateEthAddress(address);
 }
 
 export function getPartialAllowanceText(

@@ -1,18 +1,20 @@
 "use client";
 
-import { getStableChainMeta } from "../../lib/chains/meta";
-import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
-import { toast } from "@/lib/toast";
 import { IconButton } from "@diffuse/ui-kit";
 import { Skeleton } from "@diffuse/ui-kit/Skeleton";
+import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { match, P } from "ts-pattern";
-import { useTranslations } from "next-intl";
 import { Chain } from "viem";
+import { useConnect, useSwitchChain } from "wagmi";
+
+import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
+import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
+import { toast } from "@/lib/toast";
+
+import { getStableChainMeta } from "../../lib/chains/meta";
 import { ImageWithJazziconFallback } from "../misc/images/ImageWithJazziconFallback";
 import { ChainSwitchModal } from "./ChainSwitchModal";
-import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
-import { useConnect, useSwitchChain } from "wagmi";
 
 export function ChainSwitcher() {
   const [open, setOpen] = useState(false);
@@ -30,49 +32,49 @@ export function ChainSwitcher() {
   return (
     <>
       <IconButton
+        aria-busy={isPendingConnection || isPending || undefined}
+        aria-haspopup="dialog"
         aria-label={`Switch between supported networks. Currently ${
           chain ? chain.name : "Not connected"
         }`}
-        aria-busy={isPendingConnection || isPending || undefined}
-        aria-haspopup="dialog"
-        onClick={() => setOpen(true)}
         disabled={isPendingConnection || isPending}
-        variant="ghost"
-        size="sm"
         icon={match({
-          isPendingConnection,
-          isPending,
           chain,
+          isPending,
+          isPendingConnection,
         })
           .with({ isPendingConnection: true }, () => <Skeleton className="h-8 w-8" />)
           .with({ isPending: true }, () => <Skeleton className="h-8 w-8" />)
           .with({ chain: P.select() }, chain => {
             const chainName = chain?.name ?? t("unknownChain");
             const chainId = chain?.id;
-            const { iconUrl, iconBackground } = getStableChainMeta(chainId!);
+            const { iconBackground, iconUrl } = getStableChainMeta(chainId!);
 
             return (
               <ImageWithJazziconFallback
-                src={iconUrl}
                 alt={chainName}
-                size={20}
                 className="rounded-full object-cover"
+                decoding="async"
+                fetchPriority="low"
+                jazziconSeed={stableSeedForChainId(chainId!)}
+                size={20}
+                src={iconUrl}
                 style={{
                   background: iconBackground || "transparent",
                 }}
-                fetchPriority="low"
-                decoding="async"
-                jazziconSeed={stableSeedForChainId(chainId!)}
               />
             );
           })
           .exhaustive()}
+        onClick={() => setOpen(true)}
+        size="sm"
+        variant="ghost"
       />
       <ChainSwitchModal
-        open={open}
-        onOpenChange={setOpen}
         currentChain={chain ?? null}
+        onOpenChange={setOpen}
         onSwitched={({ to }) => onChainSwitch({ to })}
+        open={open}
         title={t("switchNetworkTitle")}
       />
     </>

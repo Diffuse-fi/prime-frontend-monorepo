@@ -1,16 +1,26 @@
 import { SCALES } from "../formatters/config";
 
 export type CalculateAprOpts = {
-  durationInDays?: number;
   aprScale?: bigint;
+  durationInDays?: number;
 };
 
 const daysInYear = 365;
 
+export function calcAprByInterestEarned(
+  interest: bigint,
+  amount: bigint,
+  { aprScale = SCALES.BPS, durationInDays = 365 }: CalculateAprOpts = {}
+): bigint {
+  if (interest === 0n || amount === 0n) return 0n;
+
+  return (interest * aprScale * BigInt(daysInYear)) / (amount * BigInt(durationInDays));
+}
+
 export function calcAprInterest(
   apr: bigint,
   amount: bigint,
-  { durationInDays = 365, aprScale = SCALES.BPS }: CalculateAprOpts = {}
+  { aprScale = SCALES.BPS, durationInDays = 365 }: CalculateAprOpts = {}
 ): bigint {
   if (apr === 0n || amount === 0n) return 0n;
 
@@ -22,14 +32,4 @@ export function calcAverageApr(aprs: bigint[], aprScale = SCALES.BPS): bigint {
 
   const totalApr = aprs.reduce((acc, apr) => acc + apr, 0n);
   return totalApr / aprScale / BigInt(aprs.length);
-}
-
-export function calcAprByInterestEarned(
-  interest: bigint,
-  amount: bigint,
-  { durationInDays = 365, aprScale = SCALES.BPS }: CalculateAprOpts = {}
-): bigint {
-  if (interest === 0n || amount === 0n) return 0n;
-
-  return (interest * aprScale * BigInt(daysInYear)) / (amount * BigInt(durationInDays));
 }

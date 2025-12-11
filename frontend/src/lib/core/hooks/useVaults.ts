@@ -1,16 +1,18 @@
-import { useMemo } from "react";
-import { useClients } from "../../wagmi/useClients";
-import { useViewer } from "./useViewer";
 import { Vault } from "@diffuse/sdk-js";
-import { VaultFullInfo, VaultLimits } from "../types";
-import { QV } from "../../query/versions";
-import { opt, qk } from "../../query/helpers";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import pLimit from "p-limit";
-import { Address, getAddress } from "viem";
 import uniqBy from "lodash/uniqBy";
-import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
+import pLimit from "p-limit";
+import { useMemo } from "react";
+import { Address, getAddress } from "viem";
 import { usePublicClient } from "wagmi";
+
+import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
+
+import { opt, qk } from "../../query/helpers";
+import { QV } from "../../query/versions";
+import { useClients } from "../../wagmi/useClients";
+import { VaultFullInfo, VaultLimits } from "../types";
+import { useViewer } from "./useViewer";
 
 const ASSET_LIMIT = pLimit(6);
 const VAULT_LIMITS_LIMIT = pLimit(3);
@@ -20,9 +22,9 @@ const CURATORS_LIMIT = pLimit(6);
 const ROOT = "vault" as const;
 const version = QV.vault;
 const qKeys = {
-  totalAssets: (address: string | null, chainId: number) =>
-    qk([ROOT, version, opt(address), chainId, "totalAssets"]),
-  limits: (addresses: string | null, chainId: number, owner: Address | undefined) =>
+  curators: (address: null | string, chainId: number) =>
+    qk([ROOT, version, opt(address), chainId, "curators"]),
+  limits: (addresses: null | string, chainId: number, owner: Address | undefined) =>
     qk([
       ROOT,
       version,
@@ -31,10 +33,10 @@ const qKeys = {
       opt(owner),
       "limits",
     ]),
-  liquidity: (address: string | null, chainId: number) =>
+  liquidity: (address: null | string, chainId: number) =>
     qk([ROOT, version, opt(address), chainId, "availableLiquidity"]),
-  curators: (address: string | null, chainId: number) =>
-    qk([ROOT, version, opt(address), chainId, "curators"]),
+  totalAssets: (address: null | string, chainId: number) =>
+    qk([ROOT, version, opt(address), chainId, "totalAssets"]),
 };
 
 export function useVaults() {
@@ -57,29 +59,29 @@ export function useVaults() {
 
     return allVaults.map(
       ({
-        vault: vaultAddress,
-        name,
-        targetApr,
-        riskLevel,
-        strategies,
         assets,
         feeData,
+        name,
+        riskLevel,
+        strategies,
+        targetApr,
+        vault: vaultAddress,
       }) => {
         const address = getAddress(vaultAddress);
 
         return {
-          name,
           address,
-          targetApr,
-          riskLevel,
-          strategies,
           assets,
-          feeData,
           contract: new Vault({
             address,
             chainId,
             client: { public: publicClient, wallet: walletClient },
           }),
+          feeData,
+          name,
+          riskLevel,
+          strategies,
+          targetApr,
         };
       }
     );
@@ -90,21 +92,21 @@ export function useVaults() {
 
   const limitsQueries = useQuery({
     enabled: enabled && !!owner,
-    queryKey: qKeys.limits(addressKey, chainId, owner),
+    gcTime: 1000 * 60 * 60 * 2,
     queryFn: async ({ signal }) => {
-      if (!vaultContracts.length) return [];
+      if (vaultContracts.length === 0) return [];
 
       const results = await Promise.all(
         vaultContracts.flatMap(v => [
           VAULT_LIMITS_LIMIT(() =>
             v.contract
               .getMaxDeposit(owner!, { signal })
-              .then(maxDeposit => ({ v: v.address, maxDeposit }))
+              .then(maxDeposit => ({ maxDeposit, v: v.address }))
           ),
           VAULT_LIMITS_LIMIT(() =>
             v.contract
               .getMaxWithdraw(owner!, { signal })
-              .then(maxWithdraw => ({ v: v.address, maxWithdraw }))
+              .then(maxWithdraw => ({ maxWithdraw, v: v.address }))
           ),
         ])
       );
@@ -122,27 +124,26 @@ export function useVaults() {
       }
 
       return Array.from(limitsMap, ([vaultAddress, { maxDeposit, maxWithdraw }]) => ({
-        vaultAddress,
         maxDeposit,
         maxWithdraw,
+        vaultAddress,
       }));
     },
+    queryKey: qKeys.limits(addressKey, chainId, owner),
     staleTime: 1000 * 60 * 60,
-    gcTime: 1000 * 60 * 60 * 2,
   });
 
   const rawTotalAssetQueries = useQuery({
     enabled,
-    queryKey: qKeys.totalAssets(addressKey, chainId),
     queryFn: async ({ signal }) => {
-      if (!vaultContracts.length) return [];
+      if (vaultContracts.length === 0) return [];
 
       const results = await Promise.all(
         vaultContracts.map(vault =>
           ASSET_LIMIT(() =>
             vault.contract.totalAssets({ signal }).then(totalAssets => ({
-              vaultAddress: vault.address,
               totalAssets,
+              vaultAddress: vault.address,
             }))
           )
         )
@@ -152,20 +153,21 @@ export function useVaults() {
 
       return results;
     },
+    queryKey: qKeys.totalAssets(addressKey, chainId),
     staleTime: 60 * 1000 * 5,
   });
 
   const availableLiquidityQuery = useQuery({
     enabled,
-    queryKey: qKeys.liquidity(addressKey, chainId),
+    gcTime: 10 * 60_000,
     queryFn: async () => {
-      if (!vaultContracts.length) return [];
+      if (vaultContracts.length === 0) return [];
 
       const promises = vaultContracts.map(v =>
         AVAILABLE_LIQUIDITY_LIMIT(() =>
           v.contract.getAvailableLiquidity().then(liquidity => ({
-            vaultAddress: v.address,
             liquidity,
+            vaultAddress: v.address,
           }))
         )
       );
@@ -173,21 +175,21 @@ export function useVaults() {
 
       return liquidities;
     },
+    queryKey: qKeys.liquidity(addressKey, chainId),
     staleTime: 30_000,
-    gcTime: 10 * 60_000,
   });
 
   const curatorsQuery = useQuery({
     enabled,
-    queryKey: qKeys.curators(addressKey, chainId),
+    gcTime: 2 * 60 * 60 * 1000,
     queryFn: async () => {
-      if (!vaultContracts.length) return [];
+      if (vaultContracts.length === 0) return [];
 
       const promises = vaultContracts.map(v =>
         CURATORS_LIMIT(() =>
           v.contract.getCurator().then(curator => ({
-            vaultAddress: v.address,
             curator: getAddress(curator),
+            vaultAddress: v.address,
           }))
         )
       );
@@ -195,16 +197,17 @@ export function useVaults() {
 
       return curators;
     },
+    queryKey: qKeys.curators(addressKey, chainId),
     staleTime: 60 * 60 * 1000,
-    gcTime: 2 * 60 * 60 * 1000,
   });
 
   const totalAssetsByVault = useMemo(() => {
     const m = new Map<Address, bigint>();
 
-    rawTotalAssetQueries.data?.forEach(({ vaultAddress, totalAssets }) => {
-      m.set(vaultAddress, totalAssets);
-    });
+    if (rawTotalAssetQueries.data)
+      for (const { totalAssets, vaultAddress } of rawTotalAssetQueries.data) {
+        m.set(vaultAddress, totalAssets);
+      }
 
     return m;
   }, [rawTotalAssetQueries.data]);
@@ -214,7 +217,7 @@ export function useVaults() {
   const limitsByVault = useMemo(() => {
     const m = new Map<Address, { maxDeposit?: bigint; maxWithdraw?: bigint }>();
 
-    limits?.forEach(l => m.set(l.vaultAddress, l));
+    if (limits) for (const l of limits) m.set(l.vaultAddress, l);
 
     return m;
   }, [limits]);
@@ -222,9 +225,10 @@ export function useVaults() {
   const availableLiquidityByVault = useMemo(() => {
     const m = new Map<Address, bigint>();
 
-    availableLiquidityQuery.data?.forEach(({ vaultAddress, liquidity }) => {
-      m.set(vaultAddress, liquidity);
-    });
+    if (availableLiquidityQuery.data)
+      for (const { liquidity, vaultAddress } of availableLiquidityQuery.data) {
+        m.set(vaultAddress, liquidity);
+      }
 
     return m;
   }, [availableLiquidityQuery.data]);
@@ -232,9 +236,10 @@ export function useVaults() {
   const curatorsByVault = useMemo(() => {
     const m = new Map<Address, Address>();
 
-    curatorsQuery.data?.forEach(({ vaultAddress, curator }) => {
-      m.set(vaultAddress, curator);
-    });
+    if (curatorsQuery.data)
+      for (const { curator, vaultAddress } of curatorsQuery.data) {
+        m.set(vaultAddress, curator);
+      }
 
     return m;
   }, [curatorsQuery.data]);
@@ -242,7 +247,7 @@ export function useVaults() {
   const vaults: VaultFullInfo[] = useMemo(() => {
     if (!chainId) return [];
 
-    if (!vaultContracts.length) return [];
+    if (vaultContracts.length === 0) return [];
 
     if (rawTotalAssetQueries.isPending) return [];
     if (rawTotalAssetQueries.isError) return [];
@@ -253,15 +258,15 @@ export function useVaults() {
     if (curatorsQuery.isPending) return [];
     if (curatorsQuery.isError) return [];
 
-    if (!totalAssetsByVault.size) return [];
-    if (!availableLiquidityByVault.size) return [];
-    if (!curatorsByVault.size) return [];
+    if (totalAssetsByVault.size === 0) return [];
+    if (availableLiquidityByVault.size === 0) return [];
+    if (curatorsByVault.size === 0) return [];
 
     return vaultContracts.map(v => ({
       ...v,
-      totalAssets: totalAssetsByVault.get(v.address),
       availableLiquidity: availableLiquidityByVault.get(v.address) ?? 0n,
       curator: curatorsByVault.get(v.address),
+      totalAssets: totalAssetsByVault.get(v.address),
     }));
   }, [
     vaultContracts,
@@ -313,19 +318,19 @@ export function useVaults() {
   };
 
   return {
-    vaults,
     invalidate,
-    isPending,
-    vaultLimits,
     isLoading,
-    vaultsAssetsList,
+    isPending,
     refetch: () => {
       refetch();
       availableLiquidityQuery.refetch();
     },
-    refetchTotalAssets: () =>
-      qc.refetchQueries({ queryKey: qKeys.totalAssets(addressKey, chainId) }),
     refetchLimits: () =>
       qc.refetchQueries({ queryKey: qKeys.limits(addressKey, chainId, owner) }),
+    refetchTotalAssets: () =>
+      qc.refetchQueries({ queryKey: qKeys.totalAssets(addressKey, chainId) }),
+    vaultLimits,
+    vaults,
+    vaultsAssetsList,
   };
 }

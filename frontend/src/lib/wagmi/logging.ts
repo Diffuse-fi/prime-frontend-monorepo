@@ -1,7 +1,9 @@
 "use client";
 
 import { watchAccount } from "@wagmi/core";
+
 import { config } from "@/lib/wagmi/config";
+
 import { walletLogger } from "../core/utils/loggers";
 
 export function installWagmiWatchers() {
@@ -9,8 +11,8 @@ export function installWagmiWatchers() {
     onChange(acct, prev) {
       walletLogger.info("account change", {
         from: prev?.address,
-        to: acct.address,
         status: acct.status,
+        to: acct.address,
       });
     },
   });

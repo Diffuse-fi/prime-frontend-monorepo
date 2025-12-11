@@ -1,28 +1,36 @@
-import { useMemo, useState } from "react";
-import { getAddress, type Address, type Hash } from "viem";
-import { useClients } from "../../wagmi/useClients";
 import type { TxInfo, TxState, VaultFullInfo } from "../types";
+
+import { applySlippageBpsArray } from "@diffuse/sdk-js";
 import { useMutation } from "@tanstack/react-query";
-import { opt, qk } from "../../query/helpers";
-import { QV } from "../../query/versions";
 import { produce } from "immer";
+import { useMemo, useState } from "react";
+import { type Address, getAddress, type Hash } from "viem";
+
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 import { getSlippageBpsFromKey } from "@/lib/formulas/slippage";
+
+import { opt, qk } from "../../query/helpers";
+import { QV } from "../../query/versions";
+import { useClients } from "../../wagmi/useClients";
 import { isUserRejectedError } from "../utils/errors";
 import { borrowLogger, loggerMut } from "../utils/loggers";
-import { applySlippageBpsArray } from "@diffuse/sdk-js";
+
+export type BorrowResult = {
+  error?: Error;
+  hash?: Hash;
+};
 
 export type SelectedBorrow = {
-  chainId: number;
   address: Address;
-  strategyId: bigint;
-  collateralType: number;
-  collateralAmount: bigint;
-  assetsToBorrow: bigint;
-  slippage: string;
-  deadline: bigint;
   assetDecimals?: number;
+  assetsToBorrow: bigint;
   assetSymbol?: string;
+  chainId: number;
+  collateralAmount: bigint;
+  collateralType: number;
+  deadline: bigint;
+  slippage: string;
+  strategyId: bigint;
 };
 
 export type UseBorrowParams = {
@@ -31,19 +39,14 @@ export type UseBorrowParams = {
   onBorrowSuccess?: (vaultAddress: Address, hash: Hash) => void;
 };
 
-export type BorrowResult = {
-  hash?: Hash;
-  error?: Error;
-};
-
 export type UseBorrowResult = {
-  borrow: () => Promise<BorrowResult>;
-  reset: () => void;
-  txState: TxState;
   allConfirmed: boolean;
-  someError: boolean;
-  someAwaitingSignature: boolean;
+  borrow: () => Promise<BorrowResult>;
   isPending: boolean;
+  reset: () => void;
+  someAwaitingSignature: boolean;
+  someError: boolean;
+  txState: TxState;
 };
 
 const ROOT = "borrow" as const;
@@ -53,34 +56,15 @@ const qKeys = {
     qk([ROOT, version, opt(chainId), opt(address)]),
 };
 
-function makeIdemKey(
-  chainId: number,
-  vault: Address,
-  wallet: Address,
-  v: SelectedBorrow
-) {
-  return [
-    chainId,
-    vault.toLowerCase(),
-    wallet.toLowerCase(),
-    v.strategyId.toString(),
-    v.collateralType.toString(),
-    v.collateralAmount.toString(),
-    v.assetsToBorrow.toString(),
-    v.slippage.toString(),
-    v.deadline.toString(),
-  ].join(":");
-}
-
 export function useBorrow(
-  selected: SelectedBorrow | null,
-  vault: VaultFullInfo | null,
+  selected: null | SelectedBorrow,
+  vault: null | VaultFullInfo,
   { onBorrowComplete, onBorrowError, onBorrowSuccess }: UseBorrowParams = {}
 ): UseBorrowResult {
   const [txState, setTxState] = useState<TxState>({});
-  const [pendingKey, setPendingKey] = useState<string | null>(null);
+  const [pendingKey, setPendingKey] = useState<null | string>(null);
 
-  const { chainId, address: wallet, publicClient } = useClients();
+  const { address: wallet, chainId, publicClient } = useClients();
 
   const enabled =
     !!selected &&
@@ -103,7 +87,6 @@ export function useBorrow(
     );
 
   const borrowMutation = useMutation({
-    mutationKey: qKeys.borrow(chainId, addr),
     mutationFn: async (): Promise<BorrowResult> => {
       const result: BorrowResult = {};
 
@@ -119,7 +102,7 @@ export function useBorrow(
 
       if (selected.collateralAmount <= 0n) {
         const e = new Error("Collateral must be greater than zero");
-        setPhase(addr, { phase: "error", errorMessage: e.message });
+        setPhase(addr, { errorMessage: e.message, phase: "error" });
         result.error = e;
         onBorrowError?.(e.message, addr);
         onBorrowComplete?.(result);
@@ -127,7 +110,7 @@ export function useBorrow(
       }
       if (selected.assetsToBorrow <= 0n) {
         const e = new Error("Borrow amount must be greater than zero");
-        setPhase(addr, { phase: "error", errorMessage: e.message });
+        setPhase(addr, { errorMessage: e.message, phase: "error" });
         result.error = e;
         onBorrowError?.(e.message, addr);
         onBorrowComplete?.(result);
@@ -144,7 +127,7 @@ export function useBorrow(
         const strategy = vault.strategies.find(s => s.id === selected.strategyId);
         if (!strategy) {
           const e = new Error("Strategy not found");
-          setPhase(addr, { phase: "error", errorMessage: e.message });
+          setPhase(addr, { errorMessage: e.message, phase: "error" });
           result.error = e;
           onBorrowError?.(e.message, addr);
           borrowLogger.warn("borrow error", { address: addr, reason: e.message });
@@ -219,24 +202,24 @@ export function useBorrow(
           selected.deadline,
         ]);
 
-        setPhase(addr, { phase: "pending", hash });
+        setPhase(addr, { hash, phase: "pending" });
         result.hash = hash;
 
         const receipt = await publicClient!.waitForTransactionReceipt({
           hash,
           onReplaced: r => {
-            setPhase(addr, { phase: "replaced", hash: r.transaction.hash });
+            setPhase(addr, { hash: r.transaction.hash, phase: "replaced" });
             result.hash = r.transaction.hash;
           },
         });
 
         if (receipt.status === "success") {
-          setPhase(addr, { phase: "success", hash: receipt.transactionHash });
+          setPhase(addr, { hash: receipt.transactionHash, phase: "success" });
           result.hash = receipt.transactionHash;
           onBorrowSuccess?.(addr, receipt.transactionHash);
         } else {
           const e = new Error("Transaction reverted");
-          setPhase(addr, { phase: "error", errorMessage: e.message });
+          setPhase(addr, { errorMessage: e.message, phase: "error" });
           result.error = e;
           onBorrowError?.(e.message, addr);
           borrowLogger.warn("borrow error", { address: addr, reason: e.message });
@@ -249,13 +232,13 @@ export function useBorrow(
         }
 
         const e = error instanceof Error ? error : new Error("Unknown error");
-        setPhase(addr, { phase: "error", errorMessage: e.message });
+        setPhase(addr, { errorMessage: e.message, phase: "error" });
         result.error = e;
         onBorrowError?.(e.message, addr);
         loggerMut.error("mutation error (borrow)", {
-          mutationKey: qKeys.borrow(chainId, addr),
           address: addr,
           error: e,
+          mutationKey: qKeys.borrow(chainId, addr),
         });
       } finally {
         setPendingKey(k => (k === idemKey ? null : k));
@@ -264,6 +247,7 @@ export function useBorrow(
 
       return result;
     },
+    mutationKey: qKeys.borrow(chainId, addr),
   });
 
   const borrow = borrowMutation.mutateAsync;
@@ -284,12 +268,31 @@ export function useBorrow(
   };
 
   return {
-    borrow,
-    reset,
-    txState,
     allConfirmed,
-    someError,
-    someAwaitingSignature,
+    borrow,
     isPending: borrowMutation.isPending,
+    reset,
+    someAwaitingSignature,
+    someError,
+    txState,
   };
+}
+
+function makeIdemKey(
+  chainId: number,
+  vault: Address,
+  wallet: Address,
+  v: SelectedBorrow
+) {
+  return [
+    chainId,
+    vault.toLowerCase(),
+    wallet.toLowerCase(),
+    v.strategyId.toString(),
+    v.collateralType.toString(),
+    v.collateralAmount.toString(),
+    v.assetsToBorrow.toString(),
+    v.slippage.toString(),
+    v.deadline.toString(),
+  ].join(":");
 }

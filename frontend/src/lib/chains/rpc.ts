@@ -1,4 +1,5 @@
 import { getAddress } from "viem";
+
 import { getAvailableChains } from ".";
 
 export const customRpcMap: Record<number, string[]> = {
@@ -6,11 +7,6 @@ export const customRpcMap: Record<number, string[]> = {
     "https://ethereum.publicnode.com",
   ],
 };
-
-export function getCustomRpcUrls(): string[] {
-  const urls = Object.values(customRpcMap).flat();
-  return Array.from(new Set(urls));
-}
 
 export function getContractExplorerUrl(chainId: number, contractAddress: string) {
   const normalized = getAddress(contractAddress);
@@ -21,4 +17,9 @@ export function getContractExplorerUrl(chainId: number, contractAddress: string)
   if (!rpcUrl) return null;
 
   return `${rpcUrl.replace(/\/$/, "")}/address/${normalized}`;
+}
+
+export function getCustomRpcUrls(): string[] {
+  const urls = Object.values(customRpcMap).flat();
+  return [...new Set(urls)];
 }

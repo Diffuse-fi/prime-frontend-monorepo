@@ -1,68 +1,69 @@
-import { AssetImage } from "@/components/misc/images/AssetImage";
 import { AssetInfo } from "@diffuse/config";
-import { Skeleton, AssetCard, RadioGroup, RadioGroupItem, cn } from "@diffuse/ui-kit";
+import { AssetCard, cn, RadioGroup, RadioGroupItem, Skeleton } from "@diffuse/ui-kit";
 import { RadioGroupProps } from "@diffuse/ui-kit/RadioGroup";
+
+import { AssetImage } from "@/components/misc/images/AssetImage";
+
+interface AssetsListProps {
+  className?: string;
+  direction?: RadioGroupProps["dir"];
+  isLoading?: boolean;
+  onSelectAsset?: (asset: AssetInfo) => void;
+  options: Option[];
+  selectedAsset?: AssetInfo | null;
+  skeletonsToShow?: number;
+}
 
 type Option = AssetInfo;
 
-interface AssetsListProps {
-  selectedAsset?: AssetInfo | null;
-  onSelectAsset?: (asset: AssetInfo) => void;
-  options: Option[];
-  isLoading?: boolean;
-  skeletonsToShow?: number;
-  direction?: RadioGroupProps["dir"];
-  className?: string;
-}
-
 export function AssetsList({
-  selectedAsset,
+  className,
+  direction,
+  isLoading,
   onSelectAsset,
   options,
-  isLoading,
+  selectedAsset,
   skeletonsToShow = 4,
-  direction,
-  className,
 }: AssetsListProps) {
   return (
     <RadioGroup
-      className={cn("grid-cols-4", className)}
       aria-label="Select an asset"
+      className={cn("grid-cols-4", className)}
       dir={direction}
-      value={selectedAsset?.address}
       onValueChange={value => {
         const asset = options.find(option => option.address === value);
         if (asset) {
           onSelectAsset?.(asset);
         }
       }}
+      value={selectedAsset?.address}
     >
       {isLoading
         ? Array.from({ length: skeletonsToShow }).map((_, i) => (
-            <Skeleton key={i} className="h-13" />
+            <Skeleton className="h-13" key={i} />
           ))
         : options.map(option => (
             <RadioGroupItem
+              className="w-fit rounded-xl"
               key={option.address}
               value={option.address}
-              className="w-fit rounded-xl"
             >
               <AssetCard
-                symbol={option.symbol}
+                className="h-13 px-2"
+                onClick={() => onSelectAsset?.(option)}
                 renderImage={({ alt, className }) => (
                   <AssetImage
-                    imgURI={option.logoURI}
+                    address={option.address}
                     alt={alt}
                     className={className}
-                    address={option.address}
+                    imgURI={option.logoURI}
                     size={24}
                   />
                 )}
+                symbol={option.symbol}
                 variant={
                   selectedAsset?.address === option.address ? "accented" : "default"
                 }
-                className="h-13 px-2"
-                onClick={() => onSelectAsset?.(option)}
               />
             </RadioGroupItem>
           ))}

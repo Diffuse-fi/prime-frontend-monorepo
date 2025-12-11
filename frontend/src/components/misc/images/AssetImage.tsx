@@ -1,39 +1,41 @@
-import { stableSeedForAddress } from "@/lib/misc/jazzIcons";
 import { cn } from "@diffuse/ui-kit";
-import { getAddress, Address } from "viem";
+import { Address, getAddress } from "viem";
+
+import { stableSeedForAddress } from "@/lib/misc/jazzIcons";
+
 import { ImageWithJazziconFallback } from "./ImageWithJazziconFallback";
 
 type AssetImageProps = {
-  className?: string;
-  size?: number;
-  imgURI?: string;
   address: Address;
   alt: string;
+  className?: string;
+  imgURI?: string;
+  size?: number;
 };
 
 export function AssetImage({
   address,
-  size = 32,
-  imgURI,
-  className,
   alt,
+  className,
+  imgURI,
+  size = 32,
 }: AssetImageProps) {
   const seed = stableSeedForAddress(getAddress(address));
 
   return (
     <div
       className={cn("bg-transparent", className)}
-      style={{ width: size, height: size }}
+      style={{ height: size, width: size }}
     >
       <ImageWithJazziconFallback
-        src={imgURI}
         alt={alt}
-        size={size}
         className="h-full w-full object-cover"
-        jazziconSeed={seed}
-        fetchPriority="low"
         decoding="async"
+        fetchPriority="low"
+        jazziconSeed={seed}
         loading="lazy"
+        size={size}
+        src={imgURI}
       />
     </div>
   );

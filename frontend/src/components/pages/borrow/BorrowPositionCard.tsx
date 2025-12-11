@@ -1,14 +1,6 @@
 "use client";
 
-import { AppLink } from "@/components/misc/AppLink";
-import { AssetImage } from "@/components/misc/images/AssetImage";
-import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
-import { getStableChainMeta } from "@/lib/chains/meta";
-import { getContractExplorerUrl } from "@/lib/chains/rpc";
-import { BorrowerPosition, Strategy } from "@/lib/core/types";
-import { formatEvmAddress, formatUnits } from "@/lib/formatters/asset";
-import { formatAprToPercent } from "@/lib/formatters/finance";
-import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
+import { AssetInfo } from "@diffuse/config";
 import {
   Button,
   Card,
@@ -19,81 +11,91 @@ import {
 } from "@diffuse/ui-kit";
 import { ExternalLink } from "lucide-react";
 import { useChainId } from "wagmi";
+
+import { AppLink } from "@/components/misc/AppLink";
+import { AssetImage } from "@/components/misc/images/AssetImage";
+import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
+import { getStableChainMeta } from "@/lib/chains/meta";
+import { getContractExplorerUrl } from "@/lib/chains/rpc";
+import { BorrowerPosition, Strategy } from "@/lib/core/types";
+import { formatEvmAddress, formatUnits } from "@/lib/formatters/asset";
+import { formatAprToPercent } from "@/lib/formatters/finance";
+import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
+
 import { PositionDetails } from "./PositionDetails";
-import { AssetInfo } from "@diffuse/config";
 
 export interface BorrowerPositionCardProps {
-  selectedAsset: AssetInfo;
-  position: BorrowerPosition;
   className?: string;
-  onManagePositionBtnClick?: () => void;
   disabled?: boolean;
+  onManagePositionBtnClick?: () => void;
+  position: BorrowerPosition;
+  selectedAsset: AssetInfo;
   strategy: Strategy;
 }
 
 export function BorrowerPositionCard({
   className,
-  position,
-  onManagePositionBtnClick,
   disabled,
+  onManagePositionBtnClick,
+  position,
   selectedAsset,
   strategy,
 }: BorrowerPositionCardProps) {
   const {
-    strategyBalance,
-    assetsBorrowed,
     asset: strategyAsset,
-    leverage,
-    liquidationPrice,
+    assetsBorrowed,
     collateralGiven,
     collateralType,
     enterTimeOrDeadline,
+    leverage,
+    liquidationPrice,
+    strategyBalance,
   } = position;
   const chainId = useChainId();
   const { apr } = strategy;
   const explorerUrl = getContractExplorerUrl(chainId, position.vault.address);
-  const { iconUrl, iconBackground } = getStableChainMeta(chainId);
+  const { iconBackground, iconUrl } = getStableChainMeta(chainId);
   const collateralAsset = collateralType === 0 ? selectedAsset : strategyAsset;
 
   return (
     <Card
-      className={cn("h-fit", className)}
       cardBodyClassName="gap-4"
+      className={cn("h-fit", className)}
       header={
         <div className="flex items-center justify-start gap-4">
           <AssetImage
+            address={strategyAsset.address}
             alt=""
             imgURI={strategyAsset.logoURI}
-            address={strategyAsset.address}
             size={24}
           />
           <div className="flex flex-col items-start">
-            <Heading level="4" className="font-semibold">
+            <Heading className="font-semibold" level="4">
               {strategyAsset.symbol}
             </Heading>
             <span className="font-mono text-xs">{strategy.name}</span>
           </div>
           <div className="bg-muted/15 ml-auto flex size-8 items-center justify-center rounded-full">
             <ImageWithJazziconFallback
-              src={iconUrl}
               alt=""
-              size={20}
               className="object-cover"
+              decoding="async"
+              fetchPriority="low"
+              jazziconSeed={stableSeedForChainId(chainId)}
+              size={20}
+              src={iconUrl}
               style={{
                 background: iconBackground || "transparent",
               }}
-              fetchPriority="low"
-              decoding="async"
-              jazziconSeed={stableSeedForChainId(chainId)}
             />
           </div>
           {explorerUrl && (
             <AppLink
-              href={explorerUrl}
               className="text-text-dimmed bg-muted/15 hover:bg-muted/20 flex h-8 items-center gap-3 rounded-md p-2 text-sm text-nowrap transition-colors"
+              href={explorerUrl}
             >
               {formatEvmAddress(position.vault.address)}
-              <ExternalLink size={20} className="" />
+              <ExternalLink className="" size={20} />
             </AppLink>
           )}
         </div>
@@ -114,58 +116,58 @@ export function BorrowerPositionCard({
         </div>
       </div>
       <SimpleTable
-        className="px-10"
-        density="comfy"
         aria-label="Position details"
+        className="px-10"
         columns={[
-          <div key="key" className="font-mono text-xs">
+          <div className="font-mono text-xs" key="key">
             Position
           </div>,
           <div key="key2"></div>,
         ]}
+        density="comfy"
         rows={[
           [
             <div key="row-1-1">Total balance</div>,
-            <div key="row-1-2" className="text-right">
+            <div className="text-right" key="row-1-2">
               {formatUnits(strategyBalance, strategyAsset.decimals).text}{" "}
               {strategyAsset.symbol}
             </div>,
           ],
           [
             <div key="row-1-1">Total debt</div>,
-            <div key="row-1-2" className="text-right">
+            <div className="text-right" key="row-1-2">
               {formatUnits(assetsBorrowed, selectedAsset.decimals).text}{" "}
               {selectedAsset.symbol}
             </div>,
           ],
           [
             <div key="row-1-1">Collateral</div>,
-            <div key="row-1-2" className="text-right">
+            <div className="text-right" key="row-1-2">
               {formatUnits(collateralGiven, collateralAsset.decimals).text}{" "}
               {collateralAsset.symbol}
             </div>,
           ],
         ]}
       />
-      <UncontrolledCollapsible summary="Position details" className="mt-2 px-10 md:mt-4">
+      <UncontrolledCollapsible className="mt-2 px-10 md:mt-4" summary="Position details">
         <PositionDetails
-          strategy={strategy}
-          selectedAsset={selectedAsset}
-          liquidationPrice={liquidationPrice}
-          enterTimeOrDeadline={enterTimeOrDeadline}
           collateralGiven={collateralGiven}
+          enterTimeOrDeadline={enterTimeOrDeadline}
           leverage={leverage}
-          spreadFee={position.vault.feeData.spreadFee}
-          loadingLiquidationPrice={false}
-          liquidationPriceLoadingError={undefined}
           liquidationPenalty={position.vault.feeData.liquidationFee}
+          liquidationPrice={liquidationPrice}
+          liquidationPriceLoadingError={undefined}
+          loadingLiquidationPrice={false}
+          selectedAsset={selectedAsset}
+          spreadFee={position.vault.feeData.spreadFee}
+          strategy={strategy}
         />
       </UncontrolledCollapsible>
       <Button
-        disabled={disabled}
-        size="lg"
         className="mx-auto mt-6"
+        disabled={disabled}
         onClick={onManagePositionBtnClick}
+        size="lg"
       >
         Manage position
       </Button>

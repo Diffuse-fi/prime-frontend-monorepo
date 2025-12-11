@@ -1,5 +1,6 @@
-import localizationSettings from "@/localization.json" with { type: "json" };
 import { Locale } from "next-intl";
+
+import localizationSettings from "@/localization.json" with { type: "json" };
 
 export const SUPPORTED_LOCALES = localizationSettings.supported;
 export const DEFAULT_LOCALE: Locale = localizationSettings.default;

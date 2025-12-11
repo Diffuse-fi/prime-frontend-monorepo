@@ -1,24 +1,27 @@
-import { useMemo } from "react";
-import { getAddress, type Address } from "viem";
-import { useQuery } from "@tanstack/react-query";
-import { useClients } from "../../wagmi/useClients";
 import type { VaultFullInfo } from "../types";
-import { QV } from "../../query/versions";
-import { opt, qk } from "../../query/helpers";
-import { calcBorrowingFactor } from "@/lib/formulas/borrow";
+
 import { Viewer } from "@diffuse/sdk-js";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { type Address, getAddress } from "viem";
+
+import { calcBorrowingFactor } from "@/lib/formulas/borrow";
+
+import { opt, qk } from "../../query/helpers";
+import { QV } from "../../query/versions";
+import { useClients } from "../../wagmi/useClients";
 
 export type SelectedBorrow = {
-  chainId: number;
   address: Address;
-  strategyId: bigint;
-  collateralType: number;
-  collateralAmount: bigint;
-  assetsToBorrow: bigint;
-  slippage: string;
-  deadline: bigint;
   assetDecimals: number;
+  assetsToBorrow: bigint;
   assetSymbol?: string;
+  chainId: number;
+  collateralAmount: bigint;
+  collateralType: number;
+  deadline: bigint;
+  slippage: string;
+  strategyId: bigint;
 };
 
 const ROOT = "borrowPreview" as const;
@@ -29,16 +32,16 @@ const mulWad = (x: bigint, y: bigint) => (x * y) / WAD;
 const divWad = (x: bigint, y: bigint) => (x * WAD) / y;
 
 export function useBorrowPreview(
-  selected: SelectedBorrow | null,
-  vault: VaultFullInfo | null
+  selected: null | SelectedBorrow,
+  vault: null | VaultFullInfo
 ) {
-  const { chainId, address: wallet, publicClient } = useClients();
+  const { address: wallet, chainId, publicClient } = useClients();
 
   const viewer = useMemo(() => {
     if (!publicClient || !chainId) return null;
     return new Viewer({
-      client: { public: publicClient },
       chainId,
+      client: { public: publicClient },
     });
   }, [publicClient, chainId]);
 
@@ -73,15 +76,12 @@ export function useBorrowPreview(
     [addr, chainId, selected]
   );
 
-  const { data, isLoading, isPending, isFetching, error } = useQuery({
-    queryKey,
+  const { data, error, isFetching, isLoading, isPending } = useQuery({
     enabled,
-    staleTime: 0,
     gcTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
     queryFn: async ({ signal }) => {
       if (!enabled || !selected || !vault || !wallet || !viewer) {
-        return { predictedTokensToReceive: undefined, liquidationPriceWad: undefined };
+        return { liquidationPriceWad: undefined, predictedTokensToReceive: undefined };
       }
 
       const strategy = vault.strategies.find(s => s.id === selected.strategyId);
@@ -96,9 +96,9 @@ export function useBorrowPreview(
       console.log("previewEnterStrategy", baseAssetAmount, strategyAssetAmount);
 
       const baseAssetUnits =
-        (baseAssetAmount * 1000000n) / 10n ** BigInt(selected.assetDecimals);
+        (baseAssetAmount * 1_000_000n) / 10n ** BigInt(selected.assetDecimals);
       const strategyAssetUnits =
-        (strategyAssetAmount * 1000000n) / 10n ** BigInt(strategy.token.decimals);
+        (strategyAssetAmount * 1_000_000n) / 10n ** BigInt(strategy.token.decimals);
 
       const price =
         baseAssetUnits === 0n ? 0 : Number(strategyAssetUnits) / Number(baseAssetUnits);
@@ -113,7 +113,7 @@ export function useBorrowPreview(
       const denom = selected.collateralAmount + selected.assetsToBorrow;
 
       if (denom === 0n) {
-        return { predictedTokensToReceive, liquidationPriceWad: 0n };
+        return { liquidationPriceWad: 0n, predictedTokensToReceive };
       }
 
       const assetDec = selected.assetDecimals;
@@ -152,16 +152,19 @@ export function useBorrowPreview(
           ? 0n
           : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
 
-      return { predictedTokensToReceive, liquidationPriceWad };
+      return { liquidationPriceWad, predictedTokensToReceive };
     },
+    queryKey,
+    refetchOnWindowFocus: false,
+    staleTime: 0,
   });
 
   return {
-    predictedTokensToReceive: data?.predictedTokensToReceive,
-    liquidationPriceWad: data?.liquidationPriceWad,
+    error: error ?? null,
+    isFetching,
     isLoading,
     isPending,
-    isFetching,
-    error: error ?? null,
+    liquidationPriceWad: data?.liquidationPriceWad,
+    predictedTokensToReceive: data?.predictedTokensToReceive,
   };
 }

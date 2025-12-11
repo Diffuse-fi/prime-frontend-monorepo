@@ -1,35 +1,36 @@
 "use client";
 
-import * as React from "react";
 import { Button, Dialog } from "@diffuse/ui-kit";
+import { cn } from "@diffuse/ui-kit/cn";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import * as React from "react";
 import { Chain } from "viem";
 import { useAccount, useChains, useSwitchChain } from "wagmi";
-import { cn } from "@diffuse/ui-kit/cn";
+
 import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
 import { getStableChainMeta } from "@/lib/chains/meta";
-import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
-import { useTranslations } from "next-intl";
 import { useReadonlyChainActions } from "@/lib/chains/ReadonlyChainContext";
+import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
 
 type ChainSwitchModalProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   currentChain?: Chain | null;
+  onOpenChange: (open: boolean) => void;
   onSwitched?: (args: { from?: Chain | null; to: Chain }) => void;
+  open: boolean;
   title?: React.ReactNode;
 };
 
 export function ChainSwitchModal({
-  open,
-  onOpenChange,
   currentChain,
+  onOpenChange,
   onSwitched,
+  open,
   title = "Switch network",
 }: ChainSwitchModalProps) {
   const chains = useChains();
   const { isConnected } = useAccount();
-  const { switchChainAsync, isPending, variables } = useSwitchChain();
+  const { isPending, switchChainAsync, variables } = useSwitchChain();
   const { setReadonlyChainId } = useReadonlyChainActions();
   const t = useTranslations("common.navbar");
 
@@ -55,45 +56,45 @@ export function ChainSwitchModal({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange} title={title} size="sm">
+    <Dialog onOpenChange={onOpenChange} open={open} size="sm" title={title}>
       <ul className="space-y-2">
         {chains.map(c => {
           const isActive = currentChain?.id === c.id;
-          const { iconUrl, iconBackground } = getStableChainMeta(c.id);
+          const { iconBackground, iconUrl } = getStableChainMeta(c.id);
           const isThisPending = isPending && variables?.chainId === c.id;
 
           return (
             <li key={c.id}>
               <Button
-                type="button"
-                variant="ghost"
+                aria-current={isActive ? "true" : undefined}
                 className={cn(
                   "w-full justify-start gap-3 font-semibold",
                   isActive && "bg-border hover:bg-border"
                 )}
-                onClick={() => !isActive && handleSwitch(c)}
                 disabled={isActive || isPending}
-                aria-current={isActive ? "true" : undefined}
+                onClick={() => !isActive && handleSwitch(c)}
+                type="button"
+                variant="ghost"
               >
                 <ImageWithJazziconFallback
-                  src={iconUrl}
                   alt={c.name}
-                  size={20}
                   className="rounded-full object-cover"
-                  style={{ background: iconBackground || "transparent" }}
-                  jazziconSeed={stableSeedForChainId(c.id)}
                   decoding="async"
                   fetchPriority="low"
+                  jazziconSeed={stableSeedForChainId(c.id)}
+                  size={20}
+                  src={iconUrl}
+                  style={{ background: iconBackground || "transparent" }}
                 />
 
                 <span className="flex-1 text-left">{c.name}</span>
 
                 {isThisPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" aria-label="Switching…" />
+                  <Loader2 aria-label="Switching…" className="h-4 w-4 animate-spin" />
                 ) : isActive ? (
                   <div className="flex items-center gap-1">
                     <span className="text-sm">{t("connected")}</span>
-                    <div className="bg-success size-2 rounded-full" aria-hidden />
+                    <div aria-hidden className="bg-success size-2 rounded-full" />
                   </div>
                 ) : null}
               </Button>

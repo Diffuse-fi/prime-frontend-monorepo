@@ -1,30 +1,31 @@
-import pLimit from "p-limit";
-import { LenderPosition, VaultFullInfo } from "../types";
-import { QV } from "../../query/versions";
-import { opt, qk } from "../../query/helpers";
-import { useMemo } from "react";
-import { useClients } from "../../wagmi/useClients";
 import { useQuery } from "@tanstack/react-query";
+import pLimit from "p-limit";
+import { useMemo } from "react";
+
+import { opt, qk } from "../../query/helpers";
+import { QV } from "../../query/versions";
+import { useClients } from "../../wagmi/useClients";
+import { LenderPosition, VaultFullInfo } from "../types";
 
 export type UseLenderPositionsResult = {
-  positions: LenderPosition[];
+  error: Error | null;
   isLoading: boolean;
   isPending: boolean;
+  positions: LenderPosition[];
   refetch: () => void;
-  error: Error | null;
 };
 
 const ROOT = "lender-positions";
 const version = QV.lenderPositions;
 const qKeys = {
-  positions: (vaultsAddrkey: string | null, chainId: number, ownerAddr?: string) =>
+  positions: (vaultsAddrkey: null | string, chainId: number, ownerAddr?: string) =>
     qk([ROOT, version, opt(vaultsAddrkey), chainId, opt(ownerAddr)]),
 };
 
 const LIMIT = pLimit(6);
 
 export function useLenderPositions(allVaults: VaultFullInfo[]) {
-  const { chainId, address: lender, publicClient } = useClients();
+  const { address: lender, chainId, publicClient } = useClients();
   const vaultsConsistency = allVaults.every(v => v.contract.chainId === chainId);
   const addressKey = useMemo(() => {
     if (!allVaults?.length) return null;
@@ -44,7 +45,7 @@ export function useLenderPositions(allVaults: VaultFullInfo[]) {
 
   const positionsQueries = useQuery({
     enabled,
-    queryKey: qKeys.positions(addressKey, chainId, lender),
+    gcTime: 1000 * 60 * 10,
     queryFn: async ({ signal }) => {
       const tasks = allVaults.map(vault =>
         LIMIT(async () => {
@@ -64,18 +65,18 @@ export function useLenderPositions(allVaults: VaultFullInfo[]) {
           }
 
           return {
-            vault: vault,
+            accruedYield: accruedYieldData[0],
             asset: vault.assets[0],
             balance,
-            accruedYield: accruedYieldData[0],
+            vault: vault,
           };
         })
       );
 
       return Promise.all(tasks);
     },
+    queryKey: qKeys.positions(addressKey, chainId, lender),
     staleTime: 1000 * 30,
-    gcTime: 1000 * 60 * 10,
   });
 
   const positions =
@@ -84,10 +85,10 @@ export function useLenderPositions(allVaults: VaultFullInfo[]) {
       : [];
 
   return {
-    positions,
+    error: positionsQueries.error,
     isLoading: positionsQueries.isLoading,
     isPending: positionsQueries.isPending,
+    positions,
     refetch: positionsQueries.refetch,
-    error: positionsQueries.error,
   };
 }

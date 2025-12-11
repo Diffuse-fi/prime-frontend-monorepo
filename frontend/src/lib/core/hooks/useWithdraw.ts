@@ -1,34 +1,36 @@
-import { useMemo, useState } from "react";
-import { getAddress, type Address, type Hash } from "viem";
-import { useClients } from "../../wagmi/useClients";
 import type { TxInfo, TxState, VaultFullInfo, VaultLimits } from "../types";
+
 import { useMutation } from "@tanstack/react-query";
+import { produce } from "immer";
+import { useMemo, useState } from "react";
+import { type Address, getAddress, type Hash } from "viem";
+
+import { formatUnits } from "../../formatters/asset";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
-import { produce } from "immer";
-import { formatUnits } from "../../formatters/asset";
+import { useClients } from "../../wagmi/useClients";
 import { isUserRejectedError } from "../utils/errors";
 import { lendLogger, loggerMut } from "../utils/loggers";
 
 export type UseWithdrawParams = {
-  onWithdrawSuccess?: (vaultAddress: Address, hash: Hash) => void;
   onWithdrawError?: (errorMessage: string, address: Address) => void;
+  onWithdrawSuccess?: (vaultAddress: Address, hash: Hash) => void;
 };
 
 export type UseWithdrawResult = {
-  withdraw: (params: {
-    vaultAddress: Address;
-    amount: bigint;
-    receiverOverride?: Address;
-    ownerOverride?: Address;
-  }) => Promise<Hash | null>;
-
-  reset: () => void;
-  txState: TxState;
   allConfirmed: boolean;
-  someError: boolean;
-  someAwaitingSignature: boolean;
+
   isPending: boolean;
+  reset: () => void;
+  someAwaitingSignature: boolean;
+  someError: boolean;
+  txState: TxState;
+  withdraw: (params: {
+    amount: bigint;
+    ownerOverride?: Address;
+    receiverOverride?: Address;
+    vaultAddress: Address;
+  }) => Promise<Hash | null>;
 };
 
 const ROOT = "withdraw" as const;
@@ -45,24 +47,14 @@ const qKeys = {
     ]),
 };
 
-function makeIdemKey(
-  chainId: number,
-  vault: Address,
-  amount: bigint,
-  owner: Address,
-  receiver: Address
-) {
-  return `${chainId}:${vault.toLowerCase()}:${amount.toString()}:${owner.toLowerCase()}:${receiver.toLowerCase()}`;
-}
-
 export function useWithdraw(
   allVaults: VaultFullInfo[],
   vaultsLimits: VaultLimits[],
-  { onWithdrawSuccess, onWithdrawError }: UseWithdrawParams = {}
+  { onWithdrawError, onWithdrawSuccess }: UseWithdrawParams = {}
 ): UseWithdrawResult {
   const [txState, setTxState] = useState<TxState>({});
   const [pendingByKey, setPendingByKey] = useState<Record<string, true>>({});
-  const { chainId, address: wallet, publicClient } = useClients();
+  const { address: wallet, chainId, publicClient } = useClients();
 
   const vaultByAddr = useMemo(() => {
     const m = new Map<Address, VaultFullInfo>();
@@ -92,12 +84,11 @@ export function useWithdraw(
   const isKeyPending = (key: string) => Boolean(pendingByKey[key]);
 
   const mutation = useMutation({
-    mutationKey: qKeys.mutation(chainId, null, wallet ?? null),
     mutationFn: async (params: {
-      vaultAddress: Address;
       amount: bigint;
-      receiverOverride?: Address;
       ownerOverride?: Address;
+      receiverOverride?: Address;
+      vaultAddress: Address;
     }) => {
       if (!wallet || !publicClient || !chainId) return null;
 
@@ -128,14 +119,14 @@ export function useWithdraw(
         );
       }
       if (e) {
-        setPhase(address, { phase: "error", errorMessage: e.message });
+        setPhase(address, { errorMessage: e.message, phase: "error" });
         onWithdrawError?.(e.message, address);
         lendLogger.error("withdraw failed: validation error", {
-          vault: address,
           amount: assets.toString(),
-          receiver,
-          owner,
           error: e.message,
+          owner,
+          receiver,
+          vault: address,
         });
         return null;
       }
@@ -146,26 +137,26 @@ export function useWithdraw(
 
         const hash = await vault!.contract.withdraw([assets, receiver, owner]);
 
-        setPhase(address, { phase: "pending", hash });
+        setPhase(address, { hash, phase: "pending" });
 
         const receipt = await publicClient.waitForTransactionReceipt({
           hash,
           onReplaced: r => {
-            setPhase(address, { phase: "replaced", hash: r.transaction.hash });
+            setPhase(address, { hash: r.transaction.hash, phase: "replaced" });
           },
         });
 
         if (receipt.status === "success") {
-          setPhase(address, { phase: "success", hash: receipt.transactionHash });
+          setPhase(address, { hash: receipt.transactionHash, phase: "success" });
           onWithdrawSuccess?.(address, receipt.transactionHash);
           return receipt.transactionHash;
         } else {
           const err = new Error("Transaction reverted");
-          setPhase(address, { phase: "error", errorMessage: err.message });
+          setPhase(address, { errorMessage: err.message, phase: "error" });
           onWithdrawError?.(err.message, address);
           lendLogger.error("withdraw failed: transaction reverted", {
-            vault: address,
             hash,
+            vault: address,
           });
           return null;
         }
@@ -177,12 +168,12 @@ export function useWithdraw(
         }
 
         const err = error instanceof Error ? error : new Error("Unknown error");
-        setPhase(address, { phase: "error", errorMessage: err.message });
+        setPhase(address, { errorMessage: err.message, phase: "error" });
         onWithdrawError?.(err.message, address);
         loggerMut.error("mutation error (withdraw)", {
-          mutationKey: qKeys.mutation(chainId, address, wallet),
           address,
           error: err,
+          mutationKey: qKeys.mutation(chainId, address, wallet),
         });
 
         return null;
@@ -190,6 +181,7 @@ export function useWithdraw(
         clearKeyPending(idemKey);
       }
     },
+    mutationKey: qKeys.mutation(chainId, null, wallet ?? null),
   });
 
   const withdraw = mutation.mutateAsync;
@@ -209,12 +201,22 @@ export function useWithdraw(
   };
 
   return {
-    withdraw,
-    reset,
-    txState,
     allConfirmed,
-    someError,
-    someAwaitingSignature,
     isPending: mutation.isPending,
+    reset,
+    someAwaitingSignature,
+    someError,
+    txState,
+    withdraw,
   };
+}
+
+function makeIdemKey(
+  chainId: number,
+  vault: Address,
+  amount: bigint,
+  owner: Address,
+  receiver: Address
+) {
+  return `${chainId}:${vault.toLowerCase()}:${amount.toString()}:${owner.toLowerCase()}:${receiver.toLowerCase()}`;
 }

@@ -1,34 +1,36 @@
 "use client";
 
-import { usePathname } from "@/lib/localization/navigation";
 import { Nav, NavItem, NavProps } from "@diffuse/ui-kit";
+
+import { usePathname } from "@/lib/localization/navigation";
+
 import { AppLink } from "./AppLink";
+
+export type ClientNavigationProps = {
+  ariaLabel: string;
+  className?: string;
+  config?: NavigationConfig;
+  variant?: NavProps["variant"];
+};
 
 export type NavigationConfig = NavItem[];
 
-export type ClientNavigationProps = {
-  config?: NavigationConfig;
-  ariaLabel: string;
-  variant?: NavProps["variant"];
-  className?: string;
-};
-
 export function ClientNavigation({
-  config = [],
   ariaLabel,
-  variant = "default",
   className,
+  config = [],
+  variant = "default",
 }: ClientNavigationProps) {
   const pathname = usePathname();
 
   return (
     <Nav
-      className={className}
-      variant={variant}
-      pathname={pathname}
       aria-label={ariaLabel}
+      className={className}
       items={config}
+      pathname={pathname}
       renderLink={({ href, ...props }) => <AppLink href={href} {...props} />}
+      variant={variant}
     />
   );
 }

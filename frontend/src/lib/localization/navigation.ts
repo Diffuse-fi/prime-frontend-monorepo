@@ -1,5 +1,6 @@
 import { createNavigation } from "next-intl/navigation";
+
 import { localizationRouting } from "./routing";
 
-export const { Link, useRouter, usePathname, redirect, getPathname } =
+export const { getPathname, Link, redirect, usePathname, useRouter } =
   createNavigation(localizationRouting);

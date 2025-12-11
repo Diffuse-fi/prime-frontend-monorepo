@@ -3,8 +3,8 @@ import { useAccount, useChainId, usePublicClient, useWalletClient } from "wagmi"
 
 type Clients = {
   address?: Address;
-  isConnected: boolean;
   chainId: number;
+  isConnected: boolean;
   publicClient?: PublicClient;
   walletClient?: WalletClient;
 };
@@ -15,5 +15,5 @@ export function useClients(): Clients {
   const publicClient = usePublicClient({ chainId });
   const { data: walletClient } = useWalletClient({ chainId });
 
-  return { address, isConnected, chainId, publicClient, walletClient };
+  return { address, chainId, isConnected, publicClient, walletClient };
 }

@@ -10,7 +10,7 @@ export function apiUrl<K extends ApiRouteKey>(
   key: K,
   params?: Record<
     string,
-    string | number | boolean | undefined | (string | number | boolean)[]
+    (boolean | number | string)[] | boolean | number | string | undefined
   >
 ) {
   const search = params

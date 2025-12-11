@@ -1,43 +1,44 @@
-import { useCallback, useMemo, useState } from "react";
-import { useWriteContract } from "wagmi";
-import { erc20Abi, maxUint256, type Address, getAddress } from "viem";
+import { WalletRequiredError } from "@diffuse/sdk-js";
 import { useQuery } from "@tanstack/react-query";
-import { QV } from "../../query/versions";
-import { opt, qk } from "../../query/helpers";
-import { useClients } from "../../wagmi/useClients";
-import { SelectedVault } from "../types";
 import { produce } from "immer";
 import { raceSignal as abortable } from "race-signal";
+import { useCallback, useMemo, useState } from "react";
 import useIsMountedRef from "use-is-mounted-ref";
-import { WalletRequiredError } from "@diffuse/sdk-js";
+import { type Address, erc20Abi, getAddress, maxUint256 } from "viem";
+import { useWriteContract } from "wagmi";
 
+import { opt, qk } from "../../query/helpers";
+import { QV } from "../../query/versions";
+import { useClients } from "../../wagmi/useClients";
+import { SelectedVault } from "../types";
+
+export type AllowanceStatus = "insufficient" | "missing" | "ok" | "unknown";
 export type ApprovalPolicy = "exact" | "infinite";
-export type AllowanceStatus = "ok" | "missing" | "insufficient" | "unknown";
-
-export type VaultAllowance = {
-  vault: SelectedVault;
-  current: bigint | null;
-  status: AllowanceStatus;
-};
-
-type AddressPair = `${Address}:${Address}`;
-type Pending = Record<AddressPair, boolean>;
-
-export type EnsureAllowancesResult = {
-  allowances: VaultAllowance[] | undefined;
-  ableToRequest: boolean;
-  allAllowed: boolean;
-  isPendingAllowances: boolean;
-  isPendingApprovals: boolean;
-  approveMissing: (opts?: { mode?: ApprovalPolicy }) => Promise<void>;
-  pendingApprovals: Pending;
-  error: Error | null;
-  refetchAllowances: () => Promise<void>;
-};
 
 export type EnsureAllowancesOptions = {
   onSuccess?: () => void;
 };
+
+export type EnsureAllowancesResult = {
+  ableToRequest: boolean;
+  allAllowed: boolean;
+  allowances: undefined | VaultAllowance[];
+  approveMissing: (opts?: { mode?: ApprovalPolicy }) => Promise<void>;
+  error: Error | null;
+  isPendingAllowances: boolean;
+  isPendingApprovals: boolean;
+  pendingApprovals: Pending;
+  refetchAllowances: () => Promise<void>;
+};
+export type VaultAllowance = {
+  current: bigint | null;
+  status: AllowanceStatus;
+  vault: SelectedVault;
+};
+
+type AddressPair = `${Address}:${Address}`;
+
+type Pending = Record<AddressPair, boolean>;
 
 const ROOT = "allowance-erc20";
 const qKeys = {
@@ -55,17 +56,13 @@ const qKeys = {
     ]),
 };
 
-function pairKey(asset: Address, spender: Address) {
-  return `${asset}:${spender}` as const;
-}
-
 export function useEnsureAllowances(
   sv: SelectedVault[],
   { onSuccess }: EnsureAllowancesOptions = {}
 ): EnsureAllowancesResult {
   const [pending, setPending] = useState<Pending>({});
   const [error, setError] = useState<Error | null>(null);
-  const { address: ownerAddr, publicClient, chainId } = useClients();
+  const { address: ownerAddr, chainId, publicClient } = useClients();
   const isMounted = useIsMountedRef();
   const { writeContractAsync } = useWriteContract();
   const vaultsConsistency = sv.every(v => v.chainId === chainId);
@@ -79,29 +76,28 @@ export function useEnsureAllowances(
 
       set.set(pairKey(asset, spender), { asset, spender });
     }
-    return Array.from(set.values());
+    return [...set.values()];
   }, [sv]);
 
   const pairsKey = useMemo(
     () =>
-      pairs.length ? pairs.map(p => `${p.asset}-${p.spender}`).join("|") : undefined,
+      pairs.length > 0 ? pairs.map(p => `${p.asset}-${p.spender}`).join("|") : undefined,
     [pairs]
   );
 
   const {
     data: rawAllowances,
-    refetch,
     isPending,
+    refetch,
   } = useQuery({
-    queryKey: qKeys.allowances(chainId, ownerAddr, pairsKey),
     enabled,
     gcTime: 1000 * 60 * 10,
     queryFn: async ({ signal }): Promise<Map<AddressPair, bigint | null>> => {
       const calls = pairs.map(p => ({
         abi: erc20Abi,
         address: p.asset,
-        functionName: "allowance" as const,
         args: [getAddress(ownerAddr!), p.spender],
+        functionName: "allowance" as const,
       }));
 
       try {
@@ -111,10 +107,10 @@ export function useEnsureAllowances(
         );
         const map = new Map<AddressPair, bigint | null>();
 
-        results.forEach((r, i) => {
+        for (const [i, r] of results.entries()) {
           const key = pairKey(pairs[i].asset, pairs[i].spender);
           map.set(key, r.status === "success" ? (r.result as bigint) : null);
-        });
+        }
 
         return map;
       } catch {
@@ -126,8 +122,8 @@ export function useEnsureAllowances(
               publicClient!.readContract({
                 abi: erc20Abi,
                 address: p.asset,
-                functionName: "allowance",
                 args: [getAddress(ownerAddr!), p.spender],
+                functionName: "allowance",
               }),
               signal
             );
@@ -139,17 +135,18 @@ export function useEnsureAllowances(
         return map;
       }
     },
+    queryKey: qKeys.allowances(chainId, ownerAddr, pairsKey),
   });
 
-  const allowances: VaultAllowance[] | undefined = useMemo(() => {
-    if (!rawAllowances) return undefined;
+  const allowances: undefined | VaultAllowance[] = useMemo(() => {
+    if (!rawAllowances) return;
 
     return sv.map(v => {
       const key = pairKey(getAddress(v.assetAddress), getAddress(v.address));
       const current = rawAllowances.get(key) ?? null;
 
       const status: AllowanceStatus =
-        current == null
+        current == undefined
           ? "unknown"
           : current >= v.amount
             ? "ok"
@@ -157,18 +154,19 @@ export function useEnsureAllowances(
               ? "missing"
               : "insufficient";
 
-      return { vault: v, current, status };
+      return { current, status, vault: v };
     });
   }, [sv, rawAllowances]);
 
   const allowanceByKey = useMemo(() => {
     const map = new Map<AddressPair, VaultAllowance>();
-    allowances?.forEach(allowance => {
-      map.set(
-        `${getAddress(allowance.vault.assetAddress)}:${getAddress(allowance.vault.address)}` as const,
-        allowance
-      );
-    });
+    if (allowances)
+      for (const allowance of allowances) {
+        map.set(
+          `${getAddress(allowance.vault.assetAddress)}:${getAddress(allowance.vault.address)}` as const,
+          allowance
+        );
+      }
     return map;
   }, [allowances]);
 
@@ -206,10 +204,10 @@ export function useEnsureAllowances(
         try {
           await publicClient!.simulateContract({
             abi: erc20Abi,
-            address: assetAddr,
-            functionName: "approve",
-            args: [spender, amount],
             account: owner,
+            address: assetAddr,
+            args: [spender, amount],
+            functionName: "approve",
           });
         } catch {
           throw new Error("SIMULATION_REVERTED");
@@ -219,9 +217,9 @@ export function useEnsureAllowances(
           const hash0 = await writeContractAsync({
             abi: erc20Abi,
             address: v.assetAddress,
-            functionName: "approve",
             args: [v.address, 0n],
             chainId,
+            functionName: "approve",
           });
 
           await publicClient!.waitForTransactionReceipt({ hash: hash0 });
@@ -230,9 +228,9 @@ export function useEnsureAllowances(
         const hash = await writeContractAsync({
           abi: erc20Abi,
           address: v.assetAddress,
-          functionName: "approve",
           args: [v.address, amount],
           chainId,
+          functionName: "approve",
         });
 
         await publicClient!.waitForTransactionReceipt({ hash });
@@ -279,17 +277,20 @@ export function useEnsureAllowances(
   const allAllowed = allowances !== undefined && allowances.every(a => a.status === "ok");
 
   return {
-    pendingApprovals: pending,
+    ableToRequest,
+    allAllowed,
+    allowances,
     approveMissing,
     error,
-    allowances,
-    allAllowed,
-    ableToRequest,
     isPendingAllowances: isPending,
-    isPendingApprovals: Object.values(pending).some(v => v),
+    isPendingApprovals: Object.values(pending).some(Boolean),
+    pendingApprovals: pending,
     refetchAllowances: async () => {
       await refetch();
-      return;
     },
   };
+}
+
+function pairKey(asset: Address, spender: Address) {
+  return `${asset}:${spender}` as const;
 }

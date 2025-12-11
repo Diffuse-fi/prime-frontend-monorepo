@@ -1,9 +1,3 @@
-import { AssetImage } from "@/components/misc/images/AssetImage";
-import { useVaults } from "@/lib/core/hooks/useVaults";
-import { useWithdraw } from "@/lib/core/hooks/useWithdraw";
-import { LenderPosition } from "@/lib/core/types";
-import { formatAsset, formatUnits } from "@/lib/formatters/asset";
-import { formatNumberToKMB } from "@/lib/formatters/number";
 import { AssetInfo } from "@diffuse/config";
 import {
   AssetInput,
@@ -14,31 +8,38 @@ import {
   UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
 import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ReactNode, useState } from "react";
 import { getAddress, parseUnits } from "viem";
-import { useTranslations } from "next-intl";
+
+import { AssetImage } from "@/components/misc/images/AssetImage";
+import { useVaults } from "@/lib/core/hooks/useVaults";
+import { useWithdraw } from "@/lib/core/hooks/useWithdraw";
+import { LenderPosition } from "@/lib/core/types";
+import { formatAsset, formatUnits } from "@/lib/formatters/asset";
+import { formatNumberToKMB } from "@/lib/formatters/number";
 
 type WithdrawModalProps = {
-  open: boolean;
   onOpenChange: (open: boolean) => void;
-  title?: ReactNode;
+  onWithdrawError: (e: string) => void;
+  onWithdrawSuccess: () => void;
+  open: boolean;
   selectedAsset: AssetInfo;
   selectedPosition: LenderPosition;
-  onWithdrawSuccess: () => void;
-  onWithdrawError: (e: string) => void;
+  title?: ReactNode;
 };
 
 export function WithdrawModal({
+  onOpenChange,
   onWithdrawError,
   onWithdrawSuccess,
-  selectedPosition,
-  selectedAsset,
   open,
-  onOpenChange,
+  selectedAsset,
+  selectedPosition,
   title,
 }: WithdrawModalProps) {
   const [amountToWithdraw, setAmountToWithdraw] = useState<bigint>(0n);
-  const { vaults, vaultLimits } = useVaults();
+  const { vaultLimits, vaults } = useVaults();
   const t = useTranslations("myPositions.withdrawModal");
   const tMyPositions = useTranslations("myPositions");
   const maxWithdrawable =
@@ -49,13 +50,13 @@ export function WithdrawModal({
     ? vaults.filter(v => v.assets?.some(a => a.address === selectedAsset.address))
     : vaults;
   const {
-    withdraw,
     isPending,
-    txState,
     reset: resetWithdrawState,
+    txState,
+    withdraw,
   } = useWithdraw(vaultsForSelectedAsset, vaultLimits, {
-    onWithdrawSuccess,
     onWithdrawError,
+    onWithdrawSuccess,
   });
 
   const confirmingInWalletWithdraw = Object.values(txState).some(
@@ -88,46 +89,46 @@ export function WithdrawModal({
 
   return (
     <Dialog
-      open={open}
       onOpenChange={() => {
         onOpenChange(false);
         resetWithdrawState();
       }}
-      title={title}
+      open={open}
       size="md"
+      title={title}
     >
       <div className="flex flex-col gap-4 px-6">
         <Heading level="5">{t("withdraw")}</Heading>
         <div className="flex flex-col gap-2">
           <AssetInput
+            assetSymbol={selectedAsset?.symbol}
+            onValueChange={evt => {
+              const value = parseUnits(evt.value, selectedAsset.decimals);
+              setAmountToWithdraw(value);
+            }}
             placeholder="0.0"
+            renderAssetImage={() => (
+              <AssetImage
+                address={selectedAsset.address}
+                alt=""
+                imgURI={selectedAsset.logoURI}
+                size={24}
+              />
+            )}
             value={
               amountToWithdraw
                 ? formatUnits(amountToWithdraw, selectedAsset?.decimals).text
                 : ""
             }
-            onValueChange={evt => {
-              const value = parseUnits(evt.value, selectedAsset.decimals);
-              setAmountToWithdraw(value);
-            }}
-            assetSymbol={selectedAsset?.symbol}
-            renderAssetImage={() => (
-              <AssetImage
-                alt=""
-                address={selectedAsset.address}
-                imgURI={selectedAsset.logoURI}
-                size={24}
-              />
-            )}
           />
           <div className="text-muted flex flex-nowrap items-center gap-2 pl-2 font-mono text-xs">
             {t("availableForWithdraw", { symbol: selectedAsset.symbol })}
             <Tooltip content={t("withdrawAll")} side="bottom">
               <Button
-                size="sm"
-                variant="link"
                 className="text-xs"
                 onClick={() => setAmountToWithdraw(maxWithdrawable)}
+                size="sm"
+                variant="link"
               >
                 {
                   formatNumberToKMB(
@@ -155,17 +156,17 @@ export function WithdrawModal({
         </UncontrolledCollapsible>
         <Button
           className="mx-auto mt-12 w-2/3"
-          onClick={() => {
-            withdraw({
-              vaultAddress: selectedPosition.vault.address,
-              amount: amountToWithdraw,
-            });
-          }}
           disabled={
             isPending ||
             amountToWithdraw === 0n ||
             amountToWithdraw > selectedPosition.balance
           }
+          onClick={() => {
+            withdraw({
+              amount: amountToWithdraw,
+              vaultAddress: selectedPosition.vault.address,
+            });
+          }}
           size="lg"
         >
           {confirmingInWalletWithdraw

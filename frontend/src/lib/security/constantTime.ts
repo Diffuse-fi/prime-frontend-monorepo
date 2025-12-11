@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 
-export function safeEqual(a: string | null, b: string): boolean {
+export function safeEqual(a: null | string, b: string): boolean {
   if (a === null) return false;
 
   const aBuf = Buffer.from(a);

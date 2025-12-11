@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
 import dayjs from "dayjs";
+import { useEffect } from "react";
+
 import localizationSettings from "../../localization.json" with { type: "json" };
 
 const DEFAULT_LOCALE = localizationSettings.default;
@@ -27,12 +28,14 @@ export function useSyncDayjsLocale(lang: string = DEFAULT_LOCALE) {
     }
 
     loaders[lang]()
+      // eslint-disable-next-line promise/always-return
       .then(() => {
         dayjs.locale(lang);
         loadedLocales.add(lang);
       })
       .catch(() => {
         if (DEFAULT_LOCALE && DEFAULT_LOCALE !== lang) {
+          // eslint-disable-next-line promise/always-return
           return loaders[DEFAULT_LOCALE]().then(() => {
             dayjs.locale(DEFAULT_LOCALE);
             loadedLocales.add(DEFAULT_LOCALE);

@@ -1,74 +1,74 @@
 import localFont from "next/font/local";
 
 const DM_Sans = localFont({
+  display: "swap",
+  fallback: ["sans-serif"],
+  preload: true,
   src: [
     {
       path: "./dm-sans/DMSans-Regular.ttf",
-      weight: "400",
       style: "normal",
+      weight: "400",
     },
     {
       path: "./dm-sans/DMSans-Medium.ttf",
-      weight: "500",
       style: "normal",
+      weight: "500",
     },
     {
       path: "./dm-sans/DMSans-Bold.ttf",
-      weight: "700",
       style: "normal",
+      weight: "700",
     },
     {
       path: "./dm-sans/DMSans-Light.ttf",
-      weight: "300",
       style: "normal",
+      weight: "300",
     },
     {
       path: "./dm-sans/DMSans-ExtraBold.ttf",
-      weight: "800",
       style: "normal",
+      weight: "800",
     },
     {
       path: "./dm-sans/DMSans-SemiBold.ttf",
-      weight: "600",
       style: "normal",
+      weight: "600",
     },
     {
       path: "./dm-sans/DMSans-ExtraLight.ttf",
-      weight: "200",
       style: "normal",
+      weight: "200",
     },
   ],
   variable: "--font-dm-sans",
-  display: "swap",
-  preload: true,
-  fallback: ["sans-serif"],
 });
 
 const DM_mono = localFont({
+  display: "swap",
+  fallback: ["monospace"],
+  preload: true,
   src: [
     {
       path: "./dm-mono/DMMono-Regular.ttf",
-      weight: "400",
       style: "normal",
+      weight: "400",
     },
     {
       path: "./dm-mono/DMMono-Medium.ttf",
-      weight: "500",
       style: "normal",
+      weight: "500",
     },
     {
       path: "./dm-mono/DMMono-Light.ttf",
-      weight: "300",
       style: "normal",
+      weight: "300",
     },
   ],
   variable: "--font-dm-mono",
-  display: "swap",
-  preload: true,
-  fallback: ["monospace"],
 });
 
 export const fonts = {
-  DM_Sans,
   DM_mono,
+  DM_Sans,
 };

@@ -1,38 +1,40 @@
 "use client";
 
-import { useVaults } from "../../../lib/core/hooks/useVaults";
-import { useLocalization } from "@/lib/localization/useLocalization";
 import { Button, Card, Heading, SimpleTable, Tooltip } from "@diffuse/ui-kit";
-import { VaultCard } from "./VaultCard";
-import { AssetsList } from "../../AssetsList";
-import { useCallback } from "react";
-import { useSelectedVaults } from "@/lib/core/hooks/useSelectVaults";
-import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
-import { parseUnits } from "viem";
-import { useDeposit } from "@/lib/core/hooks/useDeposit";
-import { toast } from "@/lib/toast";
-import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
-import { formatAprToPercent } from "@/lib/formatters/finance";
-import { formatUnits, getPartialAllowanceText } from "@/lib/formatters/asset";
-import { usePrevValueLocalStorage } from "@/lib/misc/usePrevValueLocalStorage";
-import { useTranslations } from "next-intl";
-import { useRouter } from "@/lib/localization/navigation";
-import { env } from "@/env";
-import { showSkeletons } from "@/lib/misc/ui";
-import { useAccount, useAccountEffect } from "wagmi";
-import { useERC20TokenBalance } from "@/lib/wagmi/useERC20TokenBalance";
-import { useOnChainSwitch } from "@/lib/wagmi/onChainSwitch";
 import { InfoIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useCallback } from "react";
+import { parseUnits } from "viem";
+import { useAccount, useAccountEffect } from "wagmi";
+
+import { env } from "@/env";
+import { useDeposit } from "@/lib/core/hooks/useDeposit";
+import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
+import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
+import { useSelectedVaults } from "@/lib/core/hooks/useSelectVaults";
+import { formatUnits, getPartialAllowanceText } from "@/lib/formatters/asset";
+import { formatAprToPercent } from "@/lib/formatters/finance";
+import { useRouter } from "@/lib/localization/navigation";
+import { useLocalization } from "@/lib/localization/useLocalization";
+import { showSkeletons } from "@/lib/misc/ui";
+import { usePrevValueLocalStorage } from "@/lib/misc/usePrevValueLocalStorage";
+import { toast } from "@/lib/toast";
+import { useOnChainSwitch } from "@/lib/wagmi/onChainSwitch";
+import { useERC20TokenBalance } from "../../../lib/wagmi/useErc20TokenBalance.js";
+
+import { useVaults } from "../../../lib/core/hooks/useVaults";
+import { AssetsList } from "../../AssetsList";
+import { VaultCard } from "./VaultCard";
 
 export default function Lend() {
   const {
-    vaults,
     isLoading,
-    vaultsAssetsList,
     isPending,
-    refetchTotalAssets,
     refetchLimits,
+    refetchTotalAssets,
     vaultLimits,
+    vaults,
+    vaultsAssetsList,
   } = useVaults();
   const previousVaultsCount = usePrevValueLocalStorage(
     vaults.length,
@@ -40,9 +42,9 @@ export default function Lend() {
     "lend-vaults-count"
   );
   const {
+    reset: resetSelectedVaults,
     selectedVaults,
     setAmountForVault,
-    reset: resetSelectedVaults,
   } = useSelectedVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
   const { dir } = useLocalization();
@@ -52,24 +54,24 @@ export default function Lend() {
     toast(t("toasts.approveSuccessToast"));
   }, [t]);
   const {
+    ableToRequest,
     allAllowed,
     allowances,
     approveMissing,
-    ableToRequest,
-    refetchAllowances,
     isPendingApprovals,
+    refetchAllowances,
   } = useEnsureAllowances(selectedVaults, { onSuccess: onSuccessAllowance });
   const resetForms = () => {
-    selectedVaults.forEach(v => {
+    for (const v of selectedVaults) {
       const vault = vaults.find(va => va.address === v.address);
       if (vault) {
         setAmountForVault(vault, 0n);
       }
-    });
+    }
   };
   const { isConnected } = useAccount();
 
-  const { reset, deposit, txState } = useDeposit(selectedVaults, vaults, vaultLimits, {
+  const { deposit, reset, txState } = useDeposit(selectedVaults, vaults, vaultLimits, {
     onDepositBatchAllSuccess: () => {
       router.push("/lend/my-positions");
       toast(t("toasts.depositSuccessToast"));
@@ -81,15 +83,15 @@ export default function Lend() {
         refetchAllowances();
       }, 0);
     },
+    onDepositBatchComplete: () => {
+      refetchAllowances();
+    },
     onDepositBatchSomeError: e => {
       toast(
         `Error depositing to some vaults: ${Object.values(e)
           .map(err => err.message)
           .join(", ")}`
       );
-    },
-    onDepositBatchComplete: () => {
-      refetchAllowances();
     },
   });
 
@@ -127,30 +129,32 @@ export default function Lend() {
   const actionButtonMeta = (() => {
     if (isAmountExceedsBalance) {
       return {
-        text: t("insufficientFundsButtonText"),
         disabled: true,
         onClick: undefined,
+        text: t("insufficientFundsButtonText"),
       };
     }
 
     if (allAllowed) {
       if (confirmingInWallet) {
         return {
-          text: t("confirming"),
           disabled: true,
           onClick: undefined,
+          text: t("confirming"),
         };
       }
 
       return {
-        text: isPendingBatch ? t("depositing") : t("depositButtonText"),
         disabled: isPendingBatch,
         onClick: () => deposit(),
+        text: isPendingBatch ? t("depositing") : t("depositButtonText"),
       };
     }
 
     if (ableToRequest) {
       return {
+        disabled: isPendingApprovals,
+        onClick: () => approveMissing({ mode: "exact" }),
         text: isPendingApprovals ? (
           t("approving")
         ) : (
@@ -173,19 +177,17 @@ export default function Lend() {
             ) : null}
           </div>
         ),
-        disabled: isPendingApprovals,
-        onClick: () => approveMissing({ mode: "exact" }),
       };
     }
 
     return {
-      text: t("enterAmountButtonText"),
       disabled: true,
       onClick: undefined,
+      text: t("enterAmountButtonText"),
     };
   })();
 
-  const stepText = !allAllowed ? "1/2" : "2/2";
+  const stepText = allAllowed ? "2/2" : "1/2";
 
   useOnChainSwitch(resetSelectedVaults);
   useAccountEffect({
@@ -197,12 +199,12 @@ export default function Lend() {
       <div className="row-start-1 flex flex-col gap-3">
         <Heading level="5">{t("assetsToLend")}</Heading>
         <AssetsList
-          onSelectAsset={setSelectedAsset}
-          selectedAsset={selectedAsset}
-          isLoading={isLoading}
-          options={vaultsAssetsList}
-          direction={dir}
           className="w-fit"
+          direction={dir}
+          isLoading={isLoading}
+          onSelectAsset={setSelectedAsset}
+          options={vaultsAssetsList}
+          selectedAsset={selectedAsset}
         />
       </div>
       <div className="col-span-1 flex flex-col gap-6 md:row-start-2">
@@ -213,16 +215,16 @@ export default function Lend() {
             {vaultsForSelectedAsset.map(vault => (
               <li key={vault.address}>
                 <VaultCard
-                  selectedAsset={selectedAsset!}
-                  vault={vault}
                   amount={selectedVaults.find(v => v.address === vault.address)?.amount}
+                  isConnected={isConnected}
                   onAmountChange={evt => {
                     if (!selectedAsset) return;
 
                     const value = parseUnits(evt.value, selectedAsset.decimals);
                     setAmountForVault(vault, value);
                   }}
-                  isConnected={isConnected}
+                  selectedAsset={selectedAsset!}
+                  vault={vault}
                 />
               </li>
             ))}
@@ -237,51 +239,51 @@ export default function Lend() {
       {isConnected && (
         <div className="col-span-1 row-start-2 flex flex-col gap-4 sm:col-span-1">
           <Card
+            cardBodyClassName="items-center gap-4"
             header={
               selectedAsset?.symbol && !isPending
                 ? `${env.NEXT_PUBLIC_APP_NAME} ${selectedAsset?.symbol} ${t("vault")}`
                 : undefined
             }
-            cardBodyClassName="items-center gap-4"
           >
             <SimpleTable
               aria-label={t("ariaLabels.selectedAssets")}
-              density="comfy"
               className={selectedVaults.length === 0 ? "mb-10" : undefined}
               columns={[
-                <div key="key1" className="text-left font-mono text-xs">
+                <div className="text-left font-mono text-xs" key="key1">
                   Asset
                 </div>,
-                <div key="key2" className="text-right font-mono text-xs">
+                <div className="text-right font-mono text-xs" key="key2">
                   Sum to lend
                 </div>,
-                <div key="key3" className="text-right font-mono text-xs">
+                <div className="text-right font-mono text-xs" key="key3">
                   Target APY
                 </div>,
               ]}
+              density="comfy"
               rows={selectedVaults.map(v => {
                 const vault = vaults.find(va => va.address === v.address);
                 const amount = v.amount;
                 const decimals = v.assetDecimals;
 
                 return [
-                  <div key="1" className="flex items-center">
+                  <div className="flex items-center" key="1">
                     {vault ? vault.name : v.address}
                   </div>,
-                  <div key="2" className="text-right">
+                  <div className="text-right" key="2">
                     {formatUnits(amount, decimals).text}
                   </div>,
-                  <div key="3" className="text-right">
+                  <div className="text-right" key="3">
                     {vault ? formatAprToPercent(vault.targetApr).text : "-"}
                   </div>,
                 ].flat();
               })}
             />
             <Button
-              onClick={actionButtonMeta.onClick}
-              disabled={actionButtonMeta.disabled}
-              size="lg"
               className="lg:w-1/2"
+              disabled={actionButtonMeta.disabled}
+              onClick={actionButtonMeta.onClick}
+              size="lg"
             >
               {actionButtonMeta.text}
             </Button>

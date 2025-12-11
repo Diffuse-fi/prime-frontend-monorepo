@@ -1,5 +1,10 @@
 "use client";
 
+import { AssetInfo } from "@diffuse/config";
+import { Button, Card, CopyButton, Heading, SimpleTable } from "@diffuse/ui-kit";
+import { Chain } from "@rainbow-me/rainbowkit";
+import { useTranslations } from "next-intl";
+
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
 import { getStableChainMeta } from "@/lib/chains/meta";
@@ -8,29 +13,25 @@ import { formatEvmAddress, formatUnits } from "@/lib/formatters/asset";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 import { formatNumberToKMB } from "@/lib/formatters/number";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
-import { AssetInfo } from "@diffuse/config";
-import { Button, Card, CopyButton, Heading, SimpleTable } from "@diffuse/ui-kit";
-import { Chain } from "@rainbow-me/rainbowkit";
-import { useTranslations } from "next-intl";
 
 type BorrowCardProps = {
-  strategy: Strategy;
-  selectedAsset: AssetInfo;
-  isConnected?: boolean;
-  onConnectWallet?: () => void;
-  onBorrow?: () => void;
   chain: Chain;
+  isConnected?: boolean;
+  onBorrow?: () => void;
+  onConnectWallet?: () => void;
+  selectedAsset: AssetInfo;
+  strategy: Strategy;
   vault: VaultFullInfo;
 };
 
 export function BorrowCard({
-  strategy,
-  selectedAsset,
-  onBorrow,
   chain,
   isConnected,
-  vault,
+  onBorrow,
   onConnectWallet,
+  selectedAsset,
+  strategy,
+  vault,
 }: BorrowCardProps) {
   const chainMeta = getStableChainMeta(chain.id);
   const availableLiquidityUnits = formatUnits(
@@ -54,18 +55,18 @@ export function BorrowCard({
 
   return (
     <Card
-      className="relative"
       cardBodyClassName="gap-4 items-center"
+      className="relative"
       header={
         <div className="flex items-center justify-start gap-4">
           <AssetImage
+            address={strategy.token.address}
             alt=""
             imgURI={strategy.token.logoURI}
-            address={strategy.token.address}
             size={42}
           />
           <div className="flex flex-col items-start">
-            <Heading level="4" className="font-semibold">
+            <Heading className="font-semibold" level="4">
               {`${strategy.token.symbol} / ${selectedAsset.symbol}`}
             </Heading>
             <span className="font-mono text-xs">{strategy.name}</span>
@@ -75,39 +76,39 @@ export function BorrowCard({
     >
       <SimpleTable
         aria-label="Strategy details"
-        density="comfy"
         columns={[
-          <div key="key" className="font-mono text-xs">
+          <div className="font-mono text-xs" key="key">
             Details
           </div>,
           <div key="key2"></div>,
         ]}
+        density="comfy"
         rows={[
           [
             <div key="1">Chain</div>,
-            <div key="2" className="flex items-center justify-end gap-2">
+            <div className="flex items-center justify-end gap-2" key="2">
               <ImageWithJazziconFallback
                 alt={chain.name}
-                size={20}
-                src={chainMeta.iconUrl}
                 className="rounded-full object-cover"
-                style={{ background: chainMeta.iconBackground || "transparent" }}
-                jazziconSeed={stableSeedForChainId(chain.id)}
                 decoding="async"
                 fetchPriority="low"
+                jazziconSeed={stableSeedForChainId(chain.id)}
+                size={20}
+                src={chainMeta.iconUrl}
+                style={{ background: chainMeta.iconBackground || "transparent" }}
               />
               {chain.name}
             </div>,
           ],
           [
             <div key="1">APR</div>,
-            <div key="2" className="text-right">
+            <div className="text-right" key="2">
               {formatAprToPercent(strategy.apr).text}
             </div>,
           ],
           [
             <div key="1">Curator</div>,
-            <div key="2" className="text-right">
+            <div className="text-right" key="2">
               {vault.curator ? (
                 <div className="-my-1 -mr-1 flex items-center justify-end gap-1">
                   {formatEvmAddress(vault.curator)}
@@ -120,22 +121,22 @@ export function BorrowCard({
           ],
           [
             <div key="1">Collateral</div>,
-            <div key="2" className="text-right">
+            <div className="text-right" key="2">
               <div className="flex flex-col items-end gap-2">
                 <div className="flex items-center justify-end gap-2">
                   <AssetImage
-                    imgURI={selectedAsset.logoURI}
-                    alt={selectedAsset.symbol}
                     address={selectedAsset.address}
+                    alt={selectedAsset.symbol}
+                    imgURI={selectedAsset.logoURI}
                     size={20}
                   />
                   {selectedAsset.symbol}
                 </div>
                 <div className="flex items-center justify-end gap-2">
                   <AssetImage
-                    imgURI={strategy.token.logoURI}
-                    alt={strategy.token.symbol}
                     address={strategy.token.address}
+                    alt={strategy.token.symbol}
+                    imgURI={strategy.token.logoURI}
                     size={20}
                   />
                   {strategy.token.symbol}
@@ -145,17 +146,17 @@ export function BorrowCard({
           ],
           [
             <div key="1">{t("liquidity")}</div>,
-            <div key="2" className="text-right">
+            <div className="text-right" key="2">
               {availableLiquidityFormatted.text} {selectedAsset.symbol}
             </div>,
           ],
         ]}
       />
       <Button
-        size="lg"
         className="mt-3 w-2/3 md:mt-6"
-        onClick={onBtnClick}
         disabled={disabled}
+        onClick={onBtnClick}
+        size="lg"
       >
         {isConnected ? t("borrow") : tCommon("connectWallet")}
       </Button>

@@ -1,13 +1,15 @@
 "use client";
 
-import { isSentryEnabled } from "@/lib/sentry";
 import { ButtonLike } from "@diffuse/ui-kit/ButtonLike";
+import { Card } from "@diffuse/ui-kit/Card";
 import { Container } from "@diffuse/ui-kit/Container";
 import { Heading } from "@diffuse/ui-kit/Heading";
 import * as Sentry from "@sentry/nextjs";
-import { useEffect } from "react";
-import { Card } from "@diffuse/ui-kit/Card";
 import { ThemeProvider } from "next-themes";
+import { useEffect } from "react";
+
+import { isSentryEnabled } from "@/lib/sentry";
+
 import "./globals.css";
 
 type GlobalErrorProps = {
@@ -26,21 +28,21 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
-          enableSystem
           disableTransitionOnChange
+          enableSystem
         >
           <Container
             as="main"
             className="flex min-h-screen flex-col items-center justify-center px-4"
           >
             <Card
+              cardBodyClassName="flex flex-col items-center gap-4"
+              className="max-w-lg"
               header={
                 <Heading align="center" level="2">
                   Something went wrong
                 </Heading>
               }
-              className="max-w-lg"
-              cardBodyClassName="flex flex-col items-center gap-4"
             >
               <p className="text-muted text-center">
                 An unexpected error occurred while loading the app. You can try again or
@@ -58,10 +60,10 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                 </div>
               )}
               <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-                <ButtonLike variant="solid" size="lg" onClick={reset}>
+                <ButtonLike onClick={reset} size="lg" variant="solid">
                   Try again
                 </ButtonLike>
-                <ButtonLike href="/" component="a" variant="ghost" size="lg">
+                <ButtonLike component="a" href="/" size="lg" variant="ghost">
                   Back to app
                 </ButtonLike>
               </div>

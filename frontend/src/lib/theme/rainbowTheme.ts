@@ -1,22 +1,24 @@
-import { darkTheme, lightTheme, Theme } from "@rainbow-me/rainbowkit";
-import { useTheme } from "next-themes";
-import merge from "lodash/merge";
-import { fonts } from "@/app/fonts/fonts";
 import type { DeepPartial } from "utility-types";
 
+import { darkTheme, lightTheme, Theme } from "@rainbow-me/rainbowkit";
+import merge from "lodash/merge";
+import { useTheme } from "next-themes";
+
+import { fonts } from "@/app/fonts/fonts";
+
 const customFonts: DeepPartial<Theme> = {
-  // We just reuse variables defined by tailwindcss theme
-  fonts: {
-    body: fonts.DM_Sans.style.fontFamily,
-  },
   blurs: {
     modalOverlay: "blur(var(--blur-sm))",
   },
   colors: {
-    profileForeground: "var(--color-fg)",
+    closeButtonBackground: "color-mix(in oklab, var(--color-muted) 20%, transparent)",
     profileAction: "var(--color-border)",
     profileActionHover: "var(--color-border)",
-    closeButtonBackground: "color-mix(in oklab, var(--color-muted) 20%, transparent)",
+    profileForeground: "var(--color-fg)",
+  },
+  // We just reuse variables defined by tailwindcss theme
+  fonts: {
+    body: fonts.DM_Sans.style.fontFamily,
   },
   shadows: {
     dialog: "var(--shadow-strong)",

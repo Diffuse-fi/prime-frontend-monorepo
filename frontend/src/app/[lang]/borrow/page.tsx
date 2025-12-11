@@ -1,28 +1,12 @@
-import { buildMetadataForPage } from "@/app/metadata";
 import { Heading } from "@diffuse/ui-kit/Heading";
-import { getTranslations } from "next-intl/server";
 import { Metadata } from "next";
-import { DEFAULT_LOCALE } from "@/lib/localization/locale";
-import { JsonLd } from "@/components/misc/JsonLd";
+import { getTranslations } from "next-intl/server";
+
 import { getWebPageGraph } from "@/app/jsonld";
+import { buildMetadataForPage } from "@/app/metadata";
+import { JsonLd } from "@/components/misc/JsonLd";
 import Borrow from "@/components/pages/borrow";
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ lang: string }>;
-}): Promise<Metadata> {
-  const { lang: locale = DEFAULT_LOCALE } = await params;
-  const t = await getTranslations({ locale, namespace: "borrow.metadata" });
-
-  return buildMetadataForPage({
-    title: t("title"),
-    description: t("description"),
-    keywords: t("keywords"),
-    path: "borrow",
-    locale,
-  });
-}
+import { DEFAULT_LOCALE } from "@/lib/localization/locale";
 
 export default async function BorrowPage({
   params,
@@ -36,10 +20,10 @@ export default async function BorrowPage({
     <section>
       <JsonLd
         graph={getWebPageGraph({
-          title: t("metadata.title"),
           description: t("metadata.description"),
-          path: "borrow",
           lang,
+          path: "borrow",
+          title: t("metadata.title"),
         })}
       />
       <Heading level="1">{t("title")}</Heading>
@@ -47,4 +31,21 @@ export default async function BorrowPage({
       <Borrow />
     </section>
   );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}): Promise<Metadata> {
+  const { lang: locale = DEFAULT_LOCALE } = await params;
+  const t = await getTranslations({ locale, namespace: "borrow.metadata" });
+
+  return buildMetadataForPage({
+    description: t("description"),
+    keywords: t("keywords"),
+    locale,
+    path: "borrow",
+    title: t("title"),
+  });
 }

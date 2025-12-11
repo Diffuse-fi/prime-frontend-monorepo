@@ -1,24 +1,25 @@
 "use client";
 
-import React, { createContext, ReactElement, useEffect, useState } from "react";
+import { cn, Toast } from "@diffuse/ui-kit";
+import { produce } from "immer";
 import uniqueId from "lodash/uniqueId";
+import React, { createContext, ReactElement, useEffect, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
+import { Portal } from "react-portal";
+
 import {
   CreateToastData,
   RenderToastData,
   toastActions,
   ToastPosition,
 } from "@/lib/toast";
-import { Portal } from "react-portal";
-import { useHotkeys } from "react-hotkeys-hook";
-import { cn, Toast } from "@diffuse/ui-kit";
-import { produce } from "immer";
 
 export interface ToastProviderProps {
-  maxToastsToShow?: number;
-  defaultPosition?: ToastPosition;
-  closeable?: boolean;
-  duration?: number;
   appearOnTop?: boolean;
+  closeable?: boolean;
+  defaultPosition?: ToastPosition;
+  duration?: number;
+  maxToastsToShow?: number;
 }
 
 type ToastsContainerContextModel = {
@@ -30,11 +31,11 @@ const ToastProviderContext = createContext<ToastsContainerContextModel>(
 );
 
 export default function ToastProvider({
-  maxToastsToShow = 5,
-  defaultPosition = "bottom-right",
-  closeable = true,
-  duration = 5000,
   appearOnTop = true,
+  closeable = true,
+  defaultPosition = "bottom-right",
+  duration = 5000,
+  maxToastsToShow = 5,
 }: ToastProviderProps): ReactElement {
   const [queue, setQueue] = useState<RenderToastData[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -114,6 +115,7 @@ export default function ToastProvider({
     <ToastProviderContext.Provider value={{ queue }}>
       <Portal node={document.body}>
         <ul
+          aria-label="Notifications"
           className={cn(
             "pointer-events-none fixed flex w-fit list-none flex-col",
             defaultPosition === "top-left" && "top-4 left-4 items-start",
@@ -123,17 +125,16 @@ export default function ToastProvider({
             "z-110 max-w-[400px] gap-2 px-4 py-2"
           )}
           role="region"
-          aria-label="Notifications"
         >
           {queue.map(toast => (
             <Toast
               className="animate-in-zoom-fade pointer-events-auto transition-transform hover:-translate-y-1 hover:scale-[1.02]"
-              key={toast.id}
               closeable={toast.closeable ?? closeable}
               duration={toast.duration ?? duration}
-              open={toast.open}
-              onClose={() => toastActions.actions.remove(toast.id)}
+              key={toast.id}
               message={toast.message}
+              onClose={() => toastActions.actions.remove(toast.id)}
+              open={toast.open}
               title={toast.title}
             />
           ))}
