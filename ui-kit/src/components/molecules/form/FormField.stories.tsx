@@ -51,7 +51,7 @@ export const Disabled: Story = () => (
 );
 
 export const WithError: Story = () => (
-  <FormField label="Amount" hint="Insufficient balance">
+  <FormField error label="Amount" hint="Insufficient balance">
     <Input error placeholder="0.00" />
   </FormField>
 );

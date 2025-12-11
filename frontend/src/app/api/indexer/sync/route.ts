@@ -10,11 +10,13 @@ export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
 
   if (!env.CRON_SECRET) {
+    Sentry.captureMessage("Server misconfigured");
     return new Response("Server misconfigured", { status: 500 });
   }
 
   const expected = `Bearer ${env.CRON_SECRET}`;
   if (!safeEqual(authHeader, expected)) {
+    Sentry.captureMessage("Unauthorized");
     return new Response("Unauthorized", { status: 401 });
   }
 

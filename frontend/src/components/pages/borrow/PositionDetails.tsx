@@ -11,6 +11,7 @@ import {
   TextWithTooltip,
   UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
+import { useTranslations } from "next-intl";
 
 interface PositionDetailsProps {
   strategy: Strategy;
@@ -54,16 +55,20 @@ export function PositionDetails({
         `${selectedAsset.symbol} / ${strategyAsset.symbol}`
       ).text
     : "N/A";
+  const t = useTranslations("borrow.positionDetails");
+  const tCommon = useTranslations("common");
 
   return (
     <div className="text-text-dimmed mt-2 flex flex-col gap-4 text-sm">
       <UncontrolledCollapsible
         defaultOpen
-        summary={<span className="text-muted font-mono text-xs">Position health</span>}
+        summary={
+          <span className="text-muted font-mono text-xs">{t("positionHealth")}</span>
+        }
       >
         <div className="flex flex-col gap-2 border-l border-[#FF4800] px-2 py-1">
           <div className="flex items-center justify-between">
-            <span>Liquidation price</span>
+            <span>{t("liquidationPrice")}</span>
             <RemoteText
               isLoading={loadingLiquidationPrice}
               text={liquidationPriceDisplay}
@@ -71,36 +76,36 @@ export function PositionDetails({
             />
           </div>
           <div className="flex items-center justify-between">
-            <span>Liquidation penalty</span>
+            <span>{t("liquidationPenalty")}</span>
             <span>{formatAprToPercent(liquidationPenalty, 0).text}</span>
           </div>
         </div>
       </UncontrolledCollapsible>
       <UncontrolledCollapsible
         defaultOpen
-        summary={<span className="text-muted font-mono text-xs">APR</span>}
+        summary={<span className="text-muted font-mono text-xs">{tCommon("apr")}</span>}
       >
         <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
           <div className="flex items-center justify-between">
-            <span>Borrow APR</span>
+            <span>{t("borrowApr")}</span>
             <span>{formatAprToPercent(apr).text}</span>
           </div>
         </div>
         <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
           <div className="flex items-center justify-between">
-            <span>Leverage</span>
+            <span>{tCommon("leverage")}</span>
             <span>{leverageDisplay}</span>
           </div>
         </div>
         <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center leading-none">
-              Spread fee
+              {t("spreadFee")}
               <InfoIcon
-                text="The fee charged by the platform for facilitating the borrowing process."
+                text={t("spreadFeeTooltip")}
                 size={14}
                 className="ml-1"
-                ariaLabel="Spread fee information"
+                ariaLabel={t("spreadFeeAriaLabel")}
               />
             </div>
             <span>{formatAprToPercent(spreadFee, 0).text}</span>
@@ -109,19 +114,19 @@ export function PositionDetails({
       </UncontrolledCollapsible>
       <UncontrolledCollapsible
         defaultOpen
-        summary={<span className="text-muted font-mono text-xs">Yield</span>}
+        summary={<span className="text-muted font-mono text-xs">{t("yield")}</span>}
       >
         <div className="flex flex-col gap-2 border-l border-[#49E695] px-2 py-1">
           <div className="flex items-center justify-between">
-            <span>Days until maturity</span>
+            <span>{t("daysUntilMaturity")}</span>
             <TextWithTooltip
               text={daysUntilMaturity.toString()}
-              tooltip={`Until ${fullEndDate}`}
+              tooltip={t("until", { date: fullEndDate })}
               className="underline decoration-dashed underline-offset-2"
             />
           </div>
           <div className="flex items-center justify-between">
-            <span>Maturity yield</span>
+            <span>{t("maturityYield")}</span>
             <span>
               {maturityYield !== 0n
                 ? `${formatUnits(maturityYield, selectedAsset.decimals).text} ${selectedAsset.symbol}`

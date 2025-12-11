@@ -1,9 +1,49 @@
 {
   "borrow": {
+    "borrowCard": {
+      "borrow": "Borrow",
+      "liquidity": "Liquidity"
+    },
     "borrowModal": {
-      "title": "Borrow {assetSymbol}"
+      "approve": "Approve",
+      "approving": "Approving...",
+      "availableForBorrow": "Available for borrow {symbol}: {amount}",
+      "balance": "Balance {symbol}: {amount}",
+      "borrow": "Borrow",
+      "collateral": "Collateral",
+      "confirming": "Confirming...",
+      "enterAmount": "Enter amount",
+      "exceedsLiquidity": "Exceeds available liquidity",
+      "insufficientBalance": "Insufficient balance",
+      "maxLeverage": "Max 10x",
+      "minLeverage": "1.00x",
+      "positionDetails": "Position details",
+      "requestPending": "Request pending...",
+      "selectCollateralAsset": "Select collateral asset",
+      "step": "Step {step}",
+      "title": "Borrow {assetSymbol}",
+      "toasts": {
+        "approveSuccess": "Approval successful",
+        "borrowError": "Borrow request failed: {error}",
+        "borrowSuccess": "Borrow request made successfully"
+      },
+      "totalBalance": "Total balance"
     },
     "description": "Borrow against collateral or multiply your exposure by looping",
+    "managePositionModal": {
+      "closePosition": "Close Position",
+      "closePositionButton": "Close position",
+      "closingPosition": "Closing position...",
+      "closureWarning": "This action will close your entire position and cannot be undone. Please review the details carefully before proceeding.",
+      "collateral": "Collateral",
+      "confirmingInWallet": "Confirming in wallet...",
+      "feesUnavailable": "Estimated fees are currently unavailable. Please proceed with caution.",
+      "positionClosure": "Position closure",
+      "toasts": {
+        "closeError": "Error closing borrow position: {error}",
+        "positionClosed": "Borrow position closed"
+      }
+    },
     "metadata": {
       "description": "Explore Diffuse Prime and access institutional borrowing strategies with flexible terms and competitive rates",
       "keywords": "Diffuse, Prime, Lend, Borrow, Vaults, Strategies",
@@ -12,6 +52,19 @@
     "navigation": {
       "borrow": "Borrow",
       "borrowPositions": "Borrow Positions"
+    },
+    "positionDetails": {
+      "borrowApr": "Borrow APR",
+      "daysUntilMaturity": "Days until maturity",
+      "liquidationPenalty": "Liquidation penalty",
+      "liquidationPrice": "Liquidation price",
+      "maturityYield": "Maturity yield",
+      "positionHealth": "Position health",
+      "spreadFee": "Spread fee",
+      "spreadFeeAriaLabel": "Spread fee information",
+      "spreadFeeTooltip": "The fee charged by the platform for facilitating the borrowing process.",
+      "until": "Until {date}",
+      "yield": "Yield"
     },
     "title": "Borrow"
   },
@@ -25,7 +78,9 @@
     "title": "My Borrow Positions"
   },
   "common": {
+    "apr": "APR",
     "connectWallet": "Connect Wallet",
+    "leverage": "Leverage",
     "navbar": {
       "connected": "Connected",
       "navigation": {
@@ -45,7 +100,12 @@
   "lend": {
     "approveButtonText": "Approve",
     "approving": "Approval Pending...",
+    "ariaLabels": {
+      "selectedAssets": "Selected assets summary",
+      "vaultRewards": "Vault rewards based on input amount and target APR"
+    },
     "assetsToLend": "Assets to lend",
+    "confirming": "Confirming...",
     "deposit": "Deposit",
     "depositButtonText": "Deposit",
     "depositing": "Depositing...",
@@ -66,18 +126,23 @@
       "description": "No strategies available for the selected asset. Please choose a different asset or change your wallet network.",
       "title": "No Strategies Available"
     },
-    "rewards": "Reward",
     "rewardsType": "Rewards type",
     "risks": {
       "protocol": {
         "description": "Strategies may interact with external protocols such as Aave, Pendle, Spectra, Ethena, Resolv, etc. Smart contract bugs, economic design flaws, governance failures, or insolvency in any of these protocols could lead to partial or total loss of deposited funds.",
         "title": "Underlying Protocol Risk"
       },
+      "title": "Risks",
       "utilization": {
         "description": "If borrower demand is high, your funds may be fully utilized in active strategies. This limits the ability to withdraw early or rebalance.",
         "title": "Utilization & Liquidity Risk"
       }
     },
+    "strategiesList": {
+      "asset": "Asset",
+      "endDate": "End date"
+    },
+    "targetApy": "Target APY",
     "title": "Explore Prime Broker",
     "toasts": {
       "approveSuccessToast": "Approval successful!",
@@ -93,6 +158,10 @@
   },
   "myPositions": {
     "averageAPY": "Average APY",
+    "claimRewards": "Claim rewards",
+    "confirming": "Confirming...",
+    "confirmingInWallet": "Confirming in wallet...",
+    "deposited": "Deposited",
     "description": "Track your lending positions and earnings across all pools",
     "interestEarned": "Interest earned",
     "metadata": {
@@ -104,14 +173,29 @@
       "description": "You have no lending positions yet. Start exploring strategies to earn yield on your assets.",
       "title": "No Lending Positions"
     },
+    "openInExplorer": "Open in explorer",
+    "openInExplorerAriaLabel": "Open vault smart contract in explorer",
+    "profit": "Profit",
+    "reward": "Reward",
+    "rewardsAvailableTooltip": "Rewards will be available when at least one strategy ends.",
     "title": "My Lending Positions",
     "toasts": {
       "withdrawErrorToast": "An error occurred.",
-      "withdrawSuccessToast": "Withdrawal successful!"
+      "withdrawSuccessToast": "Withdrawal successful!",
+      "yieldWithdrawError": "Error withdrawing yield: {error}",
+      "yieldWithdrawn": "Yield withdrawn successfully"
     },
     "totalSupplied": "Total supplied",
     "withdraw": "Withdraw",
-    "withdrawing": "Withdrawing..."
+    "withdrawing": "Withdrawing...",
+    "withdrawModal": {
+      "availableForWithdraw": "Available for Withdraw {symbol}: ",
+      "position": "Position",
+      "supplied": "Supplied",
+      "title": "Withdraw deposit",
+      "withdraw": "Withdraw",
+      "withdrawAll": "Withdraw all"
+    }
   },
   "not-found": {
     "cta": "Go to Lend page",

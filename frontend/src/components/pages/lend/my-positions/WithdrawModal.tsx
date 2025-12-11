@@ -16,6 +16,7 @@ import {
 import { ArrowRight } from "lucide-react";
 import { ReactNode, useState } from "react";
 import { getAddress, parseUnits } from "viem";
+import { useTranslations } from "next-intl";
 
 type WithdrawModalProps = {
   open: boolean;
@@ -38,6 +39,8 @@ export function WithdrawModal({
 }: WithdrawModalProps) {
   const [amountToWithdraw, setAmountToWithdraw] = useState<bigint>(0n);
   const { vaults, vaultLimits } = useVaults();
+  const t = useTranslations("myPositions.withdrawModal");
+  const tMyPositions = useTranslations("myPositions");
   const maxWithdrawable =
     vaultLimits.find(
       v => getAddress(v.address) === getAddress(selectedPosition.vault.address)
@@ -94,7 +97,7 @@ export function WithdrawModal({
       size="md"
     >
       <div className="flex flex-col gap-4 px-6">
-        <Heading level="5">Withdraw</Heading>
+        <Heading level="5">{t("withdraw")}</Heading>
         <div className="flex flex-col gap-2">
           <AssetInput
             placeholder="0.0"
@@ -118,8 +121,8 @@ export function WithdrawModal({
             )}
           />
           <div className="text-muted flex flex-nowrap items-center gap-2 pl-2 font-mono text-xs">
-            {`Available for Withdraw ${selectedAsset.symbol}: `}
-            <Tooltip content="Withdraw all" side="bottom">
+            {t("availableForWithdraw", { symbol: selectedAsset.symbol })}
+            <Tooltip content={t("withdrawAll")} side="bottom">
               <Button
                 size="sm"
                 variant="link"
@@ -139,11 +142,13 @@ export function WithdrawModal({
         </div>
         <UncontrolledCollapsible
           defaultOpen
-          summary={<span className="text-text-dimmed font-mono text-sm">Position</span>}
+          summary={
+            <span className="text-text-dimmed font-mono text-sm">{t("position")}</span>
+          }
         >
           <div className="border-primary flex flex-col gap-2 border-l px-2 py-1">
             <div className="flex items-center justify-between text-sm">
-              <span>Supplied</span>
+              <span>{t("supplied")}</span>
               {suppliedDisplay}
             </div>
           </div>
@@ -164,10 +169,10 @@ export function WithdrawModal({
           size="lg"
         >
           {confirmingInWalletWithdraw
-            ? "Confirming in wallet..."
+            ? tMyPositions("confirmingInWallet")
             : isPending
-              ? "Withdrawing..."
-              : "Withdraw"}
+              ? tMyPositions("withdrawing")
+              : t("withdraw")}
         </Button>
       </div>
     </Dialog>

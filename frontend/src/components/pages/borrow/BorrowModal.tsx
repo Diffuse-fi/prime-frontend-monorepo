@@ -94,6 +94,7 @@ export function BorrowModal({
   onBorrowRequestSuccess,
 }: ChainSwitchModalProps) {
   const t = useTranslations("borrow.borrowModal");
+  const tCommon = useTranslations("common");
   const { refetchTotalAssets, refetchLimits } = useVaults();
   const availableLiquidity = selectedStrategy.vault.availableLiquidity;
   const title = t("title", { assetSymbol: selectedAsset.symbol });
@@ -138,8 +139,8 @@ export function BorrowModal({
     ? formatUnits(state.borrow, selectedAsset.decimals).text
     : "";
   const onSuccessAllowance = useCallback(() => {
-    toast("Approval successful");
-  }, []);
+    toast(t("toasts.approveSuccess"));
+  }, [t]);
   const allowanceInput = {
     address: selectedStrategy.vault.address,
     assetAddress: collateralAsset.address,
@@ -214,7 +215,7 @@ export function BorrowModal({
     txState,
   } = useBorrow(borrowInput, selectedStrategy.vault, {
     onBorrowSuccess: () => {
-      toast("Borrow request made successfully");
+      toast(t("toasts.borrowSuccess"));
       onBorrowRequestSuccess?.();
       refetchAllowances();
       refetchTotalAssets();
@@ -222,7 +223,7 @@ export function BorrowModal({
       router.push("/borrow/my-positions");
     },
     onBorrowError: error => {
-      toast(`Borrow request failed: ${error}`);
+      toast(t("toasts.borrowError", { error }));
     },
   });
   const totalAmountToBorrow = BigInt(amountToBorrow || "0");
@@ -243,7 +244,7 @@ export function BorrowModal({
       totalAmountToBorrow === 0n
     ) {
       return {
-        text: "Enter amount",
+        text: t("enterAmount"),
         disabled: true,
         onClick: undefined,
       };
@@ -251,7 +252,7 @@ export function BorrowModal({
 
     if (isAmountExceedsBalance) {
       return {
-        text: "Insufficient balance",
+        text: t("insufficientBalance"),
         disabled: true,
         onClick: undefined,
       };
@@ -259,7 +260,7 @@ export function BorrowModal({
 
     if (collateralAmount > availableLiquidity) {
       return {
-        text: "Exceeds available liquidity",
+        text: t("exceedsLiquidity"),
         disabled: true,
         onClick: undefined,
       };
@@ -268,14 +269,14 @@ export function BorrowModal({
     if (allAllowed) {
       if (confirmingInWallet) {
         return {
-          text: "Confirming...",
+          text: t("confirming"),
           disabled: true,
           onClick: undefined,
         };
       }
 
       return {
-        text: isPending ? "Request pending..." : "Borrow",
+        text: isPending ? t("requestPending") : t("borrow"),
         disabled:
           isPending ||
           isAmountExceedsBalance ||
@@ -288,10 +289,10 @@ export function BorrowModal({
     if (ableToRequest) {
       return {
         text: isPendingApprovals ? (
-          "Approving..."
+          t("approving")
         ) : (
           <div className="flex items-center gap-1">
-            <div className="leading-none">Approve</div>
+            <div className="leading-none">{t("approve")}</div>
             {currentlyAllowed !== null && currentlyAllowed !== undefined ? (
               <Tooltip
                 content={getPartialAllowanceText(
@@ -313,7 +314,7 @@ export function BorrowModal({
     }
 
     return {
-      text: "Enter amount",
+      text: t("enterAmount"),
       disabled: true,
       onClick: undefined,
     };
@@ -354,7 +355,7 @@ export function BorrowModal({
     >
       <div className="grid grid-cols-1 gap-10 pb-2 md:grid-cols-2 md:pb-6">
         <div className="flex flex-col gap-4 text-center">
-          <Heading level="5">Collateral</Heading>
+          <Heading level="5">{t("collateral")}</Heading>
           <div className="flex flex-col gap-2">
             <div className="flex flex-nowrap items-center gap-2">
               <AssetInput
@@ -371,17 +372,22 @@ export function BorrowModal({
                     ? setCollateralAsset(selectedAsset)
                     : setCollateralAsset(selectedStrategy.token as AssetInfo)
                 }
-                aria-label="Select collateral asset"
+                aria-label={t("selectCollateralAsset")}
               />
             </div>
-            <div className="text-muted pl-2 text-left font-mono text-xs whitespace-nowrap">{`Balance ${collateralAsset.symbol}: ${balanceDisplay ? balanceDisplay.text : "N/A"}`}</div>
+            <div className="text-muted pl-2 text-left font-mono text-xs whitespace-nowrap">
+              {t("balance", {
+                symbol: collateralAsset.symbol,
+                amount: balanceDisplay ? balanceDisplay.text : "N/A",
+              })}
+            </div>
           </div>
           <Card
             className="bg-preset-gray-50 border-none"
             cardBodyClassName="gap-2"
             header={
               <div className="flex items-center justify-between">
-                <Heading level="5">Leverage</Heading>
+                <Heading level="5">{tCommon("leverage")}</Heading>
                 <div className="text-secondary text-lg">
                   {(leverage / LEVERAGE_RATE).toFixed(2)}x
                 </div>
@@ -396,8 +402,8 @@ export function BorrowModal({
               max={selectedStrategy.maxLeverage || defaultMaxLeverage}
             />
             <div className="flex justify-between font-mono text-xs">
-              <span>1.00x</span>
-              <span>Max 10x</span>
+              <span>{t("minLeverage")}</span>
+              <span>{t("maxLeverage")}</span>
             </div>
             <div className="flex flex-col gap-2 text-left">
               <AssetInput
@@ -415,7 +421,10 @@ export function BorrowModal({
                 )}
               />
               <p className="text-muted font-mono text-xs">
-                {`Available for borrow ${selectedAsset.symbol}: ${availableLiquidityFormatted.text}`}
+                {t("availableForBorrow", {
+                  symbol: selectedAsset.symbol,
+                  amount: availableLiquidityFormatted.text,
+                })}
               </p>
             </div>
           </Card>
@@ -437,13 +446,13 @@ export function BorrowModal({
           >
             {actionButtonMeta.text}
           </Button>
-          <p className="font-mono text-xs">{`Step ${stepText}`}</p>
+          <p className="font-mono text-xs">{t("step", { step: stepText })}</p>
         </div>
         <div className="flex flex-col gap-8">
-          <Heading level="5">Position details</Heading>
+          <Heading level="5">{t("positionDetails")}</Heading>
           <div className="flex flex-nowrap justify-between gap-4 pr-2 overflow-ellipsis">
             <Heading level="6" className="text-text-dimmed">
-              Total balance
+              {t("totalBalance")}
             </Heading>
             <RemoteText
               isLoading={borrowPreviewLoadingDisplayed}

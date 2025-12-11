@@ -40,7 +40,8 @@ export function BorrowCard({
   const availableLiquidityFormatted = formatNumberToKMB(
     Number(availableLiquidityUnits.meta!.rawViem)
   );
-  const t = useTranslations("common");
+  const tCommon = useTranslations("common");
+  const t = useTranslations("borrow.borrowCard");
   const onBtnClick = () => {
     if (!isConnected) {
       onConnectWallet?.();
@@ -143,7 +144,7 @@ export function BorrowCard({
             </div>,
           ],
           [
-            <div key="1">Liquidity</div>,
+            <div key="1">{t("liquidity")}</div>,
             <div key="2" className="text-right">
               {availableLiquidityFormatted.text} {selectedAsset.symbol}
             </div>,
@@ -156,7 +157,7 @@ export function BorrowCard({
         onClick={onBtnClick}
         disabled={disabled}
       >
-        {isConnected ? "Borrow" : t("connectWallet")}
+        {isConnected ? t("borrow") : tCommon("connectWallet")}
       </Button>
     </Card>
   );

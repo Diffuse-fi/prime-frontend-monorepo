@@ -1,4 +1,11 @@
-import { Chain, type PublicClient, type Address, createPublicClient, http } from "viem";
+import {
+  Chain,
+  type PublicClient,
+  type Address,
+  createPublicClient,
+  http,
+  fallback,
+} from "viem";
 import { Viewer, Vault } from "@diffuse/sdk-js";
 
 export type VaultRuntime = {
@@ -15,13 +22,13 @@ export class ChainRuntime {
   viewer: Viewer;
   startBlock: bigint;
 
-  constructor(chain: Chain, rpcUrl: string, startBlock: bigint) {
+  constructor(chain: Chain, rpcUrls: string[], startBlock: bigint) {
     this.chain = chain;
     this.startBlock = startBlock;
 
     this.publicClient = createPublicClient({
       chain,
-      transport: http(rpcUrl),
+      transport: fallback(rpcUrls.map(url => http(url))),
     });
 
     this.viewer = new Viewer({
