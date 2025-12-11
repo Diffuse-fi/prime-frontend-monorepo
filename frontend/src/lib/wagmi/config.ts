@@ -17,7 +17,7 @@ const transports = Object.fromEntries(
     chain.id,
     fallback([
       ...(customRpcMap[chain.id] ?? []).map(url => http(url)),
-      http(chain.rpcUrls.default.http[0]),
+      ...chain.rpcUrls.default.http.map(url => http(url)),
     ]),
   ])
 );
