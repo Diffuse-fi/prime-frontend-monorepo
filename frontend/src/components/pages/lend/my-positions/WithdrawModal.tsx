@@ -142,7 +142,9 @@ export function WithdrawModal({
         </div>
         <UncontrolledCollapsible
           defaultOpen
-          summary={<span className="text-text-dimmed font-mono text-sm">{t("position")}</span>}
+          summary={
+            <span className="text-text-dimmed font-mono text-sm">{t("position")}</span>
+          }
         >
           <div className="border-primary flex flex-col gap-2 border-l px-2 py-1">
             <div className="flex items-center justify-between text-sm">

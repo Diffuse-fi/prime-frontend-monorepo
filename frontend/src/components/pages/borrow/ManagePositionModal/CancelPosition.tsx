@@ -54,16 +54,12 @@ export function CancelPosition({
             {t("positionClosure")}
           </Heading>
         </div>
-        <p className="text-err px-5">
-          {t("closureWarning")}
-        </p>
+        <p className="text-err px-5">{t("closureWarning")}</p>
         <div className="bg-muted/15 gap-4 rounded-md px-6 py-4">
           <Heading level="5" className="text-text-dimmed">
             {t("feesUnavailable")}
           </Heading>
-          <p className="text-muted mt-4 text-sm">
-            {t("feesUnavailable")}
-          </p>
+          <p className="text-muted mt-4 text-sm">{t("feesUnavailable")}</p>
         </div>
         <SlippageInput
           className="px-5"

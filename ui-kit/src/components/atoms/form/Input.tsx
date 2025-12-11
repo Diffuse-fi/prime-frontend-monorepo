@@ -6,7 +6,6 @@ export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
   size?: "sm" | "md" | "lg";
   error?: boolean;
-  success?: boolean;
   left?: React.ReactNode;
   right?: React.ReactNode;
   className?: string;
@@ -18,7 +17,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     {
       size = "md",
       error,
-      success,
       left,
       right,
       className,
