@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useClients } from "../../wagmi/useClients";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
-import type { Address } from "viem";
+import { type Address } from "viem";
 import type { VaultFullInfo } from "../types";
 import type { BorrowerPosition } from "../types";
 

@@ -10,12 +10,16 @@ export interface StrategiesListProps {
 }
 
 export function StrategiesList({ strategies }: StrategiesListProps) {
-  const t = useTranslations("lend.strategiesList");
-  
+  const t = useTranslations();
+
   return (
     <div className="bg-preset-gray-50 overflow-hidden rounded-md pt-2 pb-4">
       <SimpleTable
-        columns={[t("asset"), t("apr"), t("endDate")]}
+        columns={[
+          t("lend.strategiesList.asset"),
+          t("common.apr"),
+          t("lend.strategiesList.endDate"),
+        ]}
         rows={strategies.map(s => [
           <div key="1" className="flex items-center gap-2">
             <AssetImage

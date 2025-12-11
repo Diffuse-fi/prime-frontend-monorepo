@@ -36,6 +36,7 @@ export function VaultCard({
   isConnected,
 }: VaultProps) {
   const t = useTranslations("lend");
+  const tCommon = useTranslations("common");
   const vaultAprFormatted = formatAprToPercent(vault.targetApr);
 
   return (
@@ -78,7 +79,7 @@ export function VaultCard({
         columns={[
           t("rewardsType"),
           <div key="key" className="text-right font-mono text-xs">
-            {t("apr")}
+            {tCommon("apr")}
           </div>,
         ]}
         rows={[

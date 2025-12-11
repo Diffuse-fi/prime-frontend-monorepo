@@ -56,12 +56,15 @@ export function PositionDetails({
       ).text
     : "N/A";
   const t = useTranslations("borrow.positionDetails");
+  const tCommon = useTranslations("common");
 
   return (
     <div className="text-text-dimmed mt-2 flex flex-col gap-4 text-sm">
       <UncontrolledCollapsible
         defaultOpen
-        summary={<span className="text-muted font-mono text-xs">{t("positionHealth")}</span>}
+        summary={
+          <span className="text-muted font-mono text-xs">{t("positionHealth")}</span>
+        }
       >
         <div className="flex flex-col gap-2 border-l border-[#FF4800] px-2 py-1">
           <div className="flex items-center justify-between">
@@ -80,7 +83,7 @@ export function PositionDetails({
       </UncontrolledCollapsible>
       <UncontrolledCollapsible
         defaultOpen
-        summary={<span className="text-muted font-mono text-xs">{t("apr")}</span>}
+        summary={<span className="text-muted font-mono text-xs">{tCommon("apr")}</span>}
       >
         <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
           <div className="flex items-center justify-between">
@@ -90,7 +93,7 @@ export function PositionDetails({
         </div>
         <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
           <div className="flex items-center justify-between">
-            <span>{t("leverage")}</span>
+            <span>{tCommon("leverage")}</span>
             <span>{leverageDisplay}</span>
           </div>
         </div>

@@ -24,8 +24,8 @@ export function ManagePositionModal({
   onPositionClosure,
   selectedPosition,
 }: ManagePositionModalProps) {
-  const t = useTranslations("borrow.managePositionModal");
-  
+  const t = useTranslations();
+
   return (
     <Dialog
       open={open}
@@ -38,12 +38,14 @@ export function ManagePositionModal({
       <Tabs defaultValue="close">
         <Tabs.List align="start">
           <Tabs.Trigger value="collateral" disabled>
-            {t("collateral")}
+            {t("borrow.managePositionModal.collateral")}
           </Tabs.Trigger>
           <Tabs.Trigger value="leverage" disabled>
-            {t("leverage")}
+            {t("common.leverage")}
           </Tabs.Trigger>
-          <Tabs.Trigger value="close">{t("closePosition")}</Tabs.Trigger>
+          <Tabs.Trigger value="close">
+            {t("borrow.managePositionModal.closePosition")}
+          </Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="close" inset>
           <CancelPosition

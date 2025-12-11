@@ -42,6 +42,7 @@ export function PositionCard({
     : "-";
   const t = useTranslations("myPositions");
   const tLend = useTranslations("lend");
+  const tCommon = useTranslations("common");
 
   return (
     <Card
@@ -84,7 +85,7 @@ export function PositionCard({
         columns={[
           tLend("rewardsType"),
           <div key="key" className="text-right font-mono text-xs">
-            {tLend("apr")}
+            {tCommon("apr")}
           </div>,
           <div key="key" className="text-right font-mono text-xs">
             {t("reward")}

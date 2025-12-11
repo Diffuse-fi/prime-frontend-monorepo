@@ -94,6 +94,7 @@ export function BorrowModal({
   onBorrowRequestSuccess,
 }: ChainSwitchModalProps) {
   const t = useTranslations("borrow.borrowModal");
+  const tCommon = useTranslations("common");
   const { refetchTotalAssets, refetchLimits } = useVaults();
   const availableLiquidity = selectedStrategy.vault.availableLiquidity;
   const title = t("title", { assetSymbol: selectedAsset.symbol });
@@ -139,7 +140,7 @@ export function BorrowModal({
     : "";
   const onSuccessAllowance = useCallback(() => {
     toast(t("toasts.approveSuccess"));
-  }, [t, toast]);
+  }, [t]);
   const allowanceInput = {
     address: selectedStrategy.vault.address,
     assetAddress: collateralAsset.address,
@@ -374,14 +375,19 @@ export function BorrowModal({
                 aria-label={t("selectCollateralAsset")}
               />
             </div>
-            <div className="text-muted pl-2 text-left font-mono text-xs whitespace-nowrap">{t("balance", { symbol: collateralAsset.symbol, amount: balanceDisplay ? balanceDisplay.text : "N/A" })}</div>
+            <div className="text-muted pl-2 text-left font-mono text-xs whitespace-nowrap">
+              {t("balance", {
+                symbol: collateralAsset.symbol,
+                amount: balanceDisplay ? balanceDisplay.text : "N/A",
+              })}
+            </div>
           </div>
           <Card
             className="bg-preset-gray-50 border-none"
             cardBodyClassName="gap-2"
             header={
               <div className="flex items-center justify-between">
-                <Heading level="5">{t("leverage")}</Heading>
+                <Heading level="5">{tCommon("leverage")}</Heading>
                 <div className="text-secondary text-lg">
                   {(leverage / LEVERAGE_RATE).toFixed(2)}x
                 </div>
@@ -415,7 +421,10 @@ export function BorrowModal({
                 )}
               />
               <p className="text-muted font-mono text-xs">
-                {t("availableForBorrow", { symbol: selectedAsset.symbol, amount: availableLiquidityFormatted.text })}
+                {t("availableForBorrow", {
+                  symbol: selectedAsset.symbol,
+                  amount: availableLiquidityFormatted.text,
+                })}
               </p>
             </div>
           </Card>
