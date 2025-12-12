@@ -11,7 +11,9 @@ export const config = {
   matcher: [
     {
       // Skip all internal paths
-      source: String.raw`/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|.*\..*).*)`,
+      source:
+        // eslint-disable-next-line unicorn/prefer-string-raw
+        "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|.*\\..*).*)",
     },
   ],
 };

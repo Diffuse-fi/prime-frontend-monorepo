@@ -19,7 +19,8 @@ export function compose(opts: { always?: Finalizer[]; stack: MW[] }) {
 
   return async (req: NextRequest, ev: NextFetchEvent) => {
     const ctx: Ctx = {};
-    let out: NextResponse | void;
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    let out: NextResponse | void = undefined;
 
     for (const mw of stack) {
       out = await mw(req, ev, ctx);
