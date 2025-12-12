@@ -20,9 +20,9 @@ import { showSkeletons } from "@/lib/misc/ui";
 import { usePrevValueLocalStorage } from "@/lib/misc/usePrevValueLocalStorage";
 import { toast } from "@/lib/toast";
 import { useOnChainSwitch } from "@/lib/wagmi/onChainSwitch";
-import { useERC20TokenBalance } from "../../../lib/wagmi/useErc20TokenBalance.js";
 
 import { useVaults } from "../../../lib/core/hooks/useVaults";
+import { useERC20TokenBalance } from "../../../lib/wagmi/useErc20TokenBalance";
 import { AssetsList } from "../../AssetsList";
 import { VaultCard } from "./VaultCard";
 

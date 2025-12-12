@@ -14,7 +14,8 @@ export function WebVitals() {
       value: toInt(metric.name, metric.value),
     };
 
-    globalThis.gtag?.("event", metric.name, params);
+    // eslint-disable-next-line unicorn/prefer-global-this
+    window.gtag?.("event", metric.name, params);
   });
 
   return null;

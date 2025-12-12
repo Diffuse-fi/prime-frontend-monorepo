@@ -23,8 +23,14 @@ const memoLoadRetryOnUndefined = (url: URL) => {
   return async () => {
     if (!p) {
       p = fetch(url)
-        .then(r => (r.ok ? r.arrayBuffer() : Promise.reject(r.status)))
-        .catch(() => {});
+        .then(r => {
+          if (!r.ok) {
+            throw new Error(String(r.status));
+          }
+          return r.arrayBuffer();
+        })
+        // eslint-disable-next-line unicorn/no-useless-undefined
+        .catch(() => undefined);
     }
 
     const result = await p;

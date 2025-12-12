@@ -30,9 +30,9 @@ import { useRouter } from "@/lib/localization/navigation";
 import { useDebounce } from "@/lib/misc/useDebounce";
 import { useLocalStorage } from "@/lib/misc/useLocalStorage";
 import { toast } from "@/lib/toast";
-import { useERC20TokenBalance } from "../../../lib/wagmi/useErc20TokenBalance.js";
 
 import { SelectedStartegy } from ".";
+import { useERC20TokenBalance } from "../../../lib/wagmi/useErc20TokenBalance";
 import { PositionDetails } from "./PositionDetails";
 import { SlippageInput } from "./SlippageInput";
 
