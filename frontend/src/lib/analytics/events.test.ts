@@ -82,25 +82,58 @@ describe("Analytics Events", () => {
   });
 
   describe("trackPageView", () => {
-    it("should track page view with path", async () => {
+    it("should track page view with path for home", async () => {
       const { sendGAEvent } = await import("@next/third-parties/google");
       
-      trackPageView("/lend");
+      trackPageView("/");
       
       expect(sendGAEvent).toHaveBeenCalledWith("event", "page_view_home", {
         modal_name: undefined,
+        value: "/",
+      });
+    });
+
+    it("should track page view for lend page", async () => {
+      const { sendGAEvent } = await import("@next/third-parties/google");
+      
+      trackPageView("/lend", "Lend Page");
+      
+      expect(sendGAEvent).toHaveBeenCalledWith("event", "page_view_lend", {
+        modal_name: "Lend Page",
         value: "/lend",
       });
     });
 
-    it("should track page view with path and title", async () => {
+    it("should track page view for borrow page", async () => {
       const { sendGAEvent } = await import("@next/third-parties/google");
       
-      trackPageView("/borrow", "Borrow Page");
+      trackPageView("/borrow");
       
-      expect(sendGAEvent).toHaveBeenCalledWith("event", "page_view_home", {
-        modal_name: "Borrow Page",
+      expect(sendGAEvent).toHaveBeenCalledWith("event", "page_view_borrow", {
+        modal_name: undefined,
         value: "/borrow",
+      });
+    });
+
+    it("should track page view for my positions lend page", async () => {
+      const { sendGAEvent } = await import("@next/third-parties/google");
+      
+      trackPageView("/lend/my-positions");
+      
+      expect(sendGAEvent).toHaveBeenCalledWith("event", "page_view_my_positions_lend", {
+        modal_name: undefined,
+        value: "/lend/my-positions",
+      });
+    });
+
+    it("should track page view for my positions borrow page", async () => {
+      const { sendGAEvent } = await import("@next/third-parties/google");
+      
+      trackPageView("/borrow/my-positions");
+      
+      expect(sendGAEvent).toHaveBeenCalledWith("event", "page_view_my_positions_borrow", {
+        modal_name: undefined,
+        value: "/borrow/my-positions",
       });
     });
   });

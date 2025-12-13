@@ -142,5 +142,18 @@ export function trackEvent(name: EventName, params?: EventParams): void {
  * trackPageView('/lend', 'Lend Page');
  */
 export function trackPageView(path: string, title?: string): void {
-  trackEvent("page_view_home", { value: path, modal_name: title });
+  // Map path to appropriate event name
+  let eventName: EventName = "page_view_home";
+  
+  if (path.includes("/lend/my-positions")) {
+    eventName = "page_view_my_positions_lend";
+  } else if (path.includes("/lend")) {
+    eventName = "page_view_lend";
+  } else if (path.includes("/borrow/my-positions")) {
+    eventName = "page_view_my_positions_borrow";
+  } else if (path.includes("/borrow")) {
+    eventName = "page_view_borrow";
+  }
+  
+  trackEvent(eventName, { value: path, modal_name: title });
 }

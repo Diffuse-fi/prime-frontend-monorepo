@@ -12,6 +12,7 @@ import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { useClients } from "../../wagmi/useClients";
 import { SelectedVault } from "../types";
+import { isUserRejectedError } from "../utils/errors";
 
 export type AllowanceStatus = "insufficient" | "missing" | "ok" | "unknown";
 export type ApprovalPolicy = "exact" | "infinite";
@@ -254,14 +255,12 @@ export function useEnsureAllowances(
         await refetch();
         onSuccess?.();
       } catch (error) {
-        const isRejected = error instanceof Error && 
-          (error.message.includes("User rejected") || 
-           error.message.includes("user rejected") ||
-           error.message.includes("User denied"));
+        const amount = opts?.mode === "infinite" ? maxUint256 : v.amount;
+        const isRejected = isUserRejectedError(error);
         
         if (isRejected) {
           trackEvent("lend_approve_rejected", {
-            amount: v.amount.toString(),
+            amount: amount.toString(),
             asset_symbol: v.assetSymbol,
             chain_id: chainId!,
             vault_address: getAddress(v.address),
@@ -269,7 +268,7 @@ export function useEnsureAllowances(
         } else {
           const err = error instanceof Error ? error : new Error("Unknown error");
           trackEvent("lend_approve_error", {
-            amount: v.amount.toString(),
+            amount: amount.toString(),
             asset_symbol: v.assetSymbol,
             chain_id: chainId!,
             error_message: err.message,
