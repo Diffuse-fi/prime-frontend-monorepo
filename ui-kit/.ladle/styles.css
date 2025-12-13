@@ -5,6 +5,8 @@
 @source "../src";
 @source "./**/*.{ts,tsx}";
 
+@config "../tailwind.config.ts";
+
 @layer base {
   html,
   body {

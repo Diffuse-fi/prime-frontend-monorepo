@@ -5,6 +5,7 @@ import {
   AssetInput,
   Button,
   Card,
+  Checkbox,
   Dialog,
   Heading,
   RemoteText,
@@ -17,6 +18,7 @@ import now from "lodash/now";
 import { InfoIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ReactNode, useCallback, useMemo, useReducer } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { getAddress, parseUnits } from "viem";
 
 import { AssetImage } from "@/components/misc/images/AssetImage";
@@ -56,6 +58,10 @@ type BorrowAction =
   | { leverage: number; type: "SET_LEVERAGE" }
   | { type: "RESET" };
 
+type BorrowFormValues = {
+  acknowledged: boolean;
+};
+
 type BorrowState = { borrow: bigint; collateral: bigint; leverage: number };
 
 export function BorrowModal({
@@ -65,6 +71,11 @@ export function BorrowModal({
   selectedAsset,
   selectedStrategy,
 }: ChainSwitchModalProps) {
+  const { control, formState, handleSubmit } = useForm<BorrowFormValues>({
+    defaultValues: { acknowledged: false },
+    mode: "onSubmit",
+  });
+  const { errors } = formState;
   const t = useTranslations("borrow.borrowModal");
   const tCommon = useTranslations("common");
   const { refetchLimits, refetchTotalAssets } = useVaults();
@@ -410,10 +421,30 @@ export function BorrowModal({
             ]}
             value={slippage}
           />
+          <Controller
+            control={control}
+            name="acknowledged"
+            render={({ field }) => (
+              <Checkbox
+                checked={field.value}
+                className="mt-4"
+                error={errors.acknowledged?.message}
+                label={tCommon("acknowledgements")}
+                onCheckedChange={val => field.onChange(val === true)}
+              />
+            )}
+            rules={{
+              validate: v => v || tCommon("acknowledgementsError"),
+            }}
+          />
           <Button
             className="mx-auto mt-6 lg:w-2/3"
             disabled={actionButtonMeta.disabled}
-            onClick={actionButtonMeta.onClick}
+            onClick={handleSubmit(() => {
+              if (actionButtonMeta.onClick) {
+                actionButtonMeta.onClick();
+              }
+            })}
             size="lg"
           >
             {actionButtonMeta.text}
