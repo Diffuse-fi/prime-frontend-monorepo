@@ -77,7 +77,7 @@ describe("Analytics Events", () => {
       
       trackEvent("wallet_disconnect");
       
-      expect(sendGAEvent).toHaveBeenCalledWith("event", "wallet_disconnect", undefined);
+      expect(sendGAEvent).toHaveBeenCalledWith("event", "wallet_disconnect", {});
     });
   });
 
