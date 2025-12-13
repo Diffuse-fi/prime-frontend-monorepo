@@ -5,6 +5,8 @@ import { ConnectButton as ConnectButtonComponent } from "@rainbow-me/rainbowkit"
 import { Wallet } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { trackEvent } from "@/lib/analytics";
+
 import { DesktopOnly, MobileOnly } from "../misc/viewports";
 
 export default function ConnectButton() {
@@ -15,6 +17,11 @@ export default function ConnectButton() {
       {({ account, chain, mounted, openAccountModal, openConnectModal }) => {
         const ready = mounted;
         const connected = ready && account && chain;
+
+        const handleOpenAccountModal = () => {
+          trackEvent("wallet_account_modal_open");
+          openAccountModal();
+        };
 
         return (
           <div
@@ -35,7 +42,7 @@ export default function ConnectButton() {
                     ? `Account settings for ${account.displayName}`
                     : t("navbar.walletConnect")
                 }
-                onClick={connected ? openAccountModal : openConnectModal}
+                onClick={connected ? handleOpenAccountModal : openConnectModal}
                 size="sm"
                 type="button"
               >
@@ -52,7 +59,7 @@ export default function ConnectButton() {
                     : t("navbar.walletConnect")
                 }
                 icon={<Wallet size={20} />}
-                onClick={connected ? openAccountModal : openConnectModal}
+                onClick={connected ? handleOpenAccountModal : openConnectModal}
                 size="sm"
                 type="button"
               />

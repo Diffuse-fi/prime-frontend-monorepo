@@ -6,6 +6,7 @@ import { produce } from "immer";
 import { useMemo, useState } from "react";
 import { type Address, getAddress, type Hash } from "viem";
 
+import { trackEvent } from "@/lib/analytics";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 import { getSlippageBpsFromKey } from "@/lib/formulas/slippage";
 
@@ -123,6 +124,13 @@ export function useBorrow(
       try {
         setPendingKey(idemKey);
         setPhase(addr, { phase: "awaiting-signature" });
+        trackEvent("borrow_request_start", {
+          amount: selected.assetsToBorrow.toString(),
+          asset_symbol: selected.assetSymbol,
+          chain_id: chainId!,
+          leverage: Number(selected.collateralAmount + selected.assetsToBorrow) / Number(selected.collateralAmount),
+          vault_address: addr,
+        });
 
         const strategy = vault.strategies.find(s => s.id === selected.strategyId);
         if (!strategy) {
@@ -216,17 +224,38 @@ export function useBorrow(
         if (receipt.status === "success") {
           setPhase(addr, { hash: receipt.transactionHash, phase: "success" });
           result.hash = receipt.transactionHash;
+          trackEvent("borrow_request_success", {
+            amount: selected.assetsToBorrow.toString(),
+            asset_symbol: selected.assetSymbol,
+            chain_id: chainId!,
+            leverage: Number(selected.collateralAmount + selected.assetsToBorrow) / Number(selected.collateralAmount),
+            transaction_hash: receipt.transactionHash,
+            vault_address: addr,
+          });
           onBorrowSuccess?.(addr, receipt.transactionHash);
         } else {
           const e = new Error("Transaction reverted");
           setPhase(addr, { errorMessage: e.message, phase: "error" });
           result.error = e;
+          trackEvent("borrow_request_error", {
+            amount: selected.assetsToBorrow.toString(),
+            asset_symbol: selected.assetSymbol,
+            chain_id: chainId!,
+            error_message: e.message,
+            vault_address: addr,
+          });
           onBorrowError?.(e.message, addr);
           borrowLogger.warn("borrow error", { address: addr, reason: e.message });
         }
       } catch (error) {
         if (isUserRejectedError(error)) {
           setPhase(addr, { phase: "idle" });
+          trackEvent("borrow_request_rejected", {
+            amount: selected.assetsToBorrow.toString(),
+            asset_symbol: selected.assetSymbol,
+            chain_id: chainId!,
+            vault_address: addr,
+          });
           borrowLogger.info("borrow request cancelled by user", { address: addr });
           return result;
         }
@@ -234,6 +263,13 @@ export function useBorrow(
         const e = error instanceof Error ? error : new Error("Unknown error");
         setPhase(addr, { errorMessage: e.message, phase: "error" });
         result.error = e;
+        trackEvent("borrow_request_error", {
+          amount: selected.assetsToBorrow.toString(),
+          asset_symbol: selected.assetSymbol,
+          chain_id: chainId!,
+          error_message: e.message,
+          vault_address: addr,
+        });
         onBorrowError?.(e.message, addr);
         loggerMut.error("mutation error (borrow)", {
           address: addr,
