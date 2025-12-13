@@ -1,9 +1,10 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { Tooltip, TooltipProvider } from "./Tooltip";
+
 import { Button } from "@/atoms";
 
+import { Tooltip, TooltipProvider } from "./Tooltip";
+
 export default {
-  title: "Molecules/Display/Tooltip",
   decorators: [
     Component => (
       <TooltipProvider>
@@ -11,6 +12,7 @@ export default {
       </TooltipProvider>
     ),
   ],
+  title: "Molecules/Display/Tooltip",
 } satisfies StoryDefault;
 
 export const Default: Story = () => (

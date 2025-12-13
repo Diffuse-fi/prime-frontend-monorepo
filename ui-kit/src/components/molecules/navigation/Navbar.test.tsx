@@ -1,14 +1,15 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
+import React from "react";
 import "@testing-library/jest-dom";
+
 import { Navbar } from "./Navbar";
 
 describe("<Navbar />", () => {
   it("renders logo, navigation, wallet and merges classes", () => {
     render(
       <Navbar
-        data-testid="header"
         className="custom-class"
+        data-testid="header"
         logo={<span>Logo</span>}
         navigation={
           <nav aria-label="site">
@@ -30,7 +31,7 @@ describe("<Navbar />", () => {
   it("forwards ref to <nav> and passes through attributes", () => {
     const ref = React.createRef<HTMLElement>();
 
-    render(<Navbar ref={ref} aria-label="main" />);
+    render(<Navbar aria-label="main" ref={ref} />);
 
     expect(ref.current).toBeInstanceOf(HTMLElement);
     expect(ref.current?.tagName).toBe("HEADER");

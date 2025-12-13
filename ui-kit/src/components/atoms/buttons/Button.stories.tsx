@@ -1,8 +1,8 @@
 import type { Story, StoryDefault } from "@ladle/react";
+
 import { Button } from "./Button";
 
 export default {
-  title: "Atoms/Buttons/Button",
   decorators: [
     Component => (
       <div className="flex justify-center">
@@ -10,6 +10,7 @@ export default {
       </div>
     ),
   ],
+  title: "Atoms/Buttons/Button",
 } satisfies StoryDefault;
 
 export const Default: Story = () => <Button>Default Button</Button>;
@@ -34,10 +35,10 @@ export const Sizes: Story = () => (
 export const Disabled: Story = () => (
   <div className="flex flex-col gap-4">
     <Button disabled>Disabled Solid</Button>
-    <Button variant="ghost" disabled>
+    <Button disabled variant="ghost">
       Disabled Ghost
     </Button>
-    <Button variant="link" disabled>
+    <Button disabled variant="link">
       Disabled Link
     </Button>
   </div>

@@ -1,6 +1,7 @@
 import * as React from "react";
-import { tv } from "@/lib";
+
 import { Heading } from "@/atoms";
+import { tv } from "@/lib";
 
 const card = tv({
   base: "rounded-lg bg-fg overflow-hidden flex flex-col py-2 border border-border",
@@ -15,15 +16,15 @@ const cardBody = tv({
 });
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  header?: React.ReactNode;
-  children?: React.ReactNode;
   cardBodyClassName?: string;
+  children?: React.ReactNode;
+  header?: React.ReactNode;
 }
 
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ header, children, className, cardBodyClassName, ...rest }, ref) => {
+  ({ cardBodyClassName, children, className, header, ...rest }, ref) => {
     return (
-      <div ref={ref} className={card({ className })} {...rest}>
+      <div className={card({ className })} ref={ref} {...rest}>
         {header ? (
           <div className={cardHeader()}>
             {typeof header === "string" ? <Heading level="4">{header}</Heading> : header}

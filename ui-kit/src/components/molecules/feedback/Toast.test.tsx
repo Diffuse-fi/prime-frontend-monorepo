@@ -1,14 +1,15 @@
-import { it, expect, vi, describe } from "vitest";
-import * as React from "react";
-import { Toast } from "./Toast";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import * as React from "react";
+import { describe, expect, it, vi } from "vitest";
+
+import { Toast } from "./Toast";
 
 describe("<Toast />", () => {
   it("renders, forwards ref to root, and merges className", () => {
     const ref = React.createRef<HTMLLIElement>();
     render(
-      <Toast ref={ref} className="root-x" open message="Message">
+      <Toast className="root-x" message="Message" open ref={ref}>
         Message
       </Toast>
     );
@@ -19,37 +20,37 @@ describe("<Toast />", () => {
   });
 
   it("renders message and title", () => {
-    const { rerender } = render(<Toast open message="Message" title="Title" />);
+    const { rerender } = render(<Toast message="Message" open title="Title" />);
     expect(screen.getByText("Message")).toBeInTheDocument();
     expect(screen.getByText("Title")).toBeInTheDocument();
 
-    rerender(<Toast open message={<span>Message2</span>} />);
+    rerender(<Toast message={<span>Message2</span>} open />);
     expect(screen.getByText("Message2")).toBeInTheDocument();
   });
 
   it("closeable", () => {
-    render(<Toast open message="Message" closeable />);
+    render(<Toast closeable message="Message" open />);
     expect(screen.getByRole("button", { name: /close/i })).toBeInTheDocument();
   });
 
   it("calls onClose when close button is clicked", async () => {
     const onClose = vi.fn();
     const user = userEvent.setup();
-    render(<Toast open message="Message" closeable onClose={onClose} />);
+    render(<Toast closeable message="Message" onClose={onClose} open />);
 
     await user.click(screen.getByRole("button", { name: /close/i }));
     expect(onClose).toHaveBeenCalled();
   });
 
   it("does not render when open is false", () => {
-    render(<Toast open={false} message="Message" />);
+    render(<Toast message="Message" open={false} />);
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });
 
   it("auto closes after duration", async () => {
     const onClose = vi.fn();
     vi.useFakeTimers();
-    render(<Toast open message="Message" duration={1000} onClose={onClose} />);
+    render(<Toast duration={1000} message="Message" onClose={onClose} open />);
 
     expect(onClose).not.toHaveBeenCalled();
     vi.advanceTimersByTime(500);

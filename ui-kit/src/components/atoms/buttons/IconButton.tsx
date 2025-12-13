@@ -1,11 +1,13 @@
 import * as React from "react";
+
 import { tv, VariantProps } from "@/lib";
+
 import { Button } from "./Button";
 import { button } from "./styles";
 
 export const iconButton = tv({
+  defaultVariants: { icon: true, size: "md", variant: "ghost" },
   extend: button,
-  defaultVariants: { variant: "ghost", size: "md", icon: true },
 });
 
 export interface IconButtonProps
@@ -16,19 +18,19 @@ export interface IconButtonProps
 }
 
 export function IconButton({
-  size = "md",
-  variant,
+  "aria-label": ariaLabel,
   className,
   icon,
-  "aria-label": ariaLabel,
+  size = "md",
+  variant,
   ...rest
 }: IconButtonProps) {
   return (
     <Button
-      className={iconButton({ size, variant, className, icon: true })}
       aria-label={ariaLabel}
-      variant={variant}
+      className={iconButton({ className, icon: true, size, variant })}
       size={size}
+      variant={variant}
       {...rest}
     >
       {icon}

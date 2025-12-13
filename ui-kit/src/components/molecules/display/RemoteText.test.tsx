@@ -1,6 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import * as React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { RemoteText } from "./RemoteText";
 
 vi.mock("../../atoms", () => ({
@@ -20,14 +21,14 @@ describe("<RemoteText />", () => {
   });
 
   it("when loading, shows skeleton and hides text visually", () => {
-    render(<RemoteText text="Loading text" isLoading />);
+    render(<RemoteText isLoading text="Loading text" />);
     expect(screen.getByRole("status")).toBeInTheDocument();
     expect(screen.getByText("Loading text")).toHaveClass("invisible");
   });
 
   it("renders error alert and supports custom textComponent", () => {
     render(
-      <RemoteText text="Strong text" textComponent="strong" error="Failed to load" />
+      <RemoteText error="Failed to load" text="Strong text" textComponent="strong" />
     );
     expect(screen.getByText("Strong text", { selector: "strong" })).toBeInTheDocument();
     expect(screen.getByRole("alert")).toHaveTextContent("Failed to load");

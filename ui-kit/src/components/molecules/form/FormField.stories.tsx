@@ -1,6 +1,8 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { FormField } from "./FormField";
+
 import { Input } from "@/atoms";
+
+import { FormField } from "./FormField";
 
 export default {
   title: "Molecules/Form/FormField",
@@ -15,20 +17,20 @@ export const Default: Story = () => (
 export const Sizes: Story = () => (
   <div className="max-w-md space-y-4">
     <FormField label="Small" size="sm">
-      <Input size="sm" placeholder="Small input" />
+      <Input placeholder="Small input" size="sm" />
     </FormField>
     <FormField label="Medium" size="md">
-      <Input size="md" placeholder="Medium input" />
+      <Input placeholder="Medium input" size="md" />
     </FormField>
     <FormField label="Large" size="lg">
-      <Input size="lg" placeholder="Large input" />
+      <Input placeholder="Large input" size="lg" />
     </FormField>
   </div>
 );
 
 export const WithHint: Story = () => (
-  <FormField label="Password" hint="Must be at least 8 characters">
-    <Input type="password" placeholder="Enter password" />
+  <FormField hint="Must be at least 8 characters" label="Password">
+    <Input placeholder="Enter password" type="password" />
   </FormField>
 );
 
@@ -40,18 +42,18 @@ export const Required: Story = () => (
       </>
     }
   >
-    <Input type="email" placeholder="email@example.com" />
+    <Input placeholder="email@example.com" type="email" />
   </FormField>
 );
 
 export const Disabled: Story = () => (
-  <FormField label="Username" disabled>
-    <Input placeholder="johndoe" disabled />
+  <FormField disabled label="Username">
+    <Input disabled placeholder="johndoe" />
   </FormField>
 );
 
 export const WithError: Story = () => (
-  <FormField error label="Amount" hint="Insufficient balance">
+  <FormField error hint="Insufficient balance" label="Amount">
     <Input error placeholder="0.00" />
   </FormField>
 );
@@ -77,11 +79,11 @@ export const MultipleFields: Story = () => (
     <FormField label="Last Name">
       <Input placeholder="Doe" />
     </FormField>
-    <FormField label="Email" hint="We'll never share your email">
-      <Input type="email" placeholder="john.doe@example.com" />
+    <FormField hint="We'll never share your email" label="Email">
+      <Input placeholder="john.doe@example.com" type="email" />
     </FormField>
-    <FormField label="Password" hint="Must be at least 8 characters">
-      <Input type="password" placeholder="••••••••" />
+    <FormField hint="Must be at least 8 characters" label="Password">
+      <Input placeholder="••••••••" type="password" />
     </FormField>
   </div>
 );

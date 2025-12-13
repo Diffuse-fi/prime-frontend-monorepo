@@ -1,8 +1,10 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import { Card } from "./Card";
+import React from "react";
+import { describe, expect, it } from "vitest";
+
 import { Heading } from "@/atoms";
+
+import { Card } from "./Card";
 
 describe("Card", () => {
   it("renders with string header", () => {

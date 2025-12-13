@@ -1,18 +1,19 @@
 import type { IndexerDb, IndexerStorage } from "@/features/db";
 import type { ChainRuntime } from "@/features/runtime";
+
 import { Pool } from "pg";
 
 export type IndexerInit = {
   db: IndexerDb;
-  storage: IndexerStorage;
-  runtimes: Map<number, ChainRuntime>;
   pool?: Pool;
+  runtimes: Map<number, ChainRuntime>;
+  storage: IndexerStorage;
 };
 
 export class Indexer {
   readonly db: IndexerDb;
-  readonly storage: IndexerStorage;
   readonly runtimes: Map<number, ChainRuntime>;
+  readonly storage: IndexerStorage;
   private readonly pool?: Pool;
 
   constructor(init: IndexerInit) {
@@ -22,15 +23,20 @@ export class Indexer {
     this.pool = init.pool;
   }
 
+  async shutdown() {
+    if (this.pool) {
+      await this.pool.end();
+    }
+  }
+
   async syncAll() {
-    const runtimes = Array.from(this.runtimes.values());
+    const runtimes = [...this.runtimes.values()];
 
     const results = await Promise.allSettled(
       runtimes.map(runtime => this.syncChain(runtime))
     );
 
-    for (let i = 0; i < results.length; i++) {
-      const result = results[i];
+    for (const [i, result] of results.entries()) {
       const runtime = runtimes[i];
 
       if (result.status === "rejected") {
@@ -67,11 +73,11 @@ export class Indexer {
 
     await this.storage.upsertVaults(
       vaultInfos.map(v => ({
-        id: `${runtime.chain.id}:${v.vault}`,
         chainId: runtime.chain.id,
-        vault: v.vault,
         discoveredAt: now,
+        id: `${runtime.chain.id}:${v.vault}`,
         updatedAt: now,
+        vault: v.vault,
       }))
     );
 
@@ -80,11 +86,5 @@ export class Indexer {
       checkpointAddress,
       Number(toBlock)
     );
-  }
-
-  async shutdown() {
-    if (this.pool) {
-      await this.pool.end();
-    }
   }
 }

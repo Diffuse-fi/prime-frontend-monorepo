@@ -1,6 +1,8 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { RadioGroup } from "./RadioGroup";
+
 import { useState } from "react";
+
+import { RadioGroup } from "./RadioGroup";
 
 export default {
   title: "Organisms/RadioGroup",
@@ -33,7 +35,7 @@ export const Controlled: Story = () => {
   const [value, setValue] = useState("fast");
   return (
     <div className="space-y-4">
-      <RadioGroup value={value} onValueChange={setValue}>
+      <RadioGroup onValueChange={setValue} value={value}>
         <RadioGroup.Item value="slow">
           <div className="border-border hover:bg-muted/10 rounded border p-4">
             <div className="font-medium">Slow (Lowest Fee)</div>
@@ -65,7 +67,7 @@ export const WithDisabled: Story = () => (
         <div className="font-medium">Available Option</div>
       </div>
     </RadioGroup.Item>
-    <RadioGroup.Item value="option2" disabled>
+    <RadioGroup.Item disabled value="option2">
       <div className="border-border rounded border p-4 opacity-50">
         <div className="font-medium">Disabled Option</div>
       </div>

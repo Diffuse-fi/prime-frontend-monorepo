@@ -7,8 +7,8 @@
     "incremental": true,
     "isolatedModules": true,
     "lib": ["es2022"],
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
@@ -31,5 +31,7 @@
   "references": [
     { "path": "sdk-js" },
     { "path": "ui-kit" },
-    { "path": "frontend" }]
+    { "path": "frontend" },
+    { "path": "indexer" },
+    { "path": "config" }]
 }

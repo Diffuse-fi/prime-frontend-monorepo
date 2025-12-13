@@ -1,55 +1,56 @@
-import * as React from "react";
 import { Tooltip as TooltipPrimitive } from "radix-ui";
+import * as React from "react";
+
 import { cn } from "@/lib";
 
 export interface TooltipProps
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "content"> {
-  content: React.ReactNode;
-  side?: "top" | "right" | "bottom" | "left";
   children: React.ReactNode;
-  open?: boolean;
+  content: React.ReactNode;
   defaultOpen?: boolean;
   offset?: number;
   onOpenChange?: (open: boolean) => void;
+  open?: boolean;
+  side?: "bottom" | "left" | "right" | "top";
 }
 
 export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
   (
     {
-      content,
       children,
-      side = "top",
-      open,
-      defaultOpen,
       className,
-      onOpenChange,
+      content,
+      defaultOpen,
       offset = 4,
+      onOpenChange,
+      open,
+      side = "top",
       ...props
     },
     ref
   ) => {
     return (
       <TooltipPrimitive.Root
-        open={open}
         defaultOpen={defaultOpen}
         onOpenChange={onOpenChange}
+        open={open}
       >
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
         <TooltipPrimitive.Content
-          sideOffset={offset}
-          ref={ref}
-          hideWhenDetached
-          side={side}
           align="center"
           className={cn(
             "bg-fg text-text-primary shadow-soft rounded-md px-3 py-1.5 text-sm",
             "data-[side=top]:animate-in-slide-down data-[side=bottom]:animate-in-slide-up",
             className
           )}
+          hideWhenDetached
+          ref={ref}
+          side={side}
+          sideOffset={offset}
           {...props}
         >
           {content}
-          <TooltipPrimitive.Arrow width={11} height={5} className="fill-fg" />
+          <TooltipPrimitive.Arrow className="fill-fg" height={5} width={11} />
         </TooltipPrimitive.Content>
       </TooltipPrimitive.Root>
     );

@@ -1,5 +1,6 @@
 import { zeroAddress } from "viem";
 import z from "zod";
+
 import { AddressSchema, ChainIdSchema } from "./common";
 
 export const ASSETS: Assets = {
@@ -17,14 +18,14 @@ export const ASSETS: Assets = {
           symbol: "USDC",
         },
         {
-          symbol: "ETH",
-          name: "Ether",
           address: zeroAddress,
           chainId: 1,
           decimals: 18,
           legacyAllowance: false,
           logoURI:
             "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png",
+          name: "Ether",
+          symbol: "ETH",
         },
         {
           address: "0x545A490f9ab534AdF409A2E682bc4098f49952e3",
@@ -44,14 +45,14 @@ export const ASSETS: Assets = {
 };
 
 export const AssetInfoSchema = z.object({
-  chainId: ChainIdSchema,
   address: AddressSchema,
-  name: z.string().min(1),
-  symbol: z.string().min(1),
+  chainId: ChainIdSchema,
   decimals: z.number().int().min(0).max(255),
-  logoURI: z.string().url().optional(),
   extensions: z.record(z.string(), z.any()).optional(),
   legacyAllowance: z.boolean().optional(),
+  logoURI: z.string().url().optional(),
+  name: z.string().min(1),
+  symbol: z.string().min(1),
 });
 
 export type AssetInfo = z.infer<typeof AssetInfoSchema>;
@@ -59,9 +60,9 @@ export type AssetInfo = z.infer<typeof AssetInfoSchema>;
 export const AssetsSchema = z.object({
   chains: z.array(
     z.object({
+      assets: z.array(AssetInfoSchema),
       chainId: ChainIdSchema,
       name: z.string().min(1),
-      assets: z.array(AssetInfoSchema),
     })
   ),
 });

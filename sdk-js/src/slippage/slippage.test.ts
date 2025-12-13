@@ -1,33 +1,33 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
 import {
-  SLIPPAGE_DENOMINATOR,
   applySlippageBps,
   applySlippageBpsArray,
-  type SlippageBps,
+  SLIPPAGE_DENOMINATOR,
 } from "./slippage";
 
 describe("applySlippageBps", () => {
   it("returns the same amount when bps is 0 (down)", () => {
-    const amount = 1_000n;
-    const bps: SlippageBps = 0n;
+    const amount = 1000n;
+    const bps: bigint = 0n;
 
     const result = applySlippageBps(amount, bps, "down");
 
-    expect(result).toBe(1_000n);
+    expect(result).toBe(1000n);
   });
 
   it("returns the same amount when bps is 0 (up)", () => {
-    const amount = 1_000n;
-    const bps: SlippageBps = 0n;
+    const amount = 1000n;
+    const bps: bigint = 0n;
 
     const result = applySlippageBps(amount, bps, "up");
 
-    expect(result).toBe(1_000n);
+    expect(result).toBe(1000n);
   });
 
   it("applies downward slippage correctly (1%)", () => {
-    const amount = 1_000n;
-    const bps: SlippageBps = 100n;
+    const amount = 1000n;
+    const bps: bigint = 100n;
 
     const result = applySlippageBps(amount, bps, "down");
 
@@ -35,17 +35,17 @@ describe("applySlippageBps", () => {
   });
 
   it("applies upward slippage correctly (1%)", () => {
-    const amount = 1_000n;
-    const bps: SlippageBps = 100n;
+    const amount = 1000n;
+    const bps: bigint = 100n;
 
     const result = applySlippageBps(amount, bps, "up");
 
-    expect(result).toBe(1_010n);
+    expect(result).toBe(1010n);
   });
 
   it("handles maximum bps (100%) for downward slippage", () => {
-    const amount = 1_000n;
-    const bps: SlippageBps = SLIPPAGE_DENOMINATOR;
+    const amount = 1000n;
+    const bps: bigint = SLIPPAGE_DENOMINATOR;
 
     const result = applySlippageBps(amount, bps, "down");
 
@@ -53,17 +53,17 @@ describe("applySlippageBps", () => {
   });
 
   it("handles maximum bps (100%) for upward slippage", () => {
-    const amount = 1_000n;
-    const bps: SlippageBps = SLIPPAGE_DENOMINATOR;
+    const amount = 1000n;
+    const bps: bigint = SLIPPAGE_DENOMINATOR;
 
     const result = applySlippageBps(amount, bps, "up");
 
-    expect(result).toBe(2_000n);
+    expect(result).toBe(2000n);
   });
 
   it("returns 0 when amount is 0 regardless of bps and direction", () => {
     const amount = 0n;
-    const bps: SlippageBps = 500n;
+    const bps: bigint = 500n;
 
     const down = applySlippageBps(amount, bps, "down");
     const up = applySlippageBps(amount, bps, "up");
@@ -73,22 +73,22 @@ describe("applySlippageBps", () => {
   });
 
   it("throws when bps is negative", () => {
-    const amount = 1_000n;
-    const bps = -1n as SlippageBps;
+    const amount = 1000n;
+    const bps = -1n as bigint;
 
     expect(() => applySlippageBps(amount, bps, "down")).toThrow(/Invalid slippage bps/);
   });
 
   it("throws when bps is greater than denominator", () => {
-    const amount = 1_000n;
-    const bps = (SLIPPAGE_DENOMINATOR + 1n) as SlippageBps;
+    const amount = 1000n;
+    const bps = (SLIPPAGE_DENOMINATOR + 1n) as bigint;
 
     expect(() => applySlippageBps(amount, bps, "down")).toThrow(/Invalid slippage bps/);
   });
 
   it("uses 'down' as default direction", () => {
-    const amount = 1_000n;
-    const bps: SlippageBps = 100n;
+    const amount = 1000n;
+    const bps: bigint = 100n;
 
     const result = applySlippageBps(amount, bps);
 
@@ -96,8 +96,8 @@ describe("applySlippageBps", () => {
   });
 
   it("rounds down on integer division", () => {
-    const amount = 1_001n;
-    const bps: SlippageBps = 333n;
+    const amount = 1001n;
+    const bps: bigint = 333n;
 
     const result = applySlippageBps(amount, bps, "down");
 
@@ -111,26 +111,26 @@ describe("applySlippageBps", () => {
 
 describe("applySlippageBpsArray", () => {
   it("applies slippage to each element (down)", () => {
-    const amounts = [1_000n, 2_000n, 3_000n] as const;
-    const bps: SlippageBps = 100n;
+    const amounts = [1000n, 2000n, 3000n] as const;
+    const bps: bigint = 100n;
 
     const result = applySlippageBpsArray(amounts, bps, "down");
 
-    expect(result).toEqual([990n, 1_980n, 2_970n]);
+    expect(result).toEqual([990n, 1980n, 2970n]);
   });
 
   it("applies slippage to each element (up)", () => {
-    const amounts = [1_000n, 2_000n, 3_000n] as const;
-    const bps: SlippageBps = 100n;
+    const amounts = [1000n, 2000n, 3000n] as const;
+    const bps: bigint = 100n;
 
     const result = applySlippageBpsArray(amounts, bps, "up");
 
-    expect(result).toEqual([1_010n, 2_020n, 3_030n]);
+    expect(result).toEqual([1010n, 2020n, 3030n]);
   });
 
   it("returns an empty array when input is empty", () => {
     const amounts: bigint[] = [];
-    const bps: SlippageBps = 100n;
+    const bps: bigint = 100n;
 
     const result = applySlippageBpsArray(amounts, bps, "down");
 
@@ -138,9 +138,9 @@ describe("applySlippageBpsArray", () => {
   });
 
   it("does not mutate the original array", () => {
-    const amounts = [1_000n, 2_000n] as const;
+    const amounts = [1000n, 2000n] as const;
     const copy = [...amounts];
-    const bps: SlippageBps = 50n;
+    const bps: bigint = 50n;
 
     applySlippageBpsArray(amounts, bps, "down");
 
@@ -148,11 +148,11 @@ describe("applySlippageBpsArray", () => {
   });
 
   it("uses 'down' as default direction", () => {
-    const amounts = [1_000n, 2_000n] as const;
-    const bps: SlippageBps = 100n;
+    const amounts = [1000n, 2000n] as const;
+    const bps: bigint = 100n;
 
     const result = applySlippageBpsArray(amounts, bps);
 
-    expect(result).toEqual([990n, 1_980n]);
+    expect(result).toEqual([990n, 1980n]);
   });
 });

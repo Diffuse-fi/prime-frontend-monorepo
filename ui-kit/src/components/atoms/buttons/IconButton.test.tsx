@@ -1,7 +1,8 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
+import "@testing-library/jest-dom";
+import React from "react";
+
 import { IconButton } from "./IconButton";
 
 describe("<IconButton />", () => {
@@ -18,10 +19,10 @@ describe("<IconButton />", () => {
     render(
       <IconButton
         aria-label="confirm"
-        size="lg"
-        variant="solid"
         className="extra"
         icon={<svg />}
+        size="lg"
+        variant="solid"
       />
     );
 
@@ -44,7 +45,7 @@ describe("<IconButton />", () => {
     expect(onClick).toHaveBeenCalledTimes(1);
 
     rerender(
-      <IconButton aria-label="action" icon={<span />} onClick={onClick} disabled />
+      <IconButton aria-label="action" disabled icon={<span />} onClick={onClick} />
     );
 
     expect(btn).toBeDisabled();

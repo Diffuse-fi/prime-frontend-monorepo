@@ -1,6 +1,7 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import * as React from "react";
+import { describe, expect, it } from "vitest";
+
 import { Badge } from "./Badge";
 
 describe("<Badge />", () => {
@@ -16,7 +17,7 @@ describe("<Badge />", () => {
 
   it("applies size and color variants and merges className", () => {
     render(
-      <Badge data-testid="badge" size="lg" color="error" className="mx-2">
+      <Badge className="mx-2" color="error" data-testid="badge" size="lg">
         Error
       </Badge>
     );

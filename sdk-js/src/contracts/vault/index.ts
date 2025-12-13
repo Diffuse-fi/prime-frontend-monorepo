@@ -1,17 +1,19 @@
+import { raceSignal as abortable } from "race-signal";
 import { Address } from "viem";
-import { vaultAbi } from "./abi";
-import { Init } from "@/types";
-import { normalizeError } from "@/errors/normalize";
+
 import { WalletRequiredError } from "@/errors/errors";
+import { normalizeError } from "@/errors/normalize";
+import { Init } from "@/types";
+
+import { applySlippageBpsArray } from "../../slippage";
+import { getEvent } from "../events";
 import {
   ContractBase,
   GenericContractType,
   getContractInstance,
   SdkRequestOptions,
 } from "../shared";
-import { raceSignal as abortable } from "race-signal";
-import { getEvent } from "../events";
-import { applySlippageBpsArray } from "../../slippage";
+import { vaultAbi } from "./abi";
 
 const contractName = "Vault";
 const EV_BORROWER_POSITION_ACTIVATED = getEvent(
@@ -21,117 +23,10 @@ const EV_BORROWER_POSITION_ACTIVATED = getEvent(
 );
 
 export class Vault extends ContractBase {
-  constructor(init: Init) {
-    super(init);
-  }
-
   private _contract?: GenericContractType<typeof vaultAbi>;
 
-  private getContract() {
-    if (!this._contract) {
-      this._contract = getContractInstance(this.init, contractName, vaultAbi);
-    }
-    return this._contract;
-  }
-
-  async deposit(args: [bigint, Address], { signal }: SdkRequestOptions = {}) {
-    if (!this.init.client.wallet) throw new WalletRequiredError("deposit");
-
-    const c = this.getContract();
-
-    try {
-      if (!this.init.client.wallet) throw new WalletRequiredError("deposit");
-
-      const sim = await abortable(
-        this.init.client.public.simulateContract({
-          address: c.address,
-          abi: vaultAbi,
-          functionName: "deposit",
-          args,
-          account: this.init.client.wallet.account!,
-        }),
-        signal
-      );
-
-      if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
-
-      return await this.init.client.wallet.writeContract(sim.request);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "deposit",
-        args,
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
-  async withdraw(args: [bigint, Address, Address], { signal }: SdkRequestOptions = {}) {
-    if (!this.init.client.wallet) throw new WalletRequiredError("withdraw");
-
-    const c = this.getContract();
-
-    try {
-      const sim = await abortable(
-        this.init.client.public.simulateContract({
-          address: c.address,
-          abi: vaultAbi,
-          functionName: "withdraw",
-          args,
-          account: this.init.client.wallet.account!,
-        }),
-        signal
-      );
-
-      if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
-
-      return await this.init.client.wallet.writeContract(sim.request);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "withdraw",
-        args,
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
-  async getMaxDeposit(receiver: Address, { signal }: SdkRequestOptions = {}) {
-    try {
-      return await abortable(this.getContract().read.maxDeposit([receiver]), signal);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "getMaxDeposit",
-        args: [receiver],
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
-  async getMaxWithdraw(owner: Address, { signal }: SdkRequestOptions = {}) {
-    try {
-      return await abortable(this.getContract().read.maxWithdraw([owner]), signal);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "getMaxWithdraw",
-        args: [owner],
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
-  async totalAssets({ signal }: SdkRequestOptions = {}) {
-    try {
-      return await abortable(this.getContract().read.totalAssets(), signal);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "totalAssets",
-        contract: contractName,
-        chainId: this.chainId,
-      });
-    }
+  constructor(init: Init) {
+    super(init);
   }
 
   async accruedLenderYield(
@@ -144,41 +39,12 @@ export class Vault extends ContractBase {
         this.getContract().read.accruedLenderYield([strategiesIds, owner]),
         signal
       );
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "accruedLenderYield",
+    } catch (error) {
+      throw normalizeError(error, {
         args: [strategiesIds, owner],
-        contract: contractName,
         chainId: this.chainId,
-      });
-    }
-  }
-
-  async getLenderBalance(owner: Address, { signal }: SdkRequestOptions = {}) {
-    try {
-      return await abortable(this.getContract().read.balanceOf([owner]), signal);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "getLenderBalance",
-        args: [owner],
         contract: contractName,
-        chainId: this.chainId,
-      });
-    }
-  }
-
-  async getActiveBorrowerPositions(owner: Address, { signal }: SdkRequestOptions = {}) {
-    try {
-      return await abortable(
-        this.getContract().read.getActiveBorrowerPositions([owner]),
-        signal
-      );
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "getActiveBorrowerPositions",
-        args: [owner],
-        contract: contractName,
-        chainId: this.chainId,
+        op: "accruedLenderYield",
       });
     }
   }
@@ -210,9 +76,9 @@ export class Vault extends ContractBase {
     try {
       const sim = await abortable(
         this.init.client.public.simulateContract({
-          address: c.address,
           abi: vaultAbi,
-          functionName: "borrowRequest",
+          account: this.init.client.wallet.account!,
+          address: c.address,
           args: [
             strategyId,
             collateralType,
@@ -222,7 +88,7 @@ export class Vault extends ContractBase {
             minAssetsOut,
             deadline,
           ],
-          account: this.init.client.wallet.account!,
+          functionName: "borrowRequest",
         }),
         signal
       );
@@ -230,9 +96,8 @@ export class Vault extends ContractBase {
       if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
 
       return await this.init.client.wallet.writeContract(sim.request);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "borrowRequest",
+    } catch (error) {
+      throw normalizeError(error, {
         args: [
           strategyId,
           collateralType,
@@ -242,20 +107,120 @@ export class Vault extends ContractBase {
           minAssetsOut,
           deadline,
         ],
-        contract: contractName,
         chainId: this.chainId,
+        contract: contractName,
+        op: "borrowRequest",
       });
     }
   }
 
-  async getStrategylength({ signal }: SdkRequestOptions = {}) {
+  async deposit(args: [bigint, Address], { signal }: SdkRequestOptions = {}) {
+    if (!this.init.client.wallet) throw new WalletRequiredError("deposit");
+
+    const c = this.getContract();
+
     try {
-      return await abortable(this.getContract().read.getStrategyLength(), signal);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "getStrategylength",
-        contract: contractName,
+      if (!this.init.client.wallet) throw new WalletRequiredError("deposit");
+
+      const sim = await abortable(
+        this.init.client.public.simulateContract({
+          abi: vaultAbi,
+          account: this.init.client.wallet.account!,
+          address: c.address,
+          args,
+          functionName: "deposit",
+        }),
+        signal
+      );
+
+      if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+
+      return await this.init.client.wallet.writeContract(sim.request);
+    } catch (error) {
+      throw normalizeError(error, {
+        args,
         chainId: this.chainId,
+        contract: contractName,
+        op: "deposit",
+      });
+    }
+  }
+
+  async getActiveBorrowerPositions(owner: Address, { signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(
+        this.getContract().read.getActiveBorrowerPositions([owner]),
+        signal
+      );
+    } catch (error) {
+      throw normalizeError(error, {
+        args: [owner],
+        chainId: this.chainId,
+        contract: contractName,
+        op: "getActiveBorrowerPositions",
+      });
+    }
+  }
+
+  async getAvailableLiquidity({ signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(this.getContract().read.availableLiquidity(), signal);
+    } catch (error) {
+      throw normalizeError(error, {
+        chainId: this.chainId,
+        contract: contractName,
+        op: "availableLiquidity",
+      });
+    }
+  }
+
+  async getCurator({ signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(this.getContract().read.getCurator(), signal);
+    } catch (error) {
+      throw normalizeError(error, {
+        chainId: this.chainId,
+        contract: contractName,
+        op: "getCurator",
+      });
+    }
+  }
+
+  async getLenderBalance(owner: Address, { signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(this.getContract().read.balanceOf([owner]), signal);
+    } catch (error) {
+      throw normalizeError(error, {
+        args: [owner],
+        chainId: this.chainId,
+        contract: contractName,
+        op: "getLenderBalance",
+      });
+    }
+  }
+
+  async getMaxDeposit(receiver: Address, { signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(this.getContract().read.maxDeposit([receiver]), signal);
+    } catch (error) {
+      throw normalizeError(error, {
+        args: [receiver],
+        chainId: this.chainId,
+        contract: contractName,
+        op: "getMaxDeposit",
+      });
+    }
+  }
+
+  async getMaxWithdraw(owner: Address, { signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(this.getContract().read.maxWithdraw([owner]), signal);
+    } catch (error) {
+      throw normalizeError(error, {
+        args: [owner],
+        chainId: this.chainId,
+        contract: contractName,
+        op: "getMaxWithdraw",
       });
     }
   }
@@ -269,12 +234,12 @@ export class Vault extends ContractBase {
         this.getContract().read.getPendingBorrowerPositionIds([owner]),
         signal
       );
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "getPendingBorrowerPositionIds",
+    } catch (error) {
+      throw normalizeError(error, {
         args: [owner],
-        contract: contractName,
         chainId: this.chainId,
+        contract: contractName,
+        op: "getPendingBorrowerPositionIds",
       });
     }
   }
@@ -282,11 +247,23 @@ export class Vault extends ContractBase {
   async getSpreadFee({ signal }: SdkRequestOptions = {}) {
     try {
       return await abortable(this.getContract().read.getSpreadFee(), signal);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "getSpreadFee",
-        contract: contractName,
+    } catch (error) {
+      throw normalizeError(error, {
         chainId: this.chainId,
+        contract: contractName,
+        op: "getSpreadFee",
+      });
+    }
+  }
+
+  async getStrategylength({ signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(this.getContract().read.getStrategyLength(), signal);
+    } catch (error) {
+      throw normalizeError(error, {
+        chainId: this.chainId,
+        contract: contractName,
+        op: "getStrategylength",
       });
     }
   }
@@ -310,9 +287,8 @@ export class Vault extends ContractBase {
     try {
       const sim = await abortable(
         this.init.client.public.simulateContract({
-          address: this.getContract().address,
           abi: vaultAbi,
-          functionName: "previewBorrow",
+          address: this.getContract().address,
           args: [
             forUser,
             strategyId,
@@ -321,17 +297,30 @@ export class Vault extends ContractBase {
             assetsToBorrow,
             "0x",
           ], // TODO: fix args
+          functionName: "previewBorrow",
         }),
         signal
       );
 
       return sim.result;
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "previewBorrow",
+    } catch (error) {
+      throw normalizeError(error, {
         args: [forUser, strategyId, collateralType, collateralAmount, assetsToBorrow],
-        contract: contractName,
         chainId: this.chainId,
+        contract: contractName,
+        op: "previewBorrow",
+      });
+    }
+  }
+
+  async totalAssets({ signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(this.getContract().read.totalAssets(), signal);
+    } catch (error) {
+      throw normalizeError(error, {
+        chainId: this.chainId,
+        contract: contractName,
+        op: "totalAssets",
       });
     }
   }
@@ -354,11 +343,11 @@ export class Vault extends ContractBase {
       const minAssetsOutForPreview = [0n];
       const sim = await abortable(
         this.init.client.public.simulateContract({
-          address: this.getContract().address,
           abi: vaultAbi,
-          functionName: "unborrow",
-          args: [positionId, minAssetsOutForPreview, deadline, "0x"], // TODO: fix args
           account: this.init.client.wallet.account!,
+          address: this.getContract().address,
+          args: [positionId, minAssetsOutForPreview, deadline, "0x"], // TODO: fix args
+          functionName: "unborrow",
         }),
         signal
       );
@@ -369,11 +358,11 @@ export class Vault extends ContractBase {
       const gas =
         sim.request.gas ??
         (await this.init.client.public.estimateContractGas({
-          address: this.getContract().address,
           abi: vaultAbi,
-          functionName: "unborrow",
-          args: [positionId, adjustedMinAssetsOut, deadline, "0x"], // TODO: fix args
           account: this.init.client.wallet.account!,
+          address: this.getContract().address,
+          args: [positionId, adjustedMinAssetsOut, deadline, "0x"], // TODO: fix args
+          functionName: "unborrow",
         }));
 
       const gasAdj = (gas * 12n) / 10n;
@@ -385,24 +374,42 @@ export class Vault extends ContractBase {
         args: [positionId, adjustedMinAssetsOut, deadline, "0x"], // TODO: fix args
         gas: gasAdj,
       });
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "previewUnborrow",
+    } catch (error) {
+      throw normalizeError(error, {
         args: [positionId, deadline, slippage],
-        contract: contractName,
         chainId: this.chainId,
+        contract: contractName,
+        op: "previewUnborrow",
       });
     }
   }
 
-  async getAvailableLiquidity({ signal }: SdkRequestOptions = {}) {
+  async withdraw(args: [bigint, Address, Address], { signal }: SdkRequestOptions = {}) {
+    if (!this.init.client.wallet) throw new WalletRequiredError("withdraw");
+
+    const c = this.getContract();
+
     try {
-      return await abortable(this.getContract().read.availableLiquidity(), signal);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "availableLiquidity",
-        contract: contractName,
+      const sim = await abortable(
+        this.init.client.public.simulateContract({
+          abi: vaultAbi,
+          account: this.init.client.wallet.account!,
+          address: c.address,
+          args,
+          functionName: "withdraw",
+        }),
+        signal
+      );
+
+      if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+
+      return await this.init.client.wallet.writeContract(sim.request);
+    } catch (error) {
+      throw normalizeError(error, {
+        args,
         chainId: this.chainId,
+        contract: contractName,
+        op: "withdraw",
       });
     }
   }
@@ -424,11 +431,11 @@ export class Vault extends ContractBase {
     try {
       const sim = await abortable(
         this.init.client.public.simulateContract({
-          address: c.address,
           abi: vaultAbi,
-          functionName: "withdrawYield",
-          args: [strategyIds, user],
           account: this.init.client.wallet.account!,
+          address: c.address,
+          args: [strategyIds, user],
+          functionName: "withdrawYield",
         }),
         signal
       );
@@ -436,27 +443,24 @@ export class Vault extends ContractBase {
       if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
 
       return await this.init.client.wallet.writeContract(sim.request);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "withdrawYield",
+    } catch (error) {
+      throw normalizeError(error, {
         args: [strategyIds],
-        contract: contractName,
         chainId: this.chainId,
+        contract: contractName,
+        op: "withdrawYield",
       });
     }
   }
 
-  async getCurator({ signal }: SdkRequestOptions = {}) {
-    try {
-      return await abortable(this.getContract().read.getCurator(), signal);
-    } catch (e) {
-      throw normalizeError(e, {
-        op: "getCurator",
-        contract: contractName,
-        chainId: this.chainId,
-      });
+  private getContract() {
+    if (!this._contract) {
+      this._contract = getContractInstance(this.init, contractName, vaultAbi);
     }
+    return this._contract;
   }
 }
 
-export { vaultAbi, EV_BORROWER_POSITION_ACTIVATED };
+export { EV_BORROWER_POSITION_ACTIVATED };
+
+export { vaultAbi } from "./abi";

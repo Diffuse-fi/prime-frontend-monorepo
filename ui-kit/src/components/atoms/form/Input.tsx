@@ -1,28 +1,30 @@
 import * as React from "react";
+
 import { cn } from "@/lib";
+
 import { inputField, inputRoot } from "./inputStyles";
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {
-  size?: "sm" | "md" | "lg";
+  className?: string;
   error?: boolean;
   left?: React.ReactNode;
   right?: React.ReactNode;
-  className?: string;
+  size?: "lg" | "md" | "sm";
   wrapperClassName?: string;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
-      size = "md",
+      className,
+      disabled,
       error,
       left,
       right,
-      className,
-      wrapperClassName,
-      disabled,
+      size = "md",
       type = "text",
+      wrapperClassName,
       ...props
     },
     ref
@@ -31,13 +33,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div
-        className={cn(inputRoot({ size, state, disabled: !!disabled }), wrapperClassName)}
+        className={cn(inputRoot({ disabled: !!disabled, size, state }), wrapperClassName)}
       >
         {left ? <span className="ml-2 inline-flex items-center">{left}</span> : null}
 
         <input
-          ref={ref}
-          type={type}
+          aria-invalid={error ? "true" : undefined}
           className={cn(
             inputField({
               size,
@@ -46,8 +47,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             }),
             className
           )}
-          aria-invalid={error ? "true" : undefined}
           disabled={disabled}
+          ref={ref}
+          type={type}
           {...props}
         />
 

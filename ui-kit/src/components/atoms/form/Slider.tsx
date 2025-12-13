@@ -1,25 +1,26 @@
-import * as React from "react";
 import { Slider as SlidierPrimitive } from "radix-ui";
+import * as React from "react";
+
 import { cn } from "@/lib/cn";
 
 export interface SliderProps extends SlidierPrimitive.SliderProps {
   className?: string;
-  trackClassName?: string;
   rangeClassName?: string;
   thumbClassName?: string;
+  trackClassName?: string;
 }
 
 export const Slider = React.forwardRef<HTMLSpanElement, SliderProps>(function Slider(
-  { className, trackClassName, rangeClassName, thumbClassName, ...props },
+  { className, rangeClassName, thumbClassName, trackClassName, ...props },
   ref
 ) {
   return (
     <SlidierPrimitive.Root
-      ref={ref}
       className={cn(
         "relative flex w-full touch-none items-center select-none",
         className
       )}
+      ref={ref}
       {...props}
     >
       <SlidierPrimitive.Track

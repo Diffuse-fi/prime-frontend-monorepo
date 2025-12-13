@@ -1,6 +1,8 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { UncontrolledCollapsible, ControlledCollapsible } from "./Collapsible";
+
 import { useState } from "react";
+
+import { ControlledCollapsible, UncontrolledCollapsible } from "./Collapsible";
 
 export default {
   title: "Molecules/Display/Collapsible",
@@ -15,7 +17,7 @@ export const Uncontrolled: Story = () => (
 );
 
 export const DefaultOpen: Story = () => (
-  <UncontrolledCollapsible summary="Initially open" defaultOpen>
+  <UncontrolledCollapsible defaultOpen summary="Initially open">
     <p className="text-body">This collapsible starts in an open state.</p>
   </UncontrolledCollapsible>
 );
@@ -25,15 +27,15 @@ export const Controlled: Story = () => {
   return (
     <div className="space-y-4">
       <ControlledCollapsible
-        summary="Controlled collapsible"
-        open={open}
         onOpenChange={setOpen}
+        open={open}
+        summary="Controlled collapsible"
       >
         <p className="text-body">This is controlled externally.</p>
       </ControlledCollapsible>
       <button
-        onClick={() => setOpen(!open)}
         className="bg-primary text-fg rounded px-4 py-2"
+        onClick={() => setOpen(!open)}
       >
         Toggle from outside
       </button>

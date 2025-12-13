@@ -1,7 +1,9 @@
-import { Dialog as DialogPrimitive } from "radix-ui";
 import { X } from "lucide-react";
+import { Dialog as DialogPrimitive } from "radix-ui";
 import * as React from "react";
+
 import { cn, tv } from "@/lib";
+
 import { Heading, IconButton } from "../atoms";
 
 const content = tv({
@@ -13,37 +15,37 @@ const content = tv({
     "data-[state=open]:animate-modal-content-in",
     "focus:outline-none w-full",
   ],
-  variants: {
-    size: { sm: "sm:max-w-[360px]", md: "sm:max-w-[640px]", lg: "sm:max-w-[1024px]" },
-  },
   defaultVariants: { size: "md" },
+  variants: {
+    size: { lg: "sm:max-w-[1024px]", md: "sm:max-w-[640px]", sm: "sm:max-w-[360px]" },
+  },
 });
 
 export type DialogProps = {
-  title?: React.ReactNode;
-  description?: React.ReactNode;
-  trigger?: React.ReactNode;
   children?: React.ReactNode;
-  size?: "sm" | "md" | "lg";
-  open?: boolean;
-  onOpenChange?: (o: boolean) => void;
   contentClassName?: string;
+  description?: React.ReactNode;
+  onOpenChange?: (o: boolean) => void;
+  open?: boolean;
   overlayClassName?: string;
+  size?: "lg" | "md" | "sm";
+  title?: React.ReactNode;
+  trigger?: React.ReactNode;
 };
 
 export function Dialog({
-  title,
-  description,
-  trigger,
   children,
-  size,
-  open,
-  onOpenChange,
   contentClassName,
+  description,
+  onOpenChange,
+  open,
   overlayClassName,
+  size,
+  title,
+  trigger,
 }: DialogProps) {
   return (
-    <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+    <DialogPrimitive.Root onOpenChange={onOpenChange} open={open}>
       {trigger ? (
         <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
       ) : null}
@@ -73,11 +75,11 @@ export function Dialog({
             </div>
             <DialogPrimitive.Close asChild>
               <IconButton
-                icon={<X size={20} />}
-                variant="ghost"
-                size="sm"
                 aria-label="Close"
                 className="bg-muted/20 hover:bg-muted/20 transition-transform hover:scale-108"
+                icon={<X size={20} />}
+                size="sm"
+                variant="ghost"
               />
             </DialogPrimitive.Close>
           </div>

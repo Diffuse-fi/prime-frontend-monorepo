@@ -1,6 +1,8 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { Navbar } from "./Navbar";
+
 import { Button } from "@/atoms";
+
+import { Navbar } from "./Navbar";
 
 export default {
   title: "Molecules/Navigation/Navbar",
@@ -11,13 +13,13 @@ export const Default: Story = () => (
     logo={<div className="text-xl font-bold">Logo</div>}
     navigation={
       <nav className="flex gap-4">
-        <a href="#" className="hover:text-primary text-sm">
+        <a className="hover:text-primary text-sm" href="#">
           Home
         </a>
-        <a href="#" className="hover:text-primary text-sm">
+        <a className="hover:text-primary text-sm" href="#">
           About
         </a>
-        <a href="#" className="hover:text-primary text-sm">
+        <a className="hover:text-primary text-sm" href="#">
           Contact
         </a>
       </nav>
@@ -36,13 +38,13 @@ export const WithLogoImage: Story = () => (
     }
     navigation={
       <nav className="flex gap-6">
-        <a href="#" className="hover:text-primary text-sm font-medium">
+        <a className="hover:text-primary text-sm font-medium" href="#">
           Markets
         </a>
-        <a href="#" className="hover:text-primary text-sm font-medium">
+        <a className="hover:text-primary text-sm font-medium" href="#">
           Dashboard
         </a>
-        <a href="#" className="hover:text-primary text-sm font-medium">
+        <a className="hover:text-primary text-sm font-medium" href="#">
           Docs
         </a>
       </nav>
@@ -57,15 +59,15 @@ export const WithActiveState: Story = () => (
     navigation={
       <nav className="flex gap-6">
         <a
-          href="#"
           className="text-primary border-primary border-b-2 text-sm font-medium"
+          href="#"
         >
           Lend
         </a>
-        <a href="#" className="hover:text-primary text-sm font-medium">
+        <a className="hover:text-primary text-sm font-medium" href="#">
           Borrow
         </a>
-        <a href="#" className="hover:text-primary text-sm font-medium">
+        <a className="hover:text-primary text-sm font-medium" href="#">
           Stake
         </a>
       </nav>
@@ -98,13 +100,13 @@ export const WithIcons: Story = () => (
     }
     navigation={
       <nav className="flex gap-6">
-        <a href="#" className="hover:text-primary flex items-center gap-2 text-sm">
+        <a className="hover:text-primary flex items-center gap-2 text-sm" href="#">
           <span>📊</span> Dashboard
         </a>
-        <a href="#" className="hover:text-primary flex items-center gap-2 text-sm">
+        <a className="hover:text-primary flex items-center gap-2 text-sm" href="#">
           <span>💰</span> Markets
         </a>
-        <a href="#" className="hover:text-primary flex items-center gap-2 text-sm">
+        <a className="hover:text-primary flex items-center gap-2 text-sm" href="#">
           <span>⚙️</span> Settings
         </a>
       </nav>
@@ -122,13 +124,13 @@ export const WithDropdown: Story = () => (
     logo={<div className="text-xl font-bold">Platform</div>}
     navigation={
       <nav className="flex gap-6">
-        <a href="#" className="hover:text-primary text-sm font-medium">
+        <a className="hover:text-primary text-sm font-medium" href="#">
           Products ▾
         </a>
-        <a href="#" className="hover:text-primary text-sm font-medium">
+        <a className="hover:text-primary text-sm font-medium" href="#">
           Solutions ▾
         </a>
-        <a href="#" className="hover:text-primary text-sm font-medium">
+        <a className="hover:text-primary text-sm font-medium" href="#">
           Resources
         </a>
       </nav>

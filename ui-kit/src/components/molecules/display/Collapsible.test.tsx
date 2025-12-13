@@ -1,7 +1,8 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
+import "@testing-library/jest-dom";
+import React from "react";
+
 import { ControlledCollapsible, UncontrolledCollapsible } from "./Collapsible";
 
 describe("Collapsible components", () => {
@@ -10,7 +11,7 @@ describe("Collapsible components", () => {
     const onOpenChange = vi.fn();
 
     render(
-      <ControlledCollapsible open={false} onOpenChange={onOpenChange} summary="More">
+      <ControlledCollapsible onOpenChange={onOpenChange} open={false} summary="More">
         <div>Body</div>
       </ControlledCollapsible>
     );

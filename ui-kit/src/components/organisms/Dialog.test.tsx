@@ -1,14 +1,15 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
-import { vi, describe } from "vitest";
+import "@testing-library/jest-dom";
+import React from "react";
+import { describe, vi } from "vitest";
+
 import { Dialog } from "./Dialog";
 
 describe("<Dialog />", () => {
   it("renders open dialog with title, description, children and applies size variant", () => {
     render(
-      <Dialog open size="sm" title="Title" description="Desc">
+      <Dialog description="Desc" open size="sm" title="Title">
         <div>Body</div>
       </Dialog>
     );
@@ -25,7 +26,7 @@ describe("<Dialog />", () => {
   it("uncontrolled: trigger opens and close button closes", async () => {
     const user = userEvent.setup();
     render(
-      <Dialog trigger={<button>Open</button>} title="Hello" description="World">
+      <Dialog description="World" title="Hello" trigger={<button>Open</button>}>
         <div>Content</div>
       </Dialog>
     );
@@ -47,11 +48,11 @@ describe("<Dialog />", () => {
 
     const { rerender } = render(
       <Dialog
-        trigger={<button>Open</button>}
-        open={false}
-        onOpenChange={onOpenChange}
-        title="Title"
         description="Desc"
+        onOpenChange={onOpenChange}
+        open={false}
+        title="Title"
+        trigger={<button>Open</button>}
       />
     );
 
@@ -62,11 +63,11 @@ describe("<Dialog />", () => {
 
     rerender(
       <Dialog
-        trigger={<button>Open</button>}
-        open
-        onOpenChange={onOpenChange}
-        title="Title"
         description="Desc"
+        onOpenChange={onOpenChange}
+        open
+        title="Title"
+        trigger={<button>Open</button>}
       />
     );
     expect(screen.getByRole("dialog")).toBeInTheDocument();

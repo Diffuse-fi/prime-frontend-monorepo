@@ -1,11 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { InputProps } from "@/components/atoms";
 
 vi.mock("@/atoms", () => ({
-  Input: (props: any) => {
-    const { right, ...rest } = props;
+  Input: (props: InputProps) => {
+    const { right, size: _, ...rest } = props;
     return (
       <div>
         <input {...rest} />
@@ -21,7 +23,7 @@ describe("<AssetInput />", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("renders right adornment with asset image & symbol and passes size to image renderer", () => {
-    const renderAssetImage = vi.fn(({ size }: { size: "sm" | "md" | "lg" }) => (
+    const renderAssetImage = vi.fn(({ size }: { size: "lg" | "md" | "sm" }) => (
       <span>IMG-{size}</span>
     ));
 
@@ -53,7 +55,7 @@ describe("<AssetInput />", () => {
 
     const lastCall = onValueChange.mock.calls.at(-1)?.[0];
     expect(lastCall?.value).toBe("12345.60");
-    expect(lastCall?.floatValue).toBe(12345.6);
+    expect(lastCall?.floatValue).toBe(12_345.6);
   });
 
   it("disallows negative in input", async () => {

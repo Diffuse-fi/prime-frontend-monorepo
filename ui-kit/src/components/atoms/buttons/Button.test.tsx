@@ -1,7 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { describe, expect, it } from "vitest";
+
 import { Button } from "./Button";
 
 describe("<Button />", () => {
@@ -11,7 +12,7 @@ describe("<Button />", () => {
     const onClick = vi.fn();
 
     render(
-      <Button ref={ref} onClick={onClick}>
+      <Button onClick={onClick} ref={ref}>
         Click me
       </Button>
     );
@@ -26,7 +27,7 @@ describe("<Button />", () => {
 
   it("applies variant/size classes and merges className", () => {
     const { rerender } = render(
-      <Button variant="solid" size="md" className="mx-2">
+      <Button className="mx-2" size="md" variant="solid">
         A
       </Button>
     );
@@ -35,7 +36,7 @@ describe("<Button />", () => {
     const firstClass = first.getAttribute("class") ?? "";
 
     rerender(
-      <Button variant="ghost" size="lg" className="mx-2">
+      <Button className="mx-2" size="lg" variant="ghost">
         A
       </Button>
     );
@@ -51,7 +52,7 @@ describe("<Button />", () => {
     const onClick = vi.fn();
 
     render(
-      <Button disabled onClick={onClick} name="action">
+      <Button disabled name="action" onClick={onClick}>
         Do
       </Button>
     );

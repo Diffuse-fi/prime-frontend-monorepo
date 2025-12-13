@@ -1,7 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import { Tooltip, TooltipProvider } from "./Tooltip";
 import React from "react";
+import { describe, expect, it } from "vitest";
+
+import { Tooltip, TooltipProvider } from "./Tooltip";
 
 describe("Tooltip", () => {
   it("renders trigger content", () => {

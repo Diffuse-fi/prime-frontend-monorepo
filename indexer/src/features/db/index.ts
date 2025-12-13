@@ -1,4 +1,4 @@
-export * from "./db";
 export * from "./config";
-export type { IndexerDb } from "./schema";
+export * from "./db";
 export * from "./IndexerStorage";
+export type { IndexerDb } from "./schema";

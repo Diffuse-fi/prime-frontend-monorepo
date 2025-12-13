@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "allowArbitraryExtensions": true,
+    "baseUrl": ".",
     "composite": true,
     "jsx": "preserve",
     "lib": [

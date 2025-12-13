@@ -11,6 +11,7 @@ import * as regexpPlugin from "eslint-plugin-regexp";
 import promisePlugin from "eslint-plugin-promise";
 import security from "eslint-plugin-security";
 import noSecrets from "eslint-plugin-no-secrets";
+import tseslint from "typescript-eslint";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -29,16 +30,46 @@ const nextScoped = nextCompat.map(c => ({
   ...c,
 }));
 
-const frontendFiles = [
-  "frontend/src/**/*.{ts,tsx}",
-  "frontend/tests/**/*.{ts,tsx}",
+const frontendSrc = ["frontend/src/**/*.{ts,tsx}"];
+const uiKitSrc = ["ui-kit/src/**/*.{ts,tsx}"];
+const sdkSrc = ["sdk-js/src/**/*.ts"];
+const indexerSrc = ["indexer/src/**/*.ts"];
+const configSrc = ["config/src/**/*.ts"];
+const scriptsSrc = ["scripts/**/*.ts"];
+
+const allTsFiles = [
+  ...frontendSrc,
+  ...uiKitSrc,
+  ...sdkSrc,
+  ...indexerSrc,
+  ...configSrc,
+  ...scriptsSrc,
 ];
+
+const tsConfigs = tseslint.configs.recommended.map(config => ({
+  ...config,
+  files: allTsFiles,
+}));
 
 export default [
   ...nextScoped,
+  ...tsConfigs,
+  {
+    files: allTsFiles,
+    rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
   {
     ...perfectionist.configs["recommended-natural"],
-    files: frontendFiles,
+    files: allTsFiles,
     rules: {
       ...perfectionist.configs["recommended-natural"].rules,
       "perfectionist/sort-imports": [
@@ -60,7 +91,7 @@ export default [
   },
   {
     ...unicorn.configs["recommended"],
-    files: frontendFiles,
+    files: allTsFiles,
     rules: {
       ...unicorn.configs["recommended"].rules,
       "unicorn/prevent-abbreviations": "off",
@@ -78,28 +109,31 @@ export default [
       "unicorn/no-array-reduce": "off",
       "unicorn/no-null": "off",
       "unicorn/no-nested-ternary": "warn",
+      "unicorn/import-style": "off",
     },
   },
   {
     ...sonarjs.configs.recommended,
-    files: frontendFiles,
+    files: allTsFiles,
     rules: {
       ...sonarjs.configs.recommended.rules,
       "sonarjs/no-nested-conditional": "off",
       "sonarjs/todo-tag": "warn",
       "sonarjs/no-nested-functions": "warn",
+      "sonarjs/no-unused-vars": "off",
+      "sonarjs/no-nested-template-literals": "off",
     },
   },
   {
     ...regexpPlugin.configs["flat/recommended"],
-    files: frontendFiles,
+    files: allTsFiles,
   },
   {
     ...promisePlugin.configs["flat/recommended"],
-    files: frontendFiles,
+    files: allTsFiles,
   },
   {
-    files: frontendFiles,
+    files: frontendSrc,
     plugins: {
       security,
       "no-secrets": noSecrets,
@@ -163,6 +197,7 @@ export default [
       "**/.lighthouseci/**",
       "**/drizzle/**",
       "frontend/e2e/output/**",
+      "sdk-js/**/abi.ts",
     ],
   },
 ];

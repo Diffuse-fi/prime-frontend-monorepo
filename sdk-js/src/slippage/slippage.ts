@@ -1,9 +1,8 @@
 export const SLIPPAGE_DENOMINATOR = 10_000n as const;
-export type SlippageBps = bigint;
 
 export function applySlippageBps(
   amount: bigint,
-  bps: SlippageBps,
+  bps: bigint,
   direction: "down" | "up" = "down"
 ): bigint {
   if (bps < 0n || bps > SLIPPAGE_DENOMINATOR) {
@@ -23,7 +22,7 @@ export function applySlippageBps(
 
 export function applySlippageBpsArray(
   amounts: readonly bigint[],
-  bps: SlippageBps,
+  bps: bigint,
   direction: "down" | "up" = "down"
 ): bigint[] {
   return amounts.map(x => applySlippageBps(x, bps, direction));

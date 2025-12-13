@@ -1,20 +1,21 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
 import { version as pkgVersion } from "../version";
 import { SdkErrorCode } from "./codes";
 import {
-  SdkError,
-  AddressNotFoundError,
-  InvalidAddressError,
-  WalletRequiredError,
-  UserRejectedError,
-  InsufficientFundsError,
-  SimulationRevertedError,
-  ContractRevertError,
-  RpcError,
-  NetworkError,
-  UnknownError,
-  AbortedError,
   AbiItemNotFoundError,
+  AbortedError,
+  AddressNotFoundError,
+  ContractRevertError,
+  InsufficientFundsError,
+  InvalidAddressError,
+  NetworkError,
+  RpcError,
+  SdkError,
+  SimulationRevertedError,
+  UnknownError,
+  UserRejectedError,
+  WalletRequiredError,
 } from "./errors";
 
 describe("SdkError", () => {
@@ -23,9 +24,9 @@ describe("SdkError", () => {
     const context = { op: "test" };
 
     const err = new SdkError(SdkErrorCode.UNKNOWN, "outer", {
-      userMessage: "User friendly",
       cause,
       context,
+      userMessage: "User friendly",
     });
 
     expect(err.name).toBe("SdkError");
@@ -45,15 +46,15 @@ describe("SdkError", () => {
     expect(json.context).toBe(context);
     expect(json.stack).toBeTypeOf("string");
     expect(json.cause).toEqual({
-      name: cause.name,
       message: cause.message,
+      name: cause.name,
       stack: cause.stack,
     });
   });
 
   it("omits non-object cause in JSON", () => {
     const err = new SdkError(SdkErrorCode.UNKNOWN, "msg", {
-      cause: "raw cause" as any,
+      cause: "raw cause",
     });
 
     const json = err.toJSON();

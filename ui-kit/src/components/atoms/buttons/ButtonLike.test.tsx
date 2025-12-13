@@ -1,17 +1,18 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import * as React from "react";
+import { describe, expect, it } from "vitest";
+
 import { ButtonLike } from "./ButtonLike";
 
 describe("ButtonLike", () => {
   it("renders a <button> by default, merges classes, and exposes aria-label", () => {
     render(
       <ButtonLike
-        variant="solid"
-        size="md"
-        icon
-        className="custom-class"
         aria-label="Save changes"
+        className="custom-class"
+        icon
+        size="md"
+        variant="solid"
       >
         Save
       </ButtonLike>
@@ -28,14 +29,14 @@ describe("ButtonLike", () => {
   it("renders as an <a> when component='a' and forwards anchor props", () => {
     render(
       <ButtonLike
+        aria-label="Open in explorer"
         component="a"
         href="/vaults/0x123"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Open in explorer"
-        variant="ghost"
-        size="sm"
         icon
+        rel="noopener noreferrer"
+        size="sm"
+        target="_blank"
+        variant="ghost"
       >
         <span aria-hidden="true">↗︎</span>
       </ButtonLike>

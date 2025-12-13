@@ -1,12 +1,7 @@
-import * as React from "react";
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
-import { cn } from "@/lib/cn";
+import * as React from "react";
 
-export interface RadioGroupProps
-  extends Omit<RadioGroupPrimitive.RadioGroupProps, "asChild"> {
-  className?: string;
-  children?: React.ReactNode;
-}
+import { cn } from "@/lib/cn";
 
 export interface RadioGroupItemProps
   extends Omit<RadioGroupPrimitive.RadioGroupItemProps, "asChild" | "children"> {
@@ -14,16 +9,22 @@ export interface RadioGroupItemProps
   className?: string;
 }
 
+export interface RadioGroupProps
+  extends Omit<RadioGroupPrimitive.RadioGroupProps, "asChild"> {
+  children?: React.ReactNode;
+  className?: string;
+}
+
 const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
-  ({ name, className, value, defaultValue, onValueChange, children, ...rest }, ref) => {
+  ({ children, className, defaultValue, name, onValueChange, value, ...rest }, ref) => {
     return (
       <RadioGroupPrimitive.Root
+        className={cn("grid gap-6", className)}
+        defaultValue={defaultValue}
+        name={name}
+        onValueChange={onValueChange}
         ref={ref}
         value={value}
-        defaultValue={defaultValue}
-        onValueChange={onValueChange}
-        className={cn("grid gap-6", className)}
-        name={name}
         {...rest}
       >
         {children}
@@ -34,16 +35,16 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
 RadioGroup.displayName = "RadioCards";
 
 export const RadioGroupItem = React.forwardRef<HTMLButtonElement, RadioGroupItemProps>(
-  ({ value, children, disabled, className, ...rest }, ref) => {
+  ({ children, className, disabled, value, ...rest }, ref) => {
     return (
       <RadioGroupPrimitive.Item
-        value={value!}
-        disabled={disabled}
-        ref={ref}
         className={cn(
           "standard-focus-ring cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
+        disabled={disabled}
+        ref={ref}
+        value={value!}
         {...rest}
       >
         {children}

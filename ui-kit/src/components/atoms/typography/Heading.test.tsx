@@ -1,6 +1,7 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
+import React from "react";
 import "@testing-library/jest-dom";
+
 import { Heading } from "./Heading";
 
 describe("<Heading />", () => {
@@ -21,7 +22,7 @@ describe("<Heading />", () => {
 
   it("applies level variants", () => {
     render(
-      <Heading level="4" align="center" tone="muted" className="extra">
+      <Heading align="center" className="extra" level="4" tone="muted">
         Hello
       </Heading>
     );

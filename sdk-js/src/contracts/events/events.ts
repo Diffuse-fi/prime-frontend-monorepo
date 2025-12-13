@@ -1,5 +1,6 @@
-import { AbiItemNotFoundError } from "@/errors";
 import { Abi, AbiItemName } from "viem";
+
+import { AbiItemNotFoundError } from "@/errors";
 
 export function getEvent<ContractAbi extends Abi>(
   abi: ContractAbi,

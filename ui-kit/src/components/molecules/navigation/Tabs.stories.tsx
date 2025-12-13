@@ -1,6 +1,8 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { TabsRoot, TabsList, TabsTrigger, TabsContent } from "./Tabs";
+
 import { useState } from "react";
+
+import { TabsContent, TabsList, TabsRoot, TabsTrigger } from "./Tabs";
 
 export default {
   title: "Molecules/Navigation/Tabs",
@@ -23,7 +25,7 @@ export const Controlled: Story = () => {
   const [value, setValue] = useState("overview");
   return (
     <div className="space-y-4">
-      <TabsRoot value={value} onValueChange={setValue}>
+      <TabsRoot onValueChange={setValue} value={value}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="details">Details</TabsTrigger>
@@ -47,13 +49,13 @@ export const Controlled: Story = () => {
 export const Fitted: Story = () => (
   <TabsRoot defaultValue="buy">
     <TabsList fitted>
-      <TabsTrigger value="buy" fitted>
+      <TabsTrigger fitted value="buy">
         Buy
       </TabsTrigger>
-      <TabsTrigger value="sell" fitted>
+      <TabsTrigger fitted value="sell">
         Sell
       </TabsTrigger>
-      <TabsTrigger value="swap" fitted>
+      <TabsTrigger fitted value="swap">
         Swap
       </TabsTrigger>
     </TabsList>
@@ -73,7 +75,7 @@ export const WithDisabled: Story = () => (
   <TabsRoot defaultValue="active">
     <TabsList>
       <TabsTrigger value="active">Active</TabsTrigger>
-      <TabsTrigger value="disabled" disabled>
+      <TabsTrigger disabled value="disabled">
         Disabled
       </TabsTrigger>
       <TabsTrigger value="another">Another</TabsTrigger>

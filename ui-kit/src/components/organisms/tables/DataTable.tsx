@@ -1,31 +1,32 @@
-import * as React from "react";
-import { cn } from "@/lib/cn";
 import {
   ColumnDef,
-  SortingState,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { ChevronUp } from "lucide-react";
+import * as React from "react";
+
 import { VariantProps } from "@/lib";
+import { cn } from "@/lib/cn";
+
 import { table, td, th, tr } from "./styles";
 
-export type DataTableProps<TData extends object> =
-  React.TableHTMLAttributes<HTMLTableElement> &
-    Partial<VariantProps<typeof table>> & {
-      columns: Array<ColumnDef<TData>>;
-      data: TData[];
-      initialSorting?: SortingState;
-      onRowClick?: (row: TData) => void;
-    };
+export type DataTableProps<TData extends object> = Partial<VariantProps<typeof table>> &
+  React.TableHTMLAttributes<HTMLTableElement> & {
+    columns: Array<ColumnDef<TData>>;
+    data: TData[];
+    initialSorting?: SortingState;
+    onRowClick?: (row: TData) => void;
+  };
 
 function DataTableInner<TData extends object>(
   {
+    className,
     columns,
     data,
-    className,
     density,
     initialSorting,
     onRowClick,
@@ -35,17 +36,17 @@ function DataTableInner<TData extends object>(
 ) {
   const [sorting, setSorting] = React.useState<SortingState>(initialSorting ?? []);
 
-  const { getRowModel, getHeaderGroups } = useReactTable({
-    data,
+  const { getHeaderGroups, getRowModel } = useReactTable({
     columns,
-    state: { sorting },
-    onSortingChange: setSorting,
+    data,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: { sorting },
   });
 
   return (
-    <table ref={ref} className={cn(table({ density }), className)} {...rest}>
+    <table className={cn(table({ density }), className)} ref={ref} {...rest}>
       <thead>
         {getHeaderGroups().map(hg => (
           <tr key={hg.id}>
@@ -56,9 +57,6 @@ function DataTableInner<TData extends object>(
 
               return (
                 <th
-                  key={header.id}
-                  className={cn(th(), canSort && "cursor-pointer")}
-                  onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
                   aria-sort={
                     sorted === "asc"
                       ? "ascending"
@@ -66,6 +64,9 @@ function DataTableInner<TData extends object>(
                         ? "descending"
                         : "none"
                   }
+                  className={cn(th(), canSort && "cursor-pointer")}
+                  key={header.id}
+                  onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
                   scope="col"
                 >
                   <p className="inline-flex items-center gap-1">
@@ -91,13 +92,13 @@ function DataTableInner<TData extends object>(
       <tbody>
         {getRowModel().rows.map(r => (
           <tr
-            key={r.id}
             className={tr()}
+            key={r.id}
             onClick={onRowClick ? () => onRowClick(r.original) : undefined}
           >
             {r.getVisibleCells().map(c => {
               return (
-                <td key={c.id} className={td()}>
+                <td className={td()} key={c.id}>
                   {flexRender(c.column.columnDef.cell, c.getContext())}
                 </td>
               );

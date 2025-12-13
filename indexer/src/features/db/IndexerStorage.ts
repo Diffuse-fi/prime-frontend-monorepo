@@ -1,5 +1,6 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
-import { IndexerDb, checkpoints, events, vaults, positions, prices } from "./schema";
+
+import { checkpoints, events, IndexerDb, positions, prices, vaults } from "./schema";
 
 export class IndexerStorage {
   readonly db: IndexerDb;
@@ -22,63 +23,25 @@ export class IndexerStorage {
     return rows[0] ?? null;
   }
 
-  async setCheckpoint(chainId: number, address: string, lastProcessedBlock: number) {
-    await this.db
-      .insert(checkpoints)
-      .values({
-        chainId,
-        address: address.toLowerCase(),
-        lastProcessedBlock,
-      })
-      .onConflictDoUpdate({
-        target: [checkpoints.chainId, checkpoints.address],
-        set: { lastProcessedBlock },
-      });
+  async getLatestPrices(params: { assets: string[]; source: string }) {
+    if (params.assets.length === 0) return [];
+    const rows = await this.db
+      .select()
+      .from(prices)
+      .where(
+        and(
+          inArray(
+            prices.asset,
+            params.assets.map(a => a.toLowerCase())
+          ),
+          eq(prices.source, params.source)
+        )
+      )
+      .orderBy(desc(prices.tsMinute));
+    return rows;
   }
 
-  async insertEvents(rows: Array<typeof events.$inferInsert>) {
-    if (!rows.length) return;
-    await this.db.insert(events).values(rows).onConflictDoNothing();
-  }
-
-  async upsertVaults(rows: Array<typeof vaults.$inferInsert>) {
-    if (!rows.length) return;
-    await this.db
-      .insert(vaults)
-      .values(rows)
-      .onConflictDoUpdate({
-        target: vaults.id,
-        set: {
-          chainId: sql`EXCLUDED.chain_id`,
-          vault: sql`EXCLUDED.vault`,
-          asset: sql`EXCLUDED.asset`,
-          symbol: sql`EXCLUDED.symbol`,
-          decimals: sql`EXCLUDED.decimals`,
-          updatedAt: sql`EXCLUDED.updated_at`,
-        },
-      });
-  }
-
-  async upsertPositions(rows: Array<typeof positions.$inferInsert>) {
-    if (!rows.length) return;
-    await this.db
-      .insert(positions)
-      .values(rows)
-      .onConflictDoUpdate({
-        target: positions.id,
-        set: {
-          status: sql`EXCLUDED.status`,
-          closedAt: sql`EXCLUDED.closed_at`,
-          amountInRaw: sql`EXCLUDED.amount_in_raw`,
-          amountOutRaw: sql`EXCLUDED.amount_out_raw`,
-          closeTx: sql`EXCLUDED.close_tx`,
-          closePriceUsd: sql`EXCLUDED.close_price_usd`,
-          pnlUsd: sql`EXCLUDED.pnl_usd`,
-        },
-      });
-  }
-
-  async getUserPositions(params: { chainId: number; user: string; limit?: number }) {
+  async getUserPositions(params: { chainId: number; limit?: number; user: string }) {
     const limit = params.limit ?? 50;
     return this.db
       .select()
@@ -95,9 +58,9 @@ export class IndexerStorage {
 
   async getVaultUserPositions(params: {
     chainId: number;
-    vault: string;
-    user: string;
     limit?: number;
+    user: string;
+    vault: string;
   }) {
     const limit = params.limit ?? 50;
     return this.db
@@ -114,32 +77,70 @@ export class IndexerStorage {
       .limit(limit);
   }
 
+  async insertEvents(rows: Array<typeof events.$inferInsert>) {
+    if (rows.length === 0) return;
+    await this.db.insert(events).values(rows).onConflictDoNothing();
+  }
+
+  async setCheckpoint(chainId: number, address: string, lastProcessedBlock: number) {
+    await this.db
+      .insert(checkpoints)
+      .values({
+        address: address.toLowerCase(),
+        chainId,
+        lastProcessedBlock,
+      })
+      .onConflictDoUpdate({
+        set: { lastProcessedBlock },
+        target: [checkpoints.chainId, checkpoints.address],
+      });
+  }
+
+  async upsertPositions(rows: Array<typeof positions.$inferInsert>) {
+    if (rows.length === 0) return;
+    await this.db
+      .insert(positions)
+      .values(rows)
+      .onConflictDoUpdate({
+        set: {
+          amountInRaw: sql`EXCLUDED.amount_in_raw`,
+          amountOutRaw: sql`EXCLUDED.amount_out_raw`,
+          closedAt: sql`EXCLUDED.closed_at`,
+          closePriceUsd: sql`EXCLUDED.close_price_usd`,
+          closeTx: sql`EXCLUDED.close_tx`,
+          pnlUsd: sql`EXCLUDED.pnl_usd`,
+          status: sql`EXCLUDED.status`,
+        },
+        target: positions.id,
+      });
+  }
+
   async upsertPrices(rows: Array<typeof prices.$inferInsert>) {
-    if (!rows.length) return;
+    if (rows.length === 0) return;
     await this.db
       .insert(prices)
       .values(rows)
       .onConflictDoUpdate({
-        target: [prices.asset, prices.source, prices.tsMinute],
         set: { priceUsd: sql`EXCLUDED.price_usd` },
+        target: [prices.asset, prices.source, prices.tsMinute],
       });
   }
 
-  async getLatestPrices(params: { assets: string[]; source: string }) {
-    if (!params.assets.length) return [];
-    const rows = await this.db
-      .select()
-      .from(prices)
-      .where(
-        and(
-          inArray(
-            prices.asset,
-            params.assets.map(a => a.toLowerCase())
-          ),
-          eq(prices.source, params.source)
-        )
-      )
-      .orderBy(desc(prices.tsMinute));
-    return rows;
+  async upsertVaults(rows: Array<typeof vaults.$inferInsert>) {
+    if (rows.length === 0) return;
+    await this.db
+      .insert(vaults)
+      .values(rows)
+      .onConflictDoUpdate({
+        set: {
+          asset: sql`EXCLUDED.asset`,
+          chainId: sql`EXCLUDED.chain_id`,
+          decimals: sql`EXCLUDED.decimals`,
+          symbol: sql`EXCLUDED.symbol`,
+          updatedAt: sql`EXCLUDED.updated_at`,
+          vault: sql`EXCLUDED.vault`,
+        },
+        target: vaults.id,
+      });
   }
 }

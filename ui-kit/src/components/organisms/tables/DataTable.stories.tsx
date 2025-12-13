@@ -1,39 +1,41 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { DataTable } from "./DataTable";
+
 import { ColumnDef } from "@tanstack/react-table";
+
+import { DataTable } from "./DataTable";
 
 export default {
   title: "Organisms/Tables/DataTable",
 } satisfies StoryDefault;
 
 type Person = {
+  email: string;
   id: number;
   name: string;
-  email: string;
   role: string;
   status: string;
 };
 
 const sampleData: Person[] = [
-  { id: 1, name: "John Doe", email: "john@example.com", role: "Admin", status: "Active" },
+  { email: "john@example.com", id: 1, name: "John Doe", role: "Admin", status: "Active" },
   {
+    email: "jane@example.com",
     id: 2,
     name: "Jane Smith",
-    email: "jane@example.com",
     role: "User",
     status: "Active",
   },
   {
+    email: "bob@example.com",
     id: 3,
     name: "Bob Johnson",
-    email: "bob@example.com",
     role: "User",
     status: "Inactive",
   },
   {
+    email: "alice@example.com",
     id: 4,
     name: "Alice Brown",
-    email: "alice@example.com",
     role: "Admin",
     status: "Active",
   },
@@ -68,23 +70,23 @@ export const WithSorting: Story = () => {
   const sortableColumns: ColumnDef<Person>[] = [
     {
       accessorKey: "name",
-      header: "Name",
       enableSorting: true,
+      header: "Name",
     },
     {
       accessorKey: "email",
-      header: "Email",
       enableSorting: true,
+      header: "Email",
     },
     {
       accessorKey: "role",
-      header: "Role",
       enableSorting: true,
+      header: "Role",
     },
     {
       accessorKey: "status",
-      header: "Status",
       enableSorting: true,
+      header: "Status",
     },
   ];
 
@@ -109,34 +111,33 @@ export const DensityComfortable: Story = () => (
 
 export const CryptoAssets: Story = () => {
   type Asset = {
-    symbol: string;
-    price: number;
     change24h: number;
     marketCap: string;
+    price: number;
+    symbol: string;
   };
 
   const assetData: Asset[] = [
-    { symbol: "BTC", price: 43521.0, change24h: 2.5, marketCap: "$850B" },
-    { symbol: "ETH", price: 2234.5, change24h: -1.2, marketCap: "$268B" },
-    { symbol: "USDC", price: 1.0, change24h: 0.0, marketCap: "$24B" },
-    { symbol: "DAI", price: 1.0, change24h: 0.1, marketCap: "$5B" },
+    { change24h: 2.5, marketCap: "$850B", price: 43_521, symbol: "BTC" },
+    { change24h: -1.2, marketCap: "$268B", price: 2234.5, symbol: "ETH" },
+    { change24h: 0, marketCap: "$24B", price: 1, symbol: "USDC" },
+    { change24h: 0.1, marketCap: "$5B", price: 1, symbol: "DAI" },
   ];
 
   const assetColumns: ColumnDef<Asset>[] = [
     {
       accessorKey: "symbol",
-      header: "Asset",
       enableSorting: true,
+      header: "Asset",
     },
     {
       accessorKey: "price",
-      header: "Price",
       cell: info => `$${info.getValue<number>().toLocaleString()}`,
       enableSorting: true,
+      header: "Price",
     },
     {
       accessorKey: "change24h",
-      header: "24h Change",
       cell: info => {
         const value = info.getValue<number>();
         const color = value >= 0 ? "text-success" : "text-error";
@@ -148,6 +149,7 @@ export const CryptoAssets: Story = () => {
         );
       },
       enableSorting: true,
+      header: "24h Change",
     },
     {
       accessorKey: "marketCap",

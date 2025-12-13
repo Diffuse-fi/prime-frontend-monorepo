@@ -1,4 +1,5 @@
 import type { Story, StoryDefault } from "@ladle/react";
+
 import { Skeleton } from "./Skeleton";
 
 export default {
@@ -68,7 +69,7 @@ export const TableSkeleton: Story = () => (
 export const ListSkeleton: Story = () => (
   <div className="max-w-md space-y-3">
     {[1, 2, 3, 4].map(i => (
-      <div key={i} className="flex items-center gap-3">
+      <div className="flex items-center gap-3" key={i}>
         <Skeleton className="h-10 w-10" rounded="full" />
         <div className="flex-1 space-y-2">
           <Skeleton className="h-4 w-3/4" />

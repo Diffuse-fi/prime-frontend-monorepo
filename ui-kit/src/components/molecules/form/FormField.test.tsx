@@ -1,14 +1,15 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { describe, expect, it } from "vitest";
+
 import { FormField } from "./FormField";
 
 describe("<FormField />", () => {
   it("associates label text with the wrapped control", async () => {
     render(
       <FormField label="Email">
-        <input type="text" aria-label="Email" />
+        <input aria-label="Email" type="text" />
       </FormField>
     );
     const input = screen.getByLabelText("Email");
@@ -19,8 +20,8 @@ describe("<FormField />", () => {
 
   it("applies disabled state (aria-disabled and styles) on root label", () => {
     render(
-      <FormField label="Amount" disabled data-testid="field">
-        <input type="number" aria-label="Amount" />
+      <FormField data-testid="field" disabled label="Amount">
+        <input aria-label="Amount" type="number" />
       </FormField>
     );
     const root = screen.getByTestId("field");
@@ -32,11 +33,11 @@ describe("<FormField />", () => {
   it("renders hint and merges class names on root and label span", () => {
     render(
       <FormField
-        label="Variable APR"
-        hint="APR changes each block."
         className="mt-2"
-        labelClassName="text-accent"
         data-testid="field"
+        hint="APR changes each block."
+        label="Variable APR"
+        labelClassName="text-accent"
       >
         <input aria-label="Variable APR" />
       </FormField>

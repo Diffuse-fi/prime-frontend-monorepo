@@ -1,27 +1,27 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("radix-ui", () => {
   type RootProps = React.HTMLAttributes<HTMLSpanElement> & {
-    value?: number[];
-    min?: number;
-    max?: number;
-    step?: number;
     disabled?: boolean;
+    max?: number;
+    min?: number;
     onValueChange?: (v: number[]) => void;
+    step?: number;
+    value?: number[];
   };
   const Root = React.forwardRef<HTMLSpanElement, RootProps>((props, ref) => {
     const {
-      value = [0],
-      min = 0,
-      max = 100,
-      step = 1,
-      disabled,
-      onValueChange,
-      className,
       children,
+      className,
+      disabled,
+      max = 100,
+      min = 0,
+      onValueChange,
+      step = 1,
+      value = [0],
       ...rest
     } = props;
     const [val, setVal] = React.useState(value[0]);
@@ -38,15 +38,15 @@ vi.mock("radix-ui", () => {
     };
     return (
       <span
-        ref={ref}
-        role="slider"
-        aria-valuemin={min}
-        aria-valuemax={max}
-        aria-valuenow={val}
         aria-disabled={disabled ? "true" : undefined}
-        tabIndex={0}
+        aria-valuemax={max}
+        aria-valuemin={min}
+        aria-valuenow={val}
         className={className}
         onKeyDown={onKeyDown}
+        ref={ref}
+        role="slider"
+        tabIndex={0}
         {...rest}
       >
         {children}
@@ -54,15 +54,15 @@ vi.mock("radix-ui", () => {
     );
   });
   const Track: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...p }) => (
-    <div data-testid="track" className={className} {...p} />
+    <div className={className} data-testid="track" {...p} />
   );
   const Range: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...p }) => (
-    <div data-testid="range" className={className} {...p} />
+    <div className={className} data-testid="range" {...p} />
   );
   const Thumb: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({ className, ...p }) => (
-    <div data-testid="thumb" className={className} {...p} />
+    <div className={className} data-testid="thumb" {...p} />
   );
-  return { Slider: { Root, Track, Range, Thumb } };
+  return { Slider: { Range, Root, Thumb, Track } };
 });
 
 import { Slider } from "./Slider";
@@ -75,11 +75,11 @@ describe("<Slider />", () => {
     render(
       <Slider
         aria-label="Volume"
-        value={[10]}
-        min={0}
         max={20}
-        step={2}
+        min={0}
         onValueChange={vi.fn()}
+        step={2}
+        value={[10]}
       />
     );
 
@@ -100,9 +100,9 @@ describe("<Slider />", () => {
         <Slider
           aria-label="Progress"
           className="root-x"
-          trackClassName="track-x"
           rangeClassName="range-x"
           thumbClassName="thumb-x"
+          trackClassName="track-x"
         />
       </section>
     );
@@ -122,7 +122,7 @@ describe("<Slider />", () => {
 
   it("respects disabled state and blocks interactions", async () => {
     const user = userEvent.setup();
-    render(<Slider aria-label="Disabled" value={[5]} disabled />);
+    render(<Slider aria-label="Disabled" disabled value={[5]} />);
 
     const slider = screen.getByRole("slider", { name: "Disabled" });
     expect(slider).toHaveAttribute("aria-disabled", "true");

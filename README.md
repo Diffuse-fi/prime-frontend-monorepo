@@ -5,6 +5,18 @@
 <div align="center">
   This is a monorepo for the <span style="font-weight: bold;">Diffuse Prime</span> frontend application, which includes multiple packages such as the main frontend application and a shared UI kit.
 </div>
+<br />
+<div align="center">
+  <h2 style="margin: 0; padding: 0;">Table of contents</h2>
+  <ul style="list-style-type: none; padding: 0;">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#workspaces">Workspaces</a></li>
+    <li><a href="#configuration">Configuration</a></li>
+    <li><a href="#development">Development</a></li>
+    <li><a href="#security-considerations-on-repository-level">Security considerations</a></li>
+    <li><a href="#license">License</a></li>
+  </ul>
+</div>
 
 ## Overview
 

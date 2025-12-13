@@ -1,4 +1,5 @@
 import type { Story, StoryDefault } from "@ladle/react";
+
 import { CopyButton } from "./CopyButton";
 
 export default {
@@ -9,9 +10,9 @@ export const Default: Story = () => <CopyButton textToCopy="Hello, World!" />;
 
 export const Sizes: Story = () => (
   <div className="flex items-center gap-4">
-    <CopyButton textToCopy="Copy me" size="sm" />
-    <CopyButton textToCopy="Copy me" size="md" />
-    <CopyButton textToCopy="Copy me" size="lg" />
+    <CopyButton size="sm" textToCopy="Copy me" />
+    <CopyButton size="md" textToCopy="Copy me" />
+    <CopyButton size="lg" textToCopy="Copy me" />
   </div>
 );
 

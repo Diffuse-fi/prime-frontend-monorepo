@@ -1,3 +1,1 @@
-import { version as pkgVersion } from "../package.json" with { type: "json" };
-
-export const version = pkgVersion;
+export { version } from "../package.json" with { type: "json" };

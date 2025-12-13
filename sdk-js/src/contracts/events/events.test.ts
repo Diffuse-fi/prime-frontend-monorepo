@@ -1,20 +1,23 @@
-import { describe, it, expect } from "vitest";
-import { getEvent } from "./events";
-import { AbiItemNotFoundError } from "@/errors";
 import type { Abi, AbiEvent } from "viem";
+
+import { describe, expect, it } from "vitest";
+
+import { AbiItemNotFoundError } from "@/errors";
+
+import { getEvent } from "./events";
 
 const abi: Abi = [
   {
-    type: "event",
-    name: "Borrow",
-    inputs: [],
     anonymous: false,
+    inputs: [],
+    name: "Borrow",
+    type: "event",
   },
   {
-    type: "event",
-    name: "Repay",
-    inputs: [],
     anonymous: false,
+    inputs: [],
+    name: "Repay",
+    type: "event",
   },
 ];
 
@@ -26,7 +29,7 @@ describe("getEvent", () => {
   });
 
   it("throws AbiItemNotFoundError when event does not exist", () => {
-    expect(() => getEvent(abi, "UnknownEvent" as any, "Vault")).toThrow(
+    expect(() => getEvent(abi, "UnknownEvent", "Vault")).toThrow(
       new AbiItemNotFoundError("UnknownEvent", { contractName: "Vault" })
     );
   });
