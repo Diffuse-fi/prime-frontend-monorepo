@@ -7,12 +7,10 @@ import useIsMountedRef from "use-is-mounted-ref";
 import { type Address, erc20Abi, getAddress, maxUint256 } from "viem";
 import { useWriteContract } from "wagmi";
 
-import { trackEvent } from "@/lib/analytics";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { useClients } from "../../wagmi/useClients";
 import { SelectedVault } from "../types";
-import { isUserRejectedError } from "../utils/errors";
 
 export type AllowanceStatus = "insufficient" | "missing" | "ok" | "unknown";
 export type ApprovalPolicy = "exact" | "infinite";
@@ -203,13 +201,6 @@ export function useEnsureAllowances(
         const spender = getAddress(v.address);
         const owner = getAddress(ownerAddr);
 
-        trackEvent("lend_approve_start", {
-          amount: amount.toString(),
-          asset_symbol: v.assetSymbol,
-          chain_id: chainId!,
-          vault_address: spender,
-        });
-
         try {
           await publicClient!.simulateContract({
             abi: erc20Abi,
@@ -244,38 +235,8 @@ export function useEnsureAllowances(
 
         await publicClient!.waitForTransactionReceipt({ hash });
 
-        trackEvent("lend_approve_success", {
-          amount: amount.toString(),
-          asset_symbol: v.assetSymbol,
-          chain_id: chainId!,
-          transaction_hash: hash,
-          vault_address: spender,
-        });
-
         await refetch();
         onSuccess?.();
-      } catch (error) {
-        const amount = opts?.mode === "infinite" ? maxUint256 : v.amount;
-        const isRejected = isUserRejectedError(error);
-        
-        if (isRejected) {
-          trackEvent("lend_approve_rejected", {
-            amount: amount.toString(),
-            asset_symbol: v.assetSymbol,
-            chain_id: chainId!,
-            vault_address: getAddress(v.address),
-          });
-        } else {
-          const err = error instanceof Error ? error : new Error("Unknown error");
-          trackEvent("lend_approve_error", {
-            amount: amount.toString(),
-            asset_symbol: v.assetSymbol,
-            chain_id: chainId!,
-            error_message: err.message,
-            vault_address: getAddress(v.address),
-          });
-        }
-        throw error;
       } finally {
         if (isMounted.current) {
           setPending(

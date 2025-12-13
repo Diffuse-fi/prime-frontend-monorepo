@@ -53,9 +53,9 @@ describe("Analytics Events", () => {
     it("should track chain switch", async () => {
       const { sendGAEvent } = await import("@next/third-parties/google");
       
-      trackEvent("chain_switch", { chain_id: 42161 });
+      trackEvent("chain_switch", { chain_id: 42_161 });
       
-      expect(sendGAEvent).toHaveBeenCalledWith("event", "chain_switch", { chain_id: 42161 });
+      expect(sendGAEvent).toHaveBeenCalledWith("event", "chain_switch", { chain_id: 42_161 });
     });
 
     it("should handle errors gracefully in development", async () => {

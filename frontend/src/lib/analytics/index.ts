@@ -1,1 +1,1 @@
-export { trackEvent, trackPageView, type EventName, type EventParams } from "./events";
+export { type EventName, type EventParams, trackEvent, trackPageView } from "./events";

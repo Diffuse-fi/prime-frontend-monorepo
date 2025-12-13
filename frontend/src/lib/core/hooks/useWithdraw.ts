@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { type Address, getAddress, type Hash } from "viem";
 
 import { trackEvent } from "@/lib/analytics";
+
 import { formatUnits } from "../../formatters/asset";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
