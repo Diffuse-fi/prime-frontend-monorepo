@@ -1,26 +1,26 @@
+import { Vault, Viewer } from "@diffuse/sdk-js";
 import {
-  Chain,
-  type PublicClient,
   type Address,
+  Chain,
   createPublicClient,
-  http,
   fallback,
+  http,
+  type PublicClient,
 } from "viem";
-import { Viewer, Vault } from "@diffuse/sdk-js";
 
 export type VaultRuntime = {
   chain: Chain;
   publicClient: PublicClient;
-  viewer: Viewer;
-  vaultAddress: Address;
   vault: Vault;
+  vaultAddress: Address;
+  viewer: Viewer;
 };
 
 export class ChainRuntime {
   chain: Chain;
   publicClient: PublicClient;
-  viewer: Viewer;
   startBlock: bigint;
+  viewer: Viewer;
 
   constructor(chain: Chain, rpcUrls: string[], startBlock: bigint) {
     this.chain = chain;
@@ -42,17 +42,17 @@ export class ChainRuntime {
 
     return allVaults.map(v => {
       const vault = new Vault({
+        address: v.vault,
         chainId: this.chain.id,
         client: { public: this.publicClient },
-        address: v.vault,
       });
 
       return {
         chain: this.chain,
         publicClient: this.publicClient,
-        viewer: this.viewer,
-        vaultAddress: v.vault,
         vault,
+        vaultAddress: v.vault,
+        viewer: this.viewer,
       };
     });
   }

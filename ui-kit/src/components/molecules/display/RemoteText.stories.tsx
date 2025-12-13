@@ -1,6 +1,8 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { RemoteText } from "./RemoteText";
+
 import { useState } from "react";
+
+import { RemoteText } from "./RemoteText";
 
 export default {
   title: "Molecules/Display/RemoteText",
@@ -8,10 +10,10 @@ export default {
 
 export const Default: Story = () => <RemoteText text="Loaded text" />;
 
-export const Loading: Story = () => <RemoteText text="Loading..." isLoading />;
+export const Loading: Story = () => <RemoteText isLoading text="Loading..." />;
 
 export const WithError: Story = () => (
-  <RemoteText text="Failed to load" error="Network error occurred" />
+  <RemoteText error="Network error occurred" text="Failed to load" />
 );
 
 export const States: Story = () => (
@@ -22,11 +24,11 @@ export const States: Story = () => (
     </div>
     <div>
       <p className="text-muted mb-2 text-sm">Loading</p>
-      <RemoteText text="Loading..." isLoading />
+      <RemoteText isLoading text="Loading..." />
     </div>
     <div>
       <p className="text-muted mb-2 text-sm">Error</p>
-      <RemoteText text="Failed" error="Could not fetch data" />
+      <RemoteText error="Could not fetch data" text="Failed" />
     </div>
   </div>
 );
@@ -40,7 +42,8 @@ export const Interactive: Story = () => {
     setIsLoading(true);
     setHasError(false);
     setTimeout(() => {
-      setValue((Math.random() * 10000).toFixed(2));
+      // eslint-disable-next-line sonarjs/pseudo-random
+      setValue((Math.random() * 10_000).toFixed(2));
       setIsLoading(false);
     }, 2000);
   };
@@ -57,22 +60,22 @@ export const Interactive: Story = () => {
   return (
     <div className="space-y-4">
       <RemoteText
-        text={`${value} ETH`}
-        isLoading={isLoading}
         error={hasError ? "Failed to load" : undefined}
+        isLoading={isLoading}
+        text={`${value} ETH`}
       />
       <div className="flex gap-2">
         <button
-          onClick={handleLoad}
           className="bg-primary text-fg rounded px-4 py-2"
           disabled={isLoading}
+          onClick={handleLoad}
         >
           Reload
         </button>
         <button
-          onClick={handleError}
           className="bg-error text-fg rounded px-4 py-2"
           disabled={isLoading}
+          onClick={handleError}
         >
           Trigger Error
         </button>
@@ -85,7 +88,7 @@ export const CustomComponent: Story = () => (
   <div className="space-y-4">
     <RemoteText text="Span (default)" />
     <RemoteText text="Paragraph text" textComponent="p" />
-    <RemoteText text="Heading text" textComponent="h3" className="text-xl font-bold" />
+    <RemoteText className="text-xl font-bold" text="Heading text" textComponent="h3" />
   </div>
 );
 
@@ -94,7 +97,7 @@ export const InContext: Story = () => (
     <div className="bg-fg border-border rounded border p-4">
       <div className="mb-2 flex items-center justify-between">
         <span className="text-muted">Total Value Locked</span>
-        <RemoteText text="$1,234,567.89" isLoading />
+        <RemoteText isLoading text="$1,234,567.89" />
       </div>
       <div className="mb-2 flex items-center justify-between">
         <span className="text-muted">Your Balance</span>
@@ -102,7 +105,7 @@ export const InContext: Story = () => (
       </div>
       <div className="flex items-center justify-between">
         <span className="text-muted">APY</span>
-        <RemoteText text="12.5%" error="Failed to load" />
+        <RemoteText error="Failed to load" text="12.5%" />
       </div>
     </div>
   </div>

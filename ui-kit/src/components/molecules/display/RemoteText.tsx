@@ -1,29 +1,31 @@
 import * as React from "react";
-import { Skeleton } from "../../atoms";
+
 import { cn } from "@/lib";
 
+import { Skeleton } from "../../atoms";
+
 export interface RemoteTextProps {
+  className?: string;
+  error?: string;
   isLoading?: boolean;
   text: string;
   textComponent?: React.ElementType;
-  className?: string;
-  error?: string;
 }
 
 export const RemoteText = React.forwardRef<HTMLDivElement, RemoteTextProps>(
-  ({ text, isLoading, textComponent, className, error }, ref) => {
+  ({ className, error, isLoading, text, textComponent }, ref) => {
     const Text = textComponent ?? "span";
 
     return (
       <div
         aria-busy={isLoading || undefined}
-        ref={ref}
         className={cn("relative inline-flex flex-col gap-1", className)}
+        ref={ref}
       >
         <Text className={cn(isLoading && "invisible")}>{text}</Text>
         {isLoading && <Skeleton className="absolute top-0 right-0 bottom-0 left-0" />}
         {error && (
-          <span role="alert" className="text-err text-xs">
+          <span className="text-err text-xs" role="alert">
             {error}
           </span>
         )}

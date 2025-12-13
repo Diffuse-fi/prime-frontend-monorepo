@@ -1,10 +1,8 @@
 import * as React from "react";
-import { cn, VariantProps } from "@/lib";
-import { button } from "./styles";
 
-type PolymorphicProps<T extends React.ElementType, P> = P & {
-  component?: T;
-} & Omit<React.ComponentPropsWithoutRef<T>, keyof P | "component">;
+import { cn, VariantProps } from "@/lib";
+
+import { button } from "./styles";
 
 export type ButtonLikeProps<T extends React.ElementType = "button"> = PolymorphicProps<
   T,
@@ -13,17 +11,25 @@ export type ButtonLikeProps<T extends React.ElementType = "button"> = Polymorphi
   }
 >;
 
+type PolymorphicProps<T extends React.ElementType, P> = Omit<
+  React.ComponentPropsWithoutRef<T>,
+  "component" | keyof P
+> &
+  P & {
+    component?: T;
+  };
+
 export function ButtonLike<T extends React.ElementType = "button">({
-  component,
   className,
-  variant,
-  size = "md",
+  component,
   icon,
+  size = "md",
+  variant,
   ...rest
 }: ButtonLikeProps<T>) {
   const Component = component ?? "button";
 
   return (
-    <Component className={cn(button({ variant, size, className, icon }))} {...rest} />
+    <Component className={cn(button({ className, icon, size, variant }))} {...rest} />
   );
 }

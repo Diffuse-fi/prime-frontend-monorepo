@@ -1,18 +1,19 @@
-import { describe, it, expect } from "vitest";
-import { normalizeError } from "./normalize";
-import { AddressNotFoundError, InvalidAddressError, UserRejectedError } from "./errors";
 import {
-  UserRejectedRequestError,
-  InsufficientFundsError as ViemInsufficientFunds,
-  ContractFunctionRevertedError,
-  RpcRequestError,
-  HttpRequestError,
   BaseError,
   CallExecutionError,
-  EstimateGasExecutionError,
   ContractFunctionExecutionError,
+  ContractFunctionRevertedError,
+  EstimateGasExecutionError,
+  HttpRequestError,
+  RpcRequestError,
+  UserRejectedRequestError,
+  InsufficientFundsError as ViemInsufficientFunds,
 } from "viem";
+import { describe, expect, it } from "vitest";
+
 import { SdkErrorCode } from "./codes";
+import { AddressNotFoundError, InvalidAddressError, UserRejectedError } from "./errors";
+import { normalizeError } from "./normalize";
 
 describe("normalizeError", () => {
   it("returns SdkError unchanged", () => {
@@ -65,8 +66,8 @@ describe("normalizeError", () => {
   it("detects contract revert error", () => {
     const err = new ContractFunctionRevertedError({
       abi: [],
-      functionName: "transfer",
       data: "0x",
+      functionName: "transfer",
       message: "Insufficient balance",
     });
 
@@ -79,11 +80,11 @@ describe("normalizeError", () => {
   it("detects RPC error", () => {
     const err = new RpcRequestError({
       body: {},
-      url: "http://localhost:8545",
       error: {
-        code: -32603,
+        code: -32_603,
         message: "Internal error",
       },
+      url: "http://localhost:8545",
     });
     err.shortMessage = "Internal error";
 
@@ -95,8 +96,8 @@ describe("normalizeError", () => {
 
   it("detects network error", () => {
     const err = new HttpRequestError({
-      url: "https://example.com",
       details: "Connection failed",
+      url: "https://example.com",
     });
     err.shortMessage = "Connection failed";
 
@@ -130,11 +131,11 @@ describe("normalizeError", () => {
   it("treats RPC error with code 4001 as user rejection", () => {
     const err = new RpcRequestError({
       body: {},
-      url: "http://localhost:8545",
       error: {
         code: 4001,
         message: "User rejected",
       },
+      url: "http://localhost:8545",
     });
     err.shortMessage = "User rejected";
 
@@ -145,6 +146,7 @@ describe("normalizeError", () => {
   });
 
   it("detects abort by ABORT_ERR code", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const err = new Error("Operation abort error") as any;
     err.code = "ABORT_ERR";
 
@@ -155,6 +157,7 @@ describe("normalizeError", () => {
   });
 
   it("detects abort by UND_ERR_ABORTED code", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const err = new Error("Operation aborted by transport") as any;
     err.code = "UND_ERR_ABORTED";
 
@@ -209,8 +212,8 @@ describe("normalizeError", () => {
   it("detects contract revert from CallExecutionError", () => {
     const cause = new BaseError("call reverted");
     const err = new CallExecutionError(cause, {
-      to: "0x0000000000000000000000000000000000000000",
       data: "0x",
+      to: "0x0000000000000000000000000000000000000000",
     });
 
     const result = normalizeError(err);

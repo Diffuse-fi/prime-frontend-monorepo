@@ -1,28 +1,30 @@
-import * as React from "react";
-import { CopyCheck, CopyIcon } from "lucide-react";
-import { IconButton, IconButtonProps } from "./IconButton";
-import { cn } from "@/lib";
 import copy from "copy-to-clipboard";
+import { CopyCheck, CopyIcon } from "lucide-react";
+import * as React from "react";
 
-export type CopyButtonProps = Omit<IconButtonProps, "icon" | "aria-label"> & {
+import { cn } from "@/lib";
+
+import { IconButton, IconButtonProps } from "./IconButton";
+
+export type CopyButtonProps = Omit<IconButtonProps, "aria-label" | "icon"> & {
   "aria-label"?: string;
   textToCopy: string;
 };
 
 export function CopyButton({
-  size = "md",
-  onClick,
-  className,
   "aria-label": ariaLabel = "Copy to clipboard",
+  className,
+  onClick,
+  size = "md",
   textToCopy,
   ...rest
 }: CopyButtonProps) {
   const [copySuccess, setCopySuccess] = React.useState(false);
-  const timeoutRef = React.useRef<number | null>(null);
+  const timeoutRef = React.useRef<null | number>(null);
 
   const clearExistingTimeout = () => {
     if (timeoutRef.current !== null) {
-      window.clearTimeout(timeoutRef.current);
+      globalThis.clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
   };
@@ -33,6 +35,7 @@ export function CopyButton({
     copy(textToCopy);
     setCopySuccess(true);
 
+    // eslint-disable-next-line unicorn/prefer-global-this
     timeoutRef.current = window.setTimeout(() => {
       setCopySuccess(false);
       timeoutRef.current = null;
@@ -50,9 +53,9 @@ export function CopyButton({
 
   return (
     <IconButton
+      aria-label={ariaLabel}
       className={cn("transition-transform duration-75 active:scale-110", className)}
       icon={icon}
-      aria-label={ariaLabel}
       onClick={handleCopy}
       size={size}
       {...rest}

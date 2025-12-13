@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { describe, expect, it, vi } from "vitest";
+
 import { Input } from "./Input";
 
 describe("<Input />", () => {
@@ -10,7 +11,7 @@ describe("<Input />", () => {
     const ref = React.createRef<HTMLInputElement>();
     const onChange = vi.fn();
 
-    render(<Input ref={ref} aria-label="Name" className="custom" onChange={onChange} />);
+    render(<Input aria-label="Name" className="custom" onChange={onChange} ref={ref} />);
 
     const input = screen.getByRole("textbox", { name: "Name" });
     expect(input).toBeInTheDocument();
@@ -38,7 +39,7 @@ describe("<Input />", () => {
 
   it("sets aria-invalid when error and supports disabled and type", async () => {
     const user = userEvent.setup();
-    render(<Input aria-label="Secret" type="password" error disabled defaultValue="x" />);
+    render(<Input aria-label="Secret" defaultValue="x" disabled error type="password" />);
 
     const input = screen.getByLabelText("Secret");
     expect(input).toHaveAttribute("type", "password");

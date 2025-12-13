@@ -1,5 +1,3 @@
-import { resolveAddress } from "../../resolve";
-import { Init } from "@/types";
 import {
   Abi,
   Address,
@@ -9,21 +7,25 @@ import {
   WalletClient,
 } from "viem";
 
-export class ContractBase {
-  constructor(readonly init: Init) {}
+import { Init } from "@/types";
 
-  get chainId() {
-    return this.init.chainId;
-  }
-}
+import { resolveAddress } from "../../resolve";
 
 export type GenericContractType<T extends Abi | readonly unknown[] = Abi> =
-  | GetContractReturnType<T, WalletClient, Address>
-  | GetContractReturnType<T, PublicClient, Address>;
+  | GetContractReturnType<T, PublicClient, Address>
+  | GetContractReturnType<T, WalletClient, Address>;
 
 export type SdkRequestOptions = {
   signal?: AbortSignal;
 };
+
+export class ContractBase {
+  get chainId() {
+    return this.init.chainId;
+  }
+
+  constructor(readonly init: Init) {}
+}
 
 export function getContractInstance<ContractAbi extends Abi>(
   init: Init,
@@ -31,16 +33,16 @@ export function getContractInstance<ContractAbi extends Abi>(
   contractAbi: ContractAbi
 ) {
   const address = resolveAddress({
+    addressOverride: init.address,
     chainId: init.chainId,
     contract: contractName,
-    addressOverride: init.address,
   });
 
   const client = init.client.wallet
     ? { public: init.client.public, wallet: init.client.wallet }
     : { public: init.client.public };
 
-  return getContract({ address, abi: contractAbi, client }) as GenericContractType<
+  return getContract({ abi: contractAbi, address, client }) as GenericContractType<
     typeof contractAbi
   >;
 }

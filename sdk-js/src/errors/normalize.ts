@@ -1,103 +1,30 @@
-import {
-  BaseError,
-  UserRejectedRequestError,
-  InsufficientFundsError as ViemInsufficientFunds,
-  ContractFunctionRevertedError,
-  ContractFunctionExecutionError,
-  EstimateGasExecutionError,
-  CallExecutionError,
-  RpcRequestError,
-  HttpRequestError,
-} from "viem";
-import {
-  SdkError,
-  UserRejectedError,
-  InsufficientFundsError,
-  SimulationRevertedError,
-  ContractRevertError,
-  RpcError,
-  NetworkError,
-  UnknownError,
-  AddressNotFoundError,
-  InvalidAddressError,
-  AbortedError,
-} from "./errors";
 import type { ErrorCtx } from "./types";
 
-function firstCause<T>(err: unknown, guard: (e: unknown) => e is T): T | undefined {
-  let cur: unknown = err;
-  const seen = new Set<unknown>();
+import {
+  BaseError,
+  CallExecutionError,
+  ContractFunctionExecutionError,
+  ContractFunctionRevertedError,
+  EstimateGasExecutionError,
+  HttpRequestError,
+  RpcRequestError,
+  UserRejectedRequestError,
+  InsufficientFundsError as ViemInsufficientFunds,
+} from "viem";
 
-  while (cur && typeof cur === "object" && !seen.has(cur)) {
-    seen.add(cur);
-    if (guard(cur)) return cur;
-    cur = (cur as any).cause;
-  }
-
-  return undefined;
-}
-
-function msgOf(e: any): string {
-  return String(e?.shortMessage ?? e?.message ?? e?.details ?? "");
-}
-
-function reasonOf(err: unknown): string | undefined {
-  if (err instanceof ContractFunctionRevertedError) return err.shortMessage || err.reason;
-  if (err instanceof ContractFunctionExecutionError)
-    return err.cause?.shortMessage || err.shortMessage;
-  if (err instanceof EstimateGasExecutionError) return err.shortMessage;
-  if (err instanceof CallExecutionError) return err.shortMessage;
-}
-
-function isUserRejected(err: unknown): boolean {
-  if (
-    firstCause(
-      err,
-      (e): e is UserRejectedRequestError => e instanceof UserRejectedRequestError
-    )
-  ) {
-    return true;
-  }
-  const rpc4001 = firstCause(
-    err,
-    (e): e is RpcRequestError => e instanceof RpcRequestError && e.code === 4001
-  );
-  if (rpc4001) return true;
-
-  let cur: unknown = err;
-  const seen = new Set<unknown>();
-  const rx = /user (rejected|denied)|request rejected/i;
-
-  while (cur && typeof cur === "object" && !seen.has(cur)) {
-    seen.add(cur);
-    if (rx.test(msgOf(cur))) return true;
-    cur = (cur as any).cause;
-  }
-
-  return false;
-}
-
-function isAbortError(err: unknown): boolean {
-  let cur: unknown = err;
-  const seen = new Set<unknown>();
-  const msgRx = /\babort(ed|ing)?\b/i;
-
-  while (cur && typeof cur === "object" && !seen.has(cur)) {
-    seen.add(cur);
-    const any = cur as any;
-
-    if (any?.name === "AbortError") return true;
-    if (any?.code === "ABORT_ERR") return true;
-    if (any?.code === "UND_ERR_ABORTED") return true;
-
-    const m = msgOf(cur);
-    if (m && typeof m === "string" && m.length > 0 && msgRx.test(m)) return true;
-
-    cur = any?.cause;
-  }
-
-  return false;
-}
+import {
+  AbortedError,
+  AddressNotFoundError,
+  ContractRevertError,
+  InsufficientFundsError,
+  InvalidAddressError,
+  NetworkError,
+  RpcError,
+  SdkError,
+  SimulationRevertedError,
+  UnknownError,
+  UserRejectedError,
+} from "./errors";
 
 export function normalizeError(err: unknown, context?: ErrorCtx): SdkError {
   if (err instanceof SdkError) return err;
@@ -141,9 +68,88 @@ export function normalizeError(err: unknown, context?: ErrorCtx): SdkError {
     return new NetworkError(httpErr.shortMessage ?? "HTTP error", context, httpErr);
 
   if (err instanceof BaseError) {
-    return new RpcError(err.shortMessage ?? (err as any).message, context, err);
+    return new RpcError(err.shortMessage ?? err.message, context, err);
   }
 
   const msg = err instanceof Error ? err.message : "Unknown error";
   return new UnknownError(context, err instanceof Error ? err : new Error(msg));
+}
+
+function firstCause<T>(err: unknown, guard: (e: unknown) => e is T): T | undefined {
+  let cur: unknown = err;
+  const seen = new Set<unknown>();
+
+  while (cur && typeof cur === "object" && !seen.has(cur)) {
+    seen.add(cur);
+    if (guard(cur)) return cur;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    cur = (cur as any).cause;
+  }
+
+  return undefined;
+}
+
+function isAbortError(err: unknown): boolean {
+  let cur: unknown = err;
+  const seen = new Set<unknown>();
+  const msgRx = /\babort(?:ed|ing)?\b/i;
+
+  while (cur && typeof cur === "object" && !seen.has(cur)) {
+    seen.add(cur);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const any = cur as any;
+
+    if (any?.name === "AbortError") return true;
+    if (any?.code === "ABORT_ERR") return true;
+    if (any?.code === "UND_ERR_ABORTED") return true;
+
+    const m = msgOf(cur);
+    if (m && typeof m === "string" && m.length > 0 && msgRx.test(m)) return true;
+
+    cur = any?.cause;
+  }
+
+  return false;
+}
+
+function isUserRejected(err: unknown): boolean {
+  if (
+    firstCause(
+      err,
+      (e): e is UserRejectedRequestError => e instanceof UserRejectedRequestError
+    )
+  ) {
+    return true;
+  }
+  const rpc4001 = firstCause(
+    err,
+    (e): e is RpcRequestError => e instanceof RpcRequestError && e.code === 4001
+  );
+  if (rpc4001) return true;
+
+  let cur: unknown = err;
+  const seen = new Set<unknown>();
+  const rx = /user (?:rejected|denied)|request rejected/i;
+
+  while (cur && typeof cur === "object" && !seen.has(cur)) {
+    seen.add(cur);
+    if (rx.test(msgOf(cur))) return true;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    cur = (cur as any).cause;
+  }
+
+  return false;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function msgOf(e: any): string {
+  return String(e?.shortMessage ?? e?.message ?? e?.details ?? "");
+}
+
+function reasonOf(err: unknown): string | undefined {
+  if (err instanceof ContractFunctionRevertedError) return err.shortMessage || err.reason;
+  if (err instanceof ContractFunctionExecutionError)
+    return err.cause?.shortMessage || err.shortMessage;
+  if (err instanceof EstimateGasExecutionError) return err.shortMessage;
+  if (err instanceof CallExecutionError) return err.shortMessage;
 }

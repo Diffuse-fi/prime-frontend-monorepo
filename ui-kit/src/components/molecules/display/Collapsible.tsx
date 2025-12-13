@@ -1,5 +1,6 @@
-import * as React from "react";
 import { ChevronDown } from "lucide-react";
+import * as React from "react";
+
 import { cn } from "@/lib";
 
 type CollapsibleCommonProps = {
@@ -7,28 +8,24 @@ type CollapsibleCommonProps = {
   summaryClassName?: string;
 };
 
-type ControlledCollapsibleProps = Omit<
-  React.HTMLAttributes<HTMLDetailsElement>,
-  "onToggle"
-> & {
-  open: boolean;
-  onOpenChange?: (open: boolean) => void;
-} & CollapsibleCommonProps;
+type ControlledCollapsibleProps = CollapsibleCommonProps &
+  Omit<React.HTMLAttributes<HTMLDetailsElement>, "onToggle"> & {
+    onOpenChange?: (open: boolean) => void;
+    open: boolean;
+  };
 
-type UncontrolledCollapsibleProps = Omit<
-  React.HTMLAttributes<HTMLDetailsElement>,
-  "onToggle"
-> & {
-  defaultOpen?: boolean;
-} & CollapsibleCommonProps;
+type UncontrolledCollapsibleProps = CollapsibleCommonProps &
+  Omit<React.HTMLAttributes<HTMLDetailsElement>, "onToggle"> & {
+    defaultOpen?: boolean;
+  };
 
 const CollapsibleSummary = ({
-  summary,
   open,
+  summary,
   summaryClassName,
 }: {
-  summary: React.ReactNode;
   open: boolean;
+  summary: React.ReactNode;
   summaryClassName?: string;
 }) => {
   return (
@@ -51,19 +48,19 @@ export const ControlledCollapsible = React.forwardRef<
   HTMLDetailsElement,
   ControlledCollapsibleProps
 >(function ControlledCollapsible(
-  { open, onOpenChange, summary, summaryClassName, children, ...rest },
+  { children, onOpenChange, open, summary, summaryClassName, ...rest },
   ref
 ) {
   return (
     <details
-      ref={ref}
       open={open}
+      ref={ref}
       {...rest}
       onToggle={e => onOpenChange?.((e.currentTarget as HTMLDetailsElement).open)}
     >
       <CollapsibleSummary
-        summary={summary}
         open={open}
+        summary={summary}
         summaryClassName={summaryClassName}
       />
       <div className="mt-2">{children}</div>
@@ -76,21 +73,21 @@ export const UncontrolledCollapsible = React.forwardRef<
   HTMLDetailsElement,
   UncontrolledCollapsibleProps
 >(function UncontrolledCollapsible(
-  { defaultOpen = false, summary, summaryClassName, children, ...rest },
+  { children, defaultOpen = false, summary, summaryClassName, ...rest },
   ref
 ) {
   const [open, setOpen] = React.useState(defaultOpen);
 
   return (
     <details
-      ref={ref}
       open={open}
+      ref={ref}
       {...rest}
       onToggle={e => setOpen((e.currentTarget as HTMLDetailsElement).open)}
     >
       <CollapsibleSummary
-        summary={summary}
         open={open}
+        summary={summary}
         summaryClassName={summaryClassName}
       />
       <div className="mt-2">{children}</div>

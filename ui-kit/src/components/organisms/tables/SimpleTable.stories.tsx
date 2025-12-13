@@ -1,4 +1,5 @@
 import type { Story, StoryDefault } from "@ladle/react";
+
 import { SimpleTable } from "./SimpleTable";
 
 export default {
@@ -22,13 +23,13 @@ export const Default: Story = () => (
 
 export const DensityCompact: Story = () => (
   <div className="overflow-x-auto">
-    <SimpleTable columns={sampleData.columns} rows={sampleData.rows} density="compact" />
+    <SimpleTable columns={sampleData.columns} density="compact" rows={sampleData.rows} />
   </div>
 );
 
 export const DensityComfortable: Story = () => (
   <div className="overflow-x-auto">
-    <SimpleTable columns={sampleData.columns} rows={sampleData.rows} density="comfy" />
+    <SimpleTable columns={sampleData.columns} density="comfy" rows={sampleData.rows} />
   </div>
 );
 
@@ -67,24 +68,24 @@ export const WithCustomContent: Story = () => {
   const columns = ["Asset", "Amount", "Value", "Actions"];
   const rows = [
     [
-      <div key="1" className="flex items-center gap-2">
+      <div className="flex items-center gap-2" key="1">
         <div className="bg-primary/20 h-6 w-6 rounded-full" />
         <span>ETH</span>
       </div>,
       "1.234",
       "$2,500.00",
-      <button key="1b" className="text-primary text-sm">
+      <button className="text-primary text-sm" key="1b">
         Trade
       </button>,
     ],
     [
-      <div key="2" className="flex items-center gap-2">
+      <div className="flex items-center gap-2" key="2">
         <div className="bg-primary/20 h-6 w-6 rounded-full" />
         <span>USDC</span>
       </div>,
       "5,000.00",
       "$5,000.00",
-      <button key="2b" className="text-primary text-sm">
+      <button className="text-primary text-sm" key="2b">
         Trade
       </button>,
     ],

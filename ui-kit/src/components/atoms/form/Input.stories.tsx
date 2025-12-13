@@ -1,6 +1,8 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { Input } from "./Input";
+
 import { useState } from "react";
+
+import { Input } from "./Input";
 
 export default {
   title: "Atoms/Form/Input",
@@ -20,9 +22,9 @@ export const WithValue: Story = () => {
   const [value, setValue] = useState("Hello World");
   return (
     <Input
-      value={value}
       onChange={e => setValue(e.target.value)}
       placeholder="Type something..."
+      value={value}
     />
   );
 };
@@ -30,21 +32,21 @@ export const WithValue: Story = () => {
 export const States: Story = () => (
   <div className="flex max-w-md flex-col gap-4">
     <Input placeholder="Default state" />
-    <Input placeholder="Error state" error />
-    <Input placeholder="Disabled state" disabled />
+    <Input error placeholder="Error state" />
+    <Input disabled placeholder="Disabled state" />
   </div>
 );
 
 export const WithLeftIcon: Story = () => (
   <div className="flex max-w-md flex-col gap-4">
-    <Input placeholder="Search..." left={<span>🔍</span>} />
-    <Input placeholder="Email address" left={<span>✉️</span>} />
+    <Input left={<span>🔍</span>} placeholder="Search..." />
+    <Input left={<span>✉️</span>} placeholder="Email address" />
   </div>
 );
 
 export const WithRightIcon: Story = () => (
   <div className="flex max-w-md flex-col gap-4">
-    <Input placeholder="Password" type="password" right={<span>👁️</span>} />
+    <Input placeholder="Password" right={<span>👁️</span>} type="password" />
     <Input placeholder="Amount" right={<span>$</span>} />
   </div>
 );
@@ -52,8 +54,8 @@ export const WithRightIcon: Story = () => (
 export const WithBothIcons: Story = () => (
   <div className="flex max-w-md flex-col gap-4">
     <Input
-      placeholder="Enter amount"
       left={<span className="text-muted">$</span>}
+      placeholder="Enter amount"
       right={<span className="text-muted">USD</span>}
     />
   </div>
@@ -61,10 +63,10 @@ export const WithBothIcons: Story = () => (
 
 export const DifferentTypes: Story = () => (
   <div className="flex max-w-md flex-col gap-4">
-    <Input type="text" placeholder="Text" />
-    <Input type="email" placeholder="email@example.com" />
-    <Input type="password" placeholder="Password" />
-    <Input type="number" placeholder="123" />
+    <Input placeholder="Text" type="text" />
+    <Input placeholder="email@example.com" type="email" />
+    <Input placeholder="Password" type="password" />
+    <Input placeholder="123" type="number" />
     <Input type="date" />
   </div>
 );

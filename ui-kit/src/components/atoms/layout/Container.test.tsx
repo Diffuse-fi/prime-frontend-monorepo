@@ -1,11 +1,12 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
+import React from "react";
 import "@testing-library/jest-dom";
+
 import { Container } from "./Container";
 
 it("renders children and applies base + default variant + custom classes", () => {
   render(
-    <Container data-testid="container" className="custom">
+    <Container className="custom" data-testid="container">
       Hello
     </Container>
   );

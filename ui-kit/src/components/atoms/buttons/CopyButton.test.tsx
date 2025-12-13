@@ -1,13 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import * as React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("lucide-react", () => ({
   CopyCheck: ({ size }: { size?: number }) => (
-    <svg data-testid="icon" data-icon="check" width={size} height={size} />
+    <svg data-icon="check" data-testid="icon" height={size} width={size} />
   ),
   CopyIcon: ({ size }: { size?: number }) => (
-    <svg data-testid="icon" data-icon="copy" width={size} height={size} />
+    <svg data-icon="copy" data-testid="icon" height={size} width={size} />
   ),
 }));
 
@@ -25,20 +25,20 @@ describe("<CopyButton />", () => {
 
   it("respects size prop for icon dimensions (sm/md/lg)", () => {
     const { rerender } = render(
-      <CopyButton textToCopy="x" size="sm" aria-label="Copy" />
+      <CopyButton aria-label="Copy" size="sm" textToCopy="x" />
     );
     let btn = screen.getByRole("button", { name: "Copy" });
     let icon = within(btn).getByTestId("icon");
     expect(icon).toHaveAttribute("width", "16");
     expect(icon).toHaveAttribute("height", "16");
 
-    rerender(<CopyButton textToCopy="x" size="md" aria-label="Copy" />);
+    rerender(<CopyButton aria-label="Copy" size="md" textToCopy="x" />);
     btn = screen.getByRole("button", { name: "Copy" });
     icon = within(btn).getByTestId("icon");
     expect(icon).toHaveAttribute("width", "20");
     expect(icon).toHaveAttribute("height", "20");
 
-    rerender(<CopyButton textToCopy="x" size="lg" aria-label="Copy" />);
+    rerender(<CopyButton aria-label="Copy" size="lg" textToCopy="x" />);
     btn = screen.getByRole("button", { name: "Copy" });
     icon = within(btn).getByTestId("icon");
     expect(icon).toHaveAttribute("width", "24");
@@ -47,8 +47,8 @@ describe("<CopyButton />", () => {
 
   it("clears pending timeout on unmount and supports custom aria-label", () => {
     vi.useFakeTimers();
-    const clearSpy = vi.spyOn(window, "clearTimeout");
-    const { unmount } = render(<CopyButton textToCopy="x" aria-label="Copy text" />);
+    const clearSpy = vi.spyOn(globalThis, "clearTimeout");
+    const { unmount } = render(<CopyButton aria-label="Copy text" textToCopy="x" />);
 
     const btn = screen.getByRole("button", { name: "Copy text" });
     fireEvent.click(btn);

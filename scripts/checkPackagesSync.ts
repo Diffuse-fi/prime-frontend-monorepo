@@ -4,24 +4,25 @@
  */
 
 import path from "node:path";
+
 import { listWorkspaceDirs, readJSON } from "./utils/workspaceUtils";
 
 type PkgJson = {
+  dependencies?: Record<string, string>;
   name?: string;
   version?: string;
-  dependencies?: Record<string, string>;
 };
 
 function main() {
   const wsDirs = listWorkspaceDirs();
   let failed = false;
 
-  const wsVersions = new Map<string, { version: string; dir: string }>();
+  const wsVersions = new Map<string, { dir: string; version: string }>();
   for (const dir of wsDirs) {
     const pjPath = path.join(dir, "package.json");
     const pj = readJSON<PkgJson>(pjPath);
     if (pj.name && pj.version) {
-      wsVersions.set(pj.name, { version: pj.version, dir });
+      wsVersions.set(pj.name, { dir, version: pj.version });
     }
   }
 
@@ -43,10 +44,7 @@ function main() {
   }
 
   if (failed) {
-    console.error(
-      "\nTo fix: Update the dependency versions in the package.json files to match the workspace package versions."
-    );
-    process.exit(1);
+    throw new Error("Package versions are not synchronized");
   }
 }
 

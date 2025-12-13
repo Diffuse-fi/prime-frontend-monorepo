@@ -1,35 +1,36 @@
-import * as React from "react";
-import { Select as SelectpPimitive } from "radix-ui";
 import { ChevronDown } from "lucide-react";
+import { Select as SelectpPimitive } from "radix-ui";
+import * as React from "react";
+
 import { cn, tv } from "@/lib";
+
 import { inputRoot } from "./inputStyles";
 
 export type SelectOption = {
-  value: string;
-  label: React.ReactNode;
   disabled?: boolean;
   icon?: React.ReactNode;
+  label: React.ReactNode;
+  value: string;
 };
 
 export interface SelectProps
   extends Omit<
     SelectpPimitive.SelectProps,
-    "children" | "value" | "defaultValue" | "onValueChange"
+    "children" | "defaultValue" | "onValueChange" | "value"
   > {
-  options: SelectOption[];
-  value?: string;
-  defaultValue?: string;
-  onValueChange?: (value: string) => void;
-  error?: boolean;
-  success?: boolean;
-  placeholder?: string;
-  className?: string;
-  valueClassName?: string;
-  contentClassName?: string;
-  itemClassName?: string;
-  align?: "start" | "center" | "end";
+  align?: "center" | "end" | "start";
   "aria-label"?: string;
-  size?: "sm" | "md" | "lg";
+  className?: string;
+  contentClassName?: string;
+  defaultValue?: string;
+  error?: boolean;
+  itemClassName?: string;
+  onValueChange?: (value: string) => void;
+  options: SelectOption[];
+  placeholder?: string;
+  size?: "lg" | "md" | "sm";
+  value?: string;
+  valueClassName?: string;
 }
 
 const selectValue = tv({
@@ -65,20 +66,19 @@ const itemRow = tv({
 export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
   (
     {
-      options,
-      value,
-      defaultValue,
-      onValueChange,
-      error,
-      success,
-      disabled,
-      placeholder,
-      className,
-      valueClassName,
-      contentClassName,
-      itemClassName,
       align = "start",
+      className,
+      contentClassName,
+      defaultValue,
+      disabled,
+      error,
+      itemClassName,
+      onValueChange,
+      options,
+      placeholder,
       size = "md",
+      value,
+      valueClassName,
       ...rootProps
     },
     ref
@@ -87,43 +87,43 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
 
     return (
       <SelectpPimitive.Root
-        value={value}
         defaultValue={defaultValue}
-        onValueChange={onValueChange}
         disabled={disabled}
+        onValueChange={onValueChange}
+        value={value}
         {...rootProps}
       >
         <SelectpPimitive.Trigger
-          ref={ref}
+          aria-invalid={error || undefined}
           className={cn(
-            inputRoot({ state, disabled: !!disabled, size }),
+            inputRoot({ disabled: !!disabled, size, state }),
             "focus:outline-none",
             className
           )}
-          aria-invalid={error || undefined}
+          ref={ref}
         >
           <SelectpPimitive.Value
-            placeholder={placeholder}
             className={cn(selectValue(), valueClassName)}
+            placeholder={placeholder}
           />
           <span className={chevronWrap()}>
-            <ChevronDown className="h-4 w-4" aria-hidden />
+            <ChevronDown aria-hidden className="h-4 w-4" />
           </span>
         </SelectpPimitive.Trigger>
         <SelectpPimitive.Portal>
           <SelectpPimitive.Content
             align={align}
+            className={cn(contentBox(), contentClassName)}
             position="popper"
             sideOffset={6}
-            className={cn(contentBox(), contentClassName)}
           >
             <SelectpPimitive.Viewport className={viewportBox}>
               {options.map(opt => (
                 <SelectpPimitive.Item
+                  className={cn(itemRow({ disabled: !!opt.disabled }), itemClassName)}
+                  disabled={opt.disabled}
                   key={opt.value}
                   value={opt.value}
-                  disabled={opt.disabled}
-                  className={cn(itemRow({ disabled: !!opt.disabled }), itemClassName)}
                 >
                   {opt.icon ? (
                     <span className="mr-2 inline-flex h-5 w-5 shrink-0 items-center justify-center">

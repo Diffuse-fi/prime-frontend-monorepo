@@ -1,52 +1,53 @@
 import * as React from "react";
+
 import { tv, VariantProps } from "@/lib";
 
 const badge = tv({
   base: "inline-flex items-center font-medium whitespace-nowrap rounded-full",
+  defaultVariants: {
+    color: "success",
+    size: "md",
+  },
   variants: {
-    size: {
-      sm: "text-xs py-0.5 gap-1",
-      md: "text-sm py-0.5 gap-1.5",
-      lg: "text-sm py-1 gap-2",
-    },
     color: {
-      success: "text-success",
-      warning: "text-warning",
       error: "text-error",
       muted: "text-muted",
+      success: "text-success",
+      warning: "text-warning",
     },
-  },
-  defaultVariants: {
-    size: "md",
-    color: "success",
+    size: {
+      lg: "text-sm py-1 gap-2",
+      md: "text-sm py-0.5 gap-1.5",
+      sm: "text-xs py-0.5 gap-1",
+    },
   },
 });
 
 const dot = tv({
   base: "inline-block h-6 w-6 rounded-full",
+  defaultVariants: { color: "success" },
   variants: {
     color: {
-      success: "bg-success",
-      warning: "bg-warn",
       error: "bg-err",
       muted: "bg-muted",
+      success: "bg-success",
+      warning: "bg-warn",
     },
   },
-  defaultVariants: { color: "success" },
 });
 
 export type BadgeProps = React.HTMLAttributes<HTMLSpanElement> &
   VariantProps<typeof badge>;
 
 export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ size, color, className, children, ...props }, ref) => {
+  ({ children, className, color, size, ...props }, ref) => {
     return (
-      <span ref={ref} className={badge({ size, color, className })} {...props}>
+      <span className={badge({ className, color, size })} ref={ref} {...props}>
         <span
+          aria-hidden="true"
           className={dot({
             color,
           })}
-          aria-hidden="true"
         />
         {children ? <span>{children}</span> : null}
       </span>

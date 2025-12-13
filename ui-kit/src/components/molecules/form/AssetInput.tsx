@@ -1,24 +1,25 @@
 import * as React from "react";
-import { Input, type InputProps } from "@/atoms";
 import { NumericFormat, NumericFormatProps } from "react-number-format";
 
+import { Input, type InputProps } from "@/atoms";
+
 export interface AssetInputProps
-  extends Omit<InputProps, "right" | "type" | "onChange" | "value" | "defaultValue"> {
-  renderAssetImage?: (ctx: { size: "sm" | "md" | "lg" }) => React.ReactNode;
+  extends Omit<InputProps, "defaultValue" | "onChange" | "right" | "type" | "value"> {
   assetSymbol?: string;
-  value?: string | number;
   onValueChange?: NumericFormatProps["onValueChange"];
+  renderAssetImage?: (ctx: { size: "lg" | "md" | "sm" }) => React.ReactNode;
+  value?: number | string;
 }
 
 export const AssetInput = React.forwardRef<HTMLInputElement, AssetInputProps>(
   (
     {
+      assetSymbol,
+      className,
+      onValueChange,
       renderAssetImage,
       size = "md",
-      assetSymbol,
       value,
-      onValueChange,
-      className,
       ...props
     },
     ref
@@ -33,20 +34,20 @@ export const AssetInput = React.forwardRef<HTMLInputElement, AssetInputProps>(
 
     return (
       <NumericFormat
+        allowLeadingZeros={false}
+        allowNegative={false}
         customInput={Input}
-        thousandSeparator=" "
-        inputMode="decimal"
-        getInputRef={ref}
-        size={size}
-        right={displayAssetMeta ? right : undefined}
-        type="text"
         decimalScale={2}
         fixedDecimalScale
-        allowNegative={false}
-        allowLeadingZeros={false}
-        valueIsNumericString
-        value={value}
+        getInputRef={ref}
+        inputMode="decimal"
         onValueChange={onValueChange}
+        right={displayAssetMeta ? right : undefined}
+        size={size}
+        thousandSeparator=" "
+        type="text"
+        value={value}
+        valueIsNumericString
         wrapperClassName={className}
         {...props}
       />

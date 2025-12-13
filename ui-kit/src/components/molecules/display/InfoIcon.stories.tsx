@@ -1,9 +1,9 @@
 import type { Story, StoryDefault } from "@ladle/react";
+
 import { InfoIcon } from "./InfoIcon";
 import { TooltipProvider } from "./Tooltip";
 
 export default {
-  title: "Molecules/Display/InfoIcon",
   decorators: [
     Component => (
       <TooltipProvider>
@@ -11,6 +11,7 @@ export default {
       </TooltipProvider>
     ),
   ],
+  title: "Molecules/Display/InfoIcon",
 } satisfies StoryDefault;
 
 export const Default: Story = () => (
@@ -21,19 +22,19 @@ export const Default: Story = () => (
 
 export const Sizes: Story = () => (
   <div className="flex items-center justify-center gap-4 p-20">
-    <InfoIcon text="Small size" size={14} />
-    <InfoIcon text="Default size (16)" size={16} />
-    <InfoIcon text="Medium size" size={20} />
-    <InfoIcon text="Large size" size={24} />
+    <InfoIcon size={14} text="Small size" />
+    <InfoIcon size={16} text="Default size (16)" />
+    <InfoIcon size={20} text="Medium size" />
+    <InfoIcon size={24} text="Large size" />
   </div>
 );
 
 export const Sides: Story = () => (
   <div className="flex items-center justify-center gap-8 p-20">
-    <InfoIcon text="Top tooltip" side="top" />
-    <InfoIcon text="Right tooltip" side="right" />
-    <InfoIcon text="Bottom tooltip" side="bottom" />
-    <InfoIcon text="Left tooltip" side="left" />
+    <InfoIcon side="top" text="Top tooltip" />
+    <InfoIcon side="right" text="Right tooltip" />
+    <InfoIcon side="bottom" text="Bottom tooltip" />
+    <InfoIcon side="left" text="Left tooltip" />
   </div>
 );
 
@@ -66,8 +67,8 @@ export const InContext: Story = () => (
 export const WithCustomColor: Story = () => (
   <div className="flex justify-center gap-4 p-20">
     <InfoIcon text="Default color" />
-    <InfoIcon text="Primary color" className="text-primary" />
-    <InfoIcon text="Muted color" className="text-muted" />
-    <InfoIcon text="Error color" className="text-error" />
+    <InfoIcon className="text-primary" text="Primary color" />
+    <InfoIcon className="text-muted" text="Muted color" />
+    <InfoIcon className="text-error" text="Error color" />
   </div>
 );

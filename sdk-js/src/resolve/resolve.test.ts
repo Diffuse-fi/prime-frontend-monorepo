@@ -1,19 +1,20 @@
-import { describe, it, expect, vi } from "vitest";
+import { getAddress } from "viem";
+import { describe, expect, it, vi } from "vitest";
+
 import { resolveAddress } from ".";
 import { AddressNotFoundError, InvalidAddressError } from "../errors";
-import { getAddress } from "viem";
 
 vi.mock("@diffuse/config", () => ({
   ADDRESSES: {
     chains: [
       {
         chainId: 1,
-        name: "Mainnet",
         contracts: {
           Viewer: {
             current: "0x6cc9bF3151Ff39846B0570CED355Ded5C0Bb7D76",
           },
         },
+        name: "Mainnet",
       },
     ],
   },
@@ -30,9 +31,9 @@ describe("resolveAddress", () => {
     const override = "0x6cc9bf3151ff39846b0570ced355ded5c0bb7d76";
 
     const result = resolveAddress({
+      addressOverride: override,
       chainId: 1,
       contract: "Viewer",
-      addressOverride: override,
     });
 
     expect(result).toBe(getAddress(override));
@@ -41,9 +42,9 @@ describe("resolveAddress", () => {
   it("throws InvalidAddressError for invalid override address", () => {
     expect(() =>
       resolveAddress({
+        addressOverride: "0x123",
         chainId: 1,
         contract: "Viewer",
-        addressOverride: "0x123",
       })
     ).toThrow(new InvalidAddressError("0x123", { chainId: 1, contract: "Viewer" }));
   });

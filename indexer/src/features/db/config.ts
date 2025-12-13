@@ -1,7 +1,6 @@
 import z from "zod";
 
 export const DbConfigSchema = z.object({
-  maxConnections: z.number().optional(),
   connectionString: z
     .string()
     .min(1)
@@ -9,6 +8,7 @@ export const DbConfigSchema = z.object({
       message:
         "Must be a valid PostgreSQL connection string (postgres:// or postgresql://)",
     }),
+  maxConnections: z.number().optional(),
 });
 
 export type DbConfig = z.infer<typeof DbConfigSchema>;

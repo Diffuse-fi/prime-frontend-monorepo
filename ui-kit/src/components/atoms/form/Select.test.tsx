@@ -1,13 +1,14 @@
-import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { describe, expect, it, vi } from "vitest";
+
 import { Select } from "./Select";
 
 const OPTIONS = [
-  { value: "eth", label: "ETH" },
-  { value: "usdc", label: "USDC" },
-  { value: "btc", label: "BTC", disabled: true },
+  { label: "ETH", value: "eth" },
+  { label: "USDC", value: "usdc" },
+  { disabled: true, label: "BTC", value: "btc" },
 ];
 
 describe("<Select /> keyboard-only", () => {
@@ -17,9 +18,9 @@ describe("<Select /> keyboard-only", () => {
 
     render(
       <Select
-        options={OPTIONS}
         defaultValue="eth"
         onValueChange={onValueChange}
+        options={OPTIONS}
         placeholder="Pick token"
       />
     );
@@ -43,7 +44,7 @@ describe("<Select /> keyboard-only", () => {
     const user = userEvent.setup({ pointerEventsCheck: 0 });
 
     render(
-      <Select options={OPTIONS} disabled placeholder="Disabled select" className="mx-2" />
+      <Select className="mx-2" disabled options={OPTIONS} placeholder="Disabled select" />
     );
 
     const trigger = screen.getByRole("combobox");
@@ -59,7 +60,7 @@ describe("<Select /> keyboard-only", () => {
   it("shows placeholder, merges classes, and renders disabled option in the list", async () => {
     const user = userEvent.setup({ pointerEventsCheck: 0 });
 
-    render(<Select options={OPTIONS} placeholder="Choose token" className="px-3" />);
+    render(<Select className="px-3" options={OPTIONS} placeholder="Choose token" />);
 
     const trigger = screen.getByRole("combobox");
     expect(trigger).toHaveTextContent("Choose token");

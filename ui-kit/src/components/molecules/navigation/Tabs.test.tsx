@@ -1,7 +1,8 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { describe, expect, it } from "vitest";
+
 import { Tabs } from "./Tabs";
 
 function setup(ui?: React.ReactNode) {
@@ -44,18 +45,18 @@ describe("<Tabs />", () => {
   it("applies visual variants: List align+fitted, Trigger fitted, Content inset", async () => {
     setup(
       <Tabs defaultValue="a">
-        <Tabs.List aria-label="Variants" align="between" fitted>
-          <Tabs.Trigger value="a" fitted>
+        <Tabs.List align="between" aria-label="Variants" fitted>
+          <Tabs.Trigger fitted value="a">
             A
           </Tabs.Trigger>
-          <Tabs.Trigger value="b" fitted>
+          <Tabs.Trigger fitted value="b">
             B
           </Tabs.Trigger>
         </Tabs.List>
-        <Tabs.Content value="a" inset>
+        <Tabs.Content inset value="a">
           Pa
         </Tabs.Content>
-        <Tabs.Content value="b" inset>
+        <Tabs.Content inset value="b">
           Pb
         </Tabs.Content>
       </Tabs>
@@ -80,10 +81,10 @@ describe("<Tabs />", () => {
       <Tabs defaultValue="x">
         <Tabs.List aria-label="Extras">
           <Tabs.Trigger
-            value="x"
+            count={3}
             left={<span>🔹</span>}
             right={<span>ℹ️</span>}
-            count={3}
+            value="x"
           >
             X tab
           </Tabs.Trigger>

@@ -1,7 +1,10 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { Dialog } from "./Dialog";
-import { Button } from "@/atoms";
+
 import { useState } from "react";
+
+import { Button } from "@/atoms";
+
+import { Dialog } from "./Dialog";
 
 export default {
   title: "Organisms/Dialog",
@@ -15,8 +18,8 @@ export const Default: Story = () => (
 
 export const WithDescription: Story = () => (
   <Dialog
-    title="Confirm Action"
     description="This action cannot be undone. Please confirm you want to proceed."
+    title="Confirm Action"
     trigger={<Button>Open Dialog</Button>}
   >
     <div className="mt-4 flex justify-end gap-2">
@@ -28,13 +31,13 @@ export const WithDescription: Story = () => (
 
 export const Sizes: Story = () => (
   <div className="flex gap-4">
-    <Dialog title="Small Dialog" size="sm" trigger={<Button size="sm">Small</Button>}>
+    <Dialog size="sm" title="Small Dialog" trigger={<Button size="sm">Small</Button>}>
       <p className="text-body">Small dialog content</p>
     </Dialog>
-    <Dialog title="Medium Dialog" size="md" trigger={<Button size="sm">Medium</Button>}>
+    <Dialog size="md" title="Medium Dialog" trigger={<Button size="sm">Medium</Button>}>
       <p className="text-body">Medium dialog content</p>
     </Dialog>
-    <Dialog title="Large Dialog" size="lg" trigger={<Button size="sm">Large</Button>}>
+    <Dialog size="lg" title="Large Dialog" trigger={<Button size="sm">Large</Button>}>
       <p className="text-body">Large dialog content</p>
     </Dialog>
   </div>
@@ -45,9 +48,9 @@ export const Controlled: Story = () => {
   return (
     <div className="space-y-4">
       <Dialog
-        title="Controlled Dialog"
-        open={open}
         onOpenChange={setOpen}
+        open={open}
+        title="Controlled Dialog"
         trigger={<Button>Open</Button>}
       >
         <p className="text-body">This dialog is controlled from outside.</p>
@@ -66,21 +69,21 @@ export const WithForm: Story = () => (
       <div>
         <label className="mb-1 block text-sm font-medium">Name</label>
         <input
-          type="text"
           className="border-border bg-bg w-full rounded border px-3 py-2"
           placeholder="Enter your name"
+          type="text"
         />
       </div>
       <div>
         <label className="mb-1 block text-sm font-medium">Email</label>
         <input
-          type="email"
           className="border-border bg-bg w-full rounded border px-3 py-2"
           placeholder="Enter your email"
+          type="email"
         />
       </div>
       <div className="flex justify-end gap-2">
-        <Button variant="ghost" type="button">
+        <Button type="button" variant="ghost">
           Cancel
         </Button>
         <Button type="submit">Submit</Button>

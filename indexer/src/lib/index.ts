@@ -1,2 +1,2 @@
-export * from "./Indexer";
 export * from "./create";
+export * from "./Indexer";

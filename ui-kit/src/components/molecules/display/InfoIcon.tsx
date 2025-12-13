@@ -1,38 +1,40 @@
-import * as React from "react";
-import { Tooltip, TooltipProps } from "./Tooltip";
 import { Info } from "lucide-react";
+import * as React from "react";
+
 import { cn } from "@/lib";
 
+import { Tooltip, TooltipProps } from "./Tooltip";
+
 export type InfoIconProps = {
-  text: React.ReactNode;
-  className?: string;
   ariaLabel?: string;
-  size?: number;
+  className?: string;
   side?: TooltipProps["side"];
+  size?: number;
+  text: React.ReactNode;
 };
 
 export const InfoIcon = React.forwardRef<HTMLSpanElement, InfoIconProps>(
-  ({ text, className, ariaLabel = "More info", size, side = "top" }, ref) => {
+  ({ ariaLabel = "More info", className, side = "top", size, text }, ref) => {
     const tooltipId = React.useId();
 
     return (
       <Tooltip
-        content={text}
         className="max-w-[300px] text-center"
+        content={text}
         id={tooltipId}
         side={side}
       >
         <span
-          tabIndex={0}
+          aria-describedby={tooltipId}
+          aria-label={ariaLabel}
           className={cn(
             "standard-focus-ring inline-flex cursor-help rounded-full",
             className
           )}
-          aria-describedby={tooltipId}
-          aria-label={ariaLabel}
           ref={ref}
+          tabIndex={0}
         >
-          <Info size={size} aria-hidden="true" />
+          <Info aria-hidden="true" size={size} />
         </span>
       </Tooltip>
     );

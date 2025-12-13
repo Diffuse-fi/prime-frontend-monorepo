@@ -2,13 +2,13 @@ import { tv } from "@/lib";
 
 export const table = tv({
   base: "w-full border-separate border-spacing-0 text-sm",
+  defaultVariants: { density: "comfy" },
   variants: {
     density: {
       comfy: "leading-6",
       compact: "leading-4",
     },
   },
-  defaultVariants: { density: "comfy" },
 });
 
 export const td = tv({

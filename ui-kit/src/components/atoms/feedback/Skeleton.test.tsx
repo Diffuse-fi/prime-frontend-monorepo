@@ -1,6 +1,7 @@
-import { describe, it, expect } from "vitest";
-import * as React from "react";
 import { render, screen } from "@testing-library/react";
+import * as React from "react";
+import { describe, expect, it } from "vitest";
+
 import { Skeleton } from "./Skeleton";
 
 describe("<Skeleton />", () => {
@@ -20,17 +21,17 @@ describe("<Skeleton />", () => {
   });
 
   it("applies explicit rounded variants", () => {
-    const { rerender } = render(<Skeleton rounded="sm" data-testid="sk" />);
+    const { rerender } = render(<Skeleton data-testid="sk" rounded="sm" />);
     let el = screen.getByTestId("sk");
 
     expect(el).toHaveClass("rounded-sm");
 
-    rerender(<Skeleton rounded="lg" data-testid="sk" />);
+    rerender(<Skeleton data-testid="sk" rounded="lg" />);
     el = screen.getByTestId("sk");
 
     expect(el).toHaveClass("rounded-lg");
 
-    rerender(<Skeleton rounded="full" data-testid="sk" />);
+    rerender(<Skeleton data-testid="sk" rounded="full" />);
     el = screen.getByTestId("sk");
 
     expect(el).toHaveClass("rounded-full");
@@ -45,7 +46,7 @@ describe("<Skeleton />", () => {
   });
 
   it("passes through arbitrary props", () => {
-    render(<Skeleton id="s1" aria-label="loading" data-testattr="x" data-testid="sk" />);
+    render(<Skeleton aria-label="loading" data-testattr="x" data-testid="sk" id="s1" />);
     const el = screen.getByTestId("sk");
 
     expect(el).toHaveAttribute("id", "s1");
@@ -55,7 +56,7 @@ describe("<Skeleton />", () => {
 
   it("forwards ref to the underlying div", () => {
     const ref = React.createRef<HTMLDivElement>();
-    render(<Skeleton ref={ref} data-testid="sk" />);
+    render(<Skeleton data-testid="sk" ref={ref} />);
 
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
     expect(ref.current).toBe(screen.getByTestId("sk"));

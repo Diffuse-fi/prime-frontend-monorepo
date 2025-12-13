@@ -1,12 +1,12 @@
+export type ErrorCtx = Record<string, unknown> | undefined;
+
 export type SdkErrorJSON = {
-  name: string;
-  message: string;
+  cause?: undefined | { message?: string; name?: string; stack?: string };
   code: string;
-  userMessage?: string;
   context?: Record<string, unknown>;
+  message: string;
+  name: string;
   stack?: string;
-  cause?: { name?: string; message?: string; stack?: string } | undefined;
+  userMessage?: string;
   version?: string;
 };
-
-export type ErrorCtx = Record<string, unknown> | undefined;

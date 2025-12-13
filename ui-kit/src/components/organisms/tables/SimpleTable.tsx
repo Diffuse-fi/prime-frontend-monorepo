@@ -1,23 +1,25 @@
 import * as React from "react";
-import { cn } from "@/lib/cn";
-import { table, td, th, tr } from "./styles";
 import { VariantProps } from "tailwind-variants";
+
+import { cn } from "@/lib/cn";
+
+import { table, td, th, tr } from "./styles";
 
 export interface SimpleTableProps
   extends React.TableHTMLAttributes<HTMLTableElement>,
     VariantProps<typeof table> {
-  rows: React.ReactNode[][];
   columns: React.ReactNode[];
+  rows: React.ReactNode[][];
 }
 
 export const SimpleTable = React.forwardRef<HTMLTableElement, SimpleTableProps>(
-  function SimpleTable({ rows, columns, className, density, ...rest }, ref) {
+  function SimpleTable({ className, columns, density, rows, ...rest }, ref) {
     return (
-      <table ref={ref} className={cn(table({ density }), className)} {...rest}>
+      <table className={cn(table({ density }), className)} ref={ref} {...rest}>
         <thead>
           <tr>
             {columns.map((h, i) => (
-              <th key={i} scope="col" className={th()}>
+              <th className={th()} key={i} scope="col">
                 {h}
               </th>
             ))}
@@ -25,9 +27,9 @@ export const SimpleTable = React.forwardRef<HTMLTableElement, SimpleTableProps>(
         </thead>
         <tbody>
           {rows.map((cells, rIdx) => (
-            <tr key={rIdx} className={tr()}>
+            <tr className={tr()} key={rIdx}>
               {cells.map((cell, cIdx) => (
-                <td key={cIdx} className={td()}>
+                <td className={td()} key={cIdx}>
                   {cell}
                 </td>
               ))}

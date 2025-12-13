@@ -1,43 +1,44 @@
 import type { Story, StoryDefault } from "@ladle/react";
+
 import { IconButton } from "./IconButton";
 
 export default {
   title: "Atoms/Buttons/IconButton",
 } satisfies StoryDefault;
 
-export const Default: Story = () => <IconButton icon="🏠" aria-label="Home" />;
+export const Default: Story = () => <IconButton aria-label="Home" icon="🏠" />;
 
 export const Variants: Story = () => (
   <div className="flex items-center gap-4">
-    <IconButton icon="🔍" aria-label="Search" variant="solid" />
-    <IconButton icon="🔍" aria-label="Search" variant="ghost" />
-    <IconButton icon="🔍" aria-label="Search" variant="link" />
+    <IconButton aria-label="Search" icon="🔍" variant="solid" />
+    <IconButton aria-label="Search" icon="🔍" variant="ghost" />
+    <IconButton aria-label="Search" icon="🔍" variant="link" />
   </div>
 );
 
 export const Sizes: Story = () => (
   <div className="flex items-center gap-4">
-    <IconButton icon="⚙️" aria-label="Settings" size="xs" />
-    <IconButton icon="⚙️" aria-label="Settings" size="sm" />
-    <IconButton icon="⚙️" aria-label="Settings" size="md" />
-    <IconButton icon="⚙️" aria-label="Settings" size="lg" />
+    <IconButton aria-label="Settings" icon="⚙️" size="xs" />
+    <IconButton aria-label="Settings" icon="⚙️" size="sm" />
+    <IconButton aria-label="Settings" icon="⚙️" size="md" />
+    <IconButton aria-label="Settings" icon="⚙️" size="lg" />
   </div>
 );
 
 export const Disabled: Story = () => (
   <div className="flex items-center gap-4">
-    <IconButton icon="✖️" aria-label="Close" disabled />
-    <IconButton icon="✖️" aria-label="Close" variant="solid" disabled />
+    <IconButton aria-label="Close" disabled icon="✖️" />
+    <IconButton aria-label="Close" disabled icon="✖️" variant="solid" />
   </div>
 );
 
 export const CommonIcons: Story = () => (
   <div className="flex flex-wrap items-center gap-4">
-    <IconButton icon="✖️" aria-label="Close" />
-    <IconButton icon="✏️" aria-label="Edit" />
-    <IconButton icon="🗑️" aria-label="Delete" />
-    <IconButton icon="⭐" aria-label="Favorite" />
-    <IconButton icon="❤️" aria-label="Like" />
-    <IconButton icon="📤" aria-label="Share" />
+    <IconButton aria-label="Close" icon="✖️" />
+    <IconButton aria-label="Edit" icon="✏️" />
+    <IconButton aria-label="Delete" icon="🗑️" />
+    <IconButton aria-label="Favorite" icon="⭐" />
+    <IconButton aria-label="Like" icon="❤️" />
+    <IconButton aria-label="Share" icon="📤" />
   </div>
 );

@@ -1,47 +1,48 @@
 import * as React from "react";
+
 import { cn, tv } from "@/lib";
 
-export type NavVariant = "default" | "tabs";
-
 export interface NavItem {
-  href: string;
-  label: string;
   disabled?: boolean;
   exact?: boolean;
   external?: boolean;
-  target?: string;
+  href: string;
+  label: string;
   rel?: string;
+  target?: string;
 }
 
 export interface NavProps extends React.HTMLAttributes<HTMLElement> {
-  items: NavItem[];
-  "aria-label": string;
-  variant?: NavVariant;
-  dir?: "ltr" | "rtl";
-  listClassName?: string;
-  itemClassName?: string;
   activeClassName?: string;
-  renderLink?: (props: {
-    href: string;
-    className?: string;
-    children: React.ReactNode;
-    "aria-current"?: "page";
-    disabled?: boolean;
-  }) => React.ReactElement;
+  "aria-label": string;
+  dir?: "ltr" | "rtl";
   getIsActive?: (item: NavItem, pathname: string) => boolean;
+  itemClassName?: string;
+  items: NavItem[];
+  listClassName?: string;
   pathname: string;
+  renderLink?: (props: {
+    "aria-current"?: "page";
+    children: React.ReactNode;
+    className?: string;
+    disabled?: boolean;
+    href: string;
+  }) => React.ReactElement;
+  variant?: NavVariant;
 }
+
+export type NavVariant = "default" | "tabs";
 
 const list = tv({
   base: "flex items-center gap-2",
+  defaultVariants: {
+    variant: "default",
+  },
   variants: {
     variant: {
       default: "text-subtle",
       tabs: "text-body",
     },
-  },
-  defaultVariants: {
-    variant: "default",
   },
 });
 
@@ -60,16 +61,16 @@ const activeVariants: Record<NavVariant, string> = {
 
 export const Nav = React.forwardRef<HTMLElement, NavProps>(function Nav(
   {
-    items,
-    variant = "default",
-    dir,
-    className,
-    listClassName,
-    itemClassName,
     activeClassName,
-    renderLink,
+    className,
+    dir,
     getIsActive,
+    itemClassName,
+    items,
+    listClassName,
     pathname,
+    renderLink,
+    variant = "default",
     ...rest
   },
   ref
@@ -86,7 +87,7 @@ export const Nav = React.forwardRef<HTMLElement, NavProps>(function Nav(
   );
 
   return (
-    <nav ref={ref} dir={dir} className={className} {...rest}>
+    <nav className={className} dir={dir} ref={ref} {...rest}>
       <ul className={cn(list({ variant }), listClassName)}>
         {items.map(item => {
           const active = isActive(item);
@@ -103,22 +104,22 @@ export const Nav = React.forwardRef<HTMLElement, NavProps>(function Nav(
           const children = <p>{item.label}</p>;
 
           return (
-            <li key={item.href} className={cn(disabled && "cursor-not-allowed")}>
+            <li className={cn(disabled && "cursor-not-allowed")} key={item.href}>
               {renderLink ? (
                 renderLink({
-                  href: item.href,
-                  className: classes,
-                  children,
                   "aria-current": active ? "page" : undefined,
+                  children,
+                  className: classes,
                   disabled,
+                  href: item.href,
                 })
               ) : (
                 <a
-                  href={item.href}
-                  className={classes}
                   aria-current={active ? "page" : undefined}
-                  target={item.external ? (item.target ?? "_blank") : item.target}
+                  className={classes}
+                  href={item.href}
                   rel={item.external ? (item.rel ?? "noopener noreferrer") : item.rel}
+                  target={item.external ? (item.target ?? "_blank") : item.target}
                 >
                   {children}
                 </a>

@@ -1,9 +1,9 @@
 import type { Story, StoryDefault } from "@ladle/react";
+
 import { TextWithTooltip } from "./TextWithTooltip";
 import { TooltipProvider } from "./Tooltip";
 
 export default {
-  title: "Molecules/Display/TextWithTooltip",
   decorators: [
     Component => (
       <TooltipProvider>
@@ -11,6 +11,7 @@ export default {
       </TooltipProvider>
     ),
   ],
+  title: "Molecules/Display/TextWithTooltip",
 } satisfies StoryDefault;
 
 export const Default: Story = () => (
@@ -43,16 +44,16 @@ export const InParagraph: Story = () => (
 export const Sides: Story = () => (
   <div className="space-y-4 p-20">
     <p>
-      Tooltip on <TextWithTooltip text="top" tooltip="Top tooltip" side="top" />
+      Tooltip on <TextWithTooltip side="top" text="top" tooltip="Top tooltip" />
     </p>
     <p>
-      Tooltip on <TextWithTooltip text="right" tooltip="Right tooltip" side="right" />
+      Tooltip on <TextWithTooltip side="right" text="right" tooltip="Right tooltip" />
     </p>
     <p>
-      Tooltip on <TextWithTooltip text="bottom" tooltip="Bottom tooltip" side="bottom" />
+      Tooltip on <TextWithTooltip side="bottom" text="bottom" tooltip="Bottom tooltip" />
     </p>
     <p>
-      Tooltip on <TextWithTooltip text="left" tooltip="Left tooltip" side="left" />
+      Tooltip on <TextWithTooltip side="left" text="left" tooltip="Left tooltip" />
     </p>
   </div>
 );
@@ -98,9 +99,9 @@ export const WithCustomStyling: Story = () => (
     <p className="text-body">
       This has a{" "}
       <TextWithTooltip
+        className="text-primary font-semibold"
         text="custom styled"
         tooltip="Custom styling applied"
-        className="text-primary font-semibold"
       />{" "}
       tooltip text.
     </p>

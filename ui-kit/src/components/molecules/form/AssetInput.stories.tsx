@@ -1,12 +1,14 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { AssetInput } from "./AssetInput";
+
 import { useState } from "react";
+
+import { AssetInput } from "./AssetInput";
 
 export default {
   title: "Molecules/Form/AssetInput",
 } satisfies StoryDefault;
 
-const MockAssetImage = ({ size }: { size: "sm" | "md" | "lg" }) => {
+const MockAssetImage = ({ size }: { size: "lg" | "md" | "sm" }) => {
   const sizeClass = size === "sm" ? "w-4 h-4" : size === "lg" ? "w-8 h-8" : "w-6 h-6";
   return (
     <div
@@ -29,8 +31,8 @@ export const Controlled: Story = () => {
     <div className="max-w-md space-y-4">
       <AssetInput
         assetSymbol="ETH"
-        value={value}
         onValueChange={values => setValue(values.value)}
+        value={value}
       />
       <p className="text-muted text-sm">Value: {value}</p>
     </div>
@@ -39,15 +41,15 @@ export const Controlled: Story = () => {
 
 export const WithImage: Story = () => (
   <div className="max-w-md">
-    <AssetInput assetSymbol="ETH" renderAssetImage={MockAssetImage} placeholder="0.00" />
+    <AssetInput assetSymbol="ETH" placeholder="0.00" renderAssetImage={MockAssetImage} />
   </div>
 );
 
 export const Sizes: Story = () => (
   <div className="max-w-md space-y-4">
-    <AssetInput size="sm" assetSymbol="ETH" placeholder="0.00" />
-    <AssetInput size="md" assetSymbol="ETH" placeholder="0.00" />
-    <AssetInput size="lg" assetSymbol="ETH" placeholder="0.00" />
+    <AssetInput assetSymbol="ETH" placeholder="0.00" size="sm" />
+    <AssetInput assetSymbol="ETH" placeholder="0.00" size="md" />
+    <AssetInput assetSymbol="ETH" placeholder="0.00" size="lg" />
   </div>
 );
 
@@ -68,11 +70,11 @@ export const States: Story = () => (
     </div>
     <div>
       <p className="text-muted mb-2 text-sm">Error</p>
-      <AssetInput assetSymbol="ETH" placeholder="0.00" error />
+      <AssetInput assetSymbol="ETH" error placeholder="0.00" />
     </div>
     <div>
       <p className="text-muted mb-2 text-sm">Disabled</p>
-      <AssetInput assetSymbol="ETH" placeholder="0.00" disabled />
+      <AssetInput assetSymbol="ETH" disabled placeholder="0.00" />
     </div>
   </div>
 );
@@ -95,8 +97,8 @@ export const LargeNumbers: Story = () => {
     <div className="max-w-md space-y-4">
       <AssetInput
         assetSymbol="ETH"
-        value={value}
         onValueChange={values => setValue(values.value)}
+        value={value}
       />
       <p className="text-muted text-sm">Formatted: {value}</p>
     </div>

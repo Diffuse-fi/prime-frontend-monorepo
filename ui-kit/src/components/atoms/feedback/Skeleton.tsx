@@ -1,18 +1,19 @@
 import * as React from "react";
+
 import { cn, tv, VariantProps } from "@/lib";
 
 const variants = tv({
   base: "animate-pulse bg-gray-200 dark:bg-gray-700",
-  variants: {
-    rounded: {
-      sm: "rounded-sm",
-      md: "rounded-md",
-      lg: "rounded-lg",
-      full: "rounded-full",
-    },
-  },
   defaultVariants: {
     rounded: "md",
+  },
+  variants: {
+    rounded: {
+      full: "rounded-full",
+      lg: "rounded-lg",
+      md: "rounded-md",
+      sm: "rounded-sm",
+    },
   },
 });
 
@@ -22,7 +23,7 @@ export interface SkeletonProps
 
 export const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
   ({ className, rounded = "md", ...props }, ref) => {
-    return <div ref={ref} className={cn(variants({ rounded }), className)} {...props} />;
+    return <div className={cn(variants({ rounded }), className)} ref={ref} {...props} />;
   }
 );
 

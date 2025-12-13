@@ -1,4 +1,5 @@
 import type { Story, StoryDefault } from "@ladle/react";
+
 import { Badge } from "./Badge";
 
 export default {
@@ -18,13 +19,13 @@ export const Colors: Story = () => (
 
 export const Sizes: Story = () => (
   <div className="flex items-center gap-4">
-    <Badge size="sm" color="success">
+    <Badge color="success" size="sm">
       Small
     </Badge>
-    <Badge size="md" color="success">
+    <Badge color="success" size="md">
       Medium
     </Badge>
-    <Badge size="lg" color="success">
+    <Badge color="success" size="lg">
       Large
     </Badge>
   </div>

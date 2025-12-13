@@ -1,6 +1,28 @@
-import { Address, getAddress, isAddress } from "viem";
-import { AddressNotFoundError, InvalidAddressError } from "../errors";
 import { ADDRESSES } from "@diffuse/config";
+import { Address, getAddress, isAddress } from "viem";
+
+import { AddressNotFoundError, InvalidAddressError } from "../errors";
+
+export function resolveAddress(opts: {
+  addressOverride?: Address;
+  chainId: number;
+  contract: string;
+}): Address {
+  const { addressOverride, chainId, contract } = opts;
+  if (addressOverride) {
+    if (!isAddress(addressOverride)) {
+      throw new InvalidAddressError(addressOverride, {
+        chainId,
+        contract,
+      });
+    }
+
+    return getAddress(addressOverride);
+  }
+
+  const addr = getAddressFor(chainId, contract);
+  return getAddress(addr);
+}
 
 function getAddressFor(chainId: number, contract: string): Address {
   const chain = ADDRESSES.chains.find(c => c.chainId === chainId);
@@ -24,25 +46,4 @@ function getAddressFor(chainId: number, contract: string): Address {
   }
 
   return entry.current;
-}
-
-export function resolveAddress(opts: {
-  chainId: number;
-  contract: string;
-  addressOverride?: Address;
-}): Address {
-  const { chainId, contract, addressOverride } = opts;
-  if (addressOverride) {
-    if (!isAddress(addressOverride)) {
-      throw new InvalidAddressError(addressOverride, {
-        chainId,
-        contract,
-      });
-    }
-
-    return getAddress(addressOverride);
-  }
-
-  const addr = getAddressFor(chainId, contract);
-  return getAddress(addr);
 }

@@ -1,23 +1,25 @@
 import type { Story, StoryDefault } from "@ladle/react";
-import { Select } from "./Select";
+
 import { useState } from "react";
+
+import { Select } from "./Select";
 
 export default {
   title: "Atoms/Form/Select",
 } satisfies StoryDefault;
 
 const options = [
-  { value: "apple", label: "Apple" },
-  { value: "banana", label: "Banana" },
-  { value: "cherry", label: "Cherry" },
-  { value: "date", label: "Date" },
+  { label: "Apple", value: "apple" },
+  { label: "Banana", value: "banana" },
+  { label: "Cherry", value: "cherry" },
+  { label: "Date", value: "date" },
 ];
 
 const optionsWithIcons = [
-  { value: "usa", label: "United States", icon: "🇺🇸" },
-  { value: "uk", label: "United Kingdom", icon: "🇬🇧" },
-  { value: "germany", label: "Germany", icon: "🇩🇪" },
-  { value: "france", label: "France", icon: "🇫🇷" },
+  { icon: "🇺🇸", label: "United States", value: "usa" },
+  { icon: "🇬🇧", label: "United Kingdom", value: "uk" },
+  { icon: "🇩🇪", label: "Germany", value: "germany" },
+  { icon: "🇫🇷", label: "France", value: "france" },
 ];
 
 export const Default: Story = () => (
@@ -37,10 +39,10 @@ export const Controlled: Story = () => {
   return (
     <div className="flex max-w-md flex-col gap-4">
       <Select
-        options={options}
-        value={value}
         onValueChange={setValue}
+        options={options}
         placeholder="Select..."
+        value={value}
       />
       <p className="text-muted text-sm">Selected: {value}</p>
     </div>
@@ -54,22 +56,22 @@ export const WithIcons: Story = () => (
 export const States: Story = () => (
   <div className="flex max-w-md flex-col gap-4">
     <Select options={options} placeholder="Default state" />
-    <Select options={options} placeholder="Error state" error />
-    <Select options={options} placeholder="Disabled state" disabled />
+    <Select error options={options} placeholder="Error state" />
+    <Select disabled options={options} placeholder="Disabled state" />
   </div>
 );
 
 export const WithDisabledOptions: Story = () => (
   <Select
     options={[
-      { value: "option1", label: "Available Option 1" },
-      { value: "option2", label: "Disabled Option", disabled: true },
-      { value: "option3", label: "Available Option 2" },
+      { label: "Available Option 1", value: "option1" },
+      { disabled: true, label: "Disabled Option", value: "option2" },
+      { label: "Available Option 2", value: "option3" },
     ]}
     placeholder="Select an option..."
   />
 );
 
 export const WithDefaultValue: Story = () => (
-  <Select options={options} defaultValue="cherry" placeholder="Select..." />
+  <Select defaultValue="cherry" options={options} placeholder="Select..." />
 );

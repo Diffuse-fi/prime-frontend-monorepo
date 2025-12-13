@@ -1,13 +1,14 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { describe, expect, it } from "vitest";
+
 import { InfoIcon } from "./InfoIcon";
 import { TooltipProvider } from "./Tooltip";
 
 const renderWithProvider = (ui: React.ReactNode) =>
   render(
-    <TooltipProvider delayDuration={0} skipDelayDuration={0} disableHoverableContent>
+    <TooltipProvider delayDuration={0} disableHoverableContent skipDelayDuration={0}>
       {ui}
     </TooltipProvider>
   );
@@ -32,10 +33,10 @@ describe("<InfoIcon />", () => {
     const user = userEvent.setup();
     renderWithProvider(
       <InfoIcon
-        text="APR changes each block."
         ariaLabel="APR info"
         className="mx-2"
         side="bottom"
+        text="APR changes each block."
       />
     );
 

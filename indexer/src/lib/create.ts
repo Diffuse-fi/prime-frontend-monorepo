@@ -1,30 +1,32 @@
-import { createDb, DbConfig, DbConfigSchema, IndexerStorage } from "@/features/db";
-import { Indexer } from "@/lib/Indexer";
-import z from "zod";
-import { ChainRuntime } from "@/features/runtime";
-import { getStartBlockForChainId } from "./utils";
 import { CHAINS } from "@diffuse/config";
+import z from "zod";
+
+import { createDb, DbConfig, DbConfigSchema, IndexerStorage } from "@/features/db";
+import { ChainRuntime } from "@/features/runtime";
+import { Indexer } from "@/lib/Indexer";
+
+import { getStartBlockForChainId } from "./utils";
 
 export type IndexerConfig = {
-  rpcUrls?: Record<number, string[]>;
-  startBlocks?: Record<number, bigint | number>;
   chainIdsToIgnore?: number[];
   db: DbConfig;
+  rpcUrls?: Record<number, string[]>;
+  startBlocks?: Record<number, bigint | number>;
 };
 
 const IndexerConfigSchema = z.object({
-  rpcUrls: z.record(z.coerce.number(), z.array(z.string())).optional(),
-  startBlocks: z.record(z.coerce.number(), z.union([z.bigint(), z.number()])).optional(),
   chainIdsToIgnore: z.array(z.number()).optional(),
   db: DbConfigSchema,
+  rpcUrls: z.record(z.coerce.number(), z.array(z.string())).optional(),
+  startBlocks: z.record(z.coerce.number(), z.union([z.bigint(), z.number()])).optional(),
 });
 
 export function createIndexer(config: IndexerConfig): Indexer {
   const {
+    chainIdsToIgnore = [],
     db: dbConfig,
     rpcUrls,
     startBlocks,
-    chainIdsToIgnore = [],
   } = IndexerConfigSchema.parse(config);
   const { db, pool } = createDb(dbConfig);
   const storage = new IndexerStorage(db);
@@ -44,7 +46,7 @@ export function createIndexer(config: IndexerConfig): Indexer {
       ...overrides,
     ];
 
-    if (!rpcUrlsWithOverrides.length) {
+    if (rpcUrlsWithOverrides.length === 0) {
       throw new Error(`Missing RPC URL for chain ${chain.id}`);
     }
 
@@ -55,8 +57,8 @@ export function createIndexer(config: IndexerConfig): Indexer {
 
   return new Indexer({
     db,
-    storage,
-    runtimes,
     pool,
+    runtimes,
+    storage,
   });
 }

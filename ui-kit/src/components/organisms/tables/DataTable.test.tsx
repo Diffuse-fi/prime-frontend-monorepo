@@ -1,10 +1,11 @@
-import React from "react";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { DataTable } from "./DataTable";
-import { describe, it, expect, vi } from "vitest";
+import React from "react";
+import { describe, expect, it, vi } from "vitest";
 
-type Row = { asset: string; apr: number; tvl: number };
+import { DataTable } from "./DataTable";
+
+type Row = { apr: number; asset: string; tvl: number };
 
 const columns = [
   { accessorKey: "asset", header: "Asset" },
@@ -13,9 +14,9 @@ const columns = [
 ];
 
 const data: Row[] = [
-  { asset: "ETH", apr: 0.042, tvl: 12_300_000 },
-  { asset: "USDC", apr: 0.018, tvl: 5_400_000 },
-  { asset: "BTC", apr: 0.06, tvl: 20_000_000 },
+  { apr: 0.042, asset: "ETH", tvl: 12_300_000 },
+  { apr: 0.018, asset: "USDC", tvl: 5_400_000 },
+  { apr: 0.06, asset: "BTC", tvl: 20_000_000 },
 ];
 
 describe("<DataTable />", () => {
@@ -24,7 +25,7 @@ describe("<DataTable />", () => {
       <DataTable<Row>
         columns={columns}
         data={data}
-        initialSorting={[{ id: "apr", desc: true }]}
+        initialSorting={[{ desc: true, id: "apr" }]}
       />
     );
 
@@ -53,7 +54,7 @@ describe("<DataTable />", () => {
     const onRowClick = vi.fn();
 
     render(
-      <DataTable<Row> ref={ref} columns={columns} data={data} onRowClick={onRowClick} />
+      <DataTable<Row> columns={columns} data={data} onRowClick={onRowClick} ref={ref} />
     );
 
     const table = screen.getByRole("table");
@@ -107,7 +108,7 @@ describe("<DataTable />", () => {
       <DataTable<Row>
         columns={columns}
         data={data}
-        initialSorting={[{ id: "apr", desc: true }]}
+        initialSorting={[{ desc: true, id: "apr" }]}
         onRowClick={onRowClick}
       />
     );
@@ -120,7 +121,7 @@ describe("<DataTable />", () => {
 
     expect(onRowClick).toHaveBeenCalledTimes(1);
     expect(onRowClick).toHaveBeenCalledWith(
-      expect.objectContaining({ asset: "BTC", apr: 0.06 })
+      expect.objectContaining({ apr: 0.06, asset: "BTC" })
     );
   });
 });

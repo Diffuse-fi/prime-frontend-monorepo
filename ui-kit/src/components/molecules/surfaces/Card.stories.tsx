@@ -1,4 +1,5 @@
 import type { Story, StoryDefault } from "@ladle/react";
+
 import { Card } from "./Card";
 
 export default {
@@ -66,7 +67,7 @@ export const MultipleCards: Story = () => (
 );
 
 export const LongContent: Story = () => (
-  <Card header="Long Content Card" className="max-w-2xl">
+  <Card className="max-w-2xl" header="Long Content Card">
     <div className="space-y-4">
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor

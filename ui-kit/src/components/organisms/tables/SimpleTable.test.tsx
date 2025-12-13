@@ -1,7 +1,8 @@
-import React from "react";
 import { render, screen, within } from "@testing-library/react";
+import React from "react";
+import { describe, expect, it } from "vitest";
+
 import { SimpleTable } from "./SimpleTable";
-import { describe, it, expect } from "vitest";
 
 describe("<SimpleTable />", () => {
   it("renders caption and rows with proper semantics", () => {
@@ -30,7 +31,7 @@ describe("<SimpleTable />", () => {
 
   it("merges className and forwards ref to <table>", () => {
     const ref = React.createRef<HTMLTableElement>();
-    render(<SimpleTable ref={ref} className="extra" rows={[[]]} columns={[]} />);
+    render(<SimpleTable className="extra" columns={[]} ref={ref} rows={[[]]} />);
 
     const table = screen.getByRole("table");
 

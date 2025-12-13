@@ -1,20 +1,22 @@
-import * as React from "react";
-import { IconButton } from "../../atoms";
 import { X } from "lucide-react";
+import * as React from "react";
+
 import { cn } from "@/lib";
 
+import { IconButton } from "../../atoms";
+
 export interface ToastProps extends React.HTMLAttributes<HTMLLIElement> {
-  open: boolean;
   closeable?: boolean;
   duration?: number;
-  message: string | React.ReactNode;
-  title?: string;
+  message: React.ReactNode | string;
   onClose?: () => void;
+  open: boolean;
+  title?: string;
 }
 
 export const Toast = React.forwardRef<HTMLLIElement, ToastProps>(
   (
-    { closeable, open, duration, title, message, onClose, className, role = "status" },
+    { className, closeable, duration, message, onClose, open, role = "status", title },
     ref
   ) => {
     const timeout = React.useRef<NodeJS.Timeout>(null);
@@ -48,14 +50,14 @@ export const Toast = React.forwardRef<HTMLLIElement, ToastProps>(
 
     return (
       <li
-        ref={ref}
-        className={cn("shadow-strong bg-fg flex gap-2 rounded-md p-4", className)}
-        role={role}
-        aria-live="polite"
         aria-atomic="true"
+        aria-live="polite"
+        className={cn("shadow-strong bg-fg flex gap-2 rounded-md p-4", className)}
+        data-state={open ? "open" : "closed"}
         onMouseEnter={pause}
         onMouseLeave={resume}
-        data-state={open ? "open" : "closed"}
+        ref={ref}
+        role={role}
       >
         <div className="flex flex-1 items-center rounded-md">
           <div className="flex flex-1 flex-col">
@@ -69,11 +71,11 @@ export const Toast = React.forwardRef<HTMLLIElement, ToastProps>(
         </div>
         {closeable && (
           <IconButton
-            type="button"
-            className="ml-2"
             aria-label="Close toast notification"
+            className="ml-2"
             icon={<X />}
             onClick={onClose}
+            type="button"
             variant="ghost"
           />
         )}

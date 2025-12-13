@@ -1,20 +1,21 @@
-import { SdkErrorCode } from "./codes";
 import type { ErrorCtx, SdkErrorJSON } from "./types";
+
 import { version } from "../version";
+import { SdkErrorCode } from "./codes";
 
 type ErrorOptions = {
-  name?: string;
-  userMessage?: string;
   cause?: unknown;
   context?: ErrorCtx;
+  name?: string;
+  userMessage?: string;
 };
 
 export class SdkError extends Error {
-  readonly code: SdkErrorCode;
-  readonly userMessage?: string;
   readonly cause?: unknown;
-  readonly version: string;
+  readonly code: SdkErrorCode;
   readonly context?: ErrorCtx;
+  readonly userMessage?: string;
+  readonly version: string;
 
   constructor(code: SdkErrorCode, message: string, opts?: ErrorOptions) {
     super(message);
@@ -31,22 +32,42 @@ export class SdkError extends Error {
 
   toJSON(): SdkErrorJSON {
     return {
-      name: this.name,
-      message: this.message,
-      code: this.code,
-      userMessage: this.userMessage,
-      stack: this.stack,
-      version: this.version,
-      context: this.context,
       cause:
         this.cause && typeof this.cause === "object"
           ? {
-              name: (this.cause as Error).name,
               message: (this.cause as Error).message,
+              name: (this.cause as Error).name,
               stack: (this.cause as Error).stack,
             }
           : undefined,
+      code: this.code,
+      context: this.context,
+      message: this.message,
+      name: this.name,
+      stack: this.stack,
+      userMessage: this.userMessage,
+      version: this.version,
     };
+  }
+}
+
+export class AbiItemNotFoundError extends SdkError {
+  constructor(itemName: string, ctx?: ErrorCtx) {
+    super(SdkErrorCode.ABI_ITEM_NOT_FOUND, `ABI item "${itemName}" not found in ABI.`, {
+      context: ctx,
+      name: "AbiItemNotFoundError",
+      userMessage: `ABI item "${itemName}" not found.`,
+    });
+  }
+}
+
+export class AbortedError extends SdkError {
+  constructor(ctx?: Record<string, unknown>) {
+    super(SdkErrorCode.ABORTED, "Operation was aborted.", {
+      context: ctx,
+      name: "AbortedError",
+      userMessage: "Operation aborted.",
+    });
   }
 }
 
@@ -56,20 +77,97 @@ export class AddressNotFoundError extends SdkError {
       SdkErrorCode.ADDRESS_NOT_FOUND,
       "Contract address is not configured for this chain.",
       {
-        userMessage: "Contract address not found.",
         context: ctx,
         name: "AddressNotFoundError",
+        userMessage: "Contract address not found.",
       }
     );
+  }
+}
+
+export class ContractRevertError extends SdkError {
+  constructor(details?: string, ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.CONTRACT_REVERTED, details ?? "Transaction failed.", {
+      cause,
+      context: ctx,
+      name: "ContractRevertError",
+      userMessage: "Transaction reverted on-chain.",
+    });
+  }
+}
+
+export class InsufficientFundsError extends SdkError {
+  constructor(ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.INSUFFICIENT_FUNDS, "Insufficient funds for gas or value.", {
+      cause,
+      context: ctx,
+      name: "InsufficientFundsError",
+      userMessage: "Insufficient funds for gas.",
+    });
   }
 }
 
 export class InvalidAddressError extends SdkError {
   constructor(addr: string, ctx?: ErrorCtx) {
     super(SdkErrorCode.INVALID_ADDRESS, `Invalid address provided: ${addr}`, {
-      userMessage: "Invalid contract address configuration.",
       context: { address: addr, ...ctx },
       name: "InvalidAddressError",
+      userMessage: "Invalid contract address configuration.",
+    });
+  }
+}
+
+export class NetworkError extends SdkError {
+  constructor(message: string, ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.NETWORK_ERROR, message, {
+      cause,
+      context: ctx,
+      name: "NetworkError",
+      userMessage: "Network error. Check your connection.",
+    });
+  }
+}
+
+export class RpcError extends SdkError {
+  constructor(message: string, ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.RPC_ERROR, message, {
+      cause,
+      context: ctx,
+      name: "RpcError",
+      userMessage: "RPC error. Please retry.",
+    });
+  }
+}
+
+export class SimulationRevertedError extends SdkError {
+  constructor(details?: string, ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.SIMULATION_REVERTED, details ?? "Transaction would revert.", {
+      cause,
+      context: ctx,
+      name: "SimulationRevertedError",
+      userMessage: "This action would fail (simulation).",
+    });
+  }
+}
+
+export class UnknownError extends SdkError {
+  constructor(ctx?: Record<string, unknown>, cause?: unknown) {
+    super(SdkErrorCode.UNKNOWN, "Unknown error.", {
+      cause,
+      context: ctx,
+      name: "UnknownError",
+      userMessage: "Something went wrong.",
+    });
+  }
+}
+
+export class UserRejectedError extends SdkError {
+  constructor(ctx?: ErrorCtx, cause?: unknown) {
+    super(SdkErrorCode.USER_REJECTED, "User rejected the request.", {
+      cause,
+      context: ctx,
+      name: "UserRejectedError",
+      userMessage: "Request rejected in wallet.",
     });
   }
 }
@@ -80,107 +178,10 @@ export class WalletRequiredError extends SdkError {
       SdkErrorCode.WALLET_REQUIRED,
       `Wallet client is required${op ? ` for ${op}` : ""}.`,
       {
-        userMessage: "Connect a wallet to continue.",
         context: { operation: op },
         name: "WalletRequiredError",
+        userMessage: "Connect a wallet to continue.",
       }
     );
-  }
-}
-
-export class UserRejectedError extends SdkError {
-  constructor(ctx?: ErrorCtx, cause?: unknown) {
-    super(SdkErrorCode.USER_REJECTED, "User rejected the request.", {
-      userMessage: "Request rejected in wallet.",
-      context: ctx,
-      cause,
-      name: "UserRejectedError",
-    });
-  }
-}
-
-export class InsufficientFundsError extends SdkError {
-  constructor(ctx?: Record<string, unknown>, cause?: unknown) {
-    super(SdkErrorCode.INSUFFICIENT_FUNDS, "Insufficient funds for gas or value.", {
-      userMessage: "Insufficient funds for gas.",
-      context: ctx,
-      cause,
-      name: "InsufficientFundsError",
-    });
-  }
-}
-
-export class SimulationRevertedError extends SdkError {
-  constructor(details?: string, ctx?: Record<string, unknown>, cause?: unknown) {
-    super(SdkErrorCode.SIMULATION_REVERTED, details ?? "Transaction would revert.", {
-      userMessage: "This action would fail (simulation).",
-      context: ctx,
-      cause,
-      name: "SimulationRevertedError",
-    });
-  }
-}
-
-export class ContractRevertError extends SdkError {
-  constructor(details?: string, ctx?: Record<string, unknown>, cause?: unknown) {
-    super(SdkErrorCode.CONTRACT_REVERTED, details ?? "Transaction failed.", {
-      userMessage: "Transaction reverted on-chain.",
-      context: ctx,
-      cause,
-      name: "ContractRevertError",
-    });
-  }
-}
-
-export class RpcError extends SdkError {
-  constructor(message: string, ctx?: Record<string, unknown>, cause?: unknown) {
-    super(SdkErrorCode.RPC_ERROR, message, {
-      userMessage: "RPC error. Please retry.",
-      context: ctx,
-      cause,
-      name: "RpcError",
-    });
-  }
-}
-
-export class NetworkError extends SdkError {
-  constructor(message: string, ctx?: Record<string, unknown>, cause?: unknown) {
-    super(SdkErrorCode.NETWORK_ERROR, message, {
-      userMessage: "Network error. Check your connection.",
-      context: ctx,
-      cause,
-      name: "NetworkError",
-    });
-  }
-}
-
-export class UnknownError extends SdkError {
-  constructor(ctx?: Record<string, unknown>, cause?: unknown) {
-    super(SdkErrorCode.UNKNOWN, "Unknown error.", {
-      userMessage: "Something went wrong.",
-      context: ctx,
-      cause,
-      name: "UnknownError",
-    });
-  }
-}
-
-export class AbortedError extends SdkError {
-  constructor(ctx?: Record<string, unknown>) {
-    super(SdkErrorCode.ABORTED, "Operation was aborted.", {
-      userMessage: "Operation aborted.",
-      context: ctx,
-      name: "AbortedError",
-    });
-  }
-}
-
-export class AbiItemNotFoundError extends SdkError {
-  constructor(itemName: string, ctx?: ErrorCtx) {
-    super(SdkErrorCode.ABI_ITEM_NOT_FOUND, `ABI item "${itemName}" not found in ABI.`, {
-      userMessage: `ABI item "${itemName}" not found.`,
-      context: ctx,
-      name: "AbiItemNotFoundError",
-    });
   }
 }

@@ -1,4 +1,5 @@
 import type { Story, StoryDefault } from "@ladle/react";
+
 import { Heading } from "./Heading";
 
 export default {

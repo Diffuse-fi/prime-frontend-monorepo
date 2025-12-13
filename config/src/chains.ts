@@ -1,5 +1,6 @@
 import { Chain, mainnet } from "viem/chains";
 import z from "zod";
+
 import { ChainIdSchema } from "./common";
 
 function extendChain<T extends Record<string, unknown>>(
@@ -14,9 +15,9 @@ function extendChain<T extends Record<string, unknown>>(
 
 export const CHAINS = [
   extendChain(mainnet, {
+    iconBackground: "transparent",
     iconUrl:
       "https://raw.githubusercontent.com/trustwallet/assets/refs/heads/master/blockchains/ethereum/info/logo.png",
-    iconBackground: "transparent",
   }),
 ] as const;
 
@@ -26,9 +27,9 @@ const ChainContractSchema = z.object({
 });
 
 const ChainNativeCurrencySchema = z.object({
+  decimals: z.number().int(),
   name: z.string(),
   symbol: z.string(),
-  decimals: z.number().int(),
 });
 
 const ChainRpcUrlEntrySchema = z.object({
@@ -37,47 +38,35 @@ const ChainRpcUrlEntrySchema = z.object({
 });
 
 const ChainBlockExplorerSchema = z.object({
+  apiUrl: z.string().optional(),
   name: z.string(),
   url: z.string(),
-  apiUrl: z.string().optional(),
 });
 
 const ChainConfigSchema = z.object({
-  id: ChainIdSchema,
-  name: z.string(),
-  nativeCurrency: ChainNativeCurrencySchema,
-  blockTime: z.number().int().optional(),
-  rpcUrls: z
-    .object({
-      default: ChainRpcUrlEntrySchema,
-    })
-    .catchall(ChainRpcUrlEntrySchema),
   blockExplorers: z
     .object({
       default: ChainBlockExplorerSchema,
     })
     .catchall(ChainBlockExplorerSchema)
     .optional(),
-  iconUrl: z.string().url().optional(),
-  iconBackground: z.string().optional(),
+  blockTime: z.number().int().optional(),
   contracts: z.record(ChainContractSchema).optional(),
-  testnet: z.boolean().optional(),
+  iconBackground: z.string().optional(),
+  iconUrl: z.string().url().optional(),
+  id: ChainIdSchema,
+  name: z.string(),
+  nativeCurrency: ChainNativeCurrencySchema,
+  rpcUrls: z
+    .object({
+      default: ChainRpcUrlEntrySchema,
+    })
+    .catchall(ChainRpcUrlEntrySchema),
   sourceId: z.number().int().optional(),
+  testnet: z.boolean().optional(),
 });
 
 export const ChainsSchema = z.array(ChainConfigSchema);
-
-export function getChainsResourcesUrls(): string[] {
-  const urls: string[] = [];
-
-  for (const chain of CHAINS) {
-    if (chain.iconUrl) {
-      urls.push(chain.iconUrl);
-    }
-  }
-
-  return urls;
-}
 
 export function getChainsDefaultRpcUrls(): string[] {
   const urls: string[] = [];
@@ -86,6 +75,18 @@ export function getChainsDefaultRpcUrls(): string[] {
     const defaultRpc = chain.rpcUrls.default;
     if (defaultRpc && defaultRpc.http.length > 0) {
       urls.push(...defaultRpc.http);
+    }
+  }
+
+  return urls;
+}
+
+export function getChainsResourcesUrls(): string[] {
+  const urls: string[] = [];
+
+  for (const chain of CHAINS) {
+    if (chain.iconUrl) {
+      urls.push(chain.iconUrl);
     }
   }
 

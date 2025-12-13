@@ -1,13 +1,14 @@
-import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as React from "react";
+import { describe, expect, it } from "vitest";
+
 import { TextWithTooltip } from "./TextWithTooltip";
 import { TooltipProvider } from "./Tooltip";
 
 const renderWithProvider = (ui: React.ReactNode) =>
   render(
-    <TooltipProvider delayDuration={0} skipDelayDuration={0} disableHoverableContent>
+    <TooltipProvider delayDuration={0} disableHoverableContent skipDelayDuration={0}>
       {ui}
     </TooltipProvider>
   );
@@ -33,11 +34,11 @@ describe("<TextWithTooltip />", () => {
     const user = userEvent.setup();
     renderWithProvider(
       <TextWithTooltip
-        text="More info"
-        tooltip="Detailed explanation here."
         ariaLabel="Custom label"
         className="mx-2"
         side="bottom"
+        text="More info"
+        tooltip="Detailed explanation here."
       />
     );
 

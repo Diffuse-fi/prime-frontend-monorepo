@@ -1,21 +1,22 @@
-import React from "react";
 import { render, screen, within } from "@testing-library/react";
+import React from "react";
 import "@testing-library/jest-dom";
 import { describe, vi } from "vitest";
+
 import { Nav } from "./Nav";
 
 describe("<Nav />", () => {
   it("marks items active using default logic (startsWith, exact, root) and applies activeClassName", () => {
     render(
       <Nav
-        aria-label="main"
-        pathname="/lend/my-positions"
         activeClassName="active-x"
+        aria-label="main"
         items={[
           { href: "/", label: "Home" },
           { href: "/lend", label: "Lend" },
-          { href: "/lend/my-positions", label: "My Positions", exact: true },
+          { exact: true, href: "/lend/my-positions", label: "My Positions" },
         ]}
+        pathname="/lend/my-positions"
       />
     );
 
@@ -35,11 +36,11 @@ describe("<Nav />", () => {
     render(
       <Nav
         aria-label="root"
-        pathname="/"
         items={[
           { href: "/", label: "Home" },
           { href: "/lend", label: "Lend" },
         ]}
+        pathname="/"
       />
     );
 
@@ -51,17 +52,17 @@ describe("<Nav />", () => {
   });
 
   it("uses getIsActive when provided and ignores default matching logic", () => {
-    const getIsActive = vi.fn((item, _pathname: string) => item.href === "/b");
+    const getIsActive = vi.fn(item => item.href === "/b");
 
     render(
       <Nav
         aria-label="custom"
-        pathname="/somewhere-else"
+        getIsActive={getIsActive}
         items={[
           { href: "/a", label: "A" },
           { href: "/b", label: "B" },
         ]}
-        getIsActive={getIsActive}
+        pathname="/somewhere-else"
       />
     );
 
@@ -77,12 +78,12 @@ describe("<Nav />", () => {
     render(
       <Nav
         aria-label="tabs"
-        variant="tabs"
-        pathname="/a"
         items={[
-          { href: "/a", label: "A", exact: true },
+          { exact: true, href: "/a", label: "A" },
           { href: "/b", label: "B" },
         ]}
+        pathname="/a"
+        variant="tabs"
       />
     );
 
@@ -111,8 +112,8 @@ describe("<Nav />", () => {
     render(
       <Nav
         aria-label="main"
-        pathname="/a"
         items={[{ href: "/a", label: "A" }]}
+        pathname="/a"
         renderLink={props => <CustomLink {...props} customProp="x" />}
       />
     );
@@ -128,27 +129,27 @@ describe("<Nav />", () => {
     render(
       <Nav
         aria-label="external"
-        pathname="/"
         items={[
           {
+            external: true,
             href: "https://example.com",
             label: "Ext default",
-            external: true,
           },
           {
+            external: true,
             href: "https://custom.com",
             label: "Ext custom",
-            external: true,
-            target: "_self",
             rel: "nofollow",
+            target: "_self",
           },
           {
             href: "/internal",
             label: "Internal",
-            target: "_self",
             rel: "noopener",
+            target: "_self",
           },
         ]}
+        pathname="/"
       />
     );
 
@@ -170,11 +171,11 @@ describe("<Nav />", () => {
     render(
       <Nav
         aria-label="dir-and-disabled"
-        pathname="/disabled"
         dir="rtl"
-        listClassName="list-x"
         itemClassName="item-x"
-        items={[{ href: "/disabled", label: "Disabled", disabled: true }]}
+        items={[{ disabled: true, href: "/disabled", label: "Disabled" }]}
+        listClassName="list-x"
+        pathname="/disabled"
       />
     );
 
@@ -193,7 +194,7 @@ describe("<Nav />", () => {
   });
 
   it("supports empty items", () => {
-    render(<Nav aria-label="empty" pathname="/" items={[]} />);
+    render(<Nav aria-label="empty" items={[]} pathname="/" />);
 
     const nav = screen.getByRole("navigation", { name: "empty" });
     const list = within(nav).getByRole("list");
