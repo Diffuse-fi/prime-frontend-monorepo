@@ -19,6 +19,7 @@ import { ConnectionStatusTracker } from "@/components/misc/ConnectionStatusTrack
 import { JsonLd } from "@/components/misc/JsonLd";
 import { LocationLogger } from "@/components/misc/LocationLogger";
 import ThemeSwitcher from "@/components/misc/ThemeSwitcher";
+import { WalletTracker } from "@/components/misc/WalletTracker";
 import { WebVitals } from "@/components/misc/WebVitals";
 import ToastProvider from "@/components/toast/ToastProvider";
 import WalletBar from "@/components/wagmi/WalletBar";
@@ -90,6 +91,7 @@ export default async function RootLayout({
         <TooltipProvider delayDuration={200}>
           <NextIntlClientProvider locale={lang} messages={messages}>
             <ConnectionStatusTracker />
+            {trackingEnabled && <WalletTracker />}
             {env.NEXT_PUBLIC_DEBUG && <LocationLogger />}
             <ToastProvider
               appearOnTop

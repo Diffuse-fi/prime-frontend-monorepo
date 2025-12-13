@@ -12,6 +12,7 @@ import pLimit from "p-limit";
 import { useMemo, useState } from "react";
 import { type Address, getAddress, type Hash } from "viem";
 
+import { trackEvent } from "@/lib/analytics";
 import { formatUnits } from "../../formatters/asset";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
@@ -168,6 +169,12 @@ export function useDeposit(
             try {
               setKeyPending(idemKey);
               setPhase(address, { phase: "awaiting-signature" });
+              trackEvent("lend_deposit_start", {
+                amount: amount.toString(),
+                asset_symbol: v.assetSymbol,
+                chain_id: chainId,
+                vault_address: address,
+              });
 
               const hash = await vault!.contract.deposit([amount, receiver]);
 
@@ -187,12 +194,26 @@ export function useDeposit(
 
               if (receipt.status === "success") {
                 setPhase(address, { hash: receipt.transactionHash, phase: "success" });
+                trackEvent("lend_deposit_success", {
+                  amount: amount.toString(),
+                  asset_symbol: v.assetSymbol,
+                  chain_id: chainId,
+                  transaction_hash: receipt.transactionHash,
+                  vault_address: address,
+                });
 
                 onDepositSuccess?.(address, receipt.transactionHash);
               } else {
                 const e = new Error("Transaction reverted");
                 setPhase(address, { errorMessage: e.message, phase: "error" });
                 result.errors[address] = e;
+                trackEvent("lend_deposit_error", {
+                  amount: amount.toString(),
+                  asset_symbol: v.assetSymbol,
+                  chain_id: chainId,
+                  error_message: e.message,
+                  vault_address: address,
+                });
 
                 onDepositError?.(e.message, address);
                 lendLogger.warn("deposit error", { address, reason: e.message });
@@ -200,6 +221,12 @@ export function useDeposit(
             } catch (error) {
               if (isUserRejectedError(error)) {
                 setPhase(address, { phase: "idle" });
+                trackEvent("lend_deposit_rejected", {
+                  amount: amount.toString(),
+                  asset_symbol: v.assetSymbol,
+                  chain_id: chainId,
+                  vault_address: address,
+                });
                 lendLogger.info("deposit() cancelled by user", { address });
                 return;
               }
@@ -208,6 +235,13 @@ export function useDeposit(
 
               setPhase(address, { errorMessage: e.message, phase: "error" });
               result.errors[address] = e;
+              trackEvent("lend_deposit_error", {
+                amount: amount.toString(),
+                asset_symbol: v.assetSymbol,
+                chain_id: chainId,
+                error_message: e.message,
+                vault_address: address,
+              });
 
               onDepositError?.(e.message, address);
               loggerMut.error("mutation error (deposit)", {

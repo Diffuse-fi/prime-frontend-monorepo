@@ -8,6 +8,7 @@ import { match, P } from "ts-pattern";
 import { Chain } from "viem";
 import { useConnect, useSwitchChain } from "wagmi";
 
+import { trackEvent } from "@/lib/analytics";
 import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
 import { stableSeedForChainId } from "@/lib/misc/jazzIcons";
 import { toast } from "@/lib/toast";
@@ -28,6 +29,13 @@ export function ChainSwitcher() {
   const { isPending } = useSwitchChain();
   const { isPending: isPendingConnection } = useConnect();
   const { chain } = useReadonlyChain();
+
+  const handleOpenModal = () => {
+    trackEvent("chain_switch_modal_open", {
+      chain_id: chain?.id,
+    });
+    setOpen(true);
+  };
 
   return (
     <>
@@ -66,7 +74,7 @@ export function ChainSwitcher() {
             );
           })
           .exhaustive()}
-        onClick={() => setOpen(true)}
+        onClick={handleOpenModal}
         size="sm"
         variant="ghost"
       />
