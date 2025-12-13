@@ -123,7 +123,7 @@ export function trackEvent(name: EventName, params?: EventParams): void {
       return;
     }
 
-    sendGAEvent("event", name, params);
+    sendGAEvent("event", name, params ?? {});
   } catch (error) {
     // Silently fail to avoid breaking the app
     if (process.env.NODE_ENV === "development") {
