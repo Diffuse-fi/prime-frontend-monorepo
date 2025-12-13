@@ -7,7 +7,7 @@ import { cn, tv } from "@/lib";
 export interface CheckboxProps extends Omit<CheckboxRootProps, "asChild" | "children"> {
   boxClassName?: string;
   className?: string;
-  error?: boolean;
+  error?: boolean | string;
   label?: React.ReactNode;
   labelClassName?: string;
   size?: "lg" | "md" | "sm";
@@ -20,16 +20,17 @@ const checkboxBox = tv({
     "inline-flex shrink-0 items-center justify-center rounded-[6px] border border-border bg-fg cursor-pointer " +
     "transition-colors duration-150 " +
     "standard-focus-ring " +
-    "data-[state=checked]:border-accent data-[state=checked]:bg-accent " +
-    "data-[state=indeterminate]:border-accent data-[state=indeterminate]:bg-accent " +
-    "disabled:cursor-not-allowed disabled:opacity-40 " +
-    "dark:border-primary dark:data-[state=checked]:bg-primary dark:data-[state=indeterminate]:bg-primary",
+    "disabled:cursor-not-allowed disabled:opacity-40",
   defaultVariants: {
     size: "md",
   },
   variants: {
     error: {
-      true: "border-error data-[state=checked]:bg-error data-[state=indeterminate]:bg-error",
+      false:
+        "data-[state=checked]:border-preset-gray-200 data-[state=checked]:bg-preset-gray-200 " +
+        "data-[state=indeterminate]:border-preset-gray-200 data-[state=indeterminate]:bg-preset-gray-200 " +
+        "dark:border-primary dark:data-[state=checked]:bg-primary dark:data-[state=indeterminate]:bg-primary",
+      true: "border-err data-[state=checked]:border-err data-[state=indeterminate]:border-err",
     },
     size: {
       lg: "h-6 w-6",
@@ -52,7 +53,7 @@ export const Checkbox = React.forwardRef<
       boxClassName,
       className,
       disabled,
-      error,
+      error: genericError,
       label,
       labelClassName,
       size = "md",
@@ -60,6 +61,9 @@ export const Checkbox = React.forwardRef<
     },
     ref
   ) => {
+    const error = !!genericError;
+    const errorMsg = typeof genericError === "string" ? genericError : undefined;
+
     return (
       <label
         className={cn(
@@ -70,7 +74,11 @@ export const Checkbox = React.forwardRef<
       >
         <CheckboxPrimitive.Root
           aria-invalid={error || undefined}
-          className={cn(checkboxBox({ error: !!error, size }), boxClassName)}
+          className={cn(
+            checkboxBox({ error: !!error, size }),
+            boxClassName,
+            label && "mt-0.75"
+          )}
           disabled={disabled}
           ref={ref}
           {...rootProps}
@@ -79,15 +87,11 @@ export const Checkbox = React.forwardRef<
             <Check aria-hidden className="h-3 w-3" />
           </CheckboxPrimitive.Indicator>
         </CheckboxPrimitive.Root>
-
-        {label && (
-          <span className="flex flex-col">
-            {label && (
-              <span className={cn("text-sm leading-relaxed", labelClassName)}>
-                {label}
-              </span>
-            )}
-          </span>
+        {(label || errorMsg) && (
+          <div className="flex flex-col text-left">
+            {label && <span className={cn("text-sm", labelClassName)}>{label}</span>}
+            {errorMsg && <span className="text-err mt-1 block text-xs">{errorMsg}</span>}
+          </div>
         )}
       </label>
     );

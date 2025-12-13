@@ -78,6 +78,8 @@
     "title": "My Borrow Positions"
   },
   "common": {
+    "acknowledgements": "I acknowledge that the strategy exit process may take up to 24 hours (2 hours on average). After completion, I can withdraw my collateral and rewards.",
+    "acknowledgementsError": "You must acknowledge the exit process duration to proceed.",
     "apr": "APR",
     "connectWallet": "Connect Wallet",
     "leverage": "Leverage",
