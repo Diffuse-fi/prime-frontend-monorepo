@@ -81,5 +81,21 @@ describe("Analytics Events", () => {
 
       expect(sendGAEvent).toHaveBeenCalledWith("event", "wallet_disconnect", {});
     });
+
+    it("should NOT call sendGAEvent when tracking is disabled", async () => {
+      const originalEnv = process.env.NEXT_PUBLIC_ENABLE_TRACKING;
+
+      process.env.NEXT_PUBLIC_ENABLE_TRACKING = "false";
+
+      vi.resetModules();
+      const { trackEvent: trackEventWithTrackingDisabled } = await import("./events");
+      const { sendGAEvent } = await import("@next/third-parties/google");
+
+      trackEventWithTrackingDisabled("wallet_connect", { chain_id: 1 });
+
+      expect(sendGAEvent).not.toHaveBeenCalled();
+
+      process.env.NEXT_PUBLIC_ENABLE_TRACKING = originalEnv;
+    });
   });
 });

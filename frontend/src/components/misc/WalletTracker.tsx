@@ -6,11 +6,10 @@ import { useAccount, useAccountEffect, useChainId } from "wagmi";
 import { trackEvent } from "@/lib/analytics";
 
 export function WalletTracker() {
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
   const chainId = useChainId();
-  const prevAddressRef = useRef<string | undefined>(undefined);
   const prevChainIdRef = useRef<number | undefined>(undefined);
-  const prevConnectedRef = useRef<boolean>(false);
+  const isInitialMount = useRef(true);
 
   useAccountEffect({
     onConnect(data) {
@@ -24,23 +23,22 @@ export function WalletTracker() {
   });
 
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      prevChainIdRef.current = chainId;
+      return;
+    }
+
     if (
       isConnected &&
       chainId !== undefined &&
       prevChainIdRef.current !== undefined &&
       chainId !== prevChainIdRef.current
     ) {
-      trackEvent("chain_switch", {
-        chain_id: chainId,
-      });
+      trackEvent("chain_switch", { chain_id: chainId });
     }
     prevChainIdRef.current = chainId;
   }, [chainId, isConnected]);
-
-  useEffect(() => {
-    prevAddressRef.current = address;
-    prevConnectedRef.current = isConnected;
-  }, [address, isConnected]);
 
   return null;
 }
