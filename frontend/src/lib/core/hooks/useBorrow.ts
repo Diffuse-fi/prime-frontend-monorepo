@@ -128,7 +128,9 @@ export function useBorrow(
           amount: selected.assetsToBorrow.toString(),
           asset_symbol: selected.assetSymbol,
           chain_id: chainId!,
-          leverage: Number(selected.collateralAmount + selected.assetsToBorrow) / Number(selected.collateralAmount),
+          leverage:
+            Number(selected.collateralAmount + selected.assetsToBorrow) /
+            Number(selected.collateralAmount),
           vault_address: addr,
         });
 
@@ -228,7 +230,9 @@ export function useBorrow(
             amount: selected.assetsToBorrow.toString(),
             asset_symbol: selected.assetSymbol,
             chain_id: chainId!,
-            leverage: Number(selected.collateralAmount + selected.assetsToBorrow) / Number(selected.collateralAmount),
+            leverage:
+              Number(selected.collateralAmount + selected.assetsToBorrow) /
+              Number(selected.collateralAmount),
             transaction_hash: receipt.transactionHash,
             vault_address: addr,
           });

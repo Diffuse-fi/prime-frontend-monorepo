@@ -5,10 +5,6 @@ import { useAccount, useAccountEffect, useChainId } from "wagmi";
 
 import { trackEvent } from "@/lib/analytics";
 
-/**
- * WalletTracker component
- * Tracks wallet connection, disconnection, and chain switching events
- */
 export function WalletTracker() {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
@@ -16,7 +12,6 @@ export function WalletTracker() {
   const prevChainIdRef = useRef<number | undefined>(undefined);
   const prevConnectedRef = useRef<boolean>(false);
 
-  // Track wallet connection and disconnection
   useAccountEffect({
     onConnect(data) {
       trackEvent("wallet_connect", {
@@ -28,7 +23,6 @@ export function WalletTracker() {
     },
   });
 
-  // Track chain switching
   useEffect(() => {
     if (
       isConnected &&
@@ -43,7 +37,6 @@ export function WalletTracker() {
     prevChainIdRef.current = chainId;
   }, [chainId, isConnected]);
 
-  // Update refs
   useEffect(() => {
     prevAddressRef.current = address;
     prevConnectedRef.current = isConnected;
