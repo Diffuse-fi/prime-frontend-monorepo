@@ -5,6 +5,7 @@ import { produce } from "immer";
 import { useMemo, useState } from "react";
 import { type Address, getAddress, type Hash } from "viem";
 
+import { trackEvent } from "@/lib/analytics";
 import { getSlippageBpsFromKey } from "@/lib/formulas/slippage";
 
 import { opt, qk } from "../../query/helpers";
@@ -110,6 +111,11 @@ export function useUnborrow(
       try {
         setPendingKey(idemKey);
         setPhase(addr, { phase: "awaiting-signature" });
+        trackEvent("borrow_cancel_start", {
+          chain_id: chainId!,
+          position_id: selected.positionId.toString(),
+          vault_address: addr,
+        });
 
         const hash = await vault!.contract.unborrow([
           selected.positionId,
@@ -131,11 +137,23 @@ export function useUnborrow(
         if (receipt.status === "success") {
           setPhase(addr, { hash: receipt.transactionHash, phase: "success" });
           result.hash = receipt.transactionHash;
+          trackEvent("borrow_cancel_success", {
+            chain_id: chainId!,
+            position_id: selected.positionId.toString(),
+            transaction_hash: receipt.transactionHash,
+            vault_address: addr,
+          });
           onUnborrowSuccess?.(addr, receipt.transactionHash);
         } else {
           const e = new Error("Transaction reverted");
           setPhase(addr, { errorMessage: e.message, phase: "error" });
           result.error = e;
+          trackEvent("borrow_cancel_error", {
+            chain_id: chainId!,
+            error_message: e.message,
+            position_id: selected.positionId.toString(),
+            vault_address: addr,
+          });
           onUnborrowError?.(e.message, addr);
           borrowLogger.error("unborrow failed: transaction reverted", {
             hash,
@@ -145,6 +163,11 @@ export function useUnborrow(
       } catch (error) {
         if (isUserRejectedError(error)) {
           setPhase(addr, { phase: "idle" });
+          trackEvent("borrow_cancel_rejected", {
+            chain_id: chainId!,
+            position_id: selected.positionId.toString(),
+            vault_address: addr,
+          });
           borrowLogger.info("unborrow cancelled by user", { address: addr });
           return result;
         }
@@ -152,6 +175,12 @@ export function useUnborrow(
         const e = error instanceof Error ? error : new Error("Unknown error");
         setPhase(addr, { errorMessage: e.message, phase: "error" });
         result.error = e;
+        trackEvent("borrow_cancel_error", {
+          chain_id: chainId!,
+          error_message: e.message,
+          position_id: selected.positionId.toString(),
+          vault_address: addr,
+        });
         onUnborrowError?.(e.message, addr);
         loggerMut.error("mutation error (unborrow)", {
           address: addr,

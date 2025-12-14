@@ -5,6 +5,8 @@ import { produce } from "immer";
 import { useMemo, useState } from "react";
 import { type Address, getAddress, type Hash } from "viem";
 
+import { trackEvent } from "@/lib/analytics";
+
 import { formatUnits } from "../../formatters/asset";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
@@ -134,6 +136,12 @@ export function useWithdraw(
       try {
         setKeyPending(idemKey);
         setPhase(address, { phase: "awaiting-signature" });
+        trackEvent("lend_withdraw_start", {
+          amount: assets.toString(),
+          asset_symbol: vault!.assets[0].symbol,
+          chain_id: chainId,
+          vault_address: address,
+        });
 
         const hash = await vault!.contract.withdraw([assets, receiver, owner]);
 
@@ -148,11 +156,25 @@ export function useWithdraw(
 
         if (receipt.status === "success") {
           setPhase(address, { hash: receipt.transactionHash, phase: "success" });
+          trackEvent("lend_withdraw_success", {
+            amount: assets.toString(),
+            asset_symbol: vault!.assets[0].symbol,
+            chain_id: chainId,
+            transaction_hash: receipt.transactionHash,
+            vault_address: address,
+          });
           onWithdrawSuccess?.(address, receipt.transactionHash);
           return receipt.transactionHash;
         } else {
           const err = new Error("Transaction reverted");
           setPhase(address, { errorMessage: err.message, phase: "error" });
+          trackEvent("lend_withdraw_error", {
+            amount: assets.toString(),
+            asset_symbol: vault!.assets[0].symbol,
+            chain_id: chainId,
+            error_message: err.message,
+            vault_address: address,
+          });
           onWithdrawError?.(err.message, address);
           lendLogger.error("withdraw failed: transaction reverted", {
             hash,
@@ -163,12 +185,25 @@ export function useWithdraw(
       } catch (error) {
         if (isUserRejectedError(error)) {
           setPhase(address, { phase: "idle" });
+          trackEvent("lend_withdraw_rejected", {
+            amount: assets.toString(),
+            asset_symbol: vault!.assets[0].symbol,
+            chain_id: chainId,
+            vault_address: address,
+          });
           lendLogger.info("withdraw cancelled by user", { address });
           return null;
         }
 
         const err = error instanceof Error ? error : new Error("Unknown error");
         setPhase(address, { errorMessage: err.message, phase: "error" });
+        trackEvent("lend_withdraw_error", {
+          amount: assets.toString(),
+          asset_symbol: vault!.assets[0].symbol,
+          chain_id: chainId,
+          error_message: err.message,
+          vault_address: address,
+        });
         onWithdrawError?.(err.message, address);
         loggerMut.error("mutation error (withdraw)", {
           address,

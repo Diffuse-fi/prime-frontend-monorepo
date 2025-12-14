@@ -11,6 +11,7 @@ export const NamespaceSchema = z.enum([
   "wallet",
   "chain",
   "location",
+  "analytics",
 ]);
 
 export const LogLevelSchema = z.enum([
