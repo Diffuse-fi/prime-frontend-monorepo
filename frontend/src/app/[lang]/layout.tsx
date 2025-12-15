@@ -91,7 +91,6 @@ export default async function RootLayout({
         <TooltipProvider delayDuration={200}>
           <NextIntlClientProvider locale={lang} messages={messages}>
             <ConnectionStatusTracker />
-            {trackingEnabled && <WalletTracker />}
             {env.NEXT_PUBLIC_DEBUG && <LocationLogger />}
             <ToastProvider
               appearOnTop
@@ -107,6 +106,7 @@ export default async function RootLayout({
             >
               <ReadonlyChainProvider>
                 <Providers locale={lang}>
+                  {trackingEnabled && <WalletTracker />}
                   <ChainSyncEffects />
                   <Navbar
                     className="pt-safe sticky top-0 z-50"
