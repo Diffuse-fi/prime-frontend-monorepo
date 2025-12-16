@@ -108,7 +108,12 @@
       "eslint-config-next>eslint-import-resolver-typescript>unrs-resolver": true,
       "knip>oxc-resolver": true,
       "simple-git-hooks": true,
-      "vitest>vite>esbuild": true
+      "vitest>vite>esbuild": true,
+      "jsdom>ws>bufferutil": false,
+      "jsdom>ws>utf-8-validate": false,
+      "tsx>esbuild": false,
+      "vite>esbuild": false,
+      "vitest>@vitest/mocker>msw": false
     }
   }
 }

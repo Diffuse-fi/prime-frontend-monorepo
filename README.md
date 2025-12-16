@@ -6,9 +6,9 @@
   This is a monorepo for the <span style="font-weight: bold;">Diffuse Prime</span> frontend application, which includes multiple packages such as the main frontend application and a shared UI kit.
 </div>
 <br />
-<div align="center">
+<div align="left">
   <h2 style="margin: 0; padding: 0;">Table of contents</h2>
-  <ul style="list-style-type: none; padding: 0;">
+  <ul>
     <li><a href="#overview">Overview</a></li>
     <li><a href="#workspaces">Workspaces</a></li>
     <li><a href="#configuration">Configuration</a></li>
