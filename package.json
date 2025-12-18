@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "build": "npm run build -w config && concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" --success last && npm run build -w indexer && npm run build -w frontend",
+    "check:allow-scripts": "tsx ./scripts/checkAllowScripts.ts",
     "check:format": "prettier --check .",
     "check:licenses": "tsx ./scripts/checkLicenses.ts",
     "check:packages-sync": "tsx ./scripts/checkPackagesSync.ts",

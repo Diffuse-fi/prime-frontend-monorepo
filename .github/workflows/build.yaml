@@ -39,6 +39,27 @@ jobs:
       - name: Build
         uses: ./.github/actions/build
 
+  check-allow-scripts:
+    name: Check allow-scripts configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v5
+
+      - name: Get nodejs version from .nvmrc
+        id: nvmrc
+        run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        uses: ./.github/actions/install-dependencies
+        with:
+          setup-node: true
+          node-version: ${{ env.NODE_VERSION }}
+          audit: false
+
+      - name: Check allow-scripts configuration
+        run: npm run check:allow-scripts
+
   test-e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
