@@ -1,4 +1,6 @@
 /**
+ * @file
+ *
  * This script checks that the lavamoat allow-scripts configuration
  * in package.json is up-to-date with all installed dependencies.
  * It runs `allow-scripts auto` and verifies no changes are needed.
@@ -8,17 +10,14 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
-function main() {
+export function main() {
   const rootDir = path.resolve(__dirname, "..");
   const packageJsonPath = path.join(rootDir, "package.json");
-
-  // Read the current package.json content
   const originalContent = fs.readFileSync(packageJsonPath, "utf8");
 
-  // Run allow-scripts auto to update configuration if needed
   console.log("Running allow-scripts auto to check configuration...");
 
-  // eslint-disable-next-line sonarjs/os-command
+  // eslint-disable-next-line sonarjs/no-os-command-from-path
   const result = spawnSync("npx", ["allow-scripts", "auto"], {
     cwd: rootDir,
     encoding: "utf8",
@@ -29,7 +28,6 @@ function main() {
     throw new Error(`Failed to run allow-scripts: ${result.error.message}`);
   }
 
-  // Show the output from allow-scripts
   if (result.stdout) {
     console.log(result.stdout);
   }
@@ -41,12 +39,9 @@ function main() {
     throw new Error(`allow-scripts exited with code ${result.status}`);
   }
 
-  // Read the potentially modified package.json
   const updatedContent = fs.readFileSync(packageJsonPath, "utf8");
 
-  // Compare the contents
   if (originalContent !== updatedContent) {
-    // Restore the original content
     fs.writeFileSync(packageJsonPath, originalContent, "utf8");
 
     throw new Error(
@@ -58,7 +53,7 @@ function main() {
     );
   }
 
-  console.log("✓ allow-scripts configuration is up-to-date");
+  console.log("allow-scripts configuration is up-to-date");
 }
 
 main();

@@ -4,7 +4,7 @@ description: "Prepare nodejs and all dependencies"
 inputs:
   node-version:
     description: "Node.js version to use"
-    default: "22"
+    required: false
   setup-node:
     description: "Setup Node.js environment"
     default: true
@@ -21,11 +21,15 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Get nodejs version from .nvmrc
+      id: nvmrc
+      run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
+
     - name: Setup nodejs
       if: ${{ inputs.setup-node == 'true' }}
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ inputs.node-version }}
+        node-version: ${{ inputs.node-version || env.NODE_VERSION || 22 }}
         cache: "npm"
 
     - name: Install dependencies

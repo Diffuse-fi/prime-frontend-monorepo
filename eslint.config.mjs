@@ -12,6 +12,7 @@ import promisePlugin from "eslint-plugin-promise";
 import security from "eslint-plugin-security";
 import noSecrets from "eslint-plugin-no-secrets";
 import tseslint from "typescript-eslint";
+import jsdoc from "eslint-plugin-jsdoc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -183,6 +184,15 @@ export default [
         },
       ],
     },
+  },
+  {
+    files: scriptsSrc,
+    plugins: { jsdoc },
+    ...jsdoc.configs["flat/recommended"],
+    rules: {
+      "jsdoc/require-file-overview": "error",
+    },
+    ignores: ["scripts/utils/**"],
   },
   {
     ignores: [
