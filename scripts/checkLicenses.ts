@@ -1,4 +1,6 @@
 /**
+ * @file
+ *
  * This script checks that all production dependencies in all workspace packages
  * use only approved open-source licenses to ensure compliance and security.
  */

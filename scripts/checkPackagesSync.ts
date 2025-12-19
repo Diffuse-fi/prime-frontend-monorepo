@@ -1,4 +1,6 @@
 /**
+ * @file
+ *
  * Script to check that all workspace packages use the current versions
  * of other workspace packages from the monorepo.
  */
