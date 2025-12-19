@@ -187,7 +187,6 @@ export default [
   },
   {
     files: scriptsSrc,
-    plugins: { jsdoc },
     ...jsdoc.configs["flat/recommended"],
     rules: {
       "jsdoc/require-file-overview": "error",
