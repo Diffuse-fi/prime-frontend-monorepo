@@ -44,12 +44,15 @@ export function main() {
   if (originalContent !== updatedContent) {
     fs.writeFileSync(packageJsonPath, originalContent, "utf8");
 
+    const outputSection = result.stdout
+      ? "\nOutput from allow-scripts:\n" + result.stdout
+      : "";
+
     throw new Error(
       "allow-scripts configuration is outdated!\n" +
         "Run 'npx allow-scripts auto' to update the configuration,\n" +
-        "then commit the changes to package.json.\n" +
-        "\nOutput from allow-scripts:\n" +
-        result.stdout
+        "then commit the changes to package.json." +
+        outputSection
     );
   }
 
