@@ -24,6 +24,7 @@ runs:
     - name: Get nodejs version from .nvmrc
       id: nvmrc
       run: echo "NODE_VERSION=$(cat .nvmrc)" >> $GITHUB_ENV
+      shell: bash
 
     - name: Setup nodejs
       if: ${{ inputs.setup-node == 'true' }}
