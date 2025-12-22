@@ -13,7 +13,10 @@
   ],
   "scripts": {
     "build": "npm run build -w config && concurrently \"npm run build -w ui-kit\" \"npm run build -w sdk-js\" --success last && npm run build -w indexer && npm run build -w frontend",
+    "changeset:add": "changeset add",
+    "changeset:version": "changeset version",
     "check:allow-scripts": "tsx ./scripts/checkAllowScripts.ts",
+    "check:changesets": "changeset status --verbose",
     "check:format": "prettier --check .",
     "check:licenses": "tsx ./scripts/checkLicenses.ts",
     "check:packages-sync": "tsx ./scripts/checkPackagesSync.ts",
@@ -22,7 +25,7 @@
     "fix:syncpack": "syncpack fix-mismatches && syncpack set-semver-ranges",
     "format": "prettier --write .",
     "knip": "knip --production",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "setup": "npx --no-install allow-scripts && simple-git-hooks && npm run build",
     "syncpack:list": "syncpack list",
@@ -41,6 +44,8 @@
     ]
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.2",
+    "@changesets/cli": "^2.29.8",
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
     "@commitlint/format": "^19.8.1",

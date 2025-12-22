@@ -13,6 +13,7 @@
     <li><a href="#workspaces">Workspaces</a></li>
     <li><a href="#configuration">Configuration</a></li>
     <li><a href="#development">Development</a></li>
+    <li><a href="#releasing">Releasing</a></li>
     <li><a href="#security-considerations-on-repository-level">Security considerations</a></li>
     <li><a href="#license">License</a></li>
   </ul>
@@ -91,6 +92,10 @@ Syncpack is integrated into the CI pipeline and will fail the build if inconsist
 - Production dependencies use exact versions (e.g., `1.2.3`)
 - Development dependencies use caret ranges (e.g., `^1.2.3`)
 - Peer dependencies use specific versions or compatible ranges
+
+## Releasing
+
+Releases are managed using [Changesets](https://github.com/changesets/changesets). To find more about how to create a release please refer to the [RELEASING.md](./RELEASING.md) file.
 
 ## Security considerations (on repository level)
 
