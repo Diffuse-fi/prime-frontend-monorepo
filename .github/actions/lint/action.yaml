@@ -45,6 +45,18 @@ runs:
       run: git fetch origin ${{ github.base_ref }} --depth=1
 
     - name: Check for pending Changesets
+      id: changesets
       if: ${{ inputs.check-changesets == 'true' }}
       run: npm run check:changesets -- --since=origin/${{ github.base_ref }}
+      shell: bash
+      continue-on-error: true
+
+    - name: Changesets warning
+      if: ${{ steps.changesets.outcome == 'failure' }}
+      run: |
+        echo "::warning title=Changesets::Packages changed but no changesets found. Run 'npm run changeset:add' (or 'changeset add --empty' if no release needed)."
+        echo "### Changesets" >> $GITHUB_STEP_SUMMARY
+        echo "Packages changed but no changesets found." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Run \`npm run changeset:add\` (or \`changeset add --empty\`)." >> $GITHUB_STEP_SUMMARY
       shell: bash
