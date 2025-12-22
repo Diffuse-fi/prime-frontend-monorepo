@@ -1,0 +1,16 @@
+{
+  "access": "restricted",
+  "baseBranch": "main",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "Diffuse-fi/prime-frontend-monorepo"
+    }
+  ],
+  "commit": false,
+  "fixed": [],
+  "ignore": [],
+  "linked": [],
+  "updateInternalDependencies": "patch",
+  "$schema": "https://unpkg.com/@changesets/config@3.1.2/schema.json"
+}

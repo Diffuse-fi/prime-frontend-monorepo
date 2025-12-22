@@ -1,6 +1,12 @@
 name: "Lint"
 description: "Lints the code in the repo"
 
+inputs:
+  check-changesets:
+    description: "Whether to check for pending changesets"
+    default: false
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -31,4 +37,14 @@ runs:
 
     - name: Check that workspace packages use current versions
       run: npm run check:packages-sync
+      shell: bash
+
+    - name: Fetch base branch
+      if: ${{ inputs.check-changesets == 'true' }}
+      shell: bash
+      run: git fetch origin ${{ github.base_ref }} --depth=1
+
+    - name: Check for pending Changesets
+      if: ${{ inputs.check-changesets == 'true' }}
+      run: npm run check:changesets -- --since=origin/${{ github.base_ref }}
       shell: bash
