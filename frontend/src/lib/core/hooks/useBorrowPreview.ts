@@ -28,6 +28,7 @@ const ROOT = "borrowPreview" as const;
 const version = QV.borrow;
 
 const WAD = 10n ** 18n;
+const LTV_WAD = 950_000_000_000_000_000n; // const 95%
 const mulWad = (x: bigint, y: bigint) => (x * y) / WAD;
 const divWad = (x: bigint, y: bigint) => (x * WAD) / y;
 
@@ -93,8 +94,6 @@ export function useBorrowPreview(
         { signal }
       );
 
-      console.log("previewEnterStrategy", baseAssetAmount, strategyAssetAmount);
-
       const baseAssetUnits =
         (baseAssetAmount * 1_000_000n) / 10n ** BigInt(selected.assetDecimals);
       const strategyAssetUnits =
@@ -103,14 +102,30 @@ export function useBorrowPreview(
       const price =
         baseAssetUnits === 0n ? 0 : Number(strategyAssetUnits) / Number(baseAssetUnits);
 
-      const predictedTokensToReceive =
-        ((((selected.assetsToBorrow + selected.collateralAmount) *
-          BigInt(Math.floor(price * 1_000_000))) /
-          1_000_000n) *
-          10n ** BigInt(strategy.token.decimals)) /
-        10n ** BigInt(selected.assetDecimals);
+      let predictedTokensToReceive: bigint;
+      let denom: bigint;
 
-      const denom = selected.collateralAmount + selected.assetsToBorrow;
+      if (selected.collateralType === 1) {
+        const priceBigInt = BigInt(Math.floor(price * 1_000_000));
+        const borrowedAsPT =
+          (((selected.assetsToBorrow * priceBigInt) / 1_000_000n) *
+            10n ** BigInt(strategy.token.decimals)) /
+          10n ** BigInt(selected.assetDecimals);
+        predictedTokensToReceive = selected.collateralAmount + borrowedAsPT;
+        const collateralInBase =
+          (selected.collateralAmount *
+            1_000_000n *
+            10n ** BigInt(selected.assetDecimals)) /
+          (priceBigInt * 10n ** BigInt(strategy.token.decimals));
+        denom = collateralInBase + selected.assetsToBorrow;
+      } else {
+        const totalBase = selected.assetsToBorrow + selected.collateralAmount;
+        predictedTokensToReceive =
+          (((totalBase * BigInt(Math.floor(price * 1_000_000))) / 1_000_000n) *
+            10n ** BigInt(strategy.token.decimals)) /
+          10n ** BigInt(selected.assetDecimals);
+        denom = totalBase;
+      }
 
       if (denom === 0n) {
         return { liquidationPriceWad: 0n, predictedTokensToReceive };
@@ -135,22 +150,40 @@ export function useBorrowPreview(
           : BigInt(Math.floor(Number(borrowingFactorBpsRaw)));
 
       const borrowingFactorWad = (borrowingFactorBps * WAD) / 10_000n;
-      const factorWad = WAD + borrowingFactorWad;
 
-      const totalBase = selected.assetsToBorrow + selected.collateralAmount;
-      const borrowedShareWad =
-        totalBase === 0n ? 0n : divWad(selected.assetsToBorrow, totalBase);
+      const protocolMaxFeeBps = Math.max(
+        vault.feeData.liquidationFee,
+        vault.feeData.earlyWithdrawalFee
+      );
+      const protocolMaxFeeWad = (BigInt(protocolMaxFeeBps) * WAD) / 10_000n;
+
+      const factorWad = WAD + borrowingFactorWad + protocolMaxFeeWad;
 
       const depositPriceWad =
         predictedTokensToReceive === 0n
           ? 0n
           : (predictedTokensToReceive * WAD * 10n ** BigInt(assetDec)) /
             (denom * 10n ** BigInt(stratDec));
+      let totalBase: bigint;
+      if (selected.collateralType === 1) {
+        const collateralInBase =
+          depositPriceWad === 0n
+            ? 0n
+            : divWad(selected.collateralAmount, depositPriceWad);
+        totalBase = collateralInBase + selected.assetsToBorrow;
+      } else {
+        totalBase = selected.assetsToBorrow + selected.collateralAmount;
+      }
 
-      const liquidationPriceWad =
+      const borrowedShareWad =
+        totalBase === 0n ? 0n : divWad(selected.assetsToBorrow, totalBase);
+
+      const liquidationPriceBeforeLtv =
         depositPriceWad === 0n
           ? 0n
           : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
+
+      const liquidationPriceWad = divWad(liquidationPriceBeforeLtv, LTV_WAD);
 
       return { liquidationPriceWad, predictedTokensToReceive };
     },
