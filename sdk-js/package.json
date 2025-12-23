@@ -22,14 +22,14 @@
       }
     },
     "./package.json": "./package.json",
-    "./addresses/*": "./src/addresses/*.json"
+    "./abis/*": "./src/contracts/*/abi.json"
   },
   "main": "dist/diffuse-prime-sdk-js.mjs",
   "module": "dist/diffuse-prime-sdk-js.mjs",
   "types": "dist/index.d.ts",
   "files": [
     "dist",
-    "src/addresses/*.json",
+    "src/contracts/*/abi.json",
     "LICENSE",
     "NOTICE"
   ],

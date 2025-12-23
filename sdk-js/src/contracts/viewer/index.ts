@@ -33,6 +33,8 @@ export class Viewer extends ContractBase {
     }
   }
 
+  async getReverseRouteInfoForPosition() {}
+
   async getStrategies(vault: Address, { signal }: SdkRequestOptions = {}) {
     try {
       return await abortable(this.getContract().read.getStrategies([vault]), signal);
