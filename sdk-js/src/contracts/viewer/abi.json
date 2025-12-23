@@ -1,0 +1,296 @@
+[
+  { "inputs": [], "stateMutability": "nonpayable", "type": "constructor" },
+  { "inputs": [], "name": "AlreadyInitialized", "type": "error" },
+  { "inputs": [], "name": "EmptyRoute", "type": "error" },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "target", "type": "address" },
+      { "internalType": "bytes", "name": "data", "type": "bytes" }
+    ],
+    "name": "FailedCall",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "token", "type": "address" },
+      { "internalType": "uint256", "name": "returned", "type": "uint256" },
+      { "internalType": "uint256", "name": "minAssetsOut", "type": "uint256" },
+      { "internalType": "uint256", "name": "positionId", "type": "uint256" }
+    ],
+    "name": "InsufficientAssetsReceivedForPosition",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "interceptedOnAdapter", "type": "address" }],
+    "name": "InterceptedAdapterNotInRoute",
+    "type": "error"
+  },
+  { "inputs": [], "name": "InvalidAmountIn", "type": "error" },
+  { "inputs": [], "name": "InvalidAmountOut", "type": "error" },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "positionId", "type": "uint256" }],
+    "name": "InvalidBorrowerPosition",
+    "type": "error"
+  },
+  { "inputs": [], "name": "InvalidDepositAmount", "type": "error" },
+  { "inputs": [], "name": "InvalidInputLength", "type": "error" },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "_type", "type": "uint256" }],
+    "name": "InvalidRoute",
+    "type": "error"
+  },
+  { "inputs": [], "name": "InvalidTokenIn", "type": "error" },
+  { "inputs": [], "name": "InvalidVaultRegistry", "type": "error" },
+  { "inputs": [], "name": "OnlyCallsAllowed", "type": "error" },
+  {
+    "inputs": [{ "internalType": "address", "name": "owner", "type": "address" }],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "token", "type": "address" }],
+    "name": "SafeERC20FailedOperation",
+    "type": "error"
+  },
+  { "inputs": [], "name": "SwapNotFinished", "type": "error" },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "positionId", "type": "uint256" }],
+    "name": "UnfinishedSwapAlreadyExists",
+    "type": "error"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "positionId", "type": "uint256" }],
+    "name": "UnfinishedSwapNotExists",
+    "type": "error"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "positionId", "type": "uint256" }],
+    "name": "UnfinishedSwapNotFinished",
+    "type": "error"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "vault", "type": "address" }],
+    "name": "VaultNotFound",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "address[]", "name": "adaptersIn", "type": "address[]" },
+      { "internalType": "address[]", "name": "adaptersOut", "type": "address[]" },
+      { "internalType": "address", "name": "sender", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "bytes", "name": "dataIn", "type": "bytes" },
+      { "internalType": "bytes", "name": "dataOut", "type": "bytes" }
+    ],
+    "name": "adapterCheck",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "target", "type": "address" },
+      { "internalType": "bytes", "name": "data", "type": "bytes" }
+    ],
+    "name": "delegatecall_",
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "vault", "type": "address" }],
+    "name": "getAssets",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "contract IERC20", "name": "asset", "type": "address" },
+          { "internalType": "uint8", "name": "decimals", "type": "uint8" },
+          { "internalType": "string", "name": "symbol", "type": "string" }
+        ],
+        "internalType": "struct IViewer.TokenViewData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "vault", "type": "address" },
+      { "internalType": "uint256", "name": "positionId", "type": "uint256" }
+    ],
+    "name": "getReverseRouteInfoForPosition",
+    "outputs": [{ "internalType": "bytes[]", "name": "", "type": "bytes[]" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "vault", "type": "address" },
+      { "internalType": "uint256", "name": "positionId", "type": "uint256" }
+    ],
+    "name": "getRouteInfoForPosition",
+    "outputs": [{ "internalType": "bytes[]", "name": "", "type": "bytes[]" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "vault", "type": "address" }],
+    "name": "getStrategies",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "uint256", "name": "id", "type": "uint256" },
+          {
+            "components": [
+              { "internalType": "contract IERC20", "name": "asset", "type": "address" },
+              { "internalType": "uint8", "name": "decimals", "type": "uint8" },
+              { "internalType": "string", "name": "symbol", "type": "string" }
+            ],
+            "internalType": "struct IViewer.TokenViewData",
+            "name": "token",
+            "type": "tuple"
+          },
+          { "internalType": "uint256", "name": "apr", "type": "uint256" },
+          { "internalType": "uint256", "name": "endDate", "type": "uint256" },
+          { "internalType": "uint256", "name": "balance", "type": "uint256" },
+          { "internalType": "address", "name": "pool", "type": "address" },
+          { "internalType": "bool", "name": "isDisabled", "type": "bool" },
+          { "internalType": "uint24", "name": "minLeverage", "type": "uint24" },
+          { "internalType": "uint24", "name": "maxLeverage", "type": "uint24" },
+          { "internalType": "string", "name": "name", "type": "string" }
+        ],
+        "internalType": "struct IViewer.StrategyViewData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getVaults",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "vault", "type": "address" },
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "uint256", "name": "targetApr", "type": "uint256" },
+          { "internalType": "uint8", "name": "riskLevel", "type": "uint8" },
+          {
+            "components": [
+              { "internalType": "uint16", "name": "spreadFee", "type": "uint16" },
+              {
+                "internalType": "uint16",
+                "name": "earlyWithdrawalFee",
+                "type": "uint16"
+              },
+              { "internalType": "uint16", "name": "liquidationFee", "type": "uint16" }
+            ],
+            "internalType": "struct IViewer.FeeViewData",
+            "name": "feeData",
+            "type": "tuple"
+          },
+          {
+            "components": [
+              { "internalType": "bool", "name": "paused", "type": "bool" },
+              { "internalType": "string", "name": "pauseReason", "type": "string" },
+              { "internalType": "uint40", "name": "pauseTimestamp", "type": "uint40" }
+            ],
+            "internalType": "struct TypeLib.PauseData",
+            "name": "pauseData",
+            "type": "tuple"
+          }
+        ],
+        "internalType": "struct IViewer.VaultViewData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IVaultRegistry",
+        "name": "_vaultRegistry",
+        "type": "address"
+      }
+    ],
+    "name": "init",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "vault", "type": "address" },
+      { "internalType": "uint256", "name": "strategyId", "type": "uint256" },
+      { "internalType": "bytes", "name": "data", "type": "bytes" }
+    ],
+    "name": "previewEnterStrategy",
+    "outputs": [
+      { "internalType": "uint256", "name": "baseAssetAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "strategyAssetAmount", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "vaultRegistry",
+    "outputs": [
+      { "internalType": "contract IVaultRegistry", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
