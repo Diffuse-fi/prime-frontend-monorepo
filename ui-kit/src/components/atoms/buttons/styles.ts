@@ -30,7 +30,7 @@ export const button = tv({
       xs: "text-xs px-2 py-1 rounded-xs",
     },
     variant: {
-      ghost: "bg-transparent hover:bg-muted/10 text-primary",
+      ghost: "bg-transparent hover:bg-muted/10 text-muted",
       link: "bg-transparent underline decoration-dashed underline-offset-2 text-primary hover:text-primary/80 active:text-primary/60",
       solid:
         "border bg-primary/80 border-primary text-fg hover:bg-primary active:bg-secondary " +

@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { type Address, getAddress, type Hash } from "viem";
 
 import { trackEvent } from "@/lib/analytics";
+import { getPtAmount } from "@/lib/api/pt";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 import { getSlippageBpsFromKey } from "@/lib/formulas/slippage";
 
@@ -57,6 +58,10 @@ const qKeys = {
     qk([ROOT, version, opt(chainId), opt(address)]),
 };
 
+const WAD = 10n ** 18n;
+const mulWad = (x: bigint, y: bigint) => (x * y) / WAD;
+const divWad = (x: bigint, y: bigint) => (x * WAD) / y;
+
 export function useBorrow(
   selected: null | SelectedBorrow,
   vault: null | VaultFullInfo,
@@ -80,14 +85,15 @@ export function useBorrow(
     [selected]
   );
 
-  const setPhase = (addr: Address, info: Partial<TxInfo>) =>
+  const setPhase = (addr0: Address, info: Partial<TxInfo>) =>
     setTxState(
       produce(prev => {
-        prev[addr] = { ...(prev[addr] as TxInfo | undefined), ...info } as TxInfo;
+        prev[addr0] = { ...(prev[addr0] as TxInfo | undefined), ...info } as TxInfo;
       })
     );
 
   const borrowMutation = useMutation({
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     mutationFn: async (): Promise<BorrowResult> => {
       const result: BorrowResult = {};
 
@@ -109,6 +115,7 @@ export function useBorrow(
         onBorrowComplete?.(result);
         return result;
       }
+
       if (selected.assetsToBorrow <= 0n) {
         const e = new Error("Borrow amount must be greater than zero");
         setPhase(addr, { errorMessage: e.message, phase: "error" });
@@ -124,15 +131,6 @@ export function useBorrow(
       try {
         setPendingKey(idemKey);
         setPhase(addr, { phase: "awaiting-signature" });
-        trackEvent("borrow_request_start", {
-          amount: selected.assetsToBorrow.toString(),
-          asset_symbol: selected.assetSymbol,
-          chain_id: chainId!,
-          leverage:
-            Number(selected.collateralAmount + selected.assetsToBorrow) /
-            Number(selected.collateralAmount),
-          vault_address: addr,
-        });
 
         const strategy = vault.strategies.find(s => s.id === selected.strategyId);
         if (!strategy) {
@@ -150,45 +148,80 @@ export function useBorrow(
           BigInt(Math.max(0, Number(strategy.endDate) - Math.floor(Date.now() / 1000)))
         );
 
-        const predictedTokensToReceive = await vault.contract.previewBorrow([
-          wallet,
-          selected.strategyId,
-          selected.collateralType,
-          selected.collateralAmount,
-          selected.assetsToBorrow,
-        ]);
-
-        const WAD = 10n ** 18n;
-        const mulWad = (x: bigint, y: bigint) => (x * y) / WAD;
-        const divWad = (x: bigint, y: bigint) => (x * WAD) / y;
-
-        const toWad = (x: number) => {
-          const s = x.toString();
-          const [i, f = ""] = s.split(".");
-          const frac = (f + "0".repeat(18)).slice(0, 18);
-          return BigInt(i) * WAD + BigInt(frac);
-        };
-
-        const denom = selected.assetsToBorrow + selected.collateralAmount;
-        if (denom === 0n) throw new Error("Zero denominator");
-
         const assetDec = selected.assetDecimals ?? vault.assets[0].decimals;
         const stratDec = strategy.token.decimals;
 
-        const factorWad = toWad(1 + Number(borrowingFactor) / 10_000);
+        const factorWad = factorWadFromBps(borrowingFactor);
 
-        const borrowedShareWad = divWad(selected.assetsToBorrow, denom);
+        let predictedRouteAmounts: readonly bigint[];
+        let totalStrategyTokens: bigint;
+        let denomBase: bigint;
+        let collateralValueBase: bigint;
 
-        const totalPredictedTokensToReceive = predictedTokensToReceive.reduce(
-          (acc, value) => acc + value,
-          0n
-        );
+        if (selected.collateralType === 1) {
+          const sim = await getPtAmount({
+            strategy_id: selected.strategyId.toString(),
+            usdc_amount: selected.assetsToBorrow.toString(),
+            vault_address: addr,
+          });
+
+          if (!sim.finished) {
+            throw new Error("PT simulation not finished");
+          }
+
+          predictedRouteAmounts = sim.amounts.map(BigInt);
+          const ptOut = predictedRouteAmounts.at(-1);
+          if (ptOut === undefined) {
+            throw new Error("PT simulation returned empty amounts");
+          }
+
+          totalStrategyTokens = ptOut + selected.collateralAmount;
+
+          collateralValueBase =
+            ptOut === 0n
+              ? 0n
+              : (selected.collateralAmount * selected.assetsToBorrow) / ptOut;
+
+          denomBase = selected.assetsToBorrow + collateralValueBase;
+        } else {
+          predictedRouteAmounts = await vault.contract.previewBorrow([
+            wallet,
+            selected.strategyId,
+            selected.collateralType,
+            selected.collateralAmount,
+            selected.assetsToBorrow,
+          ]);
+
+          const routeSum = predictedRouteAmounts.reduce((acc, v) => acc + v, 0n);
+          totalStrategyTokens = routeSum;
+
+          collateralValueBase = selected.collateralAmount;
+          denomBase = selected.assetsToBorrow + selected.collateralAmount;
+        }
+
+        const leverage =
+          collateralValueBase === 0n
+            ? 0
+            : Number(selected.assetsToBorrow + collateralValueBase) /
+              Number(collateralValueBase);
+
+        trackEvent("borrow_request_start", {
+          amount: selected.assetsToBorrow.toString(),
+          asset_symbol: selected.assetSymbol,
+          chain_id: chainId!,
+          leverage,
+          vault_address: addr,
+        });
+
+        if (denomBase === 0n) throw new Error("Zero denominator");
+
+        const borrowedShareWad = divWad(selected.assetsToBorrow, denomBase);
 
         const depositPriceWad =
-          totalPredictedTokensToReceive === 0n
+          totalStrategyTokens === 0n
             ? 0n
-            : (totalPredictedTokensToReceive * WAD * 10n ** BigInt(assetDec)) /
-              (denom * 10n ** BigInt(stratDec));
+            : (totalStrategyTokens * WAD * 10n ** BigInt(assetDec)) /
+              (denomBase * 10n ** BigInt(stratDec));
 
         const resultWad =
           depositPriceWad === 0n
@@ -197,7 +230,7 @@ export function useBorrow(
 
         const bps = getSlippageBpsFromKey(selected.slippage);
         const minStrategyToReceive = applySlippageBpsArray(
-          predictedTokensToReceive,
+          predictedRouteAmounts,
           bps,
           "down"
         );
@@ -230,9 +263,7 @@ export function useBorrow(
             amount: selected.assetsToBorrow.toString(),
             asset_symbol: selected.assetSymbol,
             chain_id: chainId!,
-            leverage:
-              Number(selected.collateralAmount + selected.assetsToBorrow) /
-              Number(selected.collateralAmount),
+            leverage,
             transaction_hash: receipt.transactionHash,
             vault_address: addr,
           });
@@ -318,6 +349,11 @@ export function useBorrow(
   };
 }
 
+function factorWadFromBps(bps: bigint | number): bigint {
+  const b = toBpsBigint(bps);
+  return (WAD * (10_000n + b)) / 10_000n;
+}
+
 function makeIdemKey(
   chainId: number,
   vault: Address,
@@ -335,4 +371,10 @@ function makeIdemKey(
     v.slippage.toString(),
     v.deadline.toString(),
   ].join(":");
+}
+
+function toBpsBigint(v: bigint | number): bigint {
+  if (typeof v === "bigint") return v;
+  if (!Number.isFinite(v)) return 0n;
+  return BigInt(Math.floor(v));
 }
