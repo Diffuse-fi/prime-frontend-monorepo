@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { Locale } from "next-intl";
 
 import { env } from "@/env";
-import { apiUrl } from "@/lib/api";
+import { getApiUrl } from "@/lib/api";
 import { normalizeTwitterHandle, toOgLocale } from "@/lib/misc/metadata";
 
 import localizationSettings from "../localization.json" with { type: "json" };
@@ -86,7 +86,7 @@ export function buildMetadataForPage({
         {
           alt: `${title} | ${appName}`,
           height: 630,
-          url: apiUrl("og", {
+          url: getApiUrl("og", {
             description,
             path,
             title: title || appName,
@@ -104,7 +104,7 @@ export function buildMetadataForPage({
       ...defaultMetadata.twitter,
       description,
       images: [
-        apiUrl("og", {
+        getApiUrl("og", {
           description,
           path,
           title: title || appName,

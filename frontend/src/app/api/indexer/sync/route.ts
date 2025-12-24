@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { env } from "@/env";
 import { indexer } from "@/lib/indexer";
+import { isIndexerEnabled } from "@/lib/indexer/isEnabled";
 import { safeEqual } from "@/lib/security/constantTime";
 
 export const runtime = "nodejs";
@@ -28,6 +29,13 @@ export async function GET(req: NextRequest) {
       message: "Skipping indexer sync on Vercel preview deployments",
       status: "ok",
     });
+  }
+
+  if (!isIndexerEnabled()) {
+    return NextResponse.json(
+      { message: "Indexer is not enabled", status: "error" },
+      { status: 500 }
+    );
   }
 
   if (!indexer) {

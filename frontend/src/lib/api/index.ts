@@ -1,12 +1,15 @@
 import qs from "qs";
 
+import { env } from "@/env";
+
 const apiRoutes = {
   og: "/api/og",
-} as const satisfies Record<string, `/${string}`>;
+  ptAmount: `${env.NEXT_PUBLIC_API_BASE_URL}/getPtAmount`,
+} as const;
 
 export type ApiRouteKey = keyof typeof apiRoutes;
 
-export function apiUrl<K extends ApiRouteKey>(
+export function getApiUrl<K extends ApiRouteKey>(
   key: K,
   params?: Record<
     string,

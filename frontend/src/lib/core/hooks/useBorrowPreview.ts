@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { type Address, getAddress } from "viem";
 
+import { getPtAmount } from "@/lib/api/pt";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 
 import { opt, qk } from "../../query/helpers";
@@ -79,42 +80,17 @@ export function useBorrowPreview(
   const { data, error, isFetching, isLoading, isPending } = useQuery({
     enabled,
     gcTime: 5 * 60 * 1000,
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     queryFn: async ({ signal }) => {
       if (!enabled || !selected || !vault || !wallet || !viewer) {
-        return { liquidationPriceWad: undefined, predictedTokensToReceive: undefined };
+        return {
+          liquidationPriceWad: undefined,
+          predictedTokensToReceive: undefined,
+        };
       }
 
       const strategy = vault.strategies.find(s => s.id === selected.strategyId);
       if (!strategy) throw new Error("Strategy not found");
-
-      const [baseAssetAmount, strategyAssetAmount] = await viewer.previewEnterStrategy(
-        addr!,
-        selected.strategyId,
-        { signal }
-      );
-
-      console.log("previewEnterStrategy", baseAssetAmount, strategyAssetAmount);
-
-      const baseAssetUnits =
-        (baseAssetAmount * 1_000_000n) / 10n ** BigInt(selected.assetDecimals);
-      const strategyAssetUnits =
-        (strategyAssetAmount * 1_000_000n) / 10n ** BigInt(strategy.token.decimals);
-
-      const price =
-        baseAssetUnits === 0n ? 0 : Number(strategyAssetUnits) / Number(baseAssetUnits);
-
-      const predictedTokensToReceive =
-        ((((selected.assetsToBorrow + selected.collateralAmount) *
-          BigInt(Math.floor(price * 1_000_000))) /
-          1_000_000n) *
-          10n ** BigInt(strategy.token.decimals)) /
-        10n ** BigInt(selected.assetDecimals);
-
-      const denom = selected.collateralAmount + selected.assetsToBorrow;
-
-      if (denom === 0n) {
-        return { liquidationPriceWad: 0n, predictedTokensToReceive };
-      }
 
       const assetDec = selected.assetDecimals;
       const stratDec = strategy.token.decimals;
@@ -123,6 +99,7 @@ export function useBorrowPreview(
         0,
         Number(strategy.endDate) - Math.floor(Date.now() / 1000)
       );
+
       const borrowingFactorBpsRaw = calcBorrowingFactor(
         strategy.apr,
         vault.feeData.spreadFee,
@@ -137,9 +114,90 @@ export function useBorrowPreview(
       const borrowingFactorWad = (borrowingFactorBps * WAD) / 10_000n;
       const factorWad = WAD + borrowingFactorWad;
 
-      const totalBase = selected.assetsToBorrow + selected.collateralAmount;
-      const borrowedShareWad =
-        totalBase === 0n ? 0n : divWad(selected.assetsToBorrow, totalBase);
+      if (selected.collateralType === 1) {
+        const sim = await getPtAmount(
+          {
+            strategy_id: selected.strategyId.toString(),
+            usdc_amount: selected.assetsToBorrow.toString(),
+            vault_address: addr!,
+          },
+          { signal }
+        );
+
+        if (!sim.finished) {
+          throw new Error("PT simulation not finished");
+        }
+
+        const last = sim.amounts.at(-1);
+        if (!last) {
+          throw new Error("PT simulation returned empty amounts");
+        }
+
+        const ptOut = BigInt(last);
+        console.log({
+          assetsToBorrow: selected.assetsToBorrow,
+          collateralAmount: selected.collateralAmount,
+          ptOut,
+        });
+        const totalPt = ptOut + selected.collateralAmount;
+
+        if (ptOut === 0n) {
+          return { liquidationPriceWad: 0n, predictedTokensToReceive: totalPt };
+        }
+
+        const collateralValueBase =
+          (selected.collateralAmount * selected.assetsToBorrow) / ptOut;
+
+        const denomBase = selected.assetsToBorrow + collateralValueBase;
+
+        if (denomBase === 0n) {
+          return { liquidationPriceWad: 0n, predictedTokensToReceive: totalPt };
+        }
+
+        const borrowedShareWad = divWad(selected.assetsToBorrow, denomBase);
+
+        const depositPriceWad =
+          totalPt === 0n
+            ? 0n
+            : (totalPt * WAD * 10n ** BigInt(assetDec)) /
+              (denomBase * 10n ** BigInt(stratDec));
+
+        const liquidationPriceWad =
+          depositPriceWad === 0n
+            ? 0n
+            : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
+
+        return { liquidationPriceWad, predictedTokensToReceive: totalPt };
+      }
+
+      const [baseAssetAmount, strategyAssetAmount] = await viewer.previewEnterStrategy(
+        addr!,
+        selected.strategyId,
+        { signal }
+      );
+
+      const baseAssetUnits = (baseAssetAmount * 1_000_000n) / 10n ** BigInt(assetDec);
+
+      const strategyAssetUnits =
+        (strategyAssetAmount * 1_000_000n) / 10n ** BigInt(stratDec);
+
+      const price =
+        baseAssetUnits === 0n ? 0 : Number(strategyAssetUnits) / Number(baseAssetUnits);
+
+      const predictedTokensToReceive =
+        ((((selected.assetsToBorrow + selected.collateralAmount) *
+          BigInt(Math.floor(price * 1_000_000))) /
+          1_000_000n) *
+          10n ** BigInt(stratDec)) /
+        10n ** BigInt(assetDec);
+
+      const denom = selected.collateralAmount + selected.assetsToBorrow;
+
+      if (denom === 0n) {
+        return { liquidationPriceWad: 0n, predictedTokensToReceive };
+      }
+
+      const borrowedShareWad = divWad(selected.assetsToBorrow, denom);
 
       const depositPriceWad =
         predictedTokensToReceive === 0n

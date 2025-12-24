@@ -5,6 +5,7 @@ import { mainnet } from "viem/chains";
 import { env } from "@/env";
 
 import { customRpcMap } from "../chains/rpc";
+import { isIndexerEnabled } from "./isEnabled";
 
 export const indexerDbConfig = {
   connectionString: env.INDEXER_DATABASE_URL,
@@ -12,6 +13,10 @@ export const indexerDbConfig = {
 };
 
 function createIndexerWithSentryReport() {
+  if (!isIndexerEnabled()) {
+    throw new Error("Indexer is not enabled");
+  }
+
   try {
     return createIndexer({
       chainIdsToIgnore: [],

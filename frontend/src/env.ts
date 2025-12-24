@@ -34,16 +34,17 @@ export const env = createEnv({
 
     NEXT_PUBLIC_DEBUG: zBool.optional(),
 
+    NEXT_PUBLIC_ENABLE_INDEXER: zBool.optional(),
     NEXT_PUBLIC_ENABLE_SENTRY: zBool.optional(),
+
     NEXT_PUBLIC_ENABLE_TRACKING: zBool.optional(),
-
     NEXT_PUBLIC_INITIAL_CHAIN_ID: zInt,
-    NEXT_PUBLIC_LOG_LEVEL: LogLevelSchema.optional(),
 
+    NEXT_PUBLIC_LOG_LEVEL: LogLevelSchema.optional(),
     NEXT_PUBLIC_LOG_NAMESPACES: NamespacesCsvSchema.optional(),
     NEXT_PUBLIC_OG_VERSION: z.string().min(1).optional(),
-    NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
 
+    NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().min(1),
   },
   emptyStringAsUndefined: true,
@@ -54,6 +55,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION,
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     NEXT_PUBLIC_DEBUG: process.env.NEXT_PUBLIC_DEBUG,
+    NEXT_PUBLIC_ENABLE_INDEXER: process.env.NEXT_PUBLIC_ENABLE_INDEXER,
     NEXT_PUBLIC_ENABLE_SENTRY: process.env.NEXT_PUBLIC_ENABLE_SENTRY,
     NEXT_PUBLIC_ENABLE_TRACKING: process.env.NEXT_PUBLIC_ENABLE_TRACKING,
     NEXT_PUBLIC_INITIAL_CHAIN_ID: process.env.NEXT_PUBLIC_INITIAL_CHAIN_ID,
