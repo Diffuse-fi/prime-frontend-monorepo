@@ -1,10 +1,10 @@
 import type { VaultFullInfo } from "../types";
 
-import { Viewer } from "@diffuse/sdk-js";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { type Address, getAddress } from "viem";
 
+import { previewBorrow } from "@/lib/api/previewBorrow";
 import { getPtAmount } from "@/lib/api/pt";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 
@@ -36,15 +36,7 @@ export function useBorrowPreview(
   selected: null | SelectedBorrow,
   vault: null | VaultFullInfo
 ) {
-  const { address: wallet, chainId, publicClient } = useClients();
-
-  const viewer = useMemo(() => {
-    if (!publicClient || !chainId) return null;
-    return new Viewer({
-      chainId,
-      client: { public: publicClient },
-    });
-  }, [publicClient, chainId]);
+  const { address: wallet, chainId } = useClients();
 
   const addr = useMemo(
     () => (selected ? getAddress(selected.address) : undefined),
@@ -54,8 +46,6 @@ export function useBorrowPreview(
   const enabled =
     !!selected &&
     !!wallet &&
-    !!publicClient &&
-    !!viewer &&
     !!vault &&
     selected.chainId === chainId &&
     addr === getAddress(vault.address) &&
@@ -80,9 +70,8 @@ export function useBorrowPreview(
   const { data, error, isFetching, isLoading, isPending } = useQuery({
     enabled,
     gcTime: 5 * 60 * 1000,
-    // eslint-disable-next-line sonarjs/cognitive-complexity
     queryFn: async ({ signal }) => {
-      if (!enabled || !selected || !vault || !wallet || !viewer) {
+      if (!enabled || !selected || !vault || !addr) {
         return {
           liquidationPriceWad: undefined,
           predictedTokensToReceive: undefined,
@@ -94,51 +83,25 @@ export function useBorrowPreview(
 
       const assetDec = selected.assetDecimals;
       const stratDec = strategy.token.decimals;
-
-      const secondsLeft = Math.max(
-        0,
-        Number(strategy.endDate) - Math.floor(Date.now() / 1000)
-      );
-
-      const borrowingFactorBpsRaw = calcBorrowingFactor(
+      const factorWad = calcFactorWad(
         strategy.apr,
         vault.feeData.spreadFee,
-        BigInt(secondsLeft)
+        strategy.endDate
       );
-
-      const borrowingFactorBps =
-        typeof borrowingFactorBpsRaw === "bigint"
-          ? borrowingFactorBpsRaw
-          : BigInt(Math.floor(Number(borrowingFactorBpsRaw)));
-
-      const borrowingFactorWad = (borrowingFactorBps * WAD) / 10_000n;
-      const factorWad = WAD + borrowingFactorWad;
 
       if (selected.collateralType === 1) {
         const sim = await getPtAmount(
           {
             strategy_id: selected.strategyId.toString(),
             usdc_amount: selected.assetsToBorrow.toString(),
-            vault_address: addr!,
+            vault_address: addr,
           },
           { signal }
         );
 
-        if (!sim.finished) {
-          throw new Error("PT simulation not finished");
-        }
+        if (!sim.finished) throw new Error("PT simulation not finished");
 
-        const last = sim.amounts.at(-1);
-        if (!last) {
-          throw new Error("PT simulation returned empty amounts");
-        }
-
-        const ptOut = BigInt(last);
-        console.log({
-          assetsToBorrow: selected.assetsToBorrow,
-          collateralAmount: selected.collateralAmount,
-          ptOut,
-        });
+        const ptOut = lastBigInt(sim.amounts, "PT simulation returned empty amounts");
         const totalPt = ptOut + selected.collateralAmount;
 
         if (ptOut === 0n) {
@@ -150,67 +113,49 @@ export function useBorrowPreview(
 
         const denomBase = selected.assetsToBorrow + collateralValueBase;
 
-        if (denomBase === 0n) {
-          return { liquidationPriceWad: 0n, predictedTokensToReceive: totalPt };
-        }
-
-        const borrowedShareWad = divWad(selected.assetsToBorrow, denomBase);
-
-        const depositPriceWad =
-          totalPt === 0n
-            ? 0n
-            : (totalPt * WAD * 10n ** BigInt(assetDec)) /
-              (denomBase * 10n ** BigInt(stratDec));
-
-        const liquidationPriceWad =
-          depositPriceWad === 0n
-            ? 0n
-            : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
-
-        return { liquidationPriceWad, predictedTokensToReceive: totalPt };
+        return {
+          liquidationPriceWad: calcLiquidationPriceWad({
+            assetDec,
+            borrowedAmount: selected.assetsToBorrow,
+            denomBase,
+            factorWad,
+            predictedTokensToReceive: totalPt,
+            stratDec,
+          }),
+          predictedTokensToReceive: totalPt,
+        };
       }
 
-      const [baseAssetAmount, strategyAssetAmount] = await viewer.previewEnterStrategy(
-        addr!,
-        selected.strategyId,
+      const sim = await previewBorrow(
+        {
+          assets_to_borrow: selected.assetsToBorrow.toString(),
+          collateral_amount: selected.collateralAmount.toString(),
+          collateral_type: selected.collateralType.toString(),
+          data: "0x",
+          strategy_id: selected.strategyId.toString(),
+          vault_address: addr,
+        },
         { signal }
       );
 
-      const baseAssetUnits = (baseAssetAmount * 1_000_000n) / 10n ** BigInt(assetDec);
+      const predictedTokensToReceive = lastBigInt(
+        sim.assetsReceived,
+        "previewBorrow returned empty assetsReceived"
+      );
 
-      const strategyAssetUnits =
-        (strategyAssetAmount * 1_000_000n) / 10n ** BigInt(stratDec);
+      const denomBase = selected.collateralAmount + selected.assetsToBorrow;
 
-      const price =
-        baseAssetUnits === 0n ? 0 : Number(strategyAssetUnits) / Number(baseAssetUnits);
-
-      const predictedTokensToReceive =
-        ((((selected.assetsToBorrow + selected.collateralAmount) *
-          BigInt(Math.floor(price * 1_000_000))) /
-          1_000_000n) *
-          10n ** BigInt(stratDec)) /
-        10n ** BigInt(assetDec);
-
-      const denom = selected.collateralAmount + selected.assetsToBorrow;
-
-      if (denom === 0n) {
-        return { liquidationPriceWad: 0n, predictedTokensToReceive };
-      }
-
-      const borrowedShareWad = divWad(selected.assetsToBorrow, denom);
-
-      const depositPriceWad =
-        predictedTokensToReceive === 0n
-          ? 0n
-          : (predictedTokensToReceive * WAD * 10n ** BigInt(assetDec)) /
-            (denom * 10n ** BigInt(stratDec));
-
-      const liquidationPriceWad =
-        depositPriceWad === 0n
-          ? 0n
-          : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
-
-      return { liquidationPriceWad, predictedTokensToReceive };
+      return {
+        liquidationPriceWad: calcLiquidationPriceWad({
+          assetDec,
+          borrowedAmount: selected.assetsToBorrow,
+          denomBase,
+          factorWad,
+          predictedTokensToReceive,
+          stratDec,
+        }),
+        predictedTokensToReceive,
+      };
     },
     queryKey,
     refetchOnWindowFocus: false,
@@ -225,4 +170,49 @@ export function useBorrowPreview(
     liquidationPriceWad: data?.liquidationPriceWad,
     predictedTokensToReceive: data?.predictedTokensToReceive,
   };
+}
+
+function calcFactorWad(apr: bigint, spreadFee: number, endDate: bigint): bigint {
+  const secondsLeft = Math.max(0, Number(endDate) - Math.floor(Date.now() / 1000));
+  const bpsRaw = calcBorrowingFactor(apr, spreadFee, BigInt(secondsLeft));
+  const bps = typeof bpsRaw === "bigint" ? bpsRaw : BigInt(Math.floor(Number(bpsRaw)));
+  return WAD + (bps * WAD) / 10_000n;
+}
+
+function calcLiquidationPriceWad(args: {
+  assetDec: number;
+  borrowedAmount: bigint;
+  denomBase: bigint;
+  factorWad: bigint;
+  predictedTokensToReceive: bigint;
+  stratDec: number;
+}) {
+  const {
+    assetDec,
+    borrowedAmount,
+    denomBase,
+    factorWad,
+    predictedTokensToReceive,
+    stratDec,
+  } = args;
+
+  if (denomBase === 0n) return 0n;
+
+  const borrowedShareWad = divWad(borrowedAmount, denomBase);
+
+  const depositPriceWad =
+    predictedTokensToReceive === 0n
+      ? 0n
+      : (predictedTokensToReceive * WAD * 10n ** BigInt(assetDec)) /
+        (denomBase * 10n ** BigInt(stratDec));
+
+  return depositPriceWad === 0n
+    ? 0n
+    : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
+}
+
+function lastBigInt(xs: string[], err: string) {
+  const v = xs.at(-1);
+  if (!v) throw new Error(err);
+  return BigInt(v);
 }

@@ -4,6 +4,7 @@ import { env } from "@/env";
 
 const apiRoutes = {
   og: "/api/og",
+  previewBorrow: `${env.NEXT_PUBLIC_API_BASE_URL}/previewBorrow`,
   ptAmount: `${env.NEXT_PUBLIC_API_BASE_URL}/getPtAmount`,
 } as const;
 

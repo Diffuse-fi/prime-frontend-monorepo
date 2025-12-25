@@ -37,7 +37,11 @@ export async function getPtAmount(
   }
 
   if (!isGetPtAmountResponse(data)) {
-    throw new TypeError("Invalid response");
+    throw new TypeError(
+      `Invalid ptAmount response: expected { finished: boolean; amounts: string[] }, received: ${JSON.stringify(
+        data
+      )}`
+    );
   }
 
   return data;

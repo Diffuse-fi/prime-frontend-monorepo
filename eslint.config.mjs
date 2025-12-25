@@ -31,11 +31,11 @@ const nextScoped = nextCompat.map(c => ({
   ...c,
 }));
 
-const frontendSrc = ["frontend/src/**/*.{ts,tsx}"];
+const frontendSrc = ["frontend/src/**/*.{ts,tsx}", "frontend/scripts/**/*.ts"];
 const uiKitSrc = ["ui-kit/src/**/*.{ts,tsx}"];
 const sdkSrc = ["sdk-js/src/**/*.ts"];
 const indexerSrc = ["indexer/src/**/*.ts"];
-const configSrc = ["config/src/**/*.ts"];
+const configSrc = ["config/src/**/*.ts", "config/scripts/**/*.ts"];
 const scriptsSrc = ["scripts/**/*.ts"];
 
 const allTsFiles = [
@@ -64,6 +64,12 @@ export default [
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
           caughtErrorsIgnorePattern: "^_",
+        },
+      ],
+      "no-console": [
+        "warn",
+        {
+          allow: ["warn", "error", "info"],
         },
       ],
     },

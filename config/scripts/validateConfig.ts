@@ -1,6 +1,6 @@
-import { AssetsSchema, ASSETS, getAssetsResourcesUrls } from "../src/assets";
-import { CHAINS, ChainsSchema, getChainsResourcesUrls } from "../src/chains";
 import { ADDRESSES, AddressesSchema } from "../src/addresses";
+import { ASSETS, AssetsSchema, getAssetsResourcesUrls } from "../src/assets";
+import { CHAINS, ChainsSchema, getChainsResourcesUrls } from "../src/chains";
 
 async function checkUrlIsReachable(url: string) {
   const urlsToIgnore = ["https://example.com"];
@@ -10,7 +10,7 @@ async function checkUrlIsReachable(url: string) {
 
   const response = await fetch(url, { method: "HEAD" });
 
-  console.log(`URL: ${url}: ${response.status}`);
+  console.info(`URL: ${url}: ${response.status}`);
 
   if (response.status === 403) {
     // Some servers block unknown HEAD requests, so we can ignore 403 responses
@@ -23,31 +23,32 @@ async function checkUrlIsReachable(url: string) {
 }
 
 async function main() {
-  AssetsSchema.parse(ASSETS);
-  AddressesSchema.parse(ADDRESSES);
-  ChainsSchema.parse(CHAINS);
+  try {
+    AssetsSchema.parse(ASSETS);
+    AddressesSchema.parse(ADDRESSES);
+    ChainsSchema.parse(CHAINS);
 
-  console.log("All configurations are valid." + "\n");
+    console.info("All configurations are valid." + "\n");
 
-  const promises = [
-    ...getAssetsResourcesUrls(),
-    ...getChainsResourcesUrls(),
-  ];
+    const promises = [
+      ...getAssetsResourcesUrls(),
+      ...getChainsResourcesUrls(),
+    ];
 
-  await Promise.all(
-    promises.map(async item => {
-      try {
-        await checkUrlIsReachable(item);
-      } catch (err) {
-        throw new Error(`URL check failed for ${item}: ${err.message}`);
-      }
-    })
-  );
+    await Promise.all(
+      promises.map(async item => {
+        try {
+          await checkUrlIsReachable(item);
+        } catch (error) {
+          throw new Error(`URL check failed for ${item}: ${error.message}`);
+        }
+      })
+    );
 
-  console.log("All URLs are reachable.");
+    console.info("All URLs are reachable.");
+  } catch (error) {
+    throw new Error(`Configuration validation failed: ${error.message}`);
+  }
 }
 
-main().catch(err => {
-  console.error("Configuration validation failed:", err);
-  process.exit(1);
-});
+await main();
