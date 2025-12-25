@@ -69,6 +69,7 @@ function out(method: LogMethod, ns: Namespace, level: LogLevel, args: unknown[])
   const styleLogLevel = "color:gray;";
   const styleNs = "font-weight:bold;";
 
+  // eslint-disable-next-line no-console
   const logFunction = console[method] || console.log;
 
   logFunction.apply(console, [

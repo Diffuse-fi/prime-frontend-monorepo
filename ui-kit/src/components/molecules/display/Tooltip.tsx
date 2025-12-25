@@ -36,22 +36,25 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
         open={open}
       >
         <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
-        <TooltipPrimitive.Content
-          align="center"
-          className={cn(
-            "bg-fg text-text-primary shadow-soft rounded-md px-3 py-1.5 text-sm",
-            "data-[side=top]:animate-in-slide-down data-[side=bottom]:animate-in-slide-up",
-            className
-          )}
-          hideWhenDetached
-          ref={ref}
-          side={side}
-          sideOffset={offset}
-          {...props}
-        >
-          {content}
-          <TooltipPrimitive.Arrow className="fill-fg" height={5} width={11} />
-        </TooltipPrimitive.Content>
+        <TooltipPrimitive.Portal>
+          <TooltipPrimitive.Content
+            align="center"
+            className={cn(
+              "bg-fg text-text-primary shadow-soft relative z-110 rounded-md px-3 py-1.5 text-sm",
+              "data-[side=top]:animate-in-slide-down data-[side=bottom]:animate-in-slide-up",
+              "dark:bg-border",
+              className
+            )}
+            hideWhenDetached
+            ref={ref}
+            side={side}
+            sideOffset={offset}
+            {...props}
+          >
+            {content}
+            <TooltipPrimitive.Arrow className="fill-fg" height={5} width={11} />
+          </TooltipPrimitive.Content>
+        </TooltipPrimitive.Portal>
       </TooltipPrimitive.Root>
     );
   }

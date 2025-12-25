@@ -15,7 +15,7 @@ export function main() {
   const packageJsonPath = path.join(rootDir, "package.json");
   const originalContent = fs.readFileSync(packageJsonPath, "utf8");
 
-  console.log("Running allow-scripts auto to check configuration...");
+  console.info("Running allow-scripts auto to check configuration...");
 
   // eslint-disable-next-line sonarjs/no-os-command-from-path
   const result = spawnSync("npx", ["allow-scripts", "auto"], {
@@ -29,7 +29,7 @@ export function main() {
   }
 
   if (result.stdout) {
-    console.log(result.stdout);
+    console.info(result.stdout);
   }
   if (result.stderr) {
     console.error(result.stderr);
@@ -56,7 +56,7 @@ export function main() {
     );
   }
 
-  console.log("allow-scripts configuration is up-to-date");
+  console.info("allow-scripts configuration is up-to-date");
 }
 
 main();

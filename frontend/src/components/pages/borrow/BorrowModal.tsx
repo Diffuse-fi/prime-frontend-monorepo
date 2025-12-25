@@ -523,7 +523,7 @@ export function BorrowModal({
                         predictedTokensToReceive,
                         selectedStrategy.token.decimals
                       ).text
-                    } ${selectedStrategy.token.symbol}`
+                    } ${collateralAsset.symbol}`
                   : "N/A"
               }
             />
