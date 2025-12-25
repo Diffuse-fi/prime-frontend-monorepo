@@ -1,3 +1,4 @@
+export * from "./CopyButton";
 export * from "./Dialog";
 export * from "./Nav";
 export * from "./RadioGroup";

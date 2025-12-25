@@ -4,7 +4,8 @@ import * as React from "react";
 
 import { cn } from "@/lib";
 
-import { IconButton, IconButtonProps } from "./IconButton";
+import { IconButton, IconButtonProps } from "../atoms/buttons/IconButton";
+import { Tooltip } from "../molecules";
 
 export type CopyButtonProps = Omit<IconButtonProps, "aria-label" | "icon"> & {
   "aria-label"?: string;
@@ -35,14 +36,19 @@ export function CopyButton({
     copy(textToCopy);
     setCopySuccess(true);
 
-    // eslint-disable-next-line unicorn/prefer-global-this
-    timeoutRef.current = window.setTimeout(() => {
+    timeoutRef.current = globalThis.window.setTimeout(() => {
       setCopySuccess(false);
       timeoutRef.current = null;
     }, 2000);
   };
 
-  const iconSize = size === "sm" ? 16 : size === "lg" ? 24 : 20;
+  const iconSizeMap = {
+    lg: 24,
+    md: 20,
+    sm: 16,
+    xs: 12,
+  };
+  const iconSize = iconSizeMap[size];
   const icon = copySuccess ? <CopyCheck size={iconSize} /> : <CopyIcon size={iconSize} />;
 
   React.useEffect(() => {
@@ -52,13 +58,15 @@ export function CopyButton({
   }, []);
 
   return (
-    <IconButton
-      aria-label={ariaLabel}
-      className={cn("transition-transform duration-75 active:scale-110", className)}
-      icon={icon}
-      onClick={handleCopy}
-      size={size}
-      {...rest}
-    />
+    <Tooltip content="Copied!" offset={2} open={copySuccess} side="top">
+      <IconButton
+        aria-label={ariaLabel}
+        className={cn("transition-transform duration-75 active:scale-110", className)}
+        icon={icon}
+        onClick={handleCopy}
+        size={size}
+        {...rest}
+      />
+    </Tooltip>
   );
 }
