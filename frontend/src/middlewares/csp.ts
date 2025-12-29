@@ -18,6 +18,8 @@ const allowedSources = [
   "https://pulse.walletconnect.org",
   // EUC domain for ENS avatar images
   "https://euc.li",
+  // Diffuse API
+  env.NEXT_PUBLIC_API_BASE_URL,
   // Allowed chains RPC URLs
   ...getChainsDefaultRpcUrls(),
   ...getCustomRpcUrls(),
