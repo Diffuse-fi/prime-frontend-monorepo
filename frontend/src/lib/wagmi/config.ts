@@ -5,24 +5,14 @@ import {
   trustWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { fallback } from "viem";
-import { http } from "wagmi";
 
 import { env } from "@/env";
 
 import { getAvailableChains } from "../chains";
-import { customRpcMap } from "../chains/rpc";
+import { transportsWithInjectedRpcOverrides } from "../chains/rpcOverrides";
 
 const chains = getAvailableChains();
-const transports = Object.fromEntries(
-  chains.map(chain => [
-    chain.id,
-    fallback([
-      ...(customRpcMap[chain.id] ?? []).map(url => http(url)),
-      ...chain.rpcUrls.default.http.map(url => http(url)),
-    ]),
-  ])
-);
+const transports = transportsWithInjectedRpcOverrides(chains);
 
 export const config = getDefaultConfig({
   appDescription: env.NEXT_PUBLIC_APP_DESCRIPTION,
