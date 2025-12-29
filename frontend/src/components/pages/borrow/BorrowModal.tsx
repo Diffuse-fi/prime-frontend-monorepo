@@ -29,6 +29,7 @@ import { useVaults } from "@/lib/core/hooks/useVaults";
 import { formatUnits, getPartialAllowanceText } from "@/lib/formatters/asset";
 import { formatNumberToKMB } from "@/lib/formatters/number";
 import { useRouter } from "@/lib/localization/navigation";
+import { isAegisStrategy } from "@/lib/misc/aegis";
 import { useDebounce } from "@/lib/misc/useDebounce";
 import { useLocalStorage } from "@/lib/misc/useLocalStorage";
 import { toast } from "@/lib/toast";
@@ -86,6 +87,7 @@ export function BorrowModal({
   selectedAsset,
   selectedStrategy,
 }: ChainSwitchModalProps) {
+  const isAegis = isAegisStrategy(selectedStrategy);
   const { control, formState, handleSubmit } = useForm<BorrowFormValues>({
     defaultValues: { acknowledged: false },
     mode: "onSubmit",
@@ -477,22 +479,24 @@ export function BorrowModal({
             ]}
             value={slippage}
           />
-          <Controller
-            control={control}
-            name="acknowledged"
-            render={({ field }) => (
-              <Checkbox
-                checked={field.value}
-                className="mt-4"
-                error={errors.acknowledged?.message}
-                label={tCommon("acknowledgements")}
-                onCheckedChange={val => field.onChange(val === true)}
-              />
-            )}
-            rules={{
-              validate: v => v || tCommon("acknowledgementsError"),
-            }}
-          />
+          {isAegis && (
+            <Controller
+              control={control}
+              name="acknowledged"
+              render={({ field }) => (
+                <Checkbox
+                  checked={field.value}
+                  className="mt-4"
+                  error={errors.acknowledged?.message}
+                  label={tCommon("acknowledgements")}
+                  onCheckedChange={val => field.onChange(val === true)}
+                />
+              )}
+              rules={{
+                validate: v => v || tCommon("acknowledgementsError"),
+              }}
+            />
+          )}
           <Button
             className="mx-auto mt-6 lg:w-2/3"
             disabled={actionButtonMeta.disabled}
