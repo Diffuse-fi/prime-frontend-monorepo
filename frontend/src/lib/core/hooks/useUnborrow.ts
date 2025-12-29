@@ -1,5 +1,6 @@
 import type { TxInfo, TxState, VaultFullInfo } from "../types";
 
+import { Vault } from "@diffuse/sdk-js";
 import { useMutation } from "@tanstack/react-query";
 import { produce } from "immer";
 import { useMemo, useState } from "react";
@@ -59,11 +60,12 @@ export function useUnborrow(
   const [txState, setTxState] = useState<TxState>({});
   const [pendingKey, setPendingKey] = useState<null | string>(null);
 
-  const { address: wallet, chainId, publicClient } = useClients();
+  const { address: wallet, chainId, publicClient, walletClient } = useClients();
 
   const enabled =
     !!selected &&
     !!wallet &&
+    !!walletClient &&
     !!publicClient &&
     !!vault &&
     selected.chainId === chainId &&
@@ -81,10 +83,20 @@ export function useUnborrow(
       })
     );
 
+  const vaultContract = useMemo(() => {
+    if (!vault || !publicClient) return null;
+
+    return new Vault({
+      address: getAddress(vault.address),
+      chainId: vault.contract.chainId,
+      client: { public: publicClient, wallet: walletClient },
+    });
+  }, [publicClient, walletClient, vault]);
+
   const unborrowMutation = useMutation({
     mutationFn: async (): Promise<UnborrowResult> => {
       const result: UnborrowResult = {};
-      if (!enabled || !selected || !addr || !wallet) return result;
+      if (!enabled || !selected || !addr || !wallet || !vaultContract) return result;
 
       const idemKey = makeIdemKey(chainId!, addr, getAddress(wallet), selected);
       const currentPhase = (txState[addr]?.phase ?? "idle") as TxInfo["phase"];
@@ -118,7 +130,7 @@ export function useUnborrow(
           vault_address: addr,
         });
 
-        const hash = await vault!.contract.unborrow([
+        const hash = await vaultContract.unborrow([
           selected.positionId,
           selected.strategyId,
           selected.deadline,
