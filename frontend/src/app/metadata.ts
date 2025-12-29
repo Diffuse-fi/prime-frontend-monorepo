@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import { Locale } from "next-intl";
 
 import { env } from "@/env";
-import { getApiUrl } from "@/lib/api";
 import { normalizeTwitterHandle, toOgLocale } from "@/lib/misc/metadata";
 
 import localizationSettings from "../localization.json" with { type: "json" };
@@ -21,7 +20,6 @@ const needAlternates = SUPPORTED_LOCALES.length > 1;
 const origin = env.ORIGIN;
 const appName = env.NEXT_PUBLIC_APP_NAME;
 const twitterAccount = env.ORG_TWITTER_ACCOUNT;
-const ogVersion = env.NEXT_PUBLIC_OG_VERSION || "1";
 
 function generateAlternates(path: string, locale: string) {
   if (!needAlternates) {
@@ -86,12 +84,7 @@ export function buildMetadataForPage({
         {
           alt: `${title} | ${appName}`,
           height: 630,
-          url: getApiUrl("og", {
-            description,
-            path,
-            title: title || appName,
-            v: ogVersion,
-          }),
+          url: "/og.jpg",
           width: 1200,
         },
       ],
@@ -104,12 +97,7 @@ export function buildMetadataForPage({
       ...defaultMetadata.twitter,
       description,
       images: [
-        getApiUrl("og", {
-          description,
-          path,
-          title: title || appName,
-          v: ogVersion,
-        }),
+        "/og.jpg",
       ],
       title: `${title} | ${appName}`,
     },
