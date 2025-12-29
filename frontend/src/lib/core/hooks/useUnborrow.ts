@@ -20,6 +20,7 @@ export type SelectedUnborrow = {
   deadline: bigint;
   positionId: bigint;
   slippage: string;
+  strategyId: bigint;
 };
 
 export type UnborrowResult = {
@@ -119,6 +120,7 @@ export function useUnborrow(
 
         const hash = await vault!.contract.unborrow([
           selected.positionId,
+          selected.strategyId,
           selected.deadline,
           getSlippageBpsFromKey(selected.slippage),
         ]);

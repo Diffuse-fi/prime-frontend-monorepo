@@ -328,9 +328,11 @@ export class Vault extends ContractBase {
   async unborrow(
     [
       positionId,
+      strategyId,
       deadline,
       slippage,
     ]: [
+      bigint,
       bigint,
       bigint,
       bigint,
@@ -340,7 +342,16 @@ export class Vault extends ContractBase {
     if (!this.init.client.wallet) throw new WalletRequiredError("unborrow");
 
     try {
-      const minAssetsOutForPreview = [0n];
+      const route = await abortable(
+        this.getContract().read.reverseRoute([strategyId]),
+        signal
+      );
+
+      const minAssetsOutForPreview = Array.from(
+        { length: Math.max(1, route.length - 1) },
+        () => 0n
+      );
+
       const sim = await abortable(
         this.init.client.public.simulateContract({
           abi: vaultAbi,
@@ -376,10 +387,10 @@ export class Vault extends ContractBase {
       });
     } catch (error) {
       throw normalizeError(error, {
-        args: [positionId, deadline, slippage],
+        args: [positionId, strategyId, deadline, slippage],
         chainId: this.chainId,
         contract: contractName,
-        op: "previewUnborrow",
+        op: "unborrow",
       });
     }
   }

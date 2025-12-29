@@ -30,6 +30,7 @@ export function CancelPosition({
     deadline: BigInt(Math.floor(Date.now() / 1000) + 3600),
     positionId: selectedPosition.id,
     slippage,
+    strategyId: selectedPosition.strategyId,
   };
   const {
     isPending: isUnborrowPending,
