@@ -59,6 +59,7 @@ const qKeys = {
 };
 
 const WAD = 10n ** 18n;
+const LTV_WAD = 950_000_000_000_000_000n; // 95%
 const mulWad = (x: bigint, y: bigint) => (x * y) / WAD;
 const divWad = (x: bigint, y: bigint) => (x * WAD) / y;
 
@@ -142,16 +143,23 @@ export function useBorrow(
           return result;
         }
 
+        const secondsLeft = BigInt(
+          Math.max(0, Number(strategy.endDate) - Math.floor(Date.now() / 1000))
+        );
         const borrowingFactor = calcBorrowingFactor(
           strategy.apr,
           vault.feeData.spreadFee,
-          BigInt(Math.max(0, Number(strategy.endDate) - Math.floor(Date.now() / 1000)))
+          secondsLeft
         );
 
         const assetDec = selected.assetDecimals ?? vault.assets[0].decimals;
         const stratDec = strategy.token.decimals;
 
-        const factorWad = factorWadFromBps(borrowingFactor);
+        const factorWad = calcFactorWad(
+          borrowingFactor,
+          vault.feeData.liquidationFee,
+          vault.feeData.earlyWithdrawalFee
+        );
 
         let predictedRouteAmounts: readonly bigint[];
         let totalStrategyTokens: bigint;
@@ -192,8 +200,11 @@ export function useBorrow(
             selected.assetsToBorrow,
           ]);
 
-          const routeSum = predictedRouteAmounts.reduce((acc, v) => acc + v, 0n);
-          totalStrategyTokens = routeSum;
+          const lastAmount = predictedRouteAmounts.at(-1);
+          if (lastAmount === undefined) {
+            throw new Error("previewBorrow returned empty assetsReceived");
+          }
+          totalStrategyTokens = lastAmount;
 
           collateralValueBase = selected.collateralAmount;
           denomBase = selected.assetsToBorrow + selected.collateralAmount;
@@ -223,10 +234,12 @@ export function useBorrow(
             : (totalStrategyTokens * WAD * 10n ** BigInt(assetDec)) /
               (denomBase * 10n ** BigInt(stratDec));
 
-        const resultWad =
+        const liquidationPriceBeforeLtv =
           depositPriceWad === 0n
             ? 0n
             : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
+
+        const resultWad = divWad(liquidationPriceBeforeLtv, LTV_WAD);
 
         const bps = getSlippageBpsFromKey(selected.slippage);
         const minStrategyToReceive = applySlippageBpsArray(
@@ -349,9 +362,18 @@ export function useBorrow(
   };
 }
 
-function factorWadFromBps(bps: bigint | number): bigint {
-  const b = toBpsBigint(bps);
-  return (WAD * (10_000n + b)) / 10_000n;
+function calcFactorWad(
+  borrowingFactorBps: bigint | number,
+  liquidationFee: number,
+  earlyWithdrawalFee: number
+): bigint {
+  const bps = toBpsBigint(borrowingFactorBps);
+  const borrowingFactorWad = (bps * WAD) / 10_000n;
+
+  const protocolMaxFee = Math.max(liquidationFee, earlyWithdrawalFee);
+  const protocolMaxFeeWad = (BigInt(protocolMaxFee) * WAD) / 10_000n;
+
+  return WAD + borrowingFactorWad + protocolMaxFeeWad;
 }
 
 function makeIdemKey(
