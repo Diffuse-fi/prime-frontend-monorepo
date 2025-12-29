@@ -1,6 +1,7 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+import { RpcOverrideModeSchema, RpcOverridesSchema } from "./lib/chains/rpcOverrides";
 import { LogLevelSchema, NamespacesCsvSchema } from "./lib/logger/schemas";
 
 const zBool = z.preprocess(v => {
@@ -44,6 +45,9 @@ export const env = createEnv({
     NEXT_PUBLIC_LOG_NAMESPACES: NamespacesCsvSchema.optional(),
     NEXT_PUBLIC_OG_VERSION: z.string().min(1).optional(),
 
+    NEXT_PUBLIC_RPC_OVERRIDE_MODE: RpcOverrideModeSchema.optional(),
+    NEXT_PUBLIC_RPC_OVERRIDES: RpcOverridesSchema.optional(),
+
     NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: z.string().min(1),
   },
@@ -62,6 +66,8 @@ export const env = createEnv({
     NEXT_PUBLIC_LOG_LEVEL: process.env.NEXT_PUBLIC_LOG_LEVEL,
     NEXT_PUBLIC_LOG_NAMESPACES: process.env.NEXT_PUBLIC_LOG_NAMESPACES,
     NEXT_PUBLIC_OG_VERSION: process.env.NEXT_PUBLIC_OG_VERSION,
+    NEXT_PUBLIC_RPC_OVERRIDE_MODE: process.env.NEXT_PUBLIC_RPC_OVERRIDE_MODE,
+    NEXT_PUBLIC_RPC_OVERRIDES: process.env.NEXT_PUBLIC_RPC_OVERRIDES,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID:
       process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
