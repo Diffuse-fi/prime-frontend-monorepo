@@ -8,7 +8,7 @@ export const ADDRESSES: Addresses = {
       chainId: 1,
       contracts: {
         Viewer: {
-          current: "0xA3bc7553B870cDb7a59070e9a9542309225f026F",
+          current: "0x2B29dEa1231AA37929d11Aa176D6643181482B22",
         },
       },
       name: "Mainnet",
