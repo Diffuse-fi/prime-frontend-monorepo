@@ -348,7 +348,7 @@ export class Vault extends ContractBase {
       );
 
       const minAssetsOutForPreview = Array.from(
-        { length: Math.max(1, route.length - 1) },
+        { length: Math.max(1, route.length) },
         () => 0n
       );
 
