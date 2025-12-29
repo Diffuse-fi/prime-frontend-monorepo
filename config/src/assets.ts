@@ -33,9 +33,19 @@ export const ASSETS: Assets = {
           decimals: 18,
           legacyAllowance: false,
           logoURI:
-            "https://storage.googleapis.com/prod-pendle-bucket-a/images/uploads/57a4f9fc-a935-433b-8648-daa034e65bfe.svg",
+            "https://storage.googleapis.com/prod-pendle-bucket-a/images/uploads/e8e8523f-cce9-4933-b286-66aaec6ab805.svg",
           name: "PT-cUSD-29JAN2026",
           symbol: "PT-cUSD-29JAN2026",
+        },
+        {
+          address: "0xC3c7E5E277d31CD24a3Ac4cC9af3B6770F30eA33",
+          chainId: 1,
+          decimals: 18,
+          legacyAllowance: false,
+          logoURI:
+            "https://storage.googleapis.com/prod-pendle-bucket-a/images/uploads/0b894259-7c84-4ec3-9090-92615fb276b6.svg",
+          name: "PT-stcUSD-29JAN2026",
+          symbol: "PT-stcUSD-29JAN2026",
         },
       ],
       chainId: 1,
