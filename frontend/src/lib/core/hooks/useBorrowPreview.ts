@@ -87,7 +87,9 @@ export function useBorrowPreview(
       const factorWad = calcFactorWad(
         strategy.apr,
         vault.feeData.spreadFee,
-        strategy.endDate
+        strategy.endDate,
+        vault.feeData.liquidationFee,
+        vault.feeData.earlyWithdrawalFee
       );
 
       if (selected.collateralType === 1) {
@@ -173,11 +175,22 @@ export function useBorrowPreview(
   };
 }
 
-function calcFactorWad(apr: bigint, spreadFee: number, endDate: bigint): bigint {
+function calcFactorWad(
+  apr: bigint,
+  spreadFee: number,
+  endDate: bigint,
+  liquidationFee: number,
+  earlyWithdrawalFee: number
+): bigint {
   const secondsLeft = Math.max(0, Number(endDate) - Math.floor(Date.now() / 1000));
   const bpsRaw = calcBorrowingFactor(apr, spreadFee, BigInt(secondsLeft));
   const bps = typeof bpsRaw === "bigint" ? bpsRaw : BigInt(Math.floor(Number(bpsRaw)));
-  return WAD + (bps * WAD) / 10_000n;
+  const borrowingFactorWad = (bps * WAD) / 10_000n;
+
+  const protocolMaxFee = Math.max(liquidationFee, earlyWithdrawalFee);
+  const protocolMaxFeeWad = (BigInt(protocolMaxFee) * WAD) / 10_000n;
+
+  return WAD + borrowingFactorWad + protocolMaxFeeWad;
 }
 
 function calcLiquidationPriceWad(args: {
@@ -207,9 +220,12 @@ function calcLiquidationPriceWad(args: {
       : (predictedTokensToReceive * WAD * 10n ** BigInt(assetDec)) /
         (denomBase * 10n ** BigInt(stratDec));
 
-  return depositPriceWad === 0n
-    ? 0n
-    : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
+  const liquidationPriceBeforeLtv =
+    depositPriceWad === 0n
+      ? 0n
+      : divWad(mulWad(factorWad, borrowedShareWad), depositPriceWad);
+
+  return divWad(liquidationPriceBeforeLtv, LTV_WAD);
 }
 
 function lastBigInt(xs: string[], err: string) {
