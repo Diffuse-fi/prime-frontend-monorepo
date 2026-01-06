@@ -70,6 +70,7 @@
       "targetApy": "Target APY",
       "targetApyAriaLabel": "Target APY information",
       "targetApyTooltip": "Target APY depends on the unstake/redeem rate on the maturity date. Even when direct redemption is in place, the rate is not guaranteed to stay the same, so the final APY might change on the maturity date.",
+      "unprofitableWarning": "Target APY is at or below Borrow APR. This position is not profitable for the borrower.",
       "until": "Until {date}",
       "yield": "Yield"
     },
