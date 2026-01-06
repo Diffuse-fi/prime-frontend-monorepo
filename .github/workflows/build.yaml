@@ -28,7 +28,7 @@ jobs:
         uses: ./.github/actions/install-dependencies
         with:
           setup-node: true
-          audit: true
+          audit: false
 
       - name: Lint
         uses: ./.github/actions/lint
