@@ -14,7 +14,6 @@ import {
   Slider,
   Tooltip,
 } from "@diffuse/ui-kit";
-import now from "lodash/now";
 import { InfoIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ReactNode, useCallback, useMemo, useReducer } from "react";
@@ -533,8 +532,9 @@ export function BorrowModal({
             />
           </div>
           <PositionDetails
+            borrowedAmount={amountToBorrow}
+            collateralAsset={collateralAsset}
             collateralGiven={collateralAmount}
-            enterTimeOrDeadline={now()}
             leverage={BigInt(leverage)}
             liquidationPenalty={selectedStrategy.vault.feeData.liquidationFee}
             liquidationPrice={liquidationPriceWad}
@@ -543,6 +543,8 @@ export function BorrowModal({
             selectedAsset={selectedAsset}
             spreadFee={selectedStrategy.vault.feeData.spreadFee}
             strategy={selectedStrategy}
+            totalBalance={predictedTokensToReceive}
+            vault={selectedStrategy.vault}
           />
         </div>
       </div>

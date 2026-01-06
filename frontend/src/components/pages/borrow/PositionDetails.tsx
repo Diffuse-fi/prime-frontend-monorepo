@@ -6,8 +6,11 @@ import {
   UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
 import { useTranslations } from "next-intl";
+import { getAddress } from "viem";
 
-import { Strategy } from "@/lib/core/types";
+import { useSimulateTokenSale } from "@/lib/core/hooks/useSimulateTokenSale";
+import { useStrategyReverseRoute } from "@/lib/core/hooks/useStrategyReverseRoute";
+import { Strategy, VaultFullInfo } from "@/lib/core/types";
 import { formatAsset, formatUnits } from "@/lib/formatters/asset";
 import { formatDateTime } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
@@ -15,8 +18,9 @@ import { calcAprInterest } from "@/lib/formulas/apr";
 import { calcDaysInterval } from "@/lib/formulas/date";
 
 interface PositionDetailsProps {
+  borrowedAmount: bigint;
+  collateralAsset: AssetInfo;
   collateralGiven: bigint;
-  enterTimeOrDeadline: number;
   leverage: bigint;
   liquidationPenalty: number;
   liquidationPrice?: bigint;
@@ -25,11 +29,14 @@ interface PositionDetailsProps {
   selectedAsset: AssetInfo;
   spreadFee: number;
   strategy: Strategy;
+  totalBalance?: bigint;
+  vault: VaultFullInfo;
 }
 
 export function PositionDetails({
+  borrowedAmount,
+  collateralAsset,
   collateralGiven,
-  enterTimeOrDeadline,
   leverage,
   liquidationPenalty,
   liquidationPrice,
@@ -38,20 +45,59 @@ export function PositionDetails({
   selectedAsset,
   spreadFee,
   strategy,
+  totalBalance,
+  vault,
 }: PositionDetailsProps) {
   const { apr, endDate, token: strategyAsset } = strategy;
+  const { adapters: reverseRouteAdapters } = useStrategyReverseRoute({
+    strategyId: strategy.id,
+    vault,
+  });
+  const adapters = reverseRouteAdapters.slice(1);
+  const selectedAssetAddress = getAddress(selectedAsset.address);
+  const collateralAssetAddress = getAddress(collateralAsset.address);
+  const collateralIsSelectedAsset = selectedAssetAddress === collateralAssetAddress;
   const daysUntilMaturity = calcDaysInterval({ to: endDate });
   const fullEndDate = formatDateTime(endDate).text;
-  const maturityYield = calcAprInterest(apr, collateralGiven, {
-    durationInDays: calcDaysInterval({
-      from: enterTimeOrDeadline,
-      to: endDate,
-    }),
-  });
   const borrowAprBps = apr + BigInt(Math.round(spreadFee));
+  const totalBalanceSale = useSimulateTokenSale({
+    adapters,
+    amount: totalBalance,
+  });
+  const collateralSale = useSimulateTokenSale({
+    adapters,
+    amount: collateralIsSelectedAsset ? 0n : collateralGiven,
+    enabled: !collateralIsSelectedAsset,
+  });
+
+  const collateralInSelectedAsset = collateralIsSelectedAsset
+    ? collateralGiven
+    : (collateralSale.amountOut ?? null);
+
+  const totalBalanceInSelectedAsset = totalBalanceSale.amountOut ?? null;
+
+  const borrowInterest =
+    borrowedAmount > 0n && daysUntilMaturity > 0
+      ? calcAprInterest(borrowAprBps, borrowedAmount, {
+          durationInDays: daysUntilMaturity,
+        })
+      : 0n;
+
+  const maturityYield =
+    totalBalanceInSelectedAsset !== null && collateralInSelectedAsset !== null
+      ? totalBalanceInSelectedAsset -
+        collateralInSelectedAsset -
+        borrowInterest -
+        borrowedAmount
+      : null;
+
   const targetApyBps =
-    collateralGiven > 0n && maturityYield > 0n && daysUntilMaturity > 0
-      ? (maturityYield * 365n * 10_000n) / (collateralGiven * BigInt(daysUntilMaturity))
+    collateralInSelectedAsset !== null &&
+    collateralInSelectedAsset > 0n &&
+    maturityYield !== null &&
+    daysUntilMaturity > 0
+      ? (maturityYield * 365n * 10_000n) /
+        (collateralInSelectedAsset * BigInt(daysUntilMaturity))
       : null;
   const showUnprofitableWarning = targetApyBps !== null && targetApyBps <= borrowAprBps;
   const leverageDisplay = `x${(Number(leverage) / 100).toFixed(2)}`;
@@ -149,7 +195,7 @@ export function PositionDetails({
           <div className="flex items-center justify-between">
             <span>{t("maturityYield")}</span>
             <span>
-              {maturityYield === 0n
+              {maturityYield === null
                 ? "N/A"
                 : `${formatUnits(maturityYield, selectedAsset.decimals).text} ${selectedAsset.symbol}`}
             </span>

@@ -313,6 +313,19 @@ export class Vault extends ContractBase {
     }
   }
 
+  async reverseRoute(strategyId: bigint, { signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(this.getContract().read.reverseRoute([strategyId]), signal);
+    } catch (error) {
+      throw normalizeError(error, {
+        args: [strategyId],
+        chainId: this.chainId,
+        contract: contractName,
+        op: "reverseRoute",
+      });
+    }
+  }
+
   async totalAssets({ signal }: SdkRequestOptions = {}) {
     try {
       return await abortable(this.getContract().read.totalAssets(), signal);
