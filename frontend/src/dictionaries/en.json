@@ -2,6 +2,8 @@
   "borrow": {
     "borrowCard": {
       "borrow": "Borrow",
+      "borrowAprAriaLabel": "Borrow APR information",
+      "borrowAprTooltip": "Lenders borrowing APR {apr} + spread fee {spreadFee}",
       "liquidity": "Liquidity"
     },
     "borrowModal": {
@@ -55,6 +57,8 @@
     },
     "positionDetails": {
       "borrowApr": "Borrow APR",
+      "borrowAprAriaLabel": "Borrow APR information",
+      "borrowAprTooltip": "Lenders borrowing APR {apr} + spread fee {spreadFee}",
       "daysUntilMaturity": "Days until maturity",
       "liquidationPenalty": "Liquidation penalty",
       "liquidationPrice": "Liquidation price",
@@ -63,6 +67,9 @@
       "spreadFee": "Spread fee",
       "spreadFeeAriaLabel": "Spread fee information",
       "spreadFeeTooltip": "The fee charged by the platform for facilitating the borrowing process.",
+      "targetApy": "Target APY",
+      "targetApyAriaLabel": "Target APY information",
+      "targetApyTooltip": "Target APY depends on the unstake/redeem rate on the maturity date. Even when direct redemption is in place, the rate is not guaranteed to stay the same, so the final APY might change on the maturity date.",
       "until": "Until {date}",
       "yield": "Yield"
     },
