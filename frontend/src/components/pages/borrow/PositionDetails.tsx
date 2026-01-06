@@ -1,5 +1,10 @@
 import { AssetInfo } from "@diffuse/config";
-import { RemoteText, TextWithTooltip, UncontrolledCollapsible } from "@diffuse/ui-kit";
+import {
+  InfoIcon,
+  RemoteText,
+  TextWithTooltip,
+  UncontrolledCollapsible,
+} from "@diffuse/ui-kit";
 import { useTranslations } from "next-intl";
 
 import { Strategy } from "@/lib/core/types";
@@ -43,6 +48,10 @@ export function PositionDetails({
       to: endDate,
     }),
   });
+  const targetApyBps =
+    collateralGiven > 0n && maturityYield > 0n && daysUntilMaturity > 0
+      ? (maturityYield * 365n * 10_000n) / (collateralGiven * BigInt(daysUntilMaturity))
+      : null;
   const leverageDisplay = `x${(Number(leverage) / 100).toFixed(2)}`;
   const liquidationPriceDisplay = liquidationPrice
     ? formatAsset(
@@ -56,6 +65,20 @@ export function PositionDetails({
 
   return (
     <div className="text-text-dimmed mt-2 flex flex-col gap-4 text-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center leading-none">
+          {t("targetApy")}
+          <InfoIcon
+            ariaLabel={t("targetApyAriaLabel")}
+            className="ml-1"
+            size={14}
+            text={t("targetApyTooltip")}
+          />
+        </div>
+        <span>
+          {targetApyBps === null ? "N/A" : formatAprToPercent(targetApyBps).text}
+        </span>
+      </div>
       <UncontrolledCollapsible
         defaultOpen
         summary={
@@ -83,7 +106,18 @@ export function PositionDetails({
       >
         <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
           <div className="flex items-center justify-between">
-            <span>{t("borrowApr")}</span>
+            <div className="flex items-center leading-none">
+              <span>{t("borrowApr")}</span>
+              <InfoIcon
+                ariaLabel={t("borrowAprAriaLabel")}
+                className="ml-1"
+                size={14}
+                text={t("borrowAprTooltip", {
+                  apr: formatAprToPercent(apr).text,
+                  spreadFee: formatAprToPercent(spreadFee).text,
+                })}
+              />
+            </div>
             <span>{formatAprToPercent(apr + BigInt(Math.round(spreadFee))).text}</span>
           </div>
         </div>

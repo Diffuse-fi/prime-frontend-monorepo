@@ -1,7 +1,14 @@
 "use client";
 
 import { AssetInfo } from "@diffuse/config";
-import { Button, Card, CopyButton, Heading, SimpleTable } from "@diffuse/ui-kit";
+import {
+  Button,
+  Card,
+  CopyButton,
+  Heading,
+  InfoIcon,
+  SimpleTable,
+} from "@diffuse/ui-kit";
 import { Chain } from "@rainbow-me/rainbowkit";
 import { useTranslations } from "next-intl";
 
@@ -101,7 +108,18 @@ export function BorrowCard({
             </div>,
           ],
           [
-            <div key="1">Borrow APR</div>,
+            <div className="flex items-center leading-none" key="1">
+              <span>Borrow APR</span>
+              <InfoIcon
+                ariaLabel={t("borrowAprAriaLabel")}
+                className="ml-1"
+                size={14}
+                text={t("borrowAprTooltip", {
+                  apr: formatAprToPercent(strategy.apr).text,
+                  spreadFee: formatAprToPercent(vault.feeData.spreadFee).text,
+                })}
+              />
+            </div>,
             <div className="text-right" key="2">
               {
                 formatAprToPercent(
