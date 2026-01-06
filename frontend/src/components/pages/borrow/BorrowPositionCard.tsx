@@ -46,7 +46,6 @@ export function BorrowerPositionCard({
     assetsBorrowed,
     collateralGiven,
     collateralType,
-    enterTimeOrDeadline,
     leverage,
     liquidationPrice,
     strategyBalance,
@@ -151,8 +150,9 @@ export function BorrowerPositionCard({
       />
       <UncontrolledCollapsible className="mt-2 px-10 md:mt-4" summary="Position details">
         <PositionDetails
+          borrowedAmount={assetsBorrowed}
+          collateralAsset={collateralAsset}
           collateralGiven={collateralGiven}
-          enterTimeOrDeadline={enterTimeOrDeadline}
           leverage={leverage}
           liquidationPenalty={position.vault.feeData.liquidationFee}
           liquidationPrice={liquidationPrice}
@@ -161,6 +161,8 @@ export function BorrowerPositionCard({
           selectedAsset={selectedAsset}
           spreadFee={position.vault.feeData.spreadFee}
           strategy={strategy}
+          totalBalance={strategyBalance}
+          vault={position.vault}
         />
       </UncontrolledCollapsible>
       <Button
