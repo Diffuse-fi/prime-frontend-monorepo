@@ -101,9 +101,13 @@ export function BorrowCard({
             </div>,
           ],
           [
-            <div key="1">APR</div>,
+            <div key="1">Borrow APR</div>,
             <div className="text-right" key="2">
-              {formatAprToPercent(strategy.apr).text}
+              {
+                formatAprToPercent(
+                  strategy.apr + BigInt(Math.round(vault.feeData.spreadFee))
+                ).text
+              }
             </div>,
           ],
           [
