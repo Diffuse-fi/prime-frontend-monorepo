@@ -1,10 +1,5 @@
 import { AssetInfo } from "@diffuse/config";
-import {
-  InfoIcon,
-  RemoteText,
-  TextWithTooltip,
-  UncontrolledCollapsible,
-} from "@diffuse/ui-kit";
+import { RemoteText, TextWithTooltip, UncontrolledCollapsible } from "@diffuse/ui-kit";
 import { useTranslations } from "next-intl";
 
 import { Strategy } from "@/lib/core/types";
@@ -89,27 +84,13 @@ export function PositionDetails({
         <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
           <div className="flex items-center justify-between">
             <span>{t("borrowApr")}</span>
-            <span>{formatAprToPercent(apr).text}</span>
+            <span>{formatAprToPercent(apr + BigInt(Math.round(spreadFee))).text}</span>
           </div>
         </div>
         <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
           <div className="flex items-center justify-between">
             <span>{tCommon("leverage")}</span>
             <span>{leverageDisplay}</span>
-          </div>
-        </div>
-        <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center leading-none">
-              {t("spreadFee")}
-              <InfoIcon
-                ariaLabel={t("spreadFeeAriaLabel")}
-                className="ml-1"
-                size={14}
-                text={t("spreadFeeTooltip")}
-              />
-            </div>
-            <span>{formatAprToPercent(spreadFee, 0).text}</span>
           </div>
         </div>
       </UncontrolledCollapsible>
