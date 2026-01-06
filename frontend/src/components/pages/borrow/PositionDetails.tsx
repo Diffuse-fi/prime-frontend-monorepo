@@ -48,10 +48,12 @@ export function PositionDetails({
       to: endDate,
     }),
   });
+  const borrowAprBps = apr + BigInt(Math.round(spreadFee));
   const targetApyBps =
     collateralGiven > 0n && maturityYield > 0n && daysUntilMaturity > 0
       ? (maturityYield * 365n * 10_000n) / (collateralGiven * BigInt(daysUntilMaturity))
       : null;
+  const showUnprofitableWarning = targetApyBps !== null && targetApyBps <= borrowAprBps;
   const leverageDisplay = `x${(Number(leverage) / 100).toFixed(2)}`;
   const liquidationPriceDisplay = liquidationPrice
     ? formatAsset(
@@ -79,6 +81,9 @@ export function PositionDetails({
           {targetApyBps === null ? "N/A" : formatAprToPercent(targetApyBps).text}
         </span>
       </div>
+      {showUnprofitableWarning ? (
+        <p className="text-err font-mono text-xs">{t("unprofitableWarning")}</p>
+      ) : null}
       <UncontrolledCollapsible
         defaultOpen
         summary={
@@ -118,7 +123,7 @@ export function PositionDetails({
                 })}
               />
             </div>
-            <span>{formatAprToPercent(apr + BigInt(Math.round(spreadFee))).text}</span>
+            <span>{formatAprToPercent(borrowAprBps).text}</span>
           </div>
         </div>
         <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
