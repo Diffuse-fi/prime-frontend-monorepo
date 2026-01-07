@@ -8,7 +8,7 @@ import { QV } from "@/lib/query/versions";
 const ROOT = "simulateTokenSale" as const;
 const version = QV.simulateTokenSale;
 
-export function useSimulateTokenSale(args: {
+export function useSimulateStrategyTokenSaleAfterMaturity(args: {
   adapters: string[];
   amount: bigint | undefined;
   enabled?: boolean;
