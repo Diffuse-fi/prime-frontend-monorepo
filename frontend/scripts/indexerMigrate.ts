@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { runIndexerMigrations } from "@diffuse/indexer";
+import { IndexerConfig, runIndexerMigrations } from "@diffuse/indexer";
 
 import { indexerDbConfig } from "@/lib/indexer";
 import { isIndexerEnabled } from "@/lib/indexer/isEnabled";
@@ -18,8 +18,11 @@ async function main() {
       return;
     }
 
-    const dbConfig = indexerDbConfig;
-    await runIndexerMigrations(dbConfig);
+    if (!indexerDbConfig.connectionString) {
+      throw new Error("Indexer database URL is not defined");
+    }
+
+    await runIndexerMigrations(indexerDbConfig as IndexerConfig["db"]);
 
     console.info("Indexer migrations completed");
   } catch (error) {
