@@ -67,6 +67,13 @@ function extractAmountOut(v: unknown): null | string {
     return v.assetsReceived.at(-1) ?? null;
   }
 
+  if (Array.isArray(v.buyResults)) {
+    const last = v.buyResults.at(-1);
+    if (isRecord(last) && typeof last.amountOut === "string") {
+      return last.amountOut;
+    }
+  }
+
   return null;
 }
 
