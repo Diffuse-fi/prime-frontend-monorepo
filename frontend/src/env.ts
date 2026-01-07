@@ -73,13 +73,13 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,
   },
   server: {
-    CRON_SECRET: z.string().min(1),
+    CRON_SECRET: z.string().min(1).optional(),
 
     ENABLE_HTTPS_SECURITY_HEADERS: zBool.optional(),
     GOOGLE_ANALYTICS_ID: z.string().regex(GTM_OR_GA_ID).optional(),
     INDEXER_DATABASE_MAX_CONNECTIONS: zInt.optional(),
 
-    INDEXER_DATABASE_URL: z.string().min(1),
+    INDEXER_DATABASE_URL: z.string().min(1).optional(),
 
     ORG_GITHUB_ACCOUNT: z.string().min(1).optional(),
     ORG_TWITTER_ACCOUNT: z.string().min(1).optional(),

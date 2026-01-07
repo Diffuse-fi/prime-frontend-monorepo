@@ -1,4 +1,4 @@
-import { createIndexer } from "@diffuse/indexer";
+import { createIndexer, IndexerConfig } from "@diffuse/indexer";
 import * as Sentry from "@sentry/nextjs";
 import { mainnet } from "viem/chains";
 
@@ -17,10 +17,14 @@ function createIndexerWithSentryReport() {
     throw new Error("Indexer is not enabled");
   }
 
+  if (!indexerDbConfig.connectionString) {
+    throw new Error("Indexer database URL is not defined");
+  }
+
   try {
     return createIndexer({
       chainIdsToIgnore: [],
-      db: indexerDbConfig,
+      db: indexerDbConfig as IndexerConfig["db"],
       rpcUrls: customRpcMap,
       // Will be used on the first run when there is no checkpoint in the database
       startBlocks: {
