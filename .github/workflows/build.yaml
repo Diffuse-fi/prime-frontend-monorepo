@@ -32,8 +32,6 @@ jobs:
 
       - name: Lint
         uses: ./.github/actions/lint
-        with:
-          check-changesets: ${{ github.event_name == 'pull_request' }}
 
       - name: Build
         uses: ./.github/actions/build
