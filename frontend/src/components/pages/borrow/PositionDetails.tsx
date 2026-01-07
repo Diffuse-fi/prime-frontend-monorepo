@@ -8,8 +8,9 @@ import {
 import { useTranslations } from "next-intl";
 import { getAddress } from "viem";
 
-import { useSimulateTokenSale } from "@/lib/core/hooks/useSimulateTokenSale";
+import { useSimulateStrategyTokenSaleAfterMaturity } from "@/lib/core/hooks/useSimulateStrategyTokenSaleAfterMaturity";
 import { useStrategyReverseRoute } from "@/lib/core/hooks/useStrategyReverseRoute";
+import { useStrategySyExchangeRate } from "@/lib/core/hooks/useStrategySyExchangeRate";
 import { Strategy, VaultFullInfo } from "@/lib/core/types";
 import { formatAsset, formatUnits } from "@/lib/formatters/asset";
 import { formatDateTime } from "@/lib/formatters/date";
@@ -56,17 +57,23 @@ export function PositionDetails({
   const adapters = reverseRouteAdapters.slice(1);
   const selectedAssetAddress = getAddress(selectedAsset.address);
   const collateralAssetAddress = getAddress(collateralAsset.address);
+  const strategyAssetAddress = getAddress(strategyAsset.address);
   const collateralIsSelectedAsset = selectedAssetAddress === collateralAssetAddress;
   const daysUntilMaturity = calcDaysInterval({ to: endDate });
   const fullEndDate = formatDateTime(endDate).text;
   const borrowAprBps = apr + BigInt(Math.round(spreadFee));
-  const totalBalanceSale = useSimulateTokenSale({
-    adapters,
-    amount: totalBalance,
+  const { exchangeRate } = useStrategySyExchangeRate({
+    strategyAssetAddress,
   });
-  const collateralSale = useSimulateTokenSale({
+  const adjustedTotalBalance = getAdjustedOptionalAmount(totalBalance, exchangeRate);
+  const adjustedCollateralGiven = getAdjustedAmount(collateralGiven, exchangeRate);
+  const totalBalanceSale = useSimulateStrategyTokenSaleAfterMaturity({
     adapters,
-    amount: collateralIsSelectedAsset ? 0n : collateralGiven,
+    amount: adjustedTotalBalance,
+  });
+  const collateralSale = useSimulateStrategyTokenSaleAfterMaturity({
+    adapters,
+    amount: collateralIsSelectedAsset ? 0n : adjustedCollateralGiven,
     enabled: !collateralIsSelectedAsset,
   });
 
@@ -76,29 +83,22 @@ export function PositionDetails({
 
   const totalBalanceInSelectedAsset = totalBalanceSale.amountOut ?? null;
 
-  const borrowInterest =
-    borrowedAmount > 0n && daysUntilMaturity > 0
-      ? calcAprInterest(borrowAprBps, borrowedAmount, {
-          durationInDays: daysUntilMaturity,
-        })
-      : 0n;
-
-  const maturityYield =
-    totalBalanceInSelectedAsset !== null && collateralInSelectedAsset !== null
-      ? totalBalanceInSelectedAsset -
-        collateralInSelectedAsset -
-        borrowInterest -
-        borrowedAmount
-      : null;
-
-  const targetApyBps =
-    collateralInSelectedAsset !== null &&
-    collateralInSelectedAsset > 0n &&
-    maturityYield !== null &&
-    daysUntilMaturity > 0
-      ? (maturityYield * 365n * 10_000n) /
-        (collateralInSelectedAsset * BigInt(daysUntilMaturity))
-      : null;
+  const borrowInterest = getBorrowInterest(
+    borrowedAmount,
+    borrowAprBps,
+    daysUntilMaturity
+  );
+  const maturityYield = getMaturityYield(
+    totalBalanceInSelectedAsset,
+    collateralInSelectedAsset,
+    borrowInterest,
+    borrowedAmount
+  );
+  const targetApyBps = getTargetApyBps(
+    collateralInSelectedAsset,
+    maturityYield,
+    daysUntilMaturity
+  );
   const showUnprofitableWarning = targetApyBps !== null && targetApyBps <= borrowAprBps;
   const leverageDisplay = `x${(Number(leverage) / 100).toFixed(2)}`;
   const liquidationPriceDisplay = liquidationPrice
@@ -203,5 +203,73 @@ export function PositionDetails({
         </div>
       </UncontrolledCollapsible>
     </div>
+  );
+}
+
+function getAdjustedAmount(amount: bigint, exchangeRate?: bigint) {
+  if (!exchangeRate || exchangeRate <= 0n) {
+    return amount;
+  }
+
+  return (amount * 10n ** 18n) / exchangeRate;
+}
+
+function getAdjustedOptionalAmount(amount: bigint | undefined, exchangeRate?: bigint) {
+  if (!exchangeRate || exchangeRate <= 0n || amount === undefined) {
+    return amount;
+  }
+
+  return (amount * 10n ** 18n) / exchangeRate;
+}
+
+function getBorrowInterest(
+  borrowedAmount: bigint,
+  borrowAprBps: bigint,
+  daysUntilMaturity: number
+) {
+  if (borrowedAmount <= 0n || daysUntilMaturity <= 0) {
+    return 0n;
+  }
+
+  return calcAprInterest(borrowAprBps, borrowedAmount, {
+    durationInDays: daysUntilMaturity,
+  });
+}
+
+function getMaturityYield(
+  totalBalanceInSelectedAsset: bigint | null,
+  collateralInSelectedAsset: bigint | null,
+  borrowInterest: bigint,
+  borrowedAmount: bigint
+) {
+  if (totalBalanceInSelectedAsset === null || collateralInSelectedAsset === null) {
+    return null;
+  }
+
+  return (
+    totalBalanceInSelectedAsset -
+    collateralInSelectedAsset -
+    borrowInterest -
+    borrowedAmount
+  );
+}
+
+function getTargetApyBps(
+  collateralInSelectedAsset: bigint | null,
+  maturityYield: bigint | null,
+  daysUntilMaturity: number
+) {
+  if (
+    collateralInSelectedAsset === null ||
+    collateralInSelectedAsset <= 0n ||
+    maturityYield === null ||
+    daysUntilMaturity <= 0
+  ) {
+    return null;
+  }
+
+  return (
+    (maturityYield * 365n * 10_000n) /
+    (collateralInSelectedAsset * BigInt(daysUntilMaturity))
   );
 }
