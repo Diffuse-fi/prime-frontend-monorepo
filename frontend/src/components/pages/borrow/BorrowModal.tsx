@@ -58,18 +58,25 @@ type BorrowAction =
       borrow: bigint;
       borrowDecimals: number;
       collateralDecimals: number;
+      keepLeverage?: boolean;
+      maxLeverage: number;
+      minLeverage: number;
       type: "SET_BORROW";
     }
   | {
       borrowDecimals: number;
       collateral: bigint;
       collateralDecimals: number;
+      maxLeverage: number;
+      minLeverage: number;
       type: "SET_COLLATERAL";
     }
   | {
       borrowDecimals: number;
       collateralDecimals: number;
       leverage: number;
+      maxLeverage: number;
+      minLeverage: number;
       type: "SET_LEVERAGE";
     }
   | { type: "RESET" };
@@ -121,6 +128,8 @@ export function BorrowModal({
   const { borrow: amountToBorrow, collateral: collateralAmount, leverage } = state;
   const debouncedCollateral = useDebounce(collateralAmount, 200);
   const debouncedBorrow = useDebounce(amountToBorrow, 200);
+  const minLeverage = selectedStrategy.minLeverage ?? defaultMinLeverage;
+  const maxLeverage = selectedStrategy.maxLeverage ?? defaultMaxLeverage;
 
   function onCollateralInput(valueStr: string) {
     const next = parseUnits(valueStr || "0", collateralAsset.decimals);
@@ -128,6 +137,8 @@ export function BorrowModal({
       borrowDecimals: selectedAsset.decimals,
       collateral: next,
       collateralDecimals: collateralAsset.decimals,
+      maxLeverage,
+      minLeverage,
       type: "SET_COLLATERAL",
     });
   }
@@ -138,6 +149,8 @@ export function BorrowModal({
       borrow: next,
       borrowDecimals: selectedAsset.decimals,
       collateralDecimals: collateralAsset.decimals,
+      maxLeverage,
+      minLeverage,
       type: "SET_BORROW",
     });
   }
@@ -147,6 +160,8 @@ export function BorrowModal({
       borrowDecimals: selectedAsset.decimals,
       collateralDecimals: collateralAsset.decimals,
       leverage: val[0],
+      maxLeverage,
+      minLeverage,
       type: "SET_LEVERAGE",
     });
   }
@@ -164,14 +179,19 @@ export function BorrowModal({
         borrow: state.borrow,
         borrowDecimals: selectedAsset.decimals,
         collateralDecimals: nextAsset.decimals,
+        keepLeverage: true,
+        maxLeverage,
+        minLeverage,
         type: "SET_BORROW",
       });
     },
     [
+      selectedAsset,
       selectedStrategy.token,
       setCollateralAsset,
       state.borrow,
-      selectedAsset,
+      maxLeverage,
+      minLeverage,
     ]
   );
 
@@ -555,28 +575,95 @@ function borrowReducer(state: BorrowState, action: BorrowAction): BorrowState {
     case "RESET": {
       return { borrow: 0n, collateral: 0n, leverage: 100 };
     }
+
     case "SET_BORROW": {
       const borrow = action.borrow;
-      const collateralValueInBorrowUnits = computeCollateral(borrow, state.leverage);
+
+      const minL = BigInt(action.minLeverage);
+      const maxL = BigInt(action.maxLeverage);
+
+      if (action.keepLeverage || state.collateral === 0n) {
+        const collateralValueInBorrowUnits = computeCollateral(borrow, state.leverage);
+        const collateral = convertDecimals(
+          collateralValueInBorrowUnits,
+          action.borrowDecimals,
+          action.collateralDecimals
+        );
+        return { ...state, borrow, collateral };
+      }
+
+      const collateralInBorrowUnits = convertDecimals(
+        state.collateral,
+        action.collateralDecimals,
+        action.borrowDecimals
+      );
+
+      if (collateralInBorrowUnits === 0n) {
+        const collateralValueInBorrowUnits = computeCollateral(borrow, state.leverage);
+        const collateral = convertDecimals(
+          collateralValueInBorrowUnits,
+          action.borrowDecimals,
+          action.collateralDecimals
+        );
+        return { ...state, borrow, collateral };
+      }
+
+      const derived = deriveLeverageStep(borrow, collateralInBorrowUnits, 10);
+      const derivedClamped = clampBigInt(derived, minL, maxL);
+
+      if (derivedClamped === derived) {
+        return { ...state, borrow, leverage: Number(derivedClamped) };
+      }
+
+      const collateralValueInBorrowUnits = computeCollateral(
+        borrow,
+        Number(derivedClamped)
+      );
       const collateral = convertDecimals(
         collateralValueInBorrowUnits,
         action.borrowDecimals,
         action.collateralDecimals
       );
-      return { ...state, borrow, collateral };
+      return { ...state, borrow, collateral, leverage: Number(derivedClamped) };
     }
+
     case "SET_COLLATERAL": {
       const collateral = action.collateral;
-      const collateralValueInBorrowUnits = convertDecimals(
+
+      const minL = BigInt(action.minLeverage);
+      const maxL = BigInt(action.maxLeverage);
+
+      const collateralInBorrowUnits = convertDecimals(
         collateral,
         action.collateralDecimals,
         action.borrowDecimals
       );
-      const borrow = computeBorrow(collateralValueInBorrowUnits, state.leverage);
-      return { ...state, borrow, collateral };
+
+      if (state.borrow === 0n || collateralInBorrowUnits === 0n) {
+        const borrow = computeBorrow(collateralInBorrowUnits, state.leverage);
+        return { ...state, borrow, collateral };
+      }
+
+      const derived = deriveLeverageStep(state.borrow, collateralInBorrowUnits, 10);
+      const derivedClamped = clampBigInt(derived, minL, maxL);
+
+      if (derivedClamped === derived) {
+        return { ...state, collateral, leverage: Number(derivedClamped) };
+      }
+
+      const borrow = computeBorrow(collateralInBorrowUnits, Number(derivedClamped));
+      return { ...state, borrow, collateral, leverage: Number(derivedClamped) };
     }
+
     case "SET_LEVERAGE": {
-      const leverage = action.leverage;
+      const leverage = Number(
+        clampBigInt(
+          BigInt(action.leverage),
+          BigInt(action.minLeverage),
+          BigInt(action.maxLeverage)
+        )
+      );
+
       const collateralValueInBorrowUnits = convertDecimals(
         state.collateral,
         action.collateralDecimals,
@@ -586,6 +673,12 @@ function borrowReducer(state: BorrowState, action: BorrowAction): BorrowState {
       return { ...state, borrow, leverage };
     }
   }
+}
+
+function clampBigInt(v: bigint, min: bigint, max: bigint) {
+  if (v < min) return min;
+  if (v > max) return max;
+  return v;
 }
 
 function computeBorrow(collateral: bigint, leverage: number) {
@@ -601,4 +694,17 @@ function convertDecimals(amount: bigint, from: number, to: number) {
   if (from === to) return amount;
   if (from > to) return amount / 10n ** BigInt(from - to);
   return amount * 10n ** BigInt(to - from);
+}
+
+function deriveLeverageStep(
+  borrow: bigint,
+  collateralInBorrowUnits: bigint,
+  step: number
+) {
+  if (collateralInBorrowUnits <= 0n) return 0n;
+  const stepB = BigInt(step);
+  const num = borrow * BigInt(LEVERAGE_RATE);
+  const rawRounded = (num + collateralInBorrowUnits / 2n) / collateralInBorrowUnits;
+  const snapped = ((rawRounded + stepB / 2n) / stepB) * stepB;
+  return snapped;
 }

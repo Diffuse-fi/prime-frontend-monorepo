@@ -1,6 +1,7 @@
 name: Release frontend
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -14,14 +15,13 @@ concurrency:
 
 jobs:
   publish:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Install dependencies
-        if: steps.changed.outputs.should_release == 'true'
         uses: ./.github/actions/install-dependencies
         with:
           setup-node: true
@@ -29,25 +29,11 @@ jobs:
 
       - id: version
         name: Detect frontend version bump
+        working-directory: ./frontend
         shell: bash
         run: |
           set -euo pipefail
-
-          curr="$(node -p "require('./frontend/package.json').version")"
-
-          if git cat-file -e "${{ github.event.before }}:frontend/package.json" 2>/dev/null; then
-            prev="$(git show "${{ github.event.before }}:frontend/package.json" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>console.log(JSON.parse(d).version));")"
-          else
-            prev=""
-          fi
-
-          echo "current=$curr" >> "$GITHUB_OUTPUT"
-
-          if [ "$curr" != "$prev" ]; then
-            echo "should_release=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "should_release=false" >> "$GITHUB_OUTPUT"
-          fi
+          npx tsx ./scripts/detectVersionBump.ts --before "${{ github.event.before }}" --missing-prev skip
 
       - if: steps.version.outputs.should_release == 'true'
         id: tagcheck
@@ -56,7 +42,6 @@ jobs:
         run: |
           set -euo pipefail
           tag="frontend-v${{ steps.version.outputs.current }}"
-          
           if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
