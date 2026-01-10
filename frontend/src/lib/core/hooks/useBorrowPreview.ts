@@ -9,7 +9,7 @@ import { previewBorrow } from "@/lib/api/previewBorrow";
 import { getPtAmount } from "@/lib/api/pt";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 
-import { isAegisStrategy } from "../../misc/aegis";
+import { isAegisStrategy } from "../../aegis";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { useClients } from "../../wagmi/useClients";

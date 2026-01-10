@@ -29,12 +29,12 @@ import { useVaults } from "@/lib/core/hooks/useVaults";
 import { formatUnits, getPartialAllowanceText } from "@/lib/formatters/asset";
 import { formatNumberToKMB } from "@/lib/formatters/number";
 import { useRouter } from "@/lib/localization/navigation";
-import { isAegisStrategy } from "@/lib/misc/aegis";
 import { useDebounce } from "@/lib/misc/useDebounce";
 import { useLocalStorage } from "@/lib/misc/useLocalStorage";
 import { toast } from "@/lib/toast";
 
 import { SelectedStartegy } from ".";
+import { isAegisStrategy } from "../../../lib/aegis";
 import { useERC20TokenBalance } from "../../../lib/wagmi/useErc20TokenBalance";
 import { PositionDetails } from "./PositionDetails";
 import { SlippageInput } from "./SlippageInput";
