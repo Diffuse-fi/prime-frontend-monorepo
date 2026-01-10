@@ -3,6 +3,7 @@ import qs from "qs";
 import { env } from "@/env";
 
 const apiRoutes = {
+  mint: `${env.NEXT_PUBLIC_API_BASE_URL}/mint`,
   og: "/api/og",
   previewBorrow: `${env.NEXT_PUBLIC_API_BASE_URL}/previewBorrow`,
   ptAmount: `${env.NEXT_PUBLIC_API_BASE_URL}/getPtAmount`,
