@@ -12,6 +12,7 @@ export type BorrowerPosition = {
   id: bigint;
   leverage: bigint;
   liquidationPrice: bigint;
+  strategy: Strategy;
   strategyBalance: bigint;
   strategyId: bigint;
   subjectToLiquidation: boolean;

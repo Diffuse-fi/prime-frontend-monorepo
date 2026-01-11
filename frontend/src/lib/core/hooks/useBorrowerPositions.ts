@@ -94,9 +94,11 @@ export function useBorrowerPositions(allVaults: VaultFullInfo[]) {
             }
           );
 
-          return raw.map(
-            (p): BorrowerPosition => ({
-              asset: vault.strategies.find(s => s.id === p.strategyId)!.token,
+          return raw.map((p): BorrowerPosition => {
+            const strategy = vault.strategies.find(s => s.id === p.strategyId)!;
+
+            return {
+              asset: strategy.token,
               assetsBorrowed: p.assetsBorrowed,
               blockNumber: p.blockNumber,
               collateralGiven: p.collateralGiven,
@@ -105,13 +107,14 @@ export function useBorrowerPositions(allVaults: VaultFullInfo[]) {
               id: p.id,
               leverage: p.leverage,
               liquidationPrice: p.liquidationPrice,
+              strategy,
               strategyBalance: p.strategyBalance,
               strategyId: p.strategyId,
               subjectToLiquidation: p.subjectToLiquidation,
               user: p.user as Address,
               vault,
-            })
-          );
+            };
+          });
         })
       );
 

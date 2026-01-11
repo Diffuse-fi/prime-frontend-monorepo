@@ -123,7 +123,7 @@ export function PositionDetails({
             text={t("targetApyTooltip")}
           />
         </div>
-        <span>
+        <span className="pr-2">
           {targetApyBps === null ? "N/A" : formatAprToPercent(targetApyBps).text}
         </span>
       </div>
