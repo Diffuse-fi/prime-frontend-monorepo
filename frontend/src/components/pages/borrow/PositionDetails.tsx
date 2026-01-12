@@ -76,8 +76,6 @@ export function PositionDetails({
     vault,
   });
 
-  console.info("collateralInSelectedAsset", collateralInSelectedAsset);
-
   const totalBalanceInSelectedAsset = totalBalanceSale.amountOut ?? null;
 
   const borrowInterest = getBorrowInterest(
