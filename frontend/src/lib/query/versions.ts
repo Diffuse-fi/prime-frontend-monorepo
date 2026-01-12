@@ -13,6 +13,7 @@ const lenderPositionVersion = `v1-${lendVersion}`;
 const borrowVersion = `v1-${vaultVersion}`;
 const borrowerPositionVersion = `v1-${borrowVersion}`;
 const withdrawYieldVersion = `v1-${lendVersion}`;
+const ptBuyBSLowVersion = `v1-${borrowVersion}`;
 const simulateTokenSaleVersion = `v1-${borrowVersion}`;
 const strategyReverseRouteVersion = `v1-${borrowVersion}`;
 
@@ -24,6 +25,7 @@ export const QV = {
   deposit: depositVersion,
   lend: lendVersion,
   lenderPositions: lenderPositionVersion,
+  ptBuyBSLow: ptBuyBSLowVersion,
   simulateTokenSale: simulateTokenSaleVersion,
   strategyReverseRoute: strategyReverseRouteVersion,
   vault: vaultVersion,

@@ -16,13 +16,14 @@ import {
 } from "@diffuse/ui-kit";
 import { InfoIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ReactNode, useCallback, useMemo, useReducer } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { getAddress, parseUnits } from "viem";
 
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { useBorrow } from "@/lib/core/hooks/useBorrow";
 import { useBorrowPreview } from "@/lib/core/hooks/useBorrowPreview";
+import { useCollateralInSelectedAsset } from "@/lib/core/hooks/useCollateralInSelectedAsset";
 import { useEnsureAllowances } from "@/lib/core/hooks/useEnsureAllowances";
 import { useVaults } from "@/lib/core/hooks/useVaults";
 import { formatUnits, getPartialAllowanceText } from "@/lib/formatters/asset";
@@ -59,15 +60,18 @@ type BorrowAction =
       collateralDecimals: number;
       type: "SET_BORROW";
     }
+  | { borrow: bigint; type: "SET_DERIVED_BORROW" }
   | {
       borrowDecimals: number;
       collateral: bigint;
       collateralDecimals: number;
+      collateralInSelectedAsset?: bigint | null;
       type: "SET_COLLATERAL";
     }
   | {
       borrowDecimals: number;
       collateralDecimals: number;
+      collateralInSelectedAsset?: bigint | null;
       leverage: number;
       type: "SET_LEVERAGE";
     }
@@ -118,21 +122,56 @@ export function BorrowModal({
     leverage: 100,
   });
   const { borrow: amountToBorrow, collateral: collateralAmount, leverage } = state;
+  const lastInputRef = useRef<"borrow" | "collateral" | null>(null);
+  const didInitCollateralType = useRef(false);
   const debouncedCollateral = useDebounce(collateralAmount, 200);
   const debouncedBorrow = useDebounce(amountToBorrow, 200);
+  const { amount: collateralInSelectedAsset, isStrategyCollateral } =
+    useCollateralInSelectedAsset({
+      collateralAmount: debouncedCollateral,
+      collateralAsset,
+      selectedAsset,
+      strategy: selectedStrategy,
+      vault: selectedStrategy.vault,
+    });
+  const isCollateralDebounced = debouncedCollateral === collateralAmount;
+  const collateralInSelectedAssetForBorrow = useMemo(() => {
+    if (isStrategyCollateral) {
+      return isCollateralDebounced ? collateralInSelectedAsset : null;
+    }
+
+    return convertDecimals(
+      collateralAmount,
+      collateralAsset.decimals,
+      selectedAsset.decimals
+    );
+  }, [
+    collateralAmount,
+    collateralAsset.decimals,
+    collateralInSelectedAsset,
+    isCollateralDebounced,
+    isStrategyCollateral,
+    selectedAsset.decimals,
+  ]);
 
   function onCollateralInput(valueStr: string) {
     const next = parseUnits(valueStr || "0", collateralAsset.decimals);
+    lastInputRef.current = "collateral";
+    const collateralInSelectedAssetOverride = isStrategyCollateral
+      ? null
+      : convertDecimals(next, collateralAsset.decimals, selectedAsset.decimals);
     dispatch({
       borrowDecimals: selectedAsset.decimals,
       collateral: next,
       collateralDecimals: collateralAsset.decimals,
+      collateralInSelectedAsset: collateralInSelectedAssetOverride,
       type: "SET_COLLATERAL",
     });
   }
 
   function onBorrowInput(valueStr: string) {
     const next = parseUnits(valueStr || "0", selectedAsset.decimals);
+    lastInputRef.current = "borrow";
     dispatch({
       borrow: next,
       borrowDecimals: selectedAsset.decimals,
@@ -142,9 +181,18 @@ export function BorrowModal({
   }
 
   function onLeverageChange(val: number[]) {
+    lastInputRef.current = "collateral";
+    const collateralInSelectedAssetOverride = isStrategyCollateral
+      ? collateralInSelectedAssetForBorrow
+      : convertDecimals(
+          state.collateral,
+          collateralAsset.decimals,
+          selectedAsset.decimals
+        );
     dispatch({
       borrowDecimals: selectedAsset.decimals,
       collateralDecimals: collateralAsset.decimals,
+      collateralInSelectedAsset: collateralInSelectedAssetOverride,
       leverage: val[0],
       type: "SET_LEVERAGE",
     });
@@ -156,23 +204,56 @@ export function BorrowModal({
         getAddress(val) === getAddress(selectedAsset.address)
           ? selectedAsset
           : selectedStrategy.token;
+      const nextCollateral = convertDecimals(
+        state.collateral,
+        collateralAsset.decimals,
+        nextAsset.decimals
+      );
+      const nextIsStrategyCollateral =
+        getAddress(nextAsset.address) === getAddress(selectedStrategy.token.address);
+      const collateralInSelectedAssetOverride = nextIsStrategyCollateral
+        ? null
+        : convertDecimals(nextCollateral, nextAsset.decimals, selectedAsset.decimals);
 
       setCollateralAsset(nextAsset);
+      lastInputRef.current = "collateral";
 
       dispatch({
-        borrow: state.borrow,
         borrowDecimals: selectedAsset.decimals,
+        collateral: nextCollateral,
         collateralDecimals: nextAsset.decimals,
-        type: "SET_BORROW",
+        collateralInSelectedAsset: collateralInSelectedAssetOverride,
+        type: "SET_COLLATERAL",
       });
     },
     [
+      collateralAsset.decimals,
       selectedStrategy.token,
       setCollateralAsset,
-      state.borrow,
+      state.collateral,
       selectedAsset,
     ]
   );
+
+  useEffect(() => {
+    if (!open || didInitCollateralType.current) return;
+    didInitCollateralType.current = true;
+
+    const selectedAssetAddress = getAddress(selectedAsset.address);
+    if (getAddress(collateralAsset.address) !== selectedAssetAddress) {
+      onCollateralAssetChange(selectedAsset.address);
+    }
+  }, [collateralAsset.address, onCollateralAssetChange, open, selectedAsset.address]);
+
+  useEffect(() => {
+    if (!isStrategyCollateral) return;
+    if (lastInputRef.current !== "collateral") return;
+    if (collateralInSelectedAssetForBorrow === null) return;
+
+    const borrow = computeBorrow(collateralInSelectedAssetForBorrow, leverage);
+    console.info("borrow", borrow);
+    dispatch({ borrow, type: "SET_DERIVED_BORROW" });
+  }, [collateralInSelectedAssetForBorrow, isStrategyCollateral, leverage]);
 
   const collateralText = state.collateral
     ? formatUnits(state.collateral, collateralAsset.decimals).text
@@ -211,12 +292,15 @@ export function BorrowModal({
     token: selectedStrategy.token.address,
   });
 
-  const balance =
-    getAddress(collateralAsset.address) === getAddress(selectedAsset.address)
-      ? selectedAssetBalance
-      : getAddress(collateralAsset.address) === getAddress(selectedStrategy.token.address)
-        ? strategyTokenBalance
-        : undefined;
+  const collateralAssetAddress = getAddress(collateralAsset.address);
+  const selectedAssetAddress = getAddress(selectedAsset.address);
+  const strategyAssetAddress = getAddress(selectedStrategy.token.address);
+  let balance: typeof selectedAssetBalance | typeof strategyTokenBalance | undefined;
+  if (collateralAssetAddress === selectedAssetAddress) {
+    balance = selectedAssetBalance;
+  } else if (collateralAssetAddress === strategyAssetAddress) {
+    balance = strategyTokenBalance;
+  }
   const balanceDisplay =
     balance !== undefined && balance !== null
       ? formatNumberToKMB(
@@ -559,32 +643,37 @@ function borrowReducer(state: BorrowState, action: BorrowAction): BorrowState {
     }
     case "SET_BORROW": {
       const borrow = action.borrow;
-      const collateralValueInBorrowUnits = computeCollateral(borrow, state.leverage);
-      const collateral = convertDecimals(
-        collateralValueInBorrowUnits,
-        action.borrowDecimals,
-        action.collateralDecimals
-      );
-      return { ...state, borrow, collateral };
+      return { ...state, borrow };
     }
     case "SET_COLLATERAL": {
       const collateral = action.collateral;
-      const collateralValueInBorrowUnits = convertDecimals(
-        collateral,
-        action.collateralDecimals,
-        action.borrowDecimals
-      );
+      if (action.collateralInSelectedAsset === null) {
+        return { ...state, collateral };
+      }
+      const collateralValueInBorrowUnits =
+        action.collateralInSelectedAsset ??
+        convertDecimals(collateral, action.collateralDecimals, action.borrowDecimals);
       const borrow = computeBorrow(collateralValueInBorrowUnits, state.leverage);
+      console.info("borrow", borrow);
       return { ...state, borrow, collateral };
+    }
+    case "SET_DERIVED_BORROW": {
+      return { ...state, borrow: action.borrow };
     }
     case "SET_LEVERAGE": {
       const leverage = action.leverage;
-      const collateralValueInBorrowUnits = convertDecimals(
-        state.collateral,
-        action.collateralDecimals,
-        action.borrowDecimals
-      );
+      if (action.collateralInSelectedAsset === null) {
+        return { ...state, leverage };
+      }
+      const collateralValueInBorrowUnits =
+        action.collateralInSelectedAsset ??
+        convertDecimals(
+          state.collateral,
+          action.collateralDecimals,
+          action.borrowDecimals
+        );
       const borrow = computeBorrow(collateralValueInBorrowUnits, leverage);
+      console.info("borrow", borrow);
       return { ...state, borrow, leverage };
     }
   }
@@ -592,11 +681,6 @@ function borrowReducer(state: BorrowState, action: BorrowAction): BorrowState {
 
 function computeBorrow(collateral: bigint, leverage: number) {
   return (collateral * BigInt(leverage)) / BigInt(LEVERAGE_RATE);
-}
-
-function computeCollateral(borrow: bigint, leverage: number) {
-  if (leverage <= 0) return 0n;
-  return (borrow * BigInt(LEVERAGE_RATE)) / BigInt(leverage);
 }
 
 function convertDecimals(amount: bigint, from: number, to: number) {

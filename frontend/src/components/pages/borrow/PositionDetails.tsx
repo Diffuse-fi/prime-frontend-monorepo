@@ -8,6 +8,7 @@ import {
 import { useTranslations } from "next-intl";
 import { getAddress } from "viem";
 
+import { useCollateralInSelectedAsset } from "@/lib/core/hooks/useCollateralInSelectedAsset";
 import { useSimulateStrategyTokenSaleAfterMaturity } from "@/lib/core/hooks/useSimulateStrategyTokenSaleAfterMaturity";
 import { useStrategyReverseRoute } from "@/lib/core/hooks/useStrategyReverseRoute";
 import { useStrategySyExchangeRate } from "@/lib/core/hooks/useStrategySyExchangeRate";
@@ -55,10 +56,7 @@ export function PositionDetails({
     vault,
   });
   const adapters = reverseRouteAdapters.slice(1);
-  const selectedAssetAddress = getAddress(selectedAsset.address);
-  const collateralAssetAddress = getAddress(collateralAsset.address);
   const strategyAssetAddress = getAddress(strategyAsset.address);
-  const collateralIsSelectedAsset = selectedAssetAddress === collateralAssetAddress;
   const daysUntilMaturity = calcDaysInterval({ to: endDate });
   const fullEndDate = formatDateTime(endDate).text;
   const borrowAprBps = apr + BigInt(Math.round(spreadFee));
@@ -66,20 +64,19 @@ export function PositionDetails({
     strategyAssetAddress,
   });
   const adjustedTotalBalance = getAdjustedOptionalAmount(totalBalance, exchangeRate);
-  const adjustedCollateralGiven = getAdjustedAmount(collateralGiven, exchangeRate);
   const totalBalanceSale = useSimulateStrategyTokenSaleAfterMaturity({
     adapters,
     amount: adjustedTotalBalance,
   });
-  const collateralSale = useSimulateStrategyTokenSaleAfterMaturity({
-    adapters,
-    amount: collateralIsSelectedAsset ? 0n : adjustedCollateralGiven,
-    enabled: !collateralIsSelectedAsset,
+  const { amount: collateralInSelectedAsset } = useCollateralInSelectedAsset({
+    collateralAmount: collateralGiven,
+    collateralAsset,
+    selectedAsset,
+    strategy,
+    vault,
   });
 
-  const collateralInSelectedAsset = collateralIsSelectedAsset
-    ? collateralGiven
-    : (collateralSale.amountOut ?? null);
+  console.info("collateralInSelectedAsset", collateralInSelectedAsset);
 
   const totalBalanceInSelectedAsset = totalBalanceSale.amountOut ?? null;
 
@@ -99,7 +96,7 @@ export function PositionDetails({
     maturityYield,
     daysUntilMaturity
   );
-  const showUnprofitableWarning = targetApyBps !== null && targetApyBps <= borrowAprBps;
+  const showUnprofitableWarning = targetApyBps !== null && targetApyBps <= 10n;
   const leverageDisplay = `x${(Number(leverage) / 100).toFixed(2)}`;
   const liquidationPriceDisplay = liquidationPrice
     ? formatAsset(
@@ -204,14 +201,6 @@ export function PositionDetails({
       </UncontrolledCollapsible>
     </div>
   );
-}
-
-function getAdjustedAmount(amount: bigint, exchangeRate?: bigint) {
-  if (!exchangeRate || exchangeRate <= 0n) {
-    return amount;
-  }
-
-  return (amount * 10n ** 18n) / exchangeRate;
 }
 
 function getAdjustedOptionalAmount(amount: bigint | undefined, exchangeRate?: bigint) {
