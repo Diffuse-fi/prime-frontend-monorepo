@@ -235,7 +235,12 @@ export function BorrowModal({
       collateralDecimals: collateralAsset.decimals,
       type: "SET_BORROW",
     });
-  }, [collateralInSelectedAssetForBorrow, leverage]);
+  }, [
+    collateralAsset.decimals,
+    collateralInSelectedAssetForBorrow,
+    leverage,
+    selectedAsset.decimals,
+  ]);
 
   const collateralText = state.collateral
     ? formatUnits(state.collateral, collateralAsset.decimals).text
