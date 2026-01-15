@@ -138,7 +138,9 @@ export function useBorrowPreview(
 
         const mint = await aegisMint(
           {
-            collateral_amount: selected.collateralAmount.toString(),
+            collateral_amount: (
+              selected.collateralAmount + selected.assetsToBorrow
+            ).toString(),
             collateral_asset,
             slippage: parseSlippage(selected.slippage),
           },
