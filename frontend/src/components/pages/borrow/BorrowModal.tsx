@@ -1,6 +1,6 @@
 "use client";
 
-import { AssetInfo, AssetInfoSchema } from "@diffuse/config";
+import { AssetInfo } from "@diffuse/config";
 import {
   AssetInput,
   Button,
@@ -16,7 +16,15 @@ import {
 } from "@diffuse/ui-kit";
 import { InfoIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ReactNode, useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { Controller, useForm } from "react-hook-form";
 import { getAddress, parseUnits } from "viem";
 
@@ -51,8 +59,9 @@ type ChainSwitchModalProps = {
 
 const defaultMinLeverage = 100;
 const defaultMaxLeverage = 1000;
-
+const leverageAdjustmentForPt = 10;
 const LEVERAGE_RATE = 100;
+
 type BorrowAction =
   | {
       borrow: bigint;
@@ -98,17 +107,13 @@ export function BorrowModal({
   const { refetchLimits, refetchTotalAssets } = useVaults();
   const availableLiquidity = selectedStrategy.vault.availableLiquidity;
   const title = t("title", { assetSymbol: selectedAsset.symbol });
-  const [collateralAsset, setCollateralAsset] = useLocalStorage<AssetInfo>(
-    "borrow-collateral-asset",
-    {
-      address: selectedAsset.address,
-      chainId: selectedAsset.chainId,
-      decimals: selectedAsset.decimals,
-      name: selectedAsset.name,
-      symbol: selectedAsset.symbol,
-    },
-    v => AssetInfoSchema.safeParse(v).success
-  );
+  const [collateralAsset, setCollateralAsset] = useState<AssetInfo>({
+    address: selectedAsset.address,
+    chainId: selectedAsset.chainId,
+    decimals: selectedAsset.decimals,
+    name: selectedAsset.name,
+    symbol: selectedAsset.symbol,
+  });
   const [slippage, setSlippage] = useLocalStorage("slippage-borrow-modal", "0.1", v =>
     ["0.1", "0.5", "1.0"].includes(v)
   );
@@ -116,7 +121,10 @@ export function BorrowModal({
   const [state, dispatch] = useReducer(borrowReducer, {
     borrow: 0n,
     collateral: 0n,
-    leverage: 100,
+    leverage:
+      getAddress(collateralAsset.address) === getAddress(selectedAsset.address)
+        ? defaultMinLeverage
+        : defaultMinLeverage + leverageAdjustmentForPt,
   });
   const { borrow: amountToBorrow, collateral: collateralAmount, leverage } = state;
   const lastInputRef = useRef<"borrow" | "collateral" | null>(null);
@@ -189,6 +197,17 @@ export function BorrowModal({
         getAddress(val) === getAddress(selectedAsset.address)
           ? selectedAsset
           : selectedStrategy.token;
+
+      dispatch({
+        borrowDecimals: selectedAsset.decimals,
+        collateralDecimals: nextAsset.decimals,
+        leverage:
+          getAddress(nextAsset.address) === getAddress(selectedAsset.address)
+            ? defaultMinLeverage
+            : defaultMinLeverage + leverageAdjustmentForPt,
+        type: "SET_LEVERAGE",
+      });
+
       const nextCollateral = convertDecimals(
         state.collateral,
         collateralAsset.decimals,
@@ -322,6 +341,18 @@ export function BorrowModal({
       selectedAsset.symbol,
     ]
   );
+
+  const leverageMaxWithDefault = selectedStrategy.maxLeverage || defaultMaxLeverage;
+  const leverageMinWithDefault = selectedStrategy.minLeverage || defaultMinLeverage;
+
+  const leverageMax =
+    getAddress(collateralAsset.address) === getAddress(selectedAsset.address)
+      ? leverageMaxWithDefault
+      : leverageMaxWithDefault - leverageAdjustmentForPt;
+  const leverageMin =
+    getAddress(collateralAsset.address) === getAddress(selectedAsset.address)
+      ? leverageMinWithDefault
+      : leverageMinWithDefault + leverageAdjustmentForPt;
 
   const {
     borrow,
@@ -506,15 +537,15 @@ export function BorrowModal({
             }
           >
             <Slider
-              max={selectedStrategy.maxLeverage || defaultMaxLeverage}
-              min={selectedStrategy.minLeverage || defaultMinLeverage}
+              max={leverageMax}
+              min={leverageMin}
               onValueChange={onLeverageChange}
               step={10}
               value={[leverage]}
             />
             <div className="flex justify-between font-mono text-xs">
-              <span>{t("minLeverage")}</span>
-              <span>{t("maxLeverage")}</span>
+              <span>{`${(leverageMin / LEVERAGE_RATE).toFixed(2)}x`}</span>
+              <span>{`${(leverageMax / LEVERAGE_RATE).toFixed(2)}x`}</span>
             </div>
             <div className="flex flex-col gap-2 text-left">
               <AssetInput

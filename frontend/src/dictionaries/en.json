@@ -17,8 +17,7 @@
       "enterAmount": "Enter amount",
       "exceedsLiquidity": "Exceeds available liquidity",
       "insufficientBalance": "Insufficient balance",
-      "maxLeverage": "Max 10x",
-      "minLeverage": "1.00x",
+
       "positionDetails": "Position details",
       "requestPending": "Request pending...",
       "selectCollateralAsset": "Select collateral asset",
