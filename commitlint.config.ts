@@ -27,6 +27,7 @@ const Configuration = {
     "body-max-line-length": [0],
   },
   helpUrl: "https://github.com/conventional-changelog/commitlint/#what-is-commitlint",
+  ignores: [commit => commit.includes("WIP") || commit.includes("Merge branch")],
 } satisfies UserConfig;
 
 export default Configuration;
