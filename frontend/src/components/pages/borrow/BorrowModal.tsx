@@ -437,12 +437,14 @@ export function BorrowModal({
 
   const stepText = collateralAmount === 0n || !allAllowed ? "1/2" : "2/2";
 
+  // Temporary: Disable PT token as collateral for Aegis vaults
   const selectOptions: SelectOption[] = [
     {
       label: selectedAsset.symbol,
       value: selectedAsset.address,
     },
     {
+      disabled: isAegis,
       label: selectedStrategy.token.symbol,
       value: selectedStrategy.token.address,
     },
