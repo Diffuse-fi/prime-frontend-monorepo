@@ -14,7 +14,7 @@ import {
   Slider,
   Tooltip,
 } from "@diffuse/ui-kit";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   ReactNode,
@@ -474,6 +474,7 @@ export function BorrowModal({
       value: selectedAsset.address,
     },
     {
+      disabled: isAegis,
       label: selectedStrategy.token.symbol,
       value: selectedStrategy.token.address,
     },
@@ -523,6 +524,12 @@ export function BorrowModal({
                 symbol: collateralAsset.symbol,
               })}
             </div>
+            {isAegis && (
+              <p className="text-warn flex items-start gap-1 pl-2 text-left text-xs">
+                <TriangleAlert aria-hidden className="text-warn h-3 w-3 shrink-0" />
+                {t("aegisCollateralWarning")}
+              </p>
+            )}
           </div>
           <Card
             cardBodyClassName="gap-2"
