@@ -6,6 +6,7 @@ import {
   Card,
   cn,
   Heading,
+  InfoIcon,
   SimpleTable,
   UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
@@ -27,6 +28,7 @@ import { PositionDetails } from "./PositionDetails";
 export interface BorrowerPositionCardProps {
   className?: string;
   disabled?: boolean;
+  isExitPending?: boolean;
   onManagePositionBtnClick?: () => void;
   position: BorrowerPosition;
   selectedAsset: AssetInfo;
@@ -36,6 +38,7 @@ export interface BorrowerPositionCardProps {
 export function BorrowerPositionCard({
   className,
   disabled,
+  isExitPending,
   onManagePositionBtnClick,
   position,
   selectedAsset,
@@ -165,9 +168,23 @@ export function BorrowerPositionCard({
           vault={position.vault}
         />
       </UncontrolledCollapsible>
+      {isExitPending && (
+        <p className="align-center text-err mt-4 flex font-mono text-sm">
+          <InfoIcon
+            aria-hidden
+            className="text-err mr-2 inline-block"
+            size={16}
+            text="The strategy exit process may take up to 24 hours (2 hours on average)."
+          />
+          Exit is pending for this position
+          <Button onClick={onManagePositionBtnClick} variant="ghost">
+            Check status
+          </Button>
+        </p>
+      )}
       <Button
         className="mx-auto mt-6"
-        disabled={disabled}
+        disabled={disabled || isExitPending}
         onClick={onManagePositionBtnClick}
         size="lg"
       >

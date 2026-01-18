@@ -4,10 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { type Address, getAddress } from "viem";
 
+import { aegisMint } from "@/lib/api/aegisMint";
 import { previewBorrow } from "@/lib/api/previewBorrow";
 import { getPtAmount } from "@/lib/api/pt";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 
+import { isAegisStrategy } from "../../aegis";
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { useClients } from "../../wagmi/useClients";
@@ -129,12 +131,31 @@ export function useBorrowPreview(
         };
       }
 
+      let dataForPreview = "0x";
+
+      if (isAegisStrategy(strategy) && selected.collateralType !== 1) {
+        const collateral_asset = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+
+        const mint = await aegisMint(
+          {
+            collateral_amount: (
+              selected.collateralAmount + selected.assetsToBorrow
+            ).toString(),
+            collateral_asset,
+            slippage: parseSlippage(selected.slippage),
+          },
+          { signal }
+        );
+
+        dataForPreview = mint.encodedData;
+      }
+
       const sim = await previewBorrow(
         {
           assets_to_borrow: selected.assetsToBorrow.toString(),
           collateral_amount: selected.collateralAmount.toString(),
           collateral_type: selected.collateralType.toString(),
-          data: "0x",
+          data: dataForPreview,
           strategy_id: selected.strategyId.toString(),
           vault_address: addr,
         },
@@ -232,4 +253,11 @@ function lastBigInt(xs: string[], err: string) {
   const v = xs.at(-1);
   if (!v) throw new Error(err);
   return BigInt(v);
+}
+
+function parseSlippage(slippage: string): number {
+  const n = Number(slippage);
+  if (!Number.isFinite(n) || n < 0) throw new Error("Invalid slippage");
+
+  return Math.max(0, n * 100);
 }
