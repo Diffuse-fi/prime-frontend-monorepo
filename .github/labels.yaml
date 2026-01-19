@@ -85,3 +85,11 @@
 - name: config
   description: "Changes related to configuration files"
   color: "ffab70"
+
+- name: api
+  description: "Changes related to the API"
+  color: "0a66c2"
+
+- name: documentation
+  description: "Changes related to documentation"
+  color: "007d9c"

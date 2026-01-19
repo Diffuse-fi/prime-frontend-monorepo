@@ -19,6 +19,7 @@ import { getSlippageBpsFromKey } from "@/lib/formulas/slippage";
 
 import { isUserRejectedError } from "../core/utils/errors";
 import { borrowLogger, loggerMut } from "../core/utils/loggers";
+import { makeIdempotencyKey } from "../misc/idempotency";
 import { opt, qk } from "../query/helpers";
 import { QV } from "../query/versions";
 import { useClients } from "../wagmi/useClients";
@@ -177,7 +178,15 @@ export function useAegisExit(
       const result: AegisExitResult = {};
       if (!enabled || !selected || !addr || !wallet || !adapter) return result;
 
-      const idemKey = makeIdemKey(chainId!, addr, getAddress(wallet), selected, "lock");
+      const idemKey = makeIdempotencyKey(
+        chainId!,
+        addr,
+        selected.positionId,
+        selected.slippage,
+        selected.deadline,
+        wallet,
+        "lock"
+      );
       const active = isActive(txState.lock?.phase) || pendingKey === idemKey;
       if (active) return result;
 
@@ -248,7 +257,16 @@ export function useAegisExit(
       const route = routeInfoQuery.data;
       if (!route) throw new Error("Route info missing");
 
-      const idemKey = makeIdemKey(chainId!, addr, getAddress(wallet), selected, "redeem");
+      const idemKey = makeIdempotencyKey(
+        chainId!,
+        addr,
+        selected.positionId,
+        selected.slippage,
+        selected.deadline,
+        wallet,
+        "redeem"
+      );
+
       const active = isActive(txState.redeem?.phase) || pendingKey === idemKey;
       if (active) return result;
 
@@ -327,11 +345,13 @@ export function useAegisExit(
       const result: AegisExitResult = {};
       if (!enabled || !selected || !addr || !wallet || !adapter) return result;
 
-      const idemKey = makeIdemKey(
+      const idemKey = makeIdempotencyKey(
         chainId!,
         addr,
-        getAddress(wallet),
-        selected,
+        selected.positionId,
+        selected.slippage,
+        selected.deadline,
+        wallet,
         "finalize"
       );
       const active = isActive(txState.finalize?.phase) || pendingKey === idemKey;
@@ -430,24 +450,4 @@ export function useAegisExit(
 
 function isActive(phase: AegisExitTxInfo["phase"] | undefined) {
   return phase === "awaiting-signature" || phase === "pending" || phase === "replaced";
-}
-
-function makeIdemKey(
-  chainId: number,
-  vault: Address,
-  wallet: Address,
-  v: AegisExitSelected,
-  action: string
-) {
-  return [
-    action,
-    chainId,
-    vault.toLowerCase(),
-    wallet.toLowerCase(),
-    v.positionId.toString(),
-    v.strategyId.toString(),
-    v.collateralAsset.toLowerCase(),
-    v.slippage.toString(),
-    v.deadline.toString(),
-  ].join(":");
 }

@@ -8,6 +8,7 @@ import { type Address, getAddress, type Hash } from "viem";
 
 import { trackEvent } from "@/lib/analytics";
 import { getSlippageBpsFromKey } from "@/lib/formulas/slippage";
+import { makeIdempotencyKey } from "@/lib/misc/idempotency";
 
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
@@ -98,7 +99,14 @@ export function useUnborrow(
       const result: UnborrowResult = {};
       if (!enabled || !selected || !addr || !wallet || !vaultContract) return result;
 
-      const idemKey = makeIdemKey(chainId!, addr, getAddress(wallet), selected);
+      const idemKey = makeIdempotencyKey(
+        chainId!,
+        addr,
+        selected.positionId,
+        selected.slippage,
+        selected.deadline,
+        wallet
+      );
       const currentPhase = (txState[addr]?.phase ?? "idle") as TxInfo["phase"];
       const active =
         currentPhase === "awaiting-signature" ||
@@ -237,20 +245,4 @@ export function useUnborrow(
     txState,
     unborrow,
   };
-}
-
-function makeIdemKey(
-  chainId: number,
-  vault: Address,
-  wallet: Address,
-  v: SelectedUnborrow
-) {
-  return [
-    chainId,
-    vault.toLowerCase(),
-    wallet.toLowerCase(),
-    v.positionId.toString(),
-    v.slippage.toString(),
-    v.deadline.toString(),
-  ].join(":");
 }

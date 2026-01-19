@@ -7,9 +7,9 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 
 import { env } from "@/env";
+import { transportsWithInjectedRpcOverrides } from "@/lib/chains/transportsWithInjectedRpcOverrides";
 
 import { getAvailableChains } from "../chains";
-import { transportsWithInjectedRpcOverrides } from "../chains/rpcOverrides";
 
 const chains = getAvailableChains();
 const transports = transportsWithInjectedRpcOverrides(chains);
