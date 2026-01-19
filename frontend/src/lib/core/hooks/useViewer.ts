@@ -11,13 +11,13 @@ import {
   populateAssetListWithMeta,
   populateAssetWithMeta,
 } from "@/lib/assets/assetsMeta";
+import { getContractAddressOverride } from "@/lib/wagmi/getContractAddressOverride";
 
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { VaultRiskLevel } from "../types";
 
 type UseViewerParams = {
-  addressOverride?: Address;
   chainId: number;
 };
 
@@ -31,7 +31,8 @@ export const viewerQK = {
 
 const limit = pLimit(6);
 
-export function useViewer({ addressOverride, chainId }: UseViewerParams) {
+export function useViewer({ chainId }: UseViewerParams) {
+  const addressOverride = getContractAddressOverride(chainId, "Viewer");
   const normalizedAddress = addressOverride ? getAddress(addressOverride) : null;
   const publicClient = usePublicClient({ chainId });
 

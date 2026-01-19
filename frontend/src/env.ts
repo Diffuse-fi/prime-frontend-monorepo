@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { RpcOverrideModeSchema, RpcOverridesSchema } from "./lib/chains/rpcOverrides";
 import { LogLevelSchema, NamespacesCsvSchema } from "./lib/logger/schemas";
+import { AddressesOverridesSchema } from "./lib/wagmi/addresses";
 
 const zBool = z.preprocess(v => {
   if (typeof v === "boolean") return v;
@@ -28,24 +29,26 @@ const GTM_OR_GA_ID = /^(GTM-[A-Z0-9]+|G-[A-Z0-9]+)$/i;
 
 export const env = createEnv({
   client: {
+    NEXT_PUBLIC_ADDRESSES_OVERRIDES: AddressesOverridesSchema.optional(),
     NEXT_PUBLIC_API_BASE_URL: z.string().url(),
+
     NEXT_PUBLIC_APP_DESCRIPTION: z.string().min(1),
 
     NEXT_PUBLIC_APP_NAME: z.string().min(1),
 
     NEXT_PUBLIC_DEBUG: zBool.optional(),
-
     NEXT_PUBLIC_ENABLE_INDEXER: zBool.optional(),
+
     NEXT_PUBLIC_ENABLE_SENTRY: zBool.optional(),
-
     NEXT_PUBLIC_ENABLE_TRACKING: zBool.optional(),
-    NEXT_PUBLIC_INITIAL_CHAIN_ID: zInt,
 
+    NEXT_PUBLIC_INITIAL_CHAIN_ID: zInt,
     NEXT_PUBLIC_LOG_LEVEL: LogLevelSchema.optional(),
     NEXT_PUBLIC_LOG_NAMESPACES: NamespacesCsvSchema.optional(),
-    NEXT_PUBLIC_OG_VERSION: z.string().min(1).optional(),
 
+    NEXT_PUBLIC_OG_VERSION: z.string().min(1).optional(),
     NEXT_PUBLIC_RPC_OVERRIDE_MODE: RpcOverrideModeSchema.optional(),
+
     NEXT_PUBLIC_RPC_OVERRIDES: RpcOverridesSchema.optional(),
 
     NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
@@ -55,6 +58,7 @@ export const env = createEnv({
   // Due to how Next.js loads environment variables, we must reflect here client variables
   // to be available at build time.
   experimental__runtimeEnv: {
+    NEXT_PUBLIC_ADDRESSES_OVERRIDES: process.env.NEXT_PUBLIC_ADDRESSES_OVERRIDES,
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
     NEXT_PUBLIC_APP_DESCRIPTION: process.env.NEXT_PUBLIC_APP_DESCRIPTION,
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,

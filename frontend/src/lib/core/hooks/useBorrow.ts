@@ -10,6 +10,7 @@ import { trackEvent } from "@/lib/analytics";
 import { getPtAmount } from "@/lib/api/pt";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 import { getSlippageBpsFromKey } from "@/lib/formulas/slippage";
+import { makeIdempotencyKey } from "@/lib/misc/idempotency";
 
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
@@ -100,7 +101,18 @@ export function useBorrow(
 
       if (!enabled || !selected || !addr || !wallet) return result;
 
-      const idemKey = makeIdemKey(chainId!, addr, getAddress(wallet), selected);
+      const idemKey = makeIdempotencyKey(
+        chainId!,
+        addr,
+        getAddress(wallet),
+        selected.address,
+        selected.strategyId,
+        selected.collateralType,
+        selected.collateralAmount,
+        selected.assetsToBorrow,
+        selected.slippage,
+        selected.deadline
+      );
       const currentPhase = (txState[addr]?.phase ?? "idle") as TxInfo["phase"];
       const active =
         currentPhase === "awaiting-signature" ||
@@ -374,25 +386,6 @@ function calcFactorWad(
   const protocolMaxFeeWad = (BigInt(protocolMaxFee) * WAD) / 10_000n;
 
   return WAD + borrowingFactorWad + protocolMaxFeeWad;
-}
-
-function makeIdemKey(
-  chainId: number,
-  vault: Address,
-  wallet: Address,
-  v: SelectedBorrow
-) {
-  return [
-    chainId,
-    vault.toLowerCase(),
-    wallet.toLowerCase(),
-    v.strategyId.toString(),
-    v.collateralType.toString(),
-    v.collateralAmount.toString(),
-    v.assetsToBorrow.toString(),
-    v.slippage.toString(),
-    v.deadline.toString(),
-  ].join(":");
 }
 
 function toBpsBigint(v: bigint | number): bigint {

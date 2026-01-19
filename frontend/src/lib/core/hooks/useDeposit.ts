@@ -13,6 +13,7 @@ import { useMemo, useState } from "react";
 import { type Address, getAddress, type Hash } from "viem";
 
 import { trackEvent } from "@/lib/analytics";
+import { makeIdempotencyKey } from "@/lib/misc/idempotency";
 
 import { formatUnits } from "../../formatters/asset";
 import { opt, qk } from "../../query/helpers";
@@ -45,7 +46,7 @@ export type UseLendParams = {
   txConcurrency?: number;
 };
 
-const ROOT = "deposit" as const;
+const ROOT = "deposit";
 const version = QV.deposit;
 const qKeys = {
   deposit: (chainId: number, addresses: null | string) =>
@@ -130,7 +131,7 @@ export function useDeposit(
             const address = getAddress(v.address);
             const amount = v.amount;
             const receiver = getAddress(wallet);
-            const idemKey = makeIdemKey(chainId, address, amount, receiver);
+            const idemKey = makeIdempotencyKey(chainId, address, amount, receiver);
 
             const currentPhase = (txState[address]?.phase ?? "idle") as TxInfo["phase"];
             const isActive =
@@ -299,8 +300,4 @@ export function useDeposit(
     someError,
     txState,
   };
-}
-
-function makeIdemKey(chainId: number, vault: Address, amount: bigint, receiver: Address) {
-  return `${chainId}:${vault.toLowerCase()}:${amount.toString()}:${receiver.toLowerCase()}`;
 }

@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { type Address, getAddress, type Hash } from "viem";
 
 import { trackEvent } from "@/lib/analytics";
+import { makeIdempotencyKey } from "@/lib/misc/idempotency";
 
 import { formatUnits } from "../../formatters/asset";
 import { opt, qk } from "../../query/helpers";
@@ -100,7 +101,7 @@ export function useWithdraw(
       const receiver = getAddress(params.receiverOverride ?? wallet);
       const assets = params.amount;
 
-      const idemKey = makeIdemKey(chainId, address, assets, owner, receiver);
+      const idemKey = makeIdempotencyKey(chainId, address, assets, owner, receiver);
       const currentPhase = (txState[address]?.phase ?? "idle") as TxInfo["phase"];
       const isActive =
         currentPhase === "awaiting-signature" ||
@@ -244,14 +245,4 @@ export function useWithdraw(
     txState,
     withdraw,
   };
-}
-
-function makeIdemKey(
-  chainId: number,
-  vault: Address,
-  amount: bigint,
-  owner: Address,
-  receiver: Address
-) {
-  return `${chainId}:${vault.toLowerCase()}:${amount.toString()}:${owner.toLowerCase()}:${receiver.toLowerCase()}`;
 }

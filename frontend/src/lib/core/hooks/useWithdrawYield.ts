@@ -5,6 +5,8 @@ import { produce } from "immer";
 import { useMemo, useState } from "react";
 import { type Address, getAddress, type Hash } from "viem";
 
+import { makeIdempotencyKey } from "@/lib/misc/idempotency";
+
 import { opt, qk } from "../../query/helpers";
 import { QV } from "../../query/versions";
 import { useClients } from "../../wagmi/useClients";
@@ -87,7 +89,12 @@ export function useWithdrawYield(
       const receiver = getAddress(params.receiverOverride ?? wallet);
       const strategyIds = params.strategyIds ?? [];
 
-      const idemKey = makeIdemKey(chainId, address, owner, receiver, strategyIds);
+      const idemKey = makeIdempotencyKey(
+        chainId,
+        address,
+        strategyIds.join(","),
+        receiver
+      );
       const currentPhase = (txState[address]?.phase ?? "idle") as TxInfo["phase"];
       const isActive =
         currentPhase === "awaiting-signature" ||
@@ -195,16 +202,4 @@ export function useWithdrawYield(
     txState,
     withdrawYield,
   };
-}
-
-function makeIdemKey(
-  chainId: number,
-  vault: Address,
-  owner: Address,
-  receiver: Address,
-  strategyIds: readonly bigint[]
-) {
-  return `${chainId}:${vault.toLowerCase()}:${owner.toLowerCase()}:${receiver.toLowerCase()}:${strategyIds
-    .map(String)
-    .join(",")}`;
 }
