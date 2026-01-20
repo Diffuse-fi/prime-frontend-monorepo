@@ -6,6 +6,7 @@ import {
   Button,
   Card,
   Checkbox,
+  cn,
   Dialog,
   Heading,
   RemoteText,
@@ -45,7 +46,7 @@ import { isAegisStrategy } from "../../../lib/aegis";
 import { useERC20TokenBalance } from "../../../lib/wagmi/useErc20TokenBalance";
 import { PositionDetails } from "./PositionDetails";
 import { SlippageInput } from "./SlippageInput";
-import { SelectedStartegy } from "./types";
+import { SelectedStrategy } from "./types";
 
 type ChainSwitchModalProps = {
   description?: React.ReactNode;
@@ -53,7 +54,7 @@ type ChainSwitchModalProps = {
   onOpenChange: (open: boolean) => void;
   open: boolean;
   selectedAsset: AssetInfo;
-  selectedStrategy: SelectedStartegy;
+  selectedStrategy: SelectedStrategy;
   title?: ReactNode;
 };
 
@@ -382,6 +383,7 @@ export function BorrowModal({
   const currentlyAllowed = allowances?.find(
     a => a.vault.address === selectedStrategy.vault.address
   )?.current;
+  const exceedsAvailableLiquidity = totalAmountToBorrow > availableLiquidity;
 
   const actionButtonMeta = (() => {
     if (
@@ -404,7 +406,7 @@ export function BorrowModal({
       };
     }
 
-    if (totalAmountToBorrow > availableLiquidity) {
+    if (exceedsAvailableLiquidity) {
       return {
         disabled: true,
         onClick: undefined,
@@ -557,6 +559,7 @@ export function BorrowModal({
             <div className="flex flex-col gap-2 text-left">
               <AssetInput
                 assetSymbol={selectedAsset?.symbol}
+                error={exceedsAvailableLiquidity}
                 onValueChange={evt => onBorrowInput(evt.value)}
                 placeholder="0.0"
                 renderAssetImage={() => (
@@ -569,7 +572,12 @@ export function BorrowModal({
                 )}
                 value={borrowText}
               />
-              <p className="text-muted font-mono text-xs">
+              <p
+                className={cn(
+                  "font-mono text-xs",
+                  exceedsAvailableLiquidity ? "text-err" : "text-muted"
+                )}
+              >
                 {t("availableForBorrow", {
                   amount: availableLiquidityFormatted.text,
                   symbol: selectedAsset.symbol,

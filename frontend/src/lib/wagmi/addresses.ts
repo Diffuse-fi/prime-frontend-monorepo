@@ -6,11 +6,11 @@ const Json = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess(v => {
     if (typeof v !== "string") return v;
     const s = v.trim();
-    if (s === "") return; // important
+    if (s === "") return;
     try {
       return JSON.parse(s);
     } catch {
-      return; // important
+      return;
     }
   }, schema);
 

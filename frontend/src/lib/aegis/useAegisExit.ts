@@ -24,7 +24,9 @@ import { opt, qk } from "../query/helpers";
 import { QV } from "../query/versions";
 import { useClients } from "../wagmi/useClients";
 import { makeSdkAegisExitAdapter } from "./adapter";
+import { requestAegisRedeemEncodedData } from "./api";
 import { isDataEmptyError, toErr } from "./errors";
+import { decodeAegisRouteInfo } from "./routeInfo";
 
 export type UseAegisExitParams = {
   onComplete?: (result: AegisExitResult) => void;

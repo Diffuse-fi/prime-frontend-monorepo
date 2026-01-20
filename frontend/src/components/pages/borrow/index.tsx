@@ -14,13 +14,13 @@ import { useLocalization } from "@/lib/localization/useLocalization";
 import { useVaults } from "../../../lib/core/hooks/useVaults";
 import { BorrowCard } from "./BorrowCard";
 import { BorrowModal } from "./BorrowModal";
-import { SelectedStartegy } from "./types";
+import { SelectedStrategy } from "./types";
 
 export default function Borrow() {
   const { chain } = useReadonlyChain();
   const { isLoading, refetch, vaults, vaultsAssetsList } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
-  const [selectedStrategy, setSelectedStrategy] = useState<null | SelectedStartegy>(null);
+  const [selectedStrategy, setSelectedStrategy] = useState<null | SelectedStrategy>(null);
   const { dir } = useLocalization();
   const { isConnected } = useAccount();
   const { refetchPending } = useBorrowerPositions(vaults);

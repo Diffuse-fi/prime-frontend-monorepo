@@ -1,5 +1,5 @@
 import { Strategy, VaultFullInfo } from "@/lib/core/types";
 
-export type SelectedStartegy = Strategy & {
+export type SelectedStrategy = Strategy & {
   vault: VaultFullInfo;
 };
