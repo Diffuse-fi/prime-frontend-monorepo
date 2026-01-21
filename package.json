@@ -26,7 +26,7 @@
     "fix:syncpack": "syncpack fix-mismatches && syncpack set-semver-ranges",
     "format": "prettier --write .",
     "knip": "knip --production",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint --cache . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "setup": "npx --no-install allow-scripts && simple-git-hooks && npm run build",
     "syncpack:list": "syncpack list",

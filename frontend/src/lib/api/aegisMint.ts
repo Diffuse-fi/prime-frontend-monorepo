@@ -1,3 +1,5 @@
+import { Hex } from "viem";
+
 import { getApiUrl } from ".";
 
 export type AegisMintResponse = {
@@ -5,7 +7,7 @@ export type AegisMintResponse = {
     order: Record<string, unknown>;
     signature: string;
   };
-  encodedData: string;
+  encodedData: Hex;
   signerSignature: string;
   status: "success";
 };
