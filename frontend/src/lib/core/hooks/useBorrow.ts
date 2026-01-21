@@ -4,9 +4,11 @@ import { applySlippageBpsArray } from "@diffuse/sdk-js";
 import { useMutation } from "@tanstack/react-query";
 import { produce } from "immer";
 import { useMemo, useState } from "react";
-import { type Address, getAddress, type Hash } from "viem";
+import { type Address, getAddress, type Hash, Hex } from "viem";
 
+import { isAegisStrategy } from "@/lib/aegis";
 import { trackEvent } from "@/lib/analytics";
+import { aegisMint } from "@/lib/api/aegisMint";
 import { getPtAmount } from "@/lib/api/pt";
 import { calcBorrowingFactor } from "@/lib/formulas/borrow";
 import { getSlippageBpsFromKey } from "@/lib/formulas/slippage";
@@ -155,6 +157,8 @@ export function useBorrow(
           return result;
         }
 
+        const isAegis = isAegisStrategy(strategy);
+
         const secondsLeft = BigInt(
           Math.max(0, Number(strategy.endDate) - Math.floor(Date.now() / 1000))
         );
@@ -204,12 +208,28 @@ export function useBorrow(
 
           denomBase = selected.assetsToBorrow + collateralValueBase;
         } else {
+          let data: Hex = "0x";
+
+          if (isAegis) {
+            const collateral_asset = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+
+            const mint = await aegisMint({
+              collateral_amount: (
+                selected.collateralAmount + selected.assetsToBorrow
+              ).toString(),
+              collateral_asset,
+              slippage: parseSlippage(selected.slippage),
+            });
+
+            data = mint.encodedData;
+          }
           predictedRouteAmounts = await vault.contract.previewBorrow([
             wallet,
             selected.strategyId,
             selected.collateralType,
             selected.collateralAmount,
             selected.assetsToBorrow,
+            data,
           ]);
 
           const lastAmount = predictedRouteAmounts.at(-1);
@@ -386,6 +406,13 @@ function calcFactorWad(
   const protocolMaxFeeWad = (BigInt(protocolMaxFee) * WAD) / 10_000n;
 
   return WAD + borrowingFactorWad + protocolMaxFeeWad;
+}
+
+function parseSlippage(slippage: string): number {
+  const n = Number(slippage);
+  if (!Number.isFinite(n) || n < 0) throw new Error("Invalid slippage");
+
+  return Math.max(0, n * 100);
 }
 
 function toBpsBigint(v: bigint | number): bigint {
