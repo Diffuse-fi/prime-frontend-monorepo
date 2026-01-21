@@ -1,5 +1,7 @@
 # Manifest for Gnosis Safe app
 public/manifest.json
+# Build info
+public/build.json
 
 # E2E tests outputs
 tests/e2e/output

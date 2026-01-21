@@ -6,8 +6,9 @@
   "license": "PolyForm-Noncommercial-1.0.0",
   "type": "module",
   "scripts": {
-    "build": "npm run check:env && npm run build:safe-manifest && next build",
+    "build": "npm run check:env && npm run build:safe-manifest && npm run build:generate-build-info && next build",
     "build:deps": "npm run check -w ../config && npm run build -w ../config && concurrently \"npm run build -w ../ui-kit\" \"npm run build -w ../sdk-js\" --success last && npm run build -w ../indexer",
+    "build:generate-build-info": "tsx ./scripts/generateBuildInfo.ts",
     "build:safe-manifest": "tsx ./scripts/buildSafeManifest.ts",
     "check:env": "tsx ./scripts/validateEnv.ts",
     "dev": "npm run build:safe-manifest && next dev --turbopack",
