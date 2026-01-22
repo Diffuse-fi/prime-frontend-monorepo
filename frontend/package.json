@@ -36,7 +36,7 @@
     "dayjs": "1.11.13",
     "immer": "10.1.1",
     "json-with-bigint": "3.4.4",
-    "lodash": "4.17.21",
+    "lodash": "4.17.23",
     "lucide-react": "0.542.0",
     "matcher": "6.0.0",
     "next": "15.5.9",
