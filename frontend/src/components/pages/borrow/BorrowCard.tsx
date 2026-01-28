@@ -108,7 +108,7 @@ export function BorrowCard({
             </div>,
           ],
           [
-            <div className="flex items-center leading-none" key="1">
+            <div className="flex items-center pt-1 leading-none" key="1">
               <span>{t("borrowRate")}</span>
               <InfoIcon
                 ariaLabel={t("borrowRateAriaLabel")}

@@ -268,6 +268,22 @@ export class Vault extends ContractBase {
     }
   }
 
+  public async hasUnfinishedSwap(positionId: bigint, { signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(
+        this.getContract().read.hasUnfinishedSwap([positionId]),
+        signal
+      );
+    } catch (error) {
+      throw normalizeError(error, {
+        args: [positionId],
+        chainId: this.chainId,
+        contract: contractName,
+        op: "hasUnfinishedSwap",
+      });
+    }
+  }
+
   async previewBorrow(
     [
       forUser,
@@ -373,6 +389,13 @@ export class Vault extends ContractBase {
         { length: Math.max(1, route.length) },
         () => 0n
       );
+
+      console.log("Unborrow route:", [
+        positionId,
+        minAssetsOutForPreview,
+        deadline,
+        "0x",
+      ]);
 
       const sim = await abortable(
         this.init.client.public.simulateContract({

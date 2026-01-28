@@ -1,4 +1,4 @@
-import { Button, cn, RadioGroup, RadioGroupItem, Skeleton } from "@diffuse/ui-kit";
+import { ButtonLike, cn, RadioGroup, RadioGroupItem, Skeleton } from "@diffuse/ui-kit";
 import { RadioGroupProps } from "@diffuse/ui-kit/RadioGroup";
 
 export type PositionTypeOption = {
@@ -49,7 +49,7 @@ export function PositionTypeSwitch({
                 key={option.value}
                 value={option.value}
               >
-                <Button
+                <ButtonLike
                   className={cn(
                     "h-10 rounded-full px-6 text-sm font-medium",
                     active
@@ -60,7 +60,7 @@ export function PositionTypeSwitch({
                   variant="ghost"
                 >
                   {option.label}
-                </Button>
+                </ButtonLike>
               </RadioGroupItem>
             );
           })}

@@ -44,7 +44,7 @@ export type AegisExitTxState = Partial<Record<AegisExitTxKey, AegisExitTxInfo>>;
 
 export type AegisRedeemRequest = {
   collateralAsset: Address;
-  slippageBps: number;
+  slippageBps: bigint;
   yusdAmount: bigint;
 };
 
