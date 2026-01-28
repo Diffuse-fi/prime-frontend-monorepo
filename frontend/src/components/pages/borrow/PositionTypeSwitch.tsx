@@ -56,6 +56,7 @@ export function PositionTypeSwitch({
                       ? "bg-primary/10 text-primary border border-transparent"
                       : "text-text-dimmed border-muted/40 hover:bg-muted/10 border bg-transparent"
                   )}
+                  component="div"
                   onClick={() => onSelect?.(option)}
                   variant="ghost"
                 >
