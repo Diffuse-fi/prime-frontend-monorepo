@@ -32,21 +32,20 @@ export const viewerQK = {
 const limit = pLimit(6);
 
 export function useViewer({ chainId }: UseViewerParams) {
-  const addressOverride = getContractAddressOverride(chainId, "Viewer");
-  const normalizedAddress = addressOverride ? getAddress(addressOverride) : null;
+  const addressOverride = getContractAddressOverride(chainId, "Viewer") ?? null;
   const publicClient = usePublicClient({ chainId });
 
   const viewer = useMemo(() => {
     if (!publicClient) return null;
     return new Viewer({
-      address: normalizedAddress ?? undefined,
+      address: addressOverride ?? undefined,
       chainId,
       client: { public: publicClient },
     });
-  }, [publicClient, chainId, normalizedAddress]);
+  }, [publicClient, chainId, addressOverride]);
 
   const query = useQuery({
-    ...viewerAllVaultsQuery(viewer as Viewer, normalizedAddress, chainId),
+    ...viewerAllVaultsQuery(viewer as Viewer, addressOverride, chainId),
     enabled: !!viewer && !!chainId,
   });
 

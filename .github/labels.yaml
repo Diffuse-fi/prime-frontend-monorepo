@@ -93,3 +93,7 @@
 - name: documentation
   description: "Changes related to documentation"
   color: "007d9c"
+
+- name: technical debt
+  description: "Changes that address technical debt"
+  color: "8b4513"

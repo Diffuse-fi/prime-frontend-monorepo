@@ -6,7 +6,7 @@ import type {
   AegisExitTxKey,
   AegisExitTxState,
 } from "./types";
-import type { Address, Hash, Hex } from "viem";
+import type { Address, Hash } from "viem";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { produce } from "immer";
@@ -17,16 +17,15 @@ import { env } from "@/env";
 import { trackEvent } from "@/lib/analytics";
 import { getSlippageBpsFromKey } from "@/lib/formulas/slippage";
 
+import { VaultFullInfo } from "../core/types";
 import { isUserRejectedError } from "../core/utils/errors";
 import { borrowLogger, loggerMut } from "../core/utils/loggers";
 import { makeIdempotencyKey } from "../misc/idempotency";
 import { opt, qk } from "../query/helpers";
 import { QV } from "../query/versions";
 import { useClients } from "../wagmi/useClients";
-import { makeSdkAegisExitAdapter } from "./adapter";
 import { requestAegisRedeemEncodedData } from "./api";
 import { isDataEmptyError, toErr } from "./errors";
-import { decodeAegisRouteInfo } from "./routeInfo";
 
 export type UseAegisExitParams = {
   onComplete?: (result: AegisExitResult) => void;
@@ -34,7 +33,7 @@ export type UseAegisExitParams = {
   onSuccess?: (vaultAddress: Address, hash: Hash) => void;
 };
 
-const ROOT = "aegisExit" as const;
+const ROOT = "aegisExit";
 const version = QV.borrow;
 const qKeys = {
   redeem: (
@@ -93,6 +92,7 @@ const qKeys = {
 
 export function useAegisExit(
   selected: AegisExitSelected | null,
+  vault: VaultFullInfo,
   { onComplete, onError, onSuccess }: UseAegisExitParams
 ) {
   const { address: wallet, chainId, publicClient, walletClient } = useClients();
@@ -101,6 +101,7 @@ export function useAegisExit(
 
   const enabled =
     !!selected &&
+    !!vault &&
     selected.isAegisStrategy &&
     !!wallet &&
     !!walletClient &&
@@ -111,16 +112,6 @@ export function useAegisExit(
     () => (selected ? getAddress(selected.address) : undefined),
     [selected]
   );
-
-  const adapter = useMemo(() => {
-    if (!enabled || !selected || !publicClient || !walletClient) return null;
-    return makeSdkAegisExitAdapter({
-      chainId: selected.chainId,
-      publicClient,
-      vaultAddress: selected.address,
-      walletClient,
-    });
-  }, [enabled, selected, publicClient, walletClient]);
 
   const setPhase = (key: AegisExitTxKey, info: Partial<AegisExitTxInfo>) =>
     setTxState(
@@ -133,21 +124,24 @@ export function useAegisExit(
     );
 
   const stageQuery = useQuery({
-    enabled: !!enabled && !!adapter && !!selected && !!addr,
-    queryFn: async (): Promise<AegisExitStageInfo> => {
-      if (!adapter || !selected) return { message: "Not ready", stage: -1 };
+    enabled: !!enabled && !!selected && !!addr && !!vault,
+    queryFn: async ({ signal }): Promise<AegisExitStageInfo> => {
+      if (!selected || !vault) return { message: "Not ready", stage: -1 };
 
-      const hasSwap = await adapter.hasUnfinishedSwap(selected.positionId);
+      const hasSwap = await vault.contract.hasUnfinishedSwap(selected.positionId, {
+        signal,
+      });
       if (!hasSwap) return { message: "Exit not started", stage: 0 };
 
       try {
-        const sim = await adapter.simulateUnborrowEmptyData({
-          deadline: selected.deadline,
-          positionId: selected.positionId,
-          strategyId: selected.strategyId,
-        });
+        const sim = await vault.contract.unborrow([
+          selected.positionId,
+          selected.strategyId,
+          selected.deadline,
+          getSlippageBpsFromKey(selected.slippage),
+        ]);
 
-        if (sim.finished) return { message: "Exit completed", stage: 3 };
+        if (sim) return { message: "Exit completed", stage: 3 };
         return { message: "Waiting for approval", stage: 2 };
       } catch (error) {
         if (isDataEmptyError(error)) return { message: "Need encodedData", stage: 1 };
@@ -156,29 +150,15 @@ export function useAegisExit(
     },
     queryKey: qKeys.stage(chainId, addr, selected?.positionId),
     refetchInterval: q => {
-      const stage = (q.state.data?.stage ?? 0) as number;
+      const stage = q.state.data?.stage ?? 0;
       return stage === 2 ? 60_000 : false;
     },
-  });
-
-  const routeInfoQuery = useQuery({
-    enabled:
-      !!enabled && !!adapter && !!selected && !!addr && stageQuery.data?.stage === 1,
-    queryFn: async () => {
-      const info = await adapter!.getReverseRouteInfoForPosition(selected!.positionId);
-      if (info.length === 0) throw new Error("Route info empty");
-      const last = info.at(-1) as Hex;
-      const decoded = decodeAegisRouteInfo(last);
-      if (decoded.yusdAmount === 0n) throw new Error("yUSD amount is zero");
-      return decoded;
-    },
-    queryKey: qKeys.routeInfo(chainId, addr, selected?.positionId),
   });
 
   const lockMutation = useMutation({
     mutationFn: async (): Promise<AegisExitResult> => {
       const result: AegisExitResult = {};
-      if (!enabled || !selected || !addr || !wallet || !adapter) return result;
+      if (!enabled || !selected || !addr || !wallet) return result;
 
       const idemKey = makeIdempotencyKey(
         chainId!,
@@ -189,6 +169,7 @@ export function useAegisExit(
         wallet,
         "lock"
       );
+
       const active = isActive(txState.lock?.phase) || pendingKey === idemKey;
       if (active) return result;
 
@@ -202,12 +183,12 @@ export function useAegisExit(
           vault_address: addr,
         });
 
-        const hash = await adapter.writeUnborrow({
-          deadline: selected.deadline,
-          encodedData: "0x",
-          positionId: selected.positionId,
-          strategyId: selected.strategyId,
-        });
+        const hash = await vault.contract.unborrow([
+          selected.positionId,
+          selected.strategyId,
+          selected.deadline,
+          getSlippageBpsFromKey(selected.slippage),
+        ]);
 
         setPhase("lock", { hash, phase: "pending" });
         result.hash = hash;
@@ -232,6 +213,7 @@ export function useAegisExit(
           setPhase("lock", { phase: "idle" });
           return result;
         }
+
         const e = toErr(error);
         setPhase("lock", { errorMessage: e.message, phase: "error" });
         result.error = e;
@@ -254,9 +236,10 @@ export function useAegisExit(
   const redeemMutation = useMutation({
     mutationFn: async (): Promise<AegisExitResult> => {
       const result: AegisExitResult = {};
-      if (!enabled || !selected || !addr || !wallet || !adapter) return result;
+      if (!enabled || !selected || !addr || !wallet || !vault) return result;
 
-      const route = routeInfoQuery.data;
+      const route = await vault.contract.reverseRoute(selected.strategyId);
+
       if (!route) throw new Error("Route info missing");
 
       const idemKey = makeIdempotencyKey(
@@ -276,12 +259,12 @@ export function useAegisExit(
         setPendingKey(idemKey);
         setPhase("redeem", { phase: "checking" });
 
-        const { encodedData } = await requestAegisRedeemEncodedData({
+        const {} = await requestAegisRedeemEncodedData({
           baseUrl: env.NEXT_PUBLIC_API_BASE_URL,
           req: {
             collateralAsset: selected.collateralAsset,
             slippageBps: getSlippageBpsFromKey(selected.slippage),
-            yusdAmount: route.yusdAmount,
+            yusdAmount: 10_000n,
           },
         });
 
@@ -293,12 +276,7 @@ export function useAegisExit(
           vault_address: addr,
         });
 
-        const hash = await adapter.writeUnborrow({
-          deadline: selected.deadline,
-          encodedData,
-          positionId: selected.positionId,
-          strategyId: selected.strategyId,
-        });
+        const hash = "0x";
 
         setPhase("redeem", { hash, phase: "pending" });
         result.hash = hash;
@@ -345,7 +323,7 @@ export function useAegisExit(
   const finalizeMutation = useMutation({
     mutationFn: async (): Promise<AegisExitResult> => {
       const result: AegisExitResult = {};
-      if (!enabled || !selected || !addr || !wallet || !adapter) return result;
+      if (!enabled || !selected || !addr || !wallet) return result;
 
       const idemKey = makeIdempotencyKey(
         chainId!,
@@ -356,6 +334,7 @@ export function useAegisExit(
         wallet,
         "finalize"
       );
+
       const active = isActive(txState.finalize?.phase) || pendingKey === idemKey;
       if (active) return result;
 
@@ -369,12 +348,7 @@ export function useAegisExit(
           vault_address: addr,
         });
 
-        const hash = await adapter.writeUnborrow({
-          deadline: selected.deadline,
-          encodedData: "0x",
-          positionId: selected.positionId,
-          strategyId: selected.strategyId,
-        });
+        const hash = "0x";
 
         setPhase("finalize", { hash, phase: "pending" });
         result.hash = hash;
@@ -442,7 +416,6 @@ export function useAegisExit(
     redeem: redeemMutation.mutateAsync,
     refetchStage: stageQuery.refetch,
     reset,
-    routeInfo: routeInfoQuery.data,
     someAwaitingSignature,
     someError,
     stage: stageQuery.data,
