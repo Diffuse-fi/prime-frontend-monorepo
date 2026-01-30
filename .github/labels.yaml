@@ -97,3 +97,7 @@
 - name: technical debt
   description: "Changes that address technical debt"
   color: "8b4513"
+
+- name: localization
+  description: "Changes related to localization or internationalization"
+  color: "ff69b4"
