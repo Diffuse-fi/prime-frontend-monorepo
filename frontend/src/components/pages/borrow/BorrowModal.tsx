@@ -1,11 +1,12 @@
 "use client";
 
-import { AssetInfo, AssetInfoSchema } from "@diffuse/config";
+import { AssetInfo } from "@diffuse/config";
 import {
   AssetInput,
   Button,
   Card,
   Checkbox,
+  cn,
   Dialog,
   Heading,
   RemoteText,
@@ -14,9 +15,17 @@ import {
   Slider,
   Tooltip,
 } from "@diffuse/ui-kit";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, TriangleAlert } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ReactNode, useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { Controller, useForm } from "react-hook-form";
 import { getAddress, parseUnits } from "viem";
 
@@ -29,15 +38,15 @@ import { useVaults } from "@/lib/core/hooks/useVaults";
 import { formatUnits, getPartialAllowanceText } from "@/lib/formatters/asset";
 import { formatNumberToKMB } from "@/lib/formatters/number";
 import { useRouter } from "@/lib/localization/navigation";
-import { isAegisStrategy } from "@/lib/misc/aegis";
 import { useDebounce } from "@/lib/misc/useDebounce";
 import { useLocalStorage } from "@/lib/misc/useLocalStorage";
 import { toast } from "@/lib/toast";
 
-import { SelectedStartegy } from ".";
+import { isAegisStrategy } from "../../../lib/aegis";
 import { useERC20TokenBalance } from "../../../lib/wagmi/useErc20TokenBalance";
 import { PositionDetails } from "./PositionDetails";
 import { SlippageInput } from "./SlippageInput";
+import { SelectedStrategy } from "./types";
 
 type ChainSwitchModalProps = {
   description?: React.ReactNode;
@@ -45,14 +54,15 @@ type ChainSwitchModalProps = {
   onOpenChange: (open: boolean) => void;
   open: boolean;
   selectedAsset: AssetInfo;
-  selectedStrategy: SelectedStartegy;
+  selectedStrategy: SelectedStrategy;
   title?: ReactNode;
 };
 
 const defaultMinLeverage = 100;
 const defaultMaxLeverage = 1000;
-
+const leverageAdjustmentForPt = 10;
 const LEVERAGE_RATE = 100;
+
 type BorrowAction =
   | {
       borrow: bigint;
@@ -98,17 +108,13 @@ export function BorrowModal({
   const { refetchLimits, refetchTotalAssets } = useVaults();
   const availableLiquidity = selectedStrategy.vault.availableLiquidity;
   const title = t("title", { assetSymbol: selectedAsset.symbol });
-  const [collateralAsset, setCollateralAsset] = useLocalStorage<AssetInfo>(
-    "borrow-collateral-asset",
-    {
-      address: selectedAsset.address,
-      chainId: selectedAsset.chainId,
-      decimals: selectedAsset.decimals,
-      name: selectedAsset.name,
-      symbol: selectedAsset.symbol,
-    },
-    v => AssetInfoSchema.safeParse(v).success
-  );
+  const [collateralAsset, setCollateralAsset] = useState<AssetInfo>({
+    address: selectedAsset.address,
+    chainId: selectedAsset.chainId,
+    decimals: selectedAsset.decimals,
+    name: selectedAsset.name,
+    symbol: selectedAsset.symbol,
+  });
   const [slippage, setSlippage] = useLocalStorage("slippage-borrow-modal", "0.1", v =>
     ["0.1", "0.5", "1.0"].includes(v)
   );
@@ -116,7 +122,10 @@ export function BorrowModal({
   const [state, dispatch] = useReducer(borrowReducer, {
     borrow: 0n,
     collateral: 0n,
-    leverage: 100,
+    leverage:
+      getAddress(collateralAsset.address) === getAddress(selectedAsset.address)
+        ? defaultMinLeverage
+        : defaultMinLeverage + leverageAdjustmentForPt,
   });
   const { borrow: amountToBorrow, collateral: collateralAmount, leverage } = state;
   const lastInputRef = useRef<"borrow" | "collateral" | null>(null);
@@ -189,6 +198,17 @@ export function BorrowModal({
         getAddress(val) === getAddress(selectedAsset.address)
           ? selectedAsset
           : selectedStrategy.token;
+
+      dispatch({
+        borrowDecimals: selectedAsset.decimals,
+        collateralDecimals: nextAsset.decimals,
+        leverage:
+          getAddress(nextAsset.address) === getAddress(selectedAsset.address)
+            ? defaultMinLeverage
+            : defaultMinLeverage + leverageAdjustmentForPt,
+        type: "SET_LEVERAGE",
+      });
+
       const nextCollateral = convertDecimals(
         state.collateral,
         collateralAsset.decimals,
@@ -323,6 +343,18 @@ export function BorrowModal({
     ]
   );
 
+  const leverageMaxWithDefault = selectedStrategy.maxLeverage || defaultMaxLeverage;
+  const leverageMinWithDefault = selectedStrategy.minLeverage || defaultMinLeverage;
+
+  const leverageMax =
+    getAddress(collateralAsset.address) === getAddress(selectedAsset.address)
+      ? leverageMaxWithDefault
+      : leverageMaxWithDefault - leverageAdjustmentForPt;
+  const leverageMin =
+    getAddress(collateralAsset.address) === getAddress(selectedAsset.address)
+      ? leverageMinWithDefault
+      : leverageMinWithDefault + leverageAdjustmentForPt;
+
   const {
     borrow,
     isPending,
@@ -351,6 +383,7 @@ export function BorrowModal({
   const currentlyAllowed = allowances?.find(
     a => a.vault.address === selectedStrategy.vault.address
   )?.current;
+  const exceedsAvailableLiquidity = totalAmountToBorrow > availableLiquidity;
 
   const actionButtonMeta = (() => {
     if (
@@ -373,7 +406,7 @@ export function BorrowModal({
       };
     }
 
-    if (totalAmountToBorrow > availableLiquidity) {
+    if (exceedsAvailableLiquidity) {
       return {
         disabled: true,
         onClick: undefined,
@@ -443,6 +476,7 @@ export function BorrowModal({
       value: selectedAsset.address,
     },
     {
+      disabled: isAegis,
       label: selectedStrategy.token.symbol,
       value: selectedStrategy.token.address,
     },
@@ -492,6 +526,12 @@ export function BorrowModal({
                 symbol: collateralAsset.symbol,
               })}
             </div>
+            {isAegis && (
+              <p className="text-warn flex items-start gap-1 pl-2 text-left text-xs">
+                <TriangleAlert aria-hidden className="text-warn h-3 w-3 shrink-0" />
+                {t("aegisCollateralWarning")}
+              </p>
+            )}
           </div>
           <Card
             cardBodyClassName="gap-2"
@@ -506,19 +546,20 @@ export function BorrowModal({
             }
           >
             <Slider
-              max={selectedStrategy.maxLeverage || defaultMaxLeverage}
-              min={selectedStrategy.minLeverage || defaultMinLeverage}
+              max={leverageMax}
+              min={leverageMin}
               onValueChange={onLeverageChange}
               step={10}
               value={[leverage]}
             />
             <div className="flex justify-between font-mono text-xs">
-              <span>{t("minLeverage")}</span>
-              <span>{t("maxLeverage")}</span>
+              <span>{`${(leverageMin / LEVERAGE_RATE).toFixed(2)}x`}</span>
+              <span>{`${(leverageMax / LEVERAGE_RATE).toFixed(2)}x`}</span>
             </div>
             <div className="flex flex-col gap-2 text-left">
               <AssetInput
                 assetSymbol={selectedAsset?.symbol}
+                error={exceedsAvailableLiquidity}
                 onValueChange={evt => onBorrowInput(evt.value)}
                 placeholder="0.0"
                 renderAssetImage={() => (
@@ -531,7 +572,12 @@ export function BorrowModal({
                 )}
                 value={borrowText}
               />
-              <p className="text-muted font-mono text-xs">
+              <p
+                className={cn(
+                  "font-mono text-xs",
+                  exceedsAvailableLiquidity ? "text-err" : "text-muted"
+                )}
+              >
                 {t("availableForBorrow", {
                   amount: availableLiquidityFormatted.text,
                   symbol: selectedAsset.symbol,

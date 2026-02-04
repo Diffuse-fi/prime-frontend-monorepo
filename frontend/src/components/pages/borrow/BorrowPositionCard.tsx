@@ -6,15 +6,20 @@ import {
   Card,
   cn,
   Heading,
+  InfoIcon,
   SimpleTable,
   UncontrolledCollapsible,
 } from "@diffuse/ui-kit";
 import { ExternalLink } from "lucide-react";
+import { useMemo } from "react";
 import { useChainId } from "wagmi";
 
 import { AppLink } from "@/components/misc/AppLink";
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { ImageWithJazziconFallback } from "@/components/misc/images/ImageWithJazziconFallback";
+import { isAegisStrategy } from "@/lib/aegis";
+import { AegisExitStage } from "@/lib/aegis/types";
+import { useAegisExitStage } from "@/lib/aegis/useAegisExitStage";
 import { getStableChainMeta } from "@/lib/chains/meta";
 import { getContractExplorerUrl } from "@/lib/chains/rpc";
 import { BorrowerPosition, Strategy } from "@/lib/core/types";
@@ -27,6 +32,7 @@ import { PositionDetails } from "./PositionDetails";
 export interface BorrowerPositionCardProps {
   className?: string;
   disabled?: boolean;
+  isExitPending?: boolean;
   onManagePositionBtnClick?: () => void;
   position: BorrowerPosition;
   selectedAsset: AssetInfo;
@@ -36,6 +42,7 @@ export interface BorrowerPositionCardProps {
 export function BorrowerPositionCard({
   className,
   disabled,
+  isExitPending,
   onManagePositionBtnClick,
   position,
   selectedAsset,
@@ -56,23 +63,73 @@ export function BorrowerPositionCard({
   const { iconBackground, iconUrl } = getStableChainMeta(chainId);
   const collateralAsset = collateralType === 0 ? selectedAsset : strategyAsset;
 
+  const isAegis = isAegisStrategy(strategy);
+
+  const stageSelected = useMemo(() => {
+    if (!isAegis) return null;
+    return {
+      address: position.vault.address,
+      chainId,
+      collateralAsset: collateralAsset.address,
+      deadline: BigInt(Math.floor(Date.now() / 1000) + 3600),
+      isAegisStrategy: true,
+      positionId: position.id,
+      slippage: "0.5",
+      strategyId: position.strategyId,
+    };
+  }, [
+    isAegis,
+    position.vault.address,
+    chainId,
+    collateralAsset.address,
+    position.id,
+    position.strategyId,
+  ]);
+
+  const stageQ = useAegisExitStage(stageSelected, position.vault);
+  const stagesToIgnoreStatus: AegisExitStage[] = [0, -1];
+  const displayExitLabel =
+    isAegis && stageQ.data && !stagesToIgnoreStatus.includes(stageQ.data.stage);
+  const aegisExitTexts = {
+    1: "Exit is prepared and funds are locked. The system now needs a redeem request to be created before it can continue.",
+    2: "Redeem request was submitted. The exit is pending approval and may take time. Status will update automatically once approved.",
+    3: "Approval is received. The exit is ready to complete and return funds. Completion should be quick once processed.",
+  } as const;
+  const exitLabelTexts = {
+    1: "Exit: submit redeem",
+    2: "Exit: pending approval",
+    3: "Exit: ready to finalize",
+  };
+  const exitInfoText = stageQ.data
+    ? aegisExitTexts[stageQ.data.stage as keyof typeof aegisExitTexts]
+    : "Exit: checking...";
+  const exitLabelText = stageQ.data
+    ? exitLabelTexts[stageQ.data.stage as keyof typeof exitLabelTexts]
+    : "Exit: checking...";
+
   return (
     <Card
       cardBodyClassName="gap-4"
       className={cn("h-fit", className)}
       header={
-        <div className="flex items-center justify-start gap-4">
+        <div className="flex items-start justify-start gap-4">
           <AssetImage
             address={strategyAsset.address}
             alt=""
             imgURI={strategyAsset.logoURI}
             size={24}
           />
-          <div className="flex flex-col items-start">
+          <div className="align-start flex flex-col items-start gap-1">
             <Heading className="font-semibold" level="4">
               {strategyAsset.symbol}
             </Heading>
             <span className="font-mono text-xs">{strategy.name}</span>
+            {displayExitLabel ? (
+              <span className="mt-1 flex items-center gap-2 text-xs">
+                <InfoIcon aria-hidden size={16} text={exitInfoText} />
+                {exitLabelText}
+              </span>
+            ) : null}
           </div>
           <div className="bg-muted/15 ml-auto flex size-8 items-center justify-center rounded-full">
             <ImageWithJazziconFallback
@@ -165,9 +222,23 @@ export function BorrowerPositionCard({
           vault={position.vault}
         />
       </UncontrolledCollapsible>
+      {isExitPending && (
+        <p className="align-center text-err mt-4 flex font-mono text-sm">
+          <InfoIcon
+            aria-hidden
+            className="text-err mr-2 inline-block"
+            size={16}
+            text="The strategy exit process may take up to 24 hours (2 hours on average)."
+          />
+          Exit is pending for this position
+          <Button onClick={onManagePositionBtnClick} variant="ghost">
+            Check status
+          </Button>
+        </p>
+      )}
       <Button
         className="mx-auto mt-6"
-        disabled={disabled}
+        disabled={disabled || isExitPending}
         onClick={onManagePositionBtnClick}
         size="lg"
       >

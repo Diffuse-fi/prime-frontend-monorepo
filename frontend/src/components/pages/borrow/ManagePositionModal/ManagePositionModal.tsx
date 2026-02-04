@@ -5,8 +5,10 @@ import { Dialog, Tabs } from "@diffuse/ui-kit";
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 
+import { isAegisStrategy } from "@/lib/aegis";
 import { BorrowerPosition } from "@/lib/core/types";
 
+import { CancelAegisPosition } from "./CancelAegisPosition";
 import { CancelPosition } from "./CancelPosition";
 
 type ManagePositionModalProps = {
@@ -23,6 +25,7 @@ export function ManagePositionModal({
   onOpenChange,
   onPositionClosure,
   open,
+  selectedAsset,
   selectedPosition,
   title,
 }: ManagePositionModalProps) {
@@ -50,10 +53,22 @@ export function ManagePositionModal({
           </Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content inset value="close">
-          <CancelPosition
-            onPositionClosure={onPositionClosure}
-            selectedPosition={selectedPosition}
-          />
+          {isAegisStrategy(selectedPosition.strategy) ? (
+            <CancelAegisPosition
+              collateralAssetAddress={
+                selectedPosition.collateralType === 1
+                  ? selectedPosition.asset.address
+                  : selectedAsset.address
+              }
+              onPositionClosure={onPositionClosure}
+              selectedPosition={selectedPosition}
+            />
+          ) : (
+            <CancelPosition
+              onPositionClosure={onPositionClosure}
+              selectedPosition={selectedPosition}
+            />
+          )}
         </Tabs.Content>
       </Tabs>
     </Dialog>

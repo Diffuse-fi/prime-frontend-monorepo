@@ -2,11 +2,13 @@
   "borrow": {
     "borrowCard": {
       "borrow": "Borrow",
-      "borrowAprAriaLabel": "Borrow APR information",
-      "borrowAprTooltip": "Lenders borrowing APR {apr} + spread fee {spreadFee}",
+      "borrowRate": "Borrow rate",
+      "borrowRateAriaLabel": "Borrow rate information",
+      "borrowRateTooltip": "Lenders borrowing APR {apr} + spread fee {spreadFee}",
       "liquidity": "Liquidity"
     },
     "borrowModal": {
+      "aegisCollateralWarning": "At the moment, Aegis strategy is only supported for borrowing against USDC",
       "approve": "Approve",
       "approving": "Approving...",
       "availableForBorrow": "Available for borrow {symbol}: {amount}",
@@ -17,8 +19,7 @@
       "enterAmount": "Enter amount",
       "exceedsLiquidity": "Exceeds available liquidity",
       "insufficientBalance": "Insufficient balance",
-      "maxLeverage": "Max 10x",
-      "minLeverage": "1.00x",
+
       "positionDetails": "Position details",
       "requestPending": "Request pending...",
       "selectCollateralAsset": "Select collateral asset",
@@ -56,9 +57,10 @@
       "borrowPositions": "Borrow Positions"
     },
     "positionDetails": {
-      "borrowApr": "Borrow APR",
-      "borrowAprAriaLabel": "Borrow APR information",
-      "borrowAprTooltip": "Lenders borrowing APR {apr} + spread fee {spreadFee}",
+      "borrowing": "Borrowing",
+      "borrowRate": "Borrow rate",
+      "borrowRateAriaLabel": "Borrow rate information",
+      "borrowRateTooltip": "Lenders borrowing APR {apr} + spread fee {spreadFee}",
       "daysUntilMaturity": "Days until maturity",
       "liquidationPenalty": "Liquidation penalty",
       "liquidationPrice": "Liquidation price",

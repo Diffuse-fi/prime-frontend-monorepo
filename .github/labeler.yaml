@@ -43,7 +43,6 @@ eslint:
   - changed-files:
       - any-glob-to-any-file:
           - "eslint.config.*"
-          - ".eslintignore"
 
 indexer:
   - changed-files:
@@ -54,3 +53,18 @@ config:
   - changed-files:
       - any-glob-to-any-file:
           - "config/**"
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "README*"
+          - "CONTRIBUTING*"
+          - "CHANGELOG*"
+          - "LICENSE*"
+          - "SECURITY*"
+          - "RELEASING*"
+
+localization:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "frontend/src/dictionaries/**"

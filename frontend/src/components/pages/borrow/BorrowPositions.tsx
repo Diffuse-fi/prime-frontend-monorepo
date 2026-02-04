@@ -21,6 +21,7 @@ import { showSkeletons } from "@/lib/misc/ui";
 
 import { BorrowerPositionCard } from "./BorrowPositionCard";
 import { ManagePositionModal } from "./ManagePositionModal/ManagePositionModal";
+import { PositionTypeSwitch } from "./PositionTypeSwitch";
 
 export function BorrowPositions() {
   const {
@@ -52,6 +53,17 @@ export function BorrowPositions() {
     refetchPositions: refetchBorrowerPositions,
   } = useBorrowerPositions(vaultsForSelectedAsset);
 
+  const POSITION_TYPE_OPTIONS = [
+    { label: "Opened", value: "opened" },
+    { disabled: true, label: "Pending", value: "pending" },
+  ];
+
+  const [selectedType, setSelectedType] = useState<
+    (typeof POSITION_TYPE_OPTIONS)[number]
+  >(POSITION_TYPE_OPTIONS[0]);
+
+  const positionsToShow = selectedType.value === "opened" ? positions : [];
+
   return (
     <div className="mt-4 flex flex-col gap-3 md:gap-8">
       <AssetsList
@@ -63,6 +75,11 @@ export function BorrowPositions() {
         selectedAsset={selectedAsset}
         skeletonsToShow={1}
       />
+      <PositionTypeSwitch
+        onSelect={setSelectedType}
+        options={POSITION_TYPE_OPTIONS}
+        selected={selectedType}
+      />
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
         {isLoading ||
         isPending ||
@@ -70,8 +87,8 @@ export function BorrowPositions() {
         isLoadingVaults ||
         !selectedAsset ? (
           showSkeletons(2, "h-40 sm:h-80")
-        ) : positions.length > 0 ? (
-          positions.map(position => {
+        ) : positionsToShow.length > 0 ? (
+          positionsToShow.map(position => {
             const strategy = strategies.find(s => s.id === position.strategyId);
 
             if (!strategy) return null;
@@ -89,7 +106,7 @@ export function BorrowPositions() {
         ) : (
           <div className="sm:col-span-3">
             <Heading className="pt-2 font-semibold" level="5">
-              No positions yet
+              No {selectedType.label.toLocaleLowerCase()} positions yet
             </Heading>
             <p className="">
               You have no borrower positions yet. Start by borrowing assets.

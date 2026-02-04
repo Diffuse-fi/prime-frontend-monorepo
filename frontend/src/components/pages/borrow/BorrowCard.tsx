@@ -108,13 +108,13 @@ export function BorrowCard({
             </div>,
           ],
           [
-            <div className="flex items-center leading-none" key="1">
-              <span>Borrow APR</span>
+            <div className="flex items-center pt-1 leading-none" key="1">
+              <span>{t("borrowRate")}</span>
               <InfoIcon
-                ariaLabel={t("borrowAprAriaLabel")}
+                ariaLabel={t("borrowRateAriaLabel")}
                 className="ml-1"
                 size={14}
-                text={t("borrowAprTooltip", {
+                text={t("borrowRateTooltip", {
                   apr: formatAprToPercent(strategy.apr).text,
                   spreadFee: formatAprToPercent(vault.feeData.spreadFee).text,
                 })}

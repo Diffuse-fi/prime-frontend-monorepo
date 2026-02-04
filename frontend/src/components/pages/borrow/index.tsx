@@ -9,22 +9,18 @@ import { AssetsList } from "@/components/AssetsList";
 import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
 import { useBorrowerPositions } from "@/lib/core/hooks/useBorrowerPositions";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
-import { Strategy, VaultFullInfo } from "@/lib/core/types";
 import { useLocalization } from "@/lib/localization/useLocalization";
 
 import { useVaults } from "../../../lib/core/hooks/useVaults";
 import { BorrowCard } from "./BorrowCard";
 import { BorrowModal } from "./BorrowModal";
-
-export type SelectedStartegy = Strategy & {
-  vault: VaultFullInfo;
-};
+import { SelectedStrategy } from "./types";
 
 export default function Borrow() {
   const { chain } = useReadonlyChain();
   const { isLoading, refetch, vaults, vaultsAssetsList } = useVaults();
   const [selectedAsset, setSelectedAsset] = useSelectedAsset(vaultsAssetsList);
-  const [selectedStrategy, setSelectedStrategy] = useState<null | SelectedStartegy>(null);
+  const [selectedStrategy, setSelectedStrategy] = useState<null | SelectedStrategy>(null);
   const { dir } = useLocalization();
   const { isConnected } = useAccount();
   const { refetchPending } = useBorrowerPositions(vaults);

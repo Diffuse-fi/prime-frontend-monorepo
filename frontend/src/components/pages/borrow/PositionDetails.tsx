@@ -118,7 +118,7 @@ export function PositionDetails({
             text={t("targetApyTooltip")}
           />
         </div>
-        <span>
+        <span className="pr-2">
           {targetApyBps === null ? "N/A" : formatAprToPercent(targetApyBps).text}
         </span>
       </div>
@@ -148,17 +148,17 @@ export function PositionDetails({
       </UncontrolledCollapsible>
       <UncontrolledCollapsible
         defaultOpen
-        summary={<span className="text-muted font-mono text-xs">{tCommon("apr")}</span>}
+        summary={<span className="text-muted font-mono text-xs">{t("borrowing")}</span>}
       >
         <div className="flex flex-col gap-2 border-l border-[#7AB7FF] px-2 py-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center leading-none">
-              <span>{t("borrowApr")}</span>
+              <span>{t("borrowRate")}</span>
               <InfoIcon
-                ariaLabel={t("borrowAprAriaLabel")}
+                ariaLabel={t("borrowRateAriaLabel")}
                 className="ml-1"
                 size={14}
-                text={t("borrowAprTooltip", {
+                text={t("borrowRateTooltip", {
                   apr: formatAprToPercent(apr).text,
                   spreadFee: formatAprToPercent(spreadFee).text,
                 })}

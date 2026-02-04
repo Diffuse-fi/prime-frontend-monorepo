@@ -1,5 +1,5 @@
 import { raceSignal as abortable } from "race-signal";
-import { Address } from "viem";
+import { Address, Hex } from "viem";
 
 import { WalletRequiredError } from "@/errors/errors";
 import { normalizeError } from "@/errors/normalize";
@@ -268,6 +268,22 @@ export class Vault extends ContractBase {
     }
   }
 
+  public async hasUnfinishedSwap(positionId: bigint, { signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(
+        this.getContract().read.hasUnfinishedSwap([positionId]),
+        signal
+      );
+    } catch (error) {
+      throw normalizeError(error, {
+        args: [positionId],
+        chainId: this.chainId,
+        contract: contractName,
+        op: "hasUnfinishedSwap",
+      });
+    }
+  }
+
   async previewBorrow(
     [
       forUser,
@@ -275,12 +291,14 @@ export class Vault extends ContractBase {
       collateralType,
       collateralAmount,
       assetsToBorrow,
+      data = "0x",
     ]: [
       Address,
       bigint,
       number,
       bigint,
       bigint,
+      Hex,
     ],
     { signal }: SdkRequestOptions = {}
   ) {
@@ -295,8 +313,8 @@ export class Vault extends ContractBase {
             collateralType,
             collateralAmount,
             assetsToBorrow,
-            "0x",
-          ], // TODO: fix args
+            data,
+          ],
           functionName: "previewBorrow",
         }),
         signal
@@ -305,7 +323,14 @@ export class Vault extends ContractBase {
       return sim.result;
     } catch (error) {
       throw normalizeError(error, {
-        args: [forUser, strategyId, collateralType, collateralAmount, assetsToBorrow],
+        args: [
+          forUser,
+          strategyId,
+          collateralType,
+          collateralAmount,
+          assetsToBorrow,
+          data,
+        ],
         chainId: this.chainId,
         contract: contractName,
         op: "previewBorrow",
