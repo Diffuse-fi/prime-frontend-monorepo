@@ -1,17 +1,17 @@
 import type {
   AegisExitResult,
   AegisExitSelected,
-  AegisExitStageInfo,
   AegisExitTxInfo,
   AegisExitTxKey,
   AegisExitTxState,
 } from "./types";
 import type { Address, Hash } from "viem";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { vaultAbi, Viewer } from "@diffuse/sdk-js";
+import { useMutation } from "@tanstack/react-query";
 import { produce } from "immer";
 import { useMemo, useState } from "react";
-import { getAddress } from "viem";
+import { decodeAbiParameters, getAddress } from "viem";
 
 import { env } from "@/env";
 import { trackEvent } from "@/lib/analytics";
@@ -23,9 +23,11 @@ import { borrowLogger, loggerMut } from "../core/utils/loggers";
 import { makeIdempotencyKey } from "../misc/idempotency";
 import { opt, qk } from "../query/helpers";
 import { QV } from "../query/versions";
+import { getContractAddressOverride } from "../wagmi/getContractAddressOverride";
 import { useClients } from "../wagmi/useClients";
 import { requestAegisRedeemEncodedData } from "./api";
-import { isDataEmptyError, toErr } from "./errors";
+import { toErr } from "./errors";
+import { useAegisExitStage } from "./useAegisExitStage";
 
 export type UseAegisExitParams = {
   onComplete?: (result: AegisExitResult) => void;
@@ -90,6 +92,9 @@ const qKeys = {
     ]),
 };
 
+const buildMinAssetsOut = (routeLen: number) =>
+  Array.from({ length: Math.max(1, routeLen) }, () => 0n);
+
 export function useAegisExit(
   selected: AegisExitSelected | null,
   vault: VaultFullInfo,
@@ -98,6 +103,16 @@ export function useAegisExit(
   const { address: wallet, chainId, publicClient, walletClient } = useClients();
   const [txState, setTxState] = useState<AegisExitTxState>({});
   const [pendingKey, setPendingKey] = useState<null | string>(null);
+  const addressOverride = getContractAddressOverride(chainId, "Viewer") ?? null;
+
+  const viewer = useMemo(() => {
+    if (!publicClient) return null;
+    return new Viewer({
+      address: addressOverride ?? undefined,
+      chainId,
+      client: { public: publicClient },
+    });
+  }, [publicClient, chainId, addressOverride]);
 
   const enabled =
     !!selected &&
@@ -123,37 +138,17 @@ export function useAegisExit(
       })
     );
 
-  const stageQuery = useQuery({
-    enabled: !!enabled && !!selected && !!addr && !!vault,
-    queryFn: async ({ signal }): Promise<AegisExitStageInfo> => {
-      if (!selected || !vault) return { message: "Not ready", stage: -1 };
+  const readReverseRoute = async (strategyId: bigint): Promise<readonly Address[]> => {
+    const route = await publicClient!.readContract({
+      abi: vaultAbi,
+      address: addr!,
+      args: [strategyId],
+      functionName: "reverseRoute",
+    });
+    return route;
+  };
 
-      const hasSwap = await vault.contract.hasUnfinishedSwap(selected.positionId, {
-        signal,
-      });
-      if (!hasSwap) return { message: "Exit not started", stage: 0 };
-
-      try {
-        const sim = await vault.contract.unborrow([
-          selected.positionId,
-          selected.strategyId,
-          selected.deadline,
-          getSlippageBpsFromKey(selected.slippage),
-        ]);
-
-        if (sim) return { message: "Exit completed", stage: 3 };
-        return { message: "Waiting for approval", stage: 2 };
-      } catch (error) {
-        if (isDataEmptyError(error)) return { message: "Need encodedData", stage: 1 };
-        return { message: toErr(error).message, stage: -1 };
-      }
-    },
-    queryKey: qKeys.stage(chainId, addr, selected?.positionId),
-    refetchInterval: q => {
-      const stage = q.state.data?.stage ?? 0;
-      return stage === 2 ? 60_000 : false;
-    },
-  });
+  const stageQuery = useAegisExitStage(selected, vault);
 
   const lockMutation = useMutation({
     mutationFn: async (): Promise<AegisExitResult> => {
@@ -183,12 +178,17 @@ export function useAegisExit(
           vault_address: addr,
         });
 
-        const hash = await vault.contract.unborrow([
-          selected.positionId,
-          selected.strategyId,
-          selected.deadline,
-          getSlippageBpsFromKey(selected.slippage),
-        ]);
+        const route = await readReverseRoute(selected.strategyId);
+        const minAssetsOut = buildMinAssetsOut(route.length);
+
+        const hash = await walletClient!.writeContract({
+          abi: vaultAbi,
+          account: wallet,
+          address: addr,
+          args: [selected.positionId, minAssetsOut, selected.deadline, "0x"],
+          chain: publicClient!.chain,
+          functionName: "unborrow",
+        });
 
         setPhase("lock", { hash, phase: "pending" });
         result.hash = hash;
@@ -238,10 +238,6 @@ export function useAegisExit(
       const result: AegisExitResult = {};
       if (!enabled || !selected || !addr || !wallet || !vault) return result;
 
-      const route = await vault.contract.reverseRoute(selected.strategyId);
-
-      if (!route) throw new Error("Route info missing");
-
       const idemKey = makeIdempotencyKey(
         chainId!,
         addr,
@@ -255,18 +251,48 @@ export function useAegisExit(
       const active = isActive(txState.redeem?.phase) || pendingKey === idemKey;
       if (active) return result;
 
+      if (!viewer) {
+        const e = new Error("Viewer not initialized");
+        borrowLogger.error("aegis redeem error: viewer not initialized", {
+          address: addr,
+          error: e,
+        });
+        return result;
+      }
+
       try {
         setPendingKey(idemKey);
         setPhase("redeem", { phase: "checking" });
 
-        const {} = await requestAegisRedeemEncodedData({
+        const routeInfo = await viewer!.getReverseRouteInfoForPosition(
+          addr,
+          selected.positionId
+        );
+
+        const aegisData = routeInfo.at(-1);
+        if (!aegisData) throw new Error("Route info is empty");
+
+        const decoded = decodeAbiParameters(
+          [{ type: "address" }, { type: "uint256" }, { type: "uint256" }],
+          aegisData
+        );
+
+        const yusdAmount = decoded[2] as bigint;
+        if (!yusdAmount || yusdAmount === 0n)
+          throw new Error("Invalid amountIn from routeInfo");
+
+        const redeemResp = await requestAegisRedeemEncodedData({
           baseUrl: env.NEXT_PUBLIC_API_BASE_URL,
           req: {
             collateralAsset: selected.collateralAsset,
             slippageBps: getSlippageBpsFromKey(selected.slippage),
-            yusdAmount: 10_000n,
+            yusdAmount,
           },
         });
+
+        const encodedData = redeemResp.encodedData;
+        if (!encodedData || encodedData === "0x")
+          throw new Error("Prime API did not return encodedData");
 
         setPhase("redeem", { phase: "awaiting-signature" });
 
@@ -276,7 +302,17 @@ export function useAegisExit(
           vault_address: addr,
         });
 
-        const hash = "0x";
+        const route = await readReverseRoute(selected.strategyId);
+        const minAssetsOut = buildMinAssetsOut(route.length);
+
+        const hash = await walletClient!.writeContract({
+          abi: vaultAbi,
+          account: wallet,
+          address: addr,
+          args: [selected.positionId, minAssetsOut, selected.deadline, encodedData],
+          chain: publicClient!.chain,
+          functionName: "unborrow",
+        });
 
         setPhase("redeem", { hash, phase: "pending" });
         result.hash = hash;
@@ -348,7 +384,17 @@ export function useAegisExit(
           vault_address: addr,
         });
 
-        const hash = "0x";
+        const route = await readReverseRoute(selected.strategyId);
+        const minAssetsOut = buildMinAssetsOut(route.length);
+
+        const hash = await walletClient!.writeContract({
+          abi: vaultAbi,
+          account: wallet,
+          address: addr,
+          args: [selected.positionId, minAssetsOut, selected.deadline, "0x"],
+          chain: publicClient!.chain,
+          functionName: "unborrow",
+        });
 
         setPhase("finalize", { hash, phase: "pending" });
         result.hash = hash;

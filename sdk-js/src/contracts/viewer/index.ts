@@ -33,7 +33,24 @@ export class Viewer extends ContractBase {
     }
   }
 
-  async getReverseRouteInfoForPosition() {}
+  async getReverseRouteInfoForPosition(
+    vault: Address,
+    positionId: bigint,
+    { signal }: SdkRequestOptions = {}
+  ) {
+    try {
+      return await abortable(
+        this.getContract().read.getReverseRouteInfoForPosition([vault, positionId]),
+        signal
+      );
+    } catch (error) {
+      throw normalizeError(error, {
+        chainId: this.chainId,
+        contract: contractName,
+        op: "getReverseRouteInfoForPosition",
+      });
+    }
+  }
 
   async getStrategies(vault: Address, { signal }: SdkRequestOptions = {}) {
     try {

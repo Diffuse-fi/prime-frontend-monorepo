@@ -2,6 +2,7 @@ import { ButtonLike, cn, RadioGroup, RadioGroupItem, Skeleton } from "@diffuse/u
 import { RadioGroupProps } from "@diffuse/ui-kit/RadioGroup";
 
 export type PositionTypeOption = {
+  disabled?: boolean;
   label: string;
   value: string;
 };
@@ -46,7 +47,9 @@ export function PositionTypeSwitch({
             return (
               <RadioGroupItem
                 className="w-fit rounded-full"
+                disabled={option.disabled}
                 key={option.value}
+                onClick={() => onSelect?.(option)}
                 value={option.value}
               >
                 <ButtonLike
@@ -54,7 +57,11 @@ export function PositionTypeSwitch({
                     "h-10 rounded-full px-6 text-sm font-medium",
                     active
                       ? "bg-primary/10 text-primary border border-transparent"
-                      : "text-text-dimmed border-muted/40 hover:bg-muted/10 border bg-transparent"
+                      : cn(
+                          "text-text-dimmed border-muted/40 border bg-transparent",
+                          !option.disabled && "hover:bg-muted/10",
+                          option.disabled && "cursor-not-allowed hover:bg-transparent"
+                        )
                   )}
                   component="div"
                   onClick={() => onSelect?.(option)}
