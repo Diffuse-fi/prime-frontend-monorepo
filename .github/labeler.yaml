@@ -63,3 +63,8 @@ documentation:
           - "LICENSE*"
           - "SECURITY*"
           - "RELEASING*"
+
+localization:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "frontend/src/dictionaries/**"

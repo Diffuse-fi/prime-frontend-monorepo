@@ -55,7 +55,7 @@ export function BorrowPositions() {
 
   const POSITION_TYPE_OPTIONS = [
     { label: "Opened", value: "opened" },
-    { label: "Pending", value: "pending" },
+    { disabled: true, label: "Pending", value: "pending" },
   ];
 
   const [selectedType, setSelectedType] = useState<

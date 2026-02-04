@@ -61,10 +61,85 @@ export function CancelAegisPosition({
     },
   });
 
-  const canStart = stage?.stage === 0;
-  const canRedeem = stage?.stage === 1;
-  const isWaiting = stage?.stage === 2;
-  const canFinalize = stage?.stage === 2 || stage?.stage === 3;
+  const stageNum = stage?.stage;
+  const stageReady = stageNum !== undefined && stageNum !== null;
+
+  const primary = useMemo(() => {
+    if (!selected.isAegisStrategy) {
+      return {
+        disabled: true,
+        label: "Not an Aegis strategy",
+        onClick: undefined,
+      };
+    }
+
+    if (!stageReady) {
+      return {
+        disabled: true,
+        label: "Loading…",
+        onClick: undefined,
+      };
+    }
+
+    if (someAwaitingSignature) {
+      return {
+        disabled: true,
+        label: t("confirmingInWallet"),
+        onClick: undefined,
+      };
+    }
+
+    if (stageNum === 0) {
+      return {
+        disabled: false,
+        label: "Start exit",
+        onClick: () => lock(),
+      };
+    }
+
+    if (stageNum === 1) {
+      return {
+        disabled: false,
+        label: "Submit redeem request",
+        onClick: () => redeem(),
+      };
+    }
+
+    if (stageNum === 2) {
+      const finalizeEnabled = false;
+
+      if (finalizeEnabled) {
+        return {
+          disabled: false,
+          label: "Finalize",
+          onClick: () => finalize(),
+        };
+      }
+
+      return {
+        disabled: true,
+        label: "Waiting for approval…",
+        onClick: undefined,
+      };
+    }
+
+    return {
+      disabled: false,
+      label: "Finalize",
+      onClick: () => finalize(),
+    };
+  }, [
+    finalize,
+    lock,
+    redeem,
+    selected.isAegisStrategy,
+    someAwaitingSignature,
+    stageNum,
+    stageReady,
+    t,
+  ]);
+
+  const showRefresh = stageNum === 2;
 
   return (
     <div className="grid grid-cols-1 gap-6">
@@ -88,6 +163,7 @@ export function CancelAegisPosition({
               : "Not an Aegis strategy."}
           </p>
         </div>
+
         <SlippageInput
           className="px-5"
           onChange={setSlippage}
@@ -98,21 +174,17 @@ export function CancelAegisPosition({
           ]}
           value={slippage}
         />
+
         <div className="grid grid-cols-1 gap-3 px-5">
-          <Button disabled={isPending || !canStart} onClick={() => lock()} size="lg">
-            {someAwaitingSignature ? t("confirmingInWallet") : "Start exit"}
-          </Button>
-          <Button disabled={isPending || !canRedeem} onClick={() => redeem()} size="lg">
-            {someAwaitingSignature ? t("confirmingInWallet") : "Submit redeem request"}
-          </Button>
           <Button
-            disabled={isPending || !canFinalize}
-            onClick={() => finalize()}
+            disabled={isPending || primary.disabled}
+            onClick={primary.onClick}
             size="lg"
           >
-            {someAwaitingSignature ? t("confirmingInWallet") : "Finalize"}
+            {primary.label}
           </Button>
-          {isWaiting ? (
+
+          {showRefresh ? (
             <Button
               disabled={isPending}
               onClick={() => refetchStage()}

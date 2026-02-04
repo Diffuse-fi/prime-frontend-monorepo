@@ -390,13 +390,6 @@ export class Vault extends ContractBase {
         () => 0n
       );
 
-      console.log("Unborrow route:", [
-        positionId,
-        minAssetsOutForPreview,
-        deadline,
-        "0x",
-      ]);
-
       const sim = await abortable(
         this.init.client.public.simulateContract({
           abi: vaultAbi,

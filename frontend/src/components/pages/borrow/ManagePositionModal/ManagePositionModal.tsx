@@ -25,6 +25,7 @@ export function ManagePositionModal({
   onOpenChange,
   onPositionClosure,
   open,
+  selectedAsset,
   selectedPosition,
   title,
 }: ManagePositionModalProps) {
@@ -54,7 +55,11 @@ export function ManagePositionModal({
         <Tabs.Content inset value="close">
           {isAegisStrategy(selectedPosition.strategy) ? (
             <CancelAegisPosition
-              collateralAssetAddress={selectedPosition.asset.address}
+              collateralAssetAddress={
+                selectedPosition.collateralType === 1
+                  ? selectedPosition.asset.address
+                  : selectedAsset.address
+              }
               onPositionClosure={onPositionClosure}
               selectedPosition={selectedPosition}
             />
