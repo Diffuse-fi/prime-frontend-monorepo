@@ -103,7 +103,9 @@ export function useAegisExit(
   const { address: wallet, chainId, publicClient, walletClient } = useClients();
   const [txState, setTxState] = useState<AegisExitTxState>({});
   const [pendingKey, setPendingKey] = useState<null | string>(null);
-  const addressOverride = getContractAddressOverride(chainId, "Viewer") ?? null;
+  const addressOverride =
+    getContractAddressOverride(chainId, "Viewer", env.NEXT_PUBLIC_ADDRESSES_OVERRIDES) ??
+    null;
 
   const viewer = useMemo(() => {
     if (!publicClient) return null;

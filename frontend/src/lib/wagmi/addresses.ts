@@ -22,3 +22,5 @@ export const AddressesOverridesSchema = Json(
     z.record(z.string().min(1), z.object({ current: AddressSchema }))
   )
 );
+
+export type AddressesOverrides = z.infer<typeof AddressesOverridesSchema>;

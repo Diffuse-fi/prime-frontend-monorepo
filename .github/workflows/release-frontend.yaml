@@ -1,63 +1,93 @@
 name: Release frontend
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
+    paths:
+      - "frontend/**"
 
 permissions:
   contents: write
 
+concurrency:
+  group: release-frontend-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   publish:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
-      - id: changed
-        name: Check if frontend/package.json changed
-        run: |
-          if git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" | grep -qE '^frontend/package\.json$'; then
-            echo "should_release=true" >> $GITHUB_OUTPUT
-          else
-            echo "should_release=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Install dependencies
-        if: steps.changed.outputs.should_release == 'true'
         uses: ./.github/actions/install-dependencies
         with:
           setup-node: true
           audit: false
 
-      - if: steps.changed.outputs.should_release == 'true'
-        name: Get frontend version
-        id: frontend
-        run: echo "version=$(node -p \"require('./frontend/package.json').version\")" >> $GITHUB_OUTPUT
-
-      - if: steps.changed.outputs.should_release == 'true'
-        name: Check if tag exists
-        id: tagcheck
+      - name: Check if frontend version was bumped in this PR
+        id: version
+        working-directory: frontend
+        shell: bash
         run: |
-          if git rev-parse "frontend-v${{ steps.frontend.outputs.version }}" >/dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
+          set -euo pipefail
+
+          before="${{ github.event.before }}"
+          # workflow_dispatch doesn't provide github.event.before
+          if [[ -z "$before" || "$before" == "0000000000000000000000000000000000000000" ]]; then
+            before="$(git rev-parse HEAD~1 2>/dev/null || true)"
           fi
 
-      - if: steps.changed.outputs.should_release == 'true' && steps.tagcheck.outputs.exists == 'false'
-        name: Create and push tag
+          if [[ -n "$before" ]]; then
+            npx tsx ./scripts/checkVersionBump.ts --before "$before" --missing-prev skip
+          else
+            # no previous commit available; don't release automatically
+            npx tsx ./scripts/checkVersionBump.ts --missing-prev skip
+          fi
+
+      - name: Compute tag
+        if: steps.version.outputs.should_release == 'true'
+        id: meta
+        shell: bash
         run: |
+          set -euo pipefail
+          echo "tag=frontend-v${{ steps.version.outputs.current }}" >> "$GITHUB_OUTPUT"
+
+      - name: Fail if tag already exists on origin
+        if: steps.version.outputs.should_release == 'true'
+        id: tagcheck
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${{ steps.meta.outputs.tag }}"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
+            echo "::error::Tag already exists: $tag"
+            exit 1
+          fi
+
+      - name: Create and push tag
+        if: steps.version.outputs.should_release == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${{ steps.meta.outputs.tag }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag "frontend-v${{ steps.frontend.outputs.version }}"
-          git push origin "frontend-v${{ steps.frontend.outputs.version }}"
+          git tag "$tag"
+          git push origin "$tag"
 
-      - if: steps.changed.outputs.should_release == 'true' && steps.tagcheck.outputs.exists == 'false'
-        name: Create GitHub Release
+      - name: Create GitHub Release
+        if: steps.version.outputs.should_release == 'true'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: frontend-v${{ steps.frontend.outputs.version }}
+          tag_name: ${{ steps.meta.outputs.tag }}
           generate_release_notes: true
+
+      - name: Skip (no bump)
+        if: steps.version.outputs.should_release != 'true'
+        shell: bash
+        run: echo "No frontend version bump detected — skipping release."
