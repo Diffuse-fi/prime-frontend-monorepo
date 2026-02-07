@@ -1,13 +1,13 @@
 import { Address, getAddress } from "viem";
 
-import { env } from "@/env";
+import { AddressesOverrides } from "./addresses";
 
 export function getContractAddressOverride(
   chainId: number,
-  contractName: string
+  contractName: string,
+  addressesOverrides?: AddressesOverrides
 ): Address | null {
   try {
-    const addressesOverrides = env.NEXT_PUBLIC_ADDRESSES_OVERRIDES;
     if (!addressesOverrides) return null;
 
     const chainOverrides = addressesOverrides[chainId.toString()];

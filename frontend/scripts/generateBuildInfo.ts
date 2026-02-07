@@ -1,3 +1,5 @@
+import { CHAINS } from "@diffuse/config";
+import { resolveAddress } from "@diffuse/sdk-js";
 import nextEnv from "@next/env";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -7,22 +9,25 @@ import os from "node:os";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { AddressesOverridesSchema } from "@/lib/wagmi/addresses";
+import { getContractAddressOverride } from "@/lib/wagmi/getContractAddressOverride";
+
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const frontendRoot = resolve(scriptDir, "..");
 const buildPath = resolve(frontendRoot, "public", "build.json");
 
 nextEnv.loadEnvConfig(frontendRoot, false);
+const { env } = await import("../src/env");
 
 const require = createRequire(import.meta.url);
 
 async function buildInfo() {
-  const { env } = await import("../src/env");
-
   const pkg = await readFrontendPackageJson();
 
   const git = readGitInfo();
   const ci = pickCiInfo();
   const runtime = runtimeInfo();
+  const viewers = viewerInfo();
 
   const versions = {
     next: await tryPkgVersion("next"),
@@ -50,6 +55,9 @@ async function buildInfo() {
     publicEnv,
     vercelEnv: ci.vercel.env,
     versions,
+    viewers: Object.entries(viewers)
+      .sort()
+      .map(([k, v]) => `${k}:${v}`),
   };
 
   const buildId = createHash("sha256")
@@ -67,6 +75,7 @@ async function buildInfo() {
     runtime,
     schemaVersion: 1,
     versions,
+    viewers,
   };
 }
 
@@ -275,10 +284,35 @@ function trySpawn(cmd: string, args: string[]) {
       stdio: ["ignore", "pipe", "ignore"],
     });
     if (res.status !== 0) return;
+
     return (res.stdout ?? "").trim() || undefined;
   } catch {
+    console.warn(`Failed to spawn ${cmd} ${args.join(" ")}`);
     return;
   }
+}
+
+function viewerInfo() {
+  const viewersMap: Record<string, string> = {};
+
+  const rawOverrides = env.NEXT_PUBLIC_ADDRESSES_OVERRIDES;
+  const overrides = rawOverrides
+    ? AddressesOverridesSchema.parse(rawOverrides)
+    : undefined;
+
+  for (const chain of CHAINS) {
+    const addressOverride =
+      getContractAddressOverride(chain.id, "Viewer", overrides) ?? undefined;
+
+    const key = `${chain.name} (${chain.id})`;
+    viewersMap[key] = resolveAddress({
+      addressOverride,
+      chainId: chain.id,
+      contract: "Viewer",
+    });
+  }
+
+  return viewersMap;
 }
 
 await maybeWriteBuildInfo();
