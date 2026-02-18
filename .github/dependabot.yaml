@@ -6,8 +6,9 @@ updates:
       interval: "monthly"
     allow:
       - dependency-name: "baseline-browser-mapping"
-    open-pull-requests-limit: 1
+        dependency-type: "all"
     commit-message:
       prefix: "chore"
+      include: "scope"
     labels:
       - "dependencies"
