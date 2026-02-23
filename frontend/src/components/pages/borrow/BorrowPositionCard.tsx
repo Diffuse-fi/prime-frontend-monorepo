@@ -210,6 +210,7 @@ export function BorrowerPositionCard({
           borrowedAmount={assetsBorrowed}
           collateralAsset={collateralAsset}
           collateralGiven={collateralGiven}
+          id={position.id.toString()}
           leverage={leverage}
           liquidationPenalty={position.vault.feeData.liquidationFee}
           liquidationPrice={liquidationPrice}

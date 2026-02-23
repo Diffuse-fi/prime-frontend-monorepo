@@ -12,3 +12,4 @@ updates:
       include: "scope"
     labels:
       - "dependencies"
+    target-branch: "dev"
