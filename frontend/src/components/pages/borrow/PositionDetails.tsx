@@ -23,6 +23,7 @@ interface PositionDetailsProps {
   borrowedAmount: bigint;
   collateralAsset: AssetInfo;
   collateralGiven: bigint;
+  id?: string;
   leverage: bigint;
   liquidationPenalty: number;
   liquidationPrice?: bigint;
@@ -39,6 +40,7 @@ export function PositionDetails({
   borrowedAmount,
   collateralAsset,
   collateralGiven,
+  id,
   leverage,
   liquidationPenalty,
   liquidationPrice,
@@ -108,19 +110,24 @@ export function PositionDetails({
 
   return (
     <div className="text-text-dimmed mt-2 flex flex-col gap-4 text-sm">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center leading-none">
-          {t("targetApy")}
-          <InfoIcon
-            ariaLabel={t("targetApyAriaLabel")}
-            className="ml-1"
-            size={14}
-            text={t("targetApyTooltip")}
-          />
+      <div className="flex flex-col gap-2">
+        {id !== undefined && (
+          <div className="flex items-center justify-between">{`ID: ${id}`}</div>
+        )}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center leading-none">
+            {t("targetApy")}
+            <InfoIcon
+              ariaLabel={t("targetApyAriaLabel")}
+              className="ml-1"
+              size={14}
+              text={t("targetApyTooltip")}
+            />
+          </div>
+          <span className="pr-2">
+            {targetApyBps === null ? "N/A" : formatAprToPercent(targetApyBps).text}
+          </span>
         </div>
-        <span className="pr-2">
-          {targetApyBps === null ? "N/A" : formatAprToPercent(targetApyBps).text}
-        </span>
       </div>
       {showUnprofitableWarning ? (
         <p className="text-err font-mono text-xs">{t("unprofitableWarning")}</p>

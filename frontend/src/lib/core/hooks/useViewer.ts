@@ -21,7 +21,7 @@ import { VaultRiskLevel } from "../types";
 
 type UseViewerParams = {
   chainId: number;
-  filterOutOutadtedStrategies?: boolean;
+  filterOutOutdatedStrategies?: boolean;
 };
 
 const ROOT = "viewer";
@@ -34,7 +34,7 @@ export const viewerQK = {
 
 const limit = pLimit(6);
 
-export function useViewer({ chainId, filterOutOutadtedStrategies }: UseViewerParams) {
+export function useViewer({ chainId, filterOutOutdatedStrategies }: UseViewerParams) {
   const addressOverride =
     getContractAddressOverride(chainId, "Viewer", env.NEXT_PUBLIC_ADDRESSES_OVERRIDES) ??
     null;
@@ -70,7 +70,7 @@ export function useViewer({ chainId, filterOutOutadtedStrategies }: UseViewerPar
       riskLevel: v.riskLevel as VaultRiskLevel,
       strategies: v.strategies
         .filter(s => {
-          if (!filterOutOutadtedStrategies) return true;
+          if (!filterOutOutdatedStrategies) return true;
           return !isPast(s.endDate);
         })
         .map(s => ({
@@ -84,7 +84,7 @@ export function useViewer({ chainId, filterOutOutadtedStrategies }: UseViewerPar
           }),
         })),
     }));
-  }, [query.data, chainId, filterOutOutadtedStrategies]);
+  }, [query.data, chainId, filterOutOutdatedStrategies]);
 
   return {
     allVaults,

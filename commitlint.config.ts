@@ -28,10 +28,7 @@ const Configuration = {
   },
   helpUrl: "https://github.com/conventional-changelog/commitlint/#what-is-commitlint",
   ignores: [
-    commit =>
-      commit.includes("WIP") ||
-      commit.includes("Merge branch") ||
-      commit.includes("merge"),
+    commit => commit.includes("WIP") || /^merge (branch|pull request)/i.test(commit),
   ],
 } satisfies UserConfig;
 
