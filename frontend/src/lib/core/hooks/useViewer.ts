@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import { Address, getAddress } from "viem";
 import { usePublicClient } from "wagmi";
 
+import { env } from "@/env";
 import {
   populateAssetListWithMeta,
   populateAssetWithMeta,
@@ -32,7 +33,9 @@ export const viewerQK = {
 const limit = pLimit(6);
 
 export function useViewer({ chainId }: UseViewerParams) {
-  const addressOverride = getContractAddressOverride(chainId, "Viewer") ?? null;
+  const addressOverride =
+    getContractAddressOverride(chainId, "Viewer", env.NEXT_PUBLIC_ADDRESSES_OVERRIDES) ??
+    null;
   const publicClient = usePublicClient({ chainId });
 
   const viewer = useMemo(() => {
