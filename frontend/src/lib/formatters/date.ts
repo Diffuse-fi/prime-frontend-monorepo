@@ -81,3 +81,8 @@ export function formatTimeAgo(ts: Dateish, opts?: DateFormatOpts): FormatResult<
 
   return { text, tooltip: d.toISOString(), value: d.valueOf() };
 }
+
+export const isPast = (ts: Dateish, opts?: DateFormatOpts): boolean => {
+  const d = day(ts, opts);
+  return d.isBefore(day(undefined, opts));
+};
