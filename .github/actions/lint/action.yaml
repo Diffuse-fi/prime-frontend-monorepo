@@ -10,7 +10,7 @@ runs:
       shell: bash
 
     - name: Lint
-      run: npm run lint -- --debug
+      run: npm run lint
       shell: bash
 
     - name: Check code formatting
