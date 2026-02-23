@@ -43,7 +43,10 @@ export function useVaults() {
   const { chainId } = useReadonlyChain();
   const publicClient = usePublicClient({ chainId });
   const { address: owner, walletClient } = useClients();
-  const { allVaults, isLoading, isPending, refetch } = useViewer({ chainId });
+  const { allVaults, isLoading, isPending, refetch } = useViewer({
+    chainId,
+    filterOutOutadtedStrategies: true,
+  });
   const qc = useQueryClient();
 
   const addressKey = useMemo(() => {
