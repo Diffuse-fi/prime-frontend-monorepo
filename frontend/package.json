@@ -11,6 +11,7 @@
     "build:generate-build-info": "tsx ./scripts/generateBuildInfo.ts",
     "build:safe-manifest": "tsx ./scripts/buildSafeManifest.ts",
     "check:env": "tsx ./scripts/validateEnv.ts",
+    "check:i18n": "tsx ./scripts/checkI18n.ts",
     "dev": "npm run build:safe-manifest && next dev --turbopack",
     "indexer:migrate": "tsx ./scripts/indexerMigrate.ts",
     "start": "npm run check:env && next start",
@@ -64,6 +65,7 @@
   },
   "devDependencies": {
     "@lhci/cli": "^0.15.1",
+    "@lingual/i18n-check": "0.8.19",
     "@next/env": "15.5.2",
     "@playwright/test": "1.56.1",
     "@types/negotiator": "^0.6.4",
