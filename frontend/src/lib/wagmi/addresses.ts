@@ -1,20 +1,9 @@
 import { z } from "zod";
 
+import { envJsonSchemaWithError } from "../misc/env";
 import { AddressSchema } from "./validations";
 
-const Json = <T extends z.ZodTypeAny>(schema: T) =>
-  z.preprocess(v => {
-    if (typeof v !== "string") return v;
-    const s = v.trim();
-    if (s === "") return;
-    try {
-      return JSON.parse(s);
-    } catch {
-      return;
-    }
-  }, schema);
-
-export const AddressesOverridesSchema = Json(
+export const AddressesOverridesSchema = envJsonSchemaWithError(
   z.record(
     z.string().refine(s => z.number().int().safeParse(Number(s)).success, {
       message: "Invalid chain ID",
