@@ -17,6 +17,10 @@ runs:
       run: npm run check:format
       shell: bash
 
+    - name: Check i18n translations
+      run: npm run check:i18n
+      shell: bash
+
     # - name: Check for unused files, dependencies, and exports
     #   run: npm run knip
     #   shell: bash
