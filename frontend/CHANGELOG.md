@@ -1,5 +1,23 @@
 # diffuse-frontend
 
+## 0.3.0
+
+### Minor Changes
+
+- [#219](https://github.com/Diffuse-fi/prime-frontend-monorepo/pull/219) [`7015d3f`](https://github.com/Diffuse-fi/prime-frontend-monorepo/commit/7015d3fbecafd8325ceab0762ec53fd926d22361) Thanks [@ukorvl](https://github.com/ukorvl)! - change leverage slider behavior - now change slider value on leverageed asset amount change (instead of collateral amount change)
+
+- [#207](https://github.com/Diffuse-fi/prime-frontend-monorepo/pull/207) [`42c0077`](https://github.com/Diffuse-fi/prime-frontend-monorepo/commit/42c00774938e54c1cfab8a80c73a4939c0b644a6) Thanks [@ukorvl](https://github.com/ukorvl)! - fix aegis exit finalized step
+
+### Patch Changes
+
+- [#213](https://github.com/Diffuse-fi/prime-frontend-monorepo/pull/213) [`723e2b4`](https://github.com/Diffuse-fi/prime-frontend-monorepo/commit/723e2b459c72a7665801e986f80a6065eee611bf) Thanks [@copilot-swe-agent](https://github.com/apps/copilot-swe-agent)! - add frontend i18n translation check script
+
+- [#207](https://github.com/Diffuse-fi/prime-frontend-monorepo/pull/207) [`42c0077`](https://github.com/Diffuse-fi/prime-frontend-monorepo/commit/42c00774938e54c1cfab8a80c73a4939c0b644a6) Thanks [@ukorvl](https://github.com/ukorvl)! - add position id to position card
+
+- [#216](https://github.com/Diffuse-fi/prime-frontend-monorepo/pull/216) [`efda9b8`](https://github.com/Diffuse-fi/prime-frontend-monorepo/commit/efda9b89ac5a34ecbea836016a1bbcdff061f937) Thanks [@ukorvl](https://github.com/ukorvl)! - add stringified json env safe parsing
+
+- [#207](https://github.com/Diffuse-fi/prime-frontend-monorepo/pull/207) [`42c0077`](https://github.com/Diffuse-fi/prime-frontend-monorepo/commit/42c00774938e54c1cfab8a80c73a4939c0b644a6) Thanks [@ukorvl](https://github.com/ukorvl)! - filter out outdated strategies
+
 ## 0.2.0
 
 ### Minor Changes
