@@ -13,7 +13,7 @@ import { useLocalization } from "@/lib/localization/useLocalization";
 
 import { useVaults } from "../../../lib/core/hooks/useVaults";
 import { BorrowCard } from "./BorrowCard";
-import { BorrowModal } from "./BorrowModal";
+import { BorrowModal } from "./BorrowModal/BorrowModal";
 import { SelectedStrategy } from "./types";
 
 export default function Borrow() {

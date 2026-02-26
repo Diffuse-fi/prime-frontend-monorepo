@@ -66,9 +66,6 @@
       "liquidationPrice": "Liquidation price",
       "maturityYield": "Maturity yield",
       "positionHealth": "Position health",
-      "spreadFee": "Spread fee",
-      "spreadFeeAriaLabel": "Spread fee information",
-      "spreadFeeTooltip": "The fee charged by the platform for facilitating the borrowing process.",
       "targetApy": "Effective APY",
       "targetApyAriaLabel": "Effective APY information",
       "targetApyTooltip": "Effective APY depends on the unstake/redeem rate on the maturity date. Even when direct redemption is in place, the rate is not guaranteed to stay the same, so the final APY might change on the maturity date.",
@@ -99,7 +96,6 @@
         "borrow": "Borrow",
         "lend": "Lend"
       },
-      "needToConnect": "Please connect your wallet",
       "switchNetworkTitle": "Switch Network",
       "title": "Diffuse Prime",
       "toasts": {
@@ -158,13 +154,7 @@
     "title": "Explore Prime Broker",
     "toasts": {
       "approveSuccessToast": "Approval successful!",
-      "depositErrorToast": "An error occurred.",
       "depositSuccessToast": "Deposit successful!"
-    },
-    "tooltips": {
-      "switchNetwork": "Switch Network",
-      "toggleTheme": "Toggle Theme",
-      "walletNotConnected": "Wallet not connected"
     },
     "vault": "Vault"
   },
@@ -212,11 +202,6 @@
   "not-found": {
     "cta": "Go to Lend page",
     "description": "The page you are looking for does not exist or has been moved.",
-    "metadata": {
-      "description": "The page you are looking for does not exist or has been moved.",
-      "keywords": "Diffuse, Prime, 404, Not Found, Error",
-      "title": "Page Not Found"
-    },
     "title": "404 - Page Not Found"
   }
 }
