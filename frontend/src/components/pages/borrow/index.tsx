@@ -10,6 +10,7 @@ import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
 import { useBorrowerPositions } from "@/lib/core/hooks/useBorrowerPositions";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
 import { useLocalization } from "@/lib/localization/useLocalization";
+import { showSkeletons } from "@/lib/misc/ui";
 
 import { useVaults } from "../../../lib/core/hooks/useVaults";
 import { BorrowCard } from "./BorrowCard";
@@ -48,7 +49,9 @@ export default function Borrow() {
         />
       </div>
       <div className="grid grid-cols-1 gap-2 sm:gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {selectedAsset && !!chain
+        {isLoading
+          ? showSkeletons(3, "h-50")
+          : selectedAsset && !!chain
           ? strategies.map(strategy => (
               <BorrowCard
                 chain={chain}
