@@ -5,6 +5,7 @@ import { useAccount, useChainId, useSwitchChain } from "wagmi";
 
 import {
   formatChainQueryValue,
+  getChainQueryValue,
   parseChainQueryValue,
 } from "@/lib/chains/query";
 import {
@@ -45,15 +46,6 @@ export function ChainQuerySyncEffects() {
       if (nextValue === chainQueryValue) return;
       pendingQueryValueRef.current = nextValue;
       setQuery({ chain: nextValue }, QUERY_OPTIONS);
-      if (typeof window !== "undefined") {
-        const url = new URL(window.location.href);
-        if (nextValue === undefined) {
-          url.searchParams.delete("chain");
-        } else {
-          url.searchParams.set("chain", nextValue);
-        }
-        window.history.replaceState(window.history.state, "", url.toString());
-      }
     },
     [chainQueryValue, setQuery]
   );
@@ -118,12 +110,11 @@ export function ChainQuerySyncEffects() {
     if (
       isExternalQueryChange &&
       chainQueryValue !== undefined &&
-      desiredChainId != null
+      desiredChainId != null &&
+      desiredChainId !== readonlyChainId
     ) {
-      if (desiredChainId !== readonlyChainId) {
-        applyRequestedChain(desiredChainId);
-        return;
-      }
+      applyRequestedChain(desiredChainId);
+      return;
     }
 
     const expectedValue = formatChainQueryValue(readonlyChainId);
@@ -140,21 +131,4 @@ export function ChainQuerySyncEffects() {
   ]);
 
   return null;
-}
-
-function getChainQueryValue(value: unknown): string | undefined {
-  if (Array.isArray(value)) {
-    const firstString = value.find(entry => typeof entry === "string");
-    return typeof firstString === "string" ? firstString : undefined;
-  }
-
-  if (typeof value === "number" && Number.isFinite(value)) {
-    return String(value);
-  }
-
-  if (typeof value === "string") {
-    return value;
-  }
-
-  return undefined;
 }

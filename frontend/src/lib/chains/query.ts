@@ -26,18 +26,10 @@ export function formatChainQueryValue(chainId: number): string {
   return String(chainId);
 }
 
-export function parseChainQueryValue(value: unknown): null | number {
-  const raw = extractChainQueryValue(value);
-  if (!raw) return null;
-
-  const normalized = normalizeAlias(raw);
-  return chainIdByAlias.get(normalized) ?? null;
-}
-
-function extractChainQueryValue(value: unknown): null | string {
+export function getChainQueryValue(value: unknown): string | undefined {
   if (Array.isArray(value)) {
     const firstString = value.find(entry => typeof entry === "string");
-    return typeof firstString === "string" ? firstString : null;
+    return typeof firstString === "string" ? firstString : undefined;
   }
 
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -48,5 +40,13 @@ function extractChainQueryValue(value: unknown): null | string {
     return value;
   }
 
-  return null;
+  return undefined;
+}
+
+export function parseChainQueryValue(value: unknown): null | number {
+  const raw = getChainQueryValue(value);
+  if (!raw) return null;
+
+  const normalized = normalizeAlias(raw);
+  return chainIdByAlias.get(normalized) ?? null;
 }
