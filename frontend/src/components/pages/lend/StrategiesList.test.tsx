@@ -60,16 +60,24 @@ const strategies = [
   pool: "0x0",
 }));
 
+const TABLE_BODY_ROWGROUP_INDEX = 1;
+const ASSET_CELL_INDEX = 0;
+const symbols = ["AAA", "BBB", "CCC"] as const;
+
 describe("<StrategiesList />", () => {
   it("sorts rows by APR and end date when clicking table headers", async () => {
     const user = userEvent.setup();
     render(<StrategiesList strategies={strategies} />);
 
     const getAssetOrder = () => {
-      const rows = within(screen.getAllByRole("rowgroup")[1]).getAllByRole("row");
-      return rows.map(
-        row => within(row).getAllByRole("cell")[0].textContent?.trim().slice(-3) ?? ""
-      );
+      const rows = within(
+        screen.getAllByRole("rowgroup")[TABLE_BODY_ROWGROUP_INDEX]
+      ).getAllByRole("row");
+      return rows.map(row => {
+        const cellText = within(row).getAllByRole("cell")[ASSET_CELL_INDEX].textContent ?? "";
+        const symbol = symbols.find(item => cellText.includes(item));
+        return symbol ?? "";
+      });
     };
 
     expect(getAssetOrder()).toEqual(["AAA", "BBB", "CCC"]);
@@ -84,5 +92,8 @@ describe("<StrategiesList />", () => {
     const endDateHeader = screen.getByRole("columnheader", { name: "End date" });
     await user.click(endDateHeader);
     expect(getAssetOrder()).toEqual(["CCC", "AAA", "BBB"]);
+
+    await user.click(endDateHeader);
+    expect(getAssetOrder()).toEqual(["BBB", "AAA", "CCC"]);
   });
 });

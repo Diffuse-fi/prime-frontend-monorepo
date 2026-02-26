@@ -13,11 +13,15 @@ export interface StrategiesListProps {
 
 export function StrategiesList({ strategies }: StrategiesListProps) {
   const t = useTranslations();
-  const data = strategies.map(strategy => ({
-    apr: strategy.apr,
-    endDate: strategy.endDate,
-    strategy,
-  }));
+  const data = React.useMemo(
+    () =>
+      strategies.map(strategy => ({
+        apr: strategy.apr,
+        endDate: strategy.endDate,
+        strategy,
+      })),
+    [strategies]
+  );
 
   return (
     <div className="bg-preset-gray-50 overflow-hidden rounded-md pt-2 pb-4">
