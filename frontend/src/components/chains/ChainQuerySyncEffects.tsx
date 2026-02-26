@@ -38,10 +38,6 @@ export function ChainQuerySyncEffects() {
   const lastQueryValueRef = useRef<string | undefined>(undefined);
   const pendingQueryValueRef = useRef<string | undefined>(undefined);
   const hasPendingRef = useRef(false);
-  const walletChainIdRef = useRef(walletChainId);
-  useEffect(() => {
-    walletChainIdRef.current = walletChainId;
-  }, [walletChainId]);
 
   const updateQuery = useCallback(
     (chainId?: number) => {
@@ -73,16 +69,18 @@ export function ChainQuerySyncEffects() {
       }
 
       if (!switchChainAsync) {
-        updateQuery(walletChainIdRef.current ?? readonlyChainId);
+        updateQuery(walletChainId ?? readonlyChainId);
         return;
       }
 
-      void (async () => {
+      const handleSwitch = async () => {
         try {
-          await switchChainAsync({ chainId: targetChainId });
-          if (walletChainIdRef.current !== targetChainId) {
-            updateQuery(walletChainIdRef.current ?? readonlyChainId);
+          const switchedChain = await switchChainAsync({ chainId: targetChainId });
+          if (switchedChain.id !== targetChainId) {
+            updateQuery(walletChainId ?? readonlyChainId);
+            return;
           }
+          setReadonlyChainId(targetChainId);
         } catch (error) {
           chainLogger.warn("chain switch failed", {
             error,
@@ -91,9 +89,11 @@ export function ChainQuerySyncEffects() {
           const targetChain = getChainById(targetChainId);
           const targetLabel = targetChain?.name ?? `chain ${targetChainId}`;
           toast(`Failed to switch to ${targetLabel}. Check your wallet.`);
-          updateQuery(walletChainIdRef.current ?? readonlyChainId);
+          updateQuery(walletChainId ?? readonlyChainId);
         }
-      })();
+      };
+
+      handleSwitch();
     },
     [
       isConnected,
