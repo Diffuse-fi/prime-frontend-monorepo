@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { getVaultRiskLevelColor } from "@/lib/core/utils/vault";
 import { formatUnits } from "@/lib/formatters/asset";
+import { isPast } from "@/lib/formatters/date";
 import { formatAprToPercent } from "@/lib/formatters/finance";
 
 import { VaultFullInfo } from "../../../lib/core/types";
@@ -104,7 +105,7 @@ export function VaultCard({
       />
       <div className="flex flex-col gap-2">
         <UncontrolledCollapsible defaultOpen={false} summary={t("listOfStrategies")}>
-          <StrategiesList strategies={vault.strategies} />
+          <StrategiesList strategies={vault.strategies.filter(s => !isPast(s.endDate))} />
         </UncontrolledCollapsible>
         <UncontrolledCollapsible
           defaultOpen={false}

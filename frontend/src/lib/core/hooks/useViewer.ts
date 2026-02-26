@@ -12,7 +12,6 @@ import {
   populateAssetListWithMeta,
   populateAssetWithMeta,
 } from "@/lib/assets/assetsMeta";
-import { isPast } from "@/lib/formatters/date";
 import { getContractAddressOverride } from "@/lib/wagmi/getContractAddressOverride";
 
 import { opt, qk } from "../../query/helpers";
@@ -21,7 +20,6 @@ import { VaultRiskLevel } from "../types";
 
 type UseViewerParams = {
   chainId: number;
-  filterOutOutdatedStrategies?: boolean;
 };
 
 const ROOT = "viewer";
@@ -34,7 +32,7 @@ export const viewerQK = {
 
 const limit = pLimit(6);
 
-export function useViewer({ chainId, filterOutOutdatedStrategies }: UseViewerParams) {
+export function useViewer({ chainId }: UseViewerParams) {
   const addressOverride =
     getContractAddressOverride(chainId, "Viewer", env.NEXT_PUBLIC_ADDRESSES_OVERRIDES) ??
     null;
@@ -68,23 +66,18 @@ export function useViewer({ chainId, filterOutOutdatedStrategies }: UseViewerPar
         }))
       ),
       riskLevel: v.riskLevel as VaultRiskLevel,
-      strategies: v.strategies
-        .filter(s => {
-          if (!filterOutOutdatedStrategies) return true;
-          return !isPast(s.endDate);
-        })
-        .map(s => ({
-          ...s,
-          token: populateAssetWithMeta({
-            address: getAddress(s.token.asset),
-            chainId: chainId,
-            decimals: s.token.decimals,
-            name: s.token.symbol,
-            symbol: s.token.symbol,
-          }),
-        })),
+      strategies: v.strategies.map(s => ({
+        ...s,
+        token: populateAssetWithMeta({
+          address: getAddress(s.token.asset),
+          chainId: chainId,
+          decimals: s.token.decimals,
+          name: s.token.symbol,
+          symbol: s.token.symbol,
+        }),
+      })),
     }));
-  }, [query.data, chainId, filterOutOutdatedStrategies]);
+  }, [query.data, chainId]);
 
   return {
     allVaults,
