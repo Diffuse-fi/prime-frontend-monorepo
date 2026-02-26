@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 
+import { getChainById } from "@/lib/chains";
 import {
   formatChainQueryValue,
   getChainQueryValue,
@@ -35,7 +36,8 @@ export function ChainQuerySyncEffects() {
   const { switchChainAsync } = useSwitchChain();
 
   const lastQueryValueRef = useRef<string | undefined>(undefined);
-  const pendingQueryValueRef = useRef<null | string | undefined>(null);
+  const pendingQueryValueRef = useRef<string | undefined>(undefined);
+  const hasPendingRef = useRef(false);
   const walletChainIdRef = useRef(walletChainId);
   useEffect(() => {
     walletChainIdRef.current = walletChainId;
@@ -47,6 +49,7 @@ export function ChainQuerySyncEffects() {
         chainId === undefined ? undefined : formatChainQueryValue(chainId);
       if (nextValue === chainQueryValue) return;
       pendingQueryValueRef.current = nextValue;
+      hasPendingRef.current = true;
       setQuery({ chain: nextValue }, QUERY_OPTIONS);
     },
     [chainQueryValue, setQuery]
@@ -54,8 +57,7 @@ export function ChainQuerySyncEffects() {
 
   const queryValueChanged = chainQueryValue !== lastQueryValueRef.current;
   const isPendingChange =
-    pendingQueryValueRef.current !== null &&
-    chainQueryValue === pendingQueryValueRef.current;
+    hasPendingRef.current && chainQueryValue === pendingQueryValueRef.current;
   const isExternalQueryChange = queryValueChanged && !isPendingChange;
 
   const applyRequestedChain = useCallback(
@@ -86,7 +88,9 @@ export function ChainQuerySyncEffects() {
             error,
             requestedChainId: targetChainId,
           });
-          toast("Failed to switch network.");
+          const targetChain = getChainById(targetChainId);
+          const targetLabel = targetChain?.name ?? `chain ${targetChainId}`;
+          toast(`Failed to switch to ${targetLabel}. Check your wallet.`);
           updateQuery(walletChainIdRef.current ?? readonlyChainId);
         }
       })();
@@ -103,7 +107,8 @@ export function ChainQuerySyncEffects() {
 
   useEffect(() => {
     if (isPendingChange) {
-      pendingQueryValueRef.current = null;
+      hasPendingRef.current = false;
+      pendingQueryValueRef.current = undefined;
     }
     lastQueryValueRef.current = chainQueryValue;
   }, [chainQueryValue, isPendingChange]);
