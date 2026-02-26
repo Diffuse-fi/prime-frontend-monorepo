@@ -6,8 +6,6 @@ function normalizeAlias(value: string): string {
   return value.trim().toLowerCase().split(/\s+/).join("-");
 }
 
-let chainIdByAlias: Map<string, number> | undefined;
-
 export function formatChainQueryValue(chainId: number): string {
   const aliasMap = getChainIdByAlias();
   if (chainId === 1 && aliasMap.has("mainnet")) {
@@ -45,21 +43,17 @@ export function parseChainQueryValue(value: unknown): null | number {
 }
 
 function getChainIdByAlias(): Map<string, number> {
-  if (!chainIdByAlias) {
-    const aliasMap = new Map<string, number>();
+  const aliasMap = new Map<string, number>();
 
-    for (const chain of CHAINS) {
-      aliasMap.set(normalizeAlias(String(chain.id)), chain.id);
-      aliasMap.set(normalizeAlias(chain.name), chain.id);
-    }
-
-    const mainnetChain = getChainById(1);
-    if (mainnetChain) {
-      aliasMap.set("mainnet", mainnetChain.id);
-    }
-
-    chainIdByAlias = aliasMap;
+  for (const chain of CHAINS) {
+    aliasMap.set(normalizeAlias(String(chain.id)), chain.id);
+    aliasMap.set(normalizeAlias(chain.name), chain.id);
   }
 
-  return chainIdByAlias;
+  const mainnetChain = getChainById(1);
+  if (mainnetChain) {
+    aliasMap.set("mainnet", mainnetChain.id);
+  }
+
+  return aliasMap;
 }
