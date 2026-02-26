@@ -1,4 +1,5 @@
 import { cn } from "@diffuse/ui-kit";
+import React from "react";
 import { Address, getAddress } from "viem";
 
 import { stableSeedForAddress } from "@/lib/misc/jazzIcons";
