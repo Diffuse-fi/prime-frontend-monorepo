@@ -77,28 +77,26 @@ export function ChainQuerySyncEffects() {
       const currentReadonlyChainId = readonlyChainId;
 
       const switchChain = async () => {
-        try {
-          const switchedChain = await switchChainAsync({
-            chainId: targetChainId,
-          });
-          if (switchedChain.id !== targetChainId) {
-            updateQuery(currentWalletChainId ?? currentReadonlyChainId);
-            return;
-          }
-          setReadonlyChainId(targetChainId);
-        } catch (error) {
-          chainLogger.warn("chain switch failed", {
-            error,
-            requestedChainId: targetChainId,
-          });
-          const targetChain = getChainById(targetChainId);
-          const targetLabel = targetChain?.name ?? `chain ${targetChainId}`;
-          toast(`Failed to switch to ${targetLabel}. Check your wallet.`);
+        const switchedChain = await switchChainAsync({
+          chainId: targetChainId,
+        });
+        if (switchedChain.id !== targetChainId) {
           updateQuery(currentWalletChainId ?? currentReadonlyChainId);
+          return;
         }
+        setReadonlyChainId(targetChainId);
       };
 
-      void switchChain();
+      switchChain().catch(error => {
+        chainLogger.warn("chain switch failed", {
+          error,
+          requestedChainId: targetChainId,
+        });
+        const targetChain = getChainById(targetChainId);
+        const targetLabel = targetChain?.name ?? `chain ${targetChainId}`;
+        toast(`Failed to switch to ${targetLabel}. Check your wallet.`);
+        updateQuery(currentWalletChainId ?? currentReadonlyChainId);
+      });
     },
     [
       isConnected,
