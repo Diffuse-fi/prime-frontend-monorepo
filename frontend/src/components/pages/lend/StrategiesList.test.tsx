@@ -3,8 +3,6 @@ import userEvent from "@testing-library/user-event";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 
-import { StrategiesList } from "./StrategiesList";
-
 const translations = {
   "common.apr": "APR",
   "lend.strategiesList.asset": "Asset",
@@ -20,6 +18,8 @@ vi.mock("next-intl", () => ({
 vi.mock("@/components/misc/images/AssetImage", () => ({
   AssetImage: () => <span aria-hidden="true" />,
 }));
+
+import { StrategiesList } from "./StrategiesList";
 
 const strategies = [
   {
@@ -67,12 +67,9 @@ describe("<StrategiesList />", () => {
 
     const getAssetOrder = () => {
       const rows = within(screen.getAllByRole("rowgroup")[1]).getAllByRole("row");
-      return rows.map(row => {
-        if (within(row).queryByText("AAA")) return "AAA";
-        if (within(row).queryByText("BBB")) return "BBB";
-        if (within(row).queryByText("CCC")) return "CCC";
-        return "";
-      });
+      return rows.map(
+        row => within(row).getAllByRole("cell")[0].textContent?.trim().slice(-3) ?? ""
+      );
     };
 
     expect(getAssetOrder()).toEqual(["AAA", "BBB", "CCC"]);

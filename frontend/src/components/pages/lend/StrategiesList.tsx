@@ -48,9 +48,7 @@ export function StrategiesList({ strategies }: StrategiesListProps) {
               const va = a.getValue<bigint>(id);
               const vb = b.getValue<bigint>(id);
 
-              if (va === vb) return 0;
-              if (va > vb) return 1;
-              return -1;
+              return compareBigints(va, vb);
             },
           },
           {
@@ -61,9 +59,7 @@ export function StrategiesList({ strategies }: StrategiesListProps) {
               const va = a.getValue<bigint>(id);
               const vb = b.getValue<bigint>(id);
 
-              if (va === vb) return 0;
-              if (va > vb) return 1;
-              return -1;
+              return compareBigints(va, vb);
             },
           },
         ]}
@@ -71,4 +67,10 @@ export function StrategiesList({ strategies }: StrategiesListProps) {
       />
     </div>
   );
+}
+
+function compareBigints(a: bigint, b: bigint): number {
+  if (a === b) return 0;
+  if (a > b) return 1;
+  return -1;
 }
