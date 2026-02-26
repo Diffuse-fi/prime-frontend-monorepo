@@ -10,11 +10,14 @@ import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
 import { useBorrowerPositions } from "@/lib/core/hooks/useBorrowerPositions";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
 import { useLocalization } from "@/lib/localization/useLocalization";
+import { showSkeletons } from "@/lib/misc/ui";
 
 import { useVaults } from "../../../lib/core/hooks/useVaults";
 import { BorrowCard } from "./BorrowCard";
 import { BorrowModal } from "./BorrowModal/BorrowModal";
 import { SelectedStrategy } from "./types";
+
+const SKELETON_PLACEHOLDER_COUNT = 3;
 
 export default function Borrow() {
   const { chain } = useReadonlyChain();
@@ -33,6 +36,24 @@ export default function Borrow() {
       vault: vaults.find(v => v.strategies.some(s => s.id === strategy.id))!,
     }));
   const { openConnectModal } = useConnectModal();
+  const cardsContent = isLoading
+    ? showSkeletons(SKELETON_PLACEHOLDER_COUNT, "h-50")
+    : selectedAsset && chain
+      ? strategies.map(strategy => (
+          <BorrowCard
+            chain={chain}
+            isConnected={isConnected}
+            key={strategy.id}
+            onBorrow={() => {
+              setSelectedStrategy(strategy);
+            }}
+            onConnectWallet={openConnectModal}
+            selectedAsset={selectedAsset}
+            strategy={strategy}
+            vault={strategy.vault}
+          />
+        ))
+      : null;
 
   return (
     <div className="mt-9 flex flex-col gap-3 md:gap-8">
@@ -48,22 +69,7 @@ export default function Borrow() {
         />
       </div>
       <div className="grid grid-cols-1 gap-2 sm:gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {selectedAsset && !!chain
-          ? strategies.map(strategy => (
-              <BorrowCard
-                chain={chain}
-                isConnected={isConnected}
-                key={strategy.id}
-                onBorrow={() => {
-                  setSelectedStrategy(strategy);
-                }}
-                onConnectWallet={openConnectModal}
-                selectedAsset={selectedAsset!}
-                strategy={strategy}
-                vault={strategy.vault}
-              />
-            ))
-          : null}
+        {cardsContent}
       </div>
       {selectedAsset !== null && selectedStrategy !== null && (
         <BorrowModal
