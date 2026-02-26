@@ -17,6 +17,8 @@ import { BorrowCard } from "./BorrowCard";
 import { BorrowModal } from "./BorrowModal/BorrowModal";
 import { SelectedStrategy } from "./types";
 
+const SKELETON_PLACEHOLDER_COUNT = 3;
+
 export default function Borrow() {
   const { chain } = useReadonlyChain();
   const { isLoading, refetch, vaults, vaultsAssetsList } = useVaults();
@@ -50,7 +52,7 @@ export default function Borrow() {
       </div>
       <div className="grid grid-cols-1 gap-2 sm:gap-4 md:grid-cols-2 xl:grid-cols-3">
         {isLoading
-          ? showSkeletons(3, "h-50")
+          ? showSkeletons(SKELETON_PLACEHOLDER_COUNT, "h-50")
           : selectedAsset && !!chain
           ? strategies.map(strategy => (
               <BorrowCard
