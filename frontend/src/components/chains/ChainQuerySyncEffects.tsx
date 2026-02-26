@@ -12,6 +12,7 @@ import {
   useReadonlyChainActions,
   useReadonlyChainState,
 } from "@/lib/chains/ReadonlyChainContext";
+import { chainLogger } from "@/lib/core/utils/loggers";
 import { useQueryWriter } from "@/lib/misc/useQueryWriter";
 
 const QUERY_OPTIONS = { replace: true };
@@ -79,7 +80,11 @@ export function ChainQuerySyncEffects() {
           if (walletChainIdRef.current !== targetChainId) {
             updateQuery(walletChainIdRef.current ?? readonlyChainId);
           }
-        } catch {
+        } catch (error) {
+          chainLogger.warn("chain switch failed", {
+            error,
+            requestedChainId: targetChainId,
+          });
           updateQuery(walletChainIdRef.current ?? readonlyChainId);
         }
       })();
@@ -102,7 +107,7 @@ export function ChainQuerySyncEffects() {
   }, [chainQueryValue, isPendingChange]);
 
   useEffect(() => {
-    if (chainQueryValue !== undefined && desiredChainId == null) {
+    if (chainQueryValue !== undefined && desiredChainId === null) {
       updateQuery();
       return;
     }
