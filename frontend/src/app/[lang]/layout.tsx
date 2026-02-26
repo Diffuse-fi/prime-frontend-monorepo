@@ -11,6 +11,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
 import Image from "next/image";
 
+import { ChainQuerySyncEffects } from "@/components/chains/ChainQuerySyncEffects";
 import { ChainSyncEffects } from "@/components/chains/ChainSyncEffects";
 import { ReadonlyChainProvider } from "@/components/chains/ReadonlyChainProvider";
 import { AppLink } from "@/components/misc/AppLink";
@@ -107,6 +108,7 @@ export default async function RootLayout({
               <ReadonlyChainProvider>
                 <Providers locale={lang}>
                   {trackingEnabled && <WalletTracker />}
+                  <ChainQuerySyncEffects />
                   <ChainSyncEffects />
                   <Navbar
                     className="pt-safe sticky top-0 z-50"
