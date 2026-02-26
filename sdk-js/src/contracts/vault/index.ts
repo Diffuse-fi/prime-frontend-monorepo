@@ -186,6 +186,18 @@ export class Vault extends ContractBase {
     }
   }
 
+  async getFirstActualStrategyId({ signal }: SdkRequestOptions = {}) {
+    try {
+      return await abortable(this.getContract().read.getFirstActualStrategyId(), signal);
+    } catch (error) {
+      throw normalizeError(error, {
+        chainId: this.chainId,
+        contract: contractName,
+        op: "getFirstActualStrategyId",
+      });
+    }
+  }
+
   async getLenderBalance(owner: Address, { signal }: SdkRequestOptions = {}) {
     try {
       return await abortable(this.getContract().read.balanceOf([owner]), signal);

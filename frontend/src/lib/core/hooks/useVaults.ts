@@ -45,7 +45,6 @@ export function useVaults() {
   const { address: owner, walletClient } = useClients();
   const { allVaults, isLoading, isPending, refetch } = useViewer({
     chainId,
-    filterOutOutdatedStrategies: true,
   });
   const qc = useQueryClient();
 

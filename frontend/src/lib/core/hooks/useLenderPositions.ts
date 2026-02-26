@@ -49,11 +49,12 @@ export function useLenderPositions(allVaults: VaultFullInfo[]) {
     queryFn: async ({ signal }) => {
       const tasks = allVaults.map(vault =>
         LIMIT(async () => {
+          const firstActualStrategyId = await vault.contract.getFirstActualStrategyId({
+            signal,
+          });
           const strategiesLength = await vault.contract.getStrategylength({ signal });
           const strategyIds =
-            vault.strategies.length > 0
-              ? Array.from({ length: Number(strategiesLength) }, (_, i) => BigInt(i))
-              : [];
+            buildStrategyIds(firstActualStrategyId, strategiesLength) ?? [];
 
           const [accruedYieldData, balance] = await Promise.all([
             vault.contract.accruedLenderYield(strategyIds, lender!, { signal }),
@@ -91,4 +92,15 @@ export function useLenderPositions(allVaults: VaultFullInfo[]) {
     positions,
     refetch: positionsQueries.refetch,
   };
+}
+
+function buildStrategyIds(firstActualStrategyId: bigint, strategiesLength: bigint) {
+  if (strategiesLength === 0n) return null;
+
+  const ids = [];
+  for (let i = firstActualStrategyId; i < firstActualStrategyId + strategiesLength; i++) {
+    ids.push(i);
+  }
+
+  return ids;
 }
