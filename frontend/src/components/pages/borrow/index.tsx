@@ -36,26 +36,24 @@ export default function Borrow() {
       vault: vaults.find(v => v.strategies.some(s => s.id === strategy.id))!,
     }));
   const { openConnectModal } = useConnectModal();
-  let cardsContent = null;
-
-  if (isLoading) {
-    cardsContent = showSkeletons(SKELETON_PLACEHOLDER_COUNT, "h-50");
-  } else if (selectedAsset && chain) {
-    cardsContent = strategies.map(strategy => (
-      <BorrowCard
-        chain={chain}
-        isConnected={isConnected}
-        key={strategy.id}
-        onBorrow={() => {
-          setSelectedStrategy(strategy);
-        }}
-        onConnectWallet={openConnectModal}
-        selectedAsset={selectedAsset}
-        strategy={strategy}
-        vault={strategy.vault}
-      />
-    ));
-  }
+  const cardsContent = isLoading
+    ? showSkeletons(SKELETON_PLACEHOLDER_COUNT, "h-50")
+    : selectedAsset && chain
+      ? strategies.map(strategy => (
+          <BorrowCard
+            chain={chain}
+            isConnected={isConnected}
+            key={strategy.id}
+            onBorrow={() => {
+              setSelectedStrategy(strategy);
+            }}
+            onConnectWallet={openConnectModal}
+            selectedAsset={selectedAsset}
+            strategy={strategy}
+            vault={strategy.vault}
+          />
+        ))
+      : null;
 
   return (
     <div className="mt-9 flex flex-col gap-3 md:gap-8">
