@@ -2,10 +2,6 @@ import { getAvailableChains, getChainById } from ".";
 
 const CHAINS = getAvailableChains();
 
-function normalizeAlias(value: string): string {
-  return value.trim().toLowerCase().split(/\s+/).join("-");
-}
-
 export function formatChainQueryValue(chainId: number): string {
   const aliasMap = getChainIdByAlias();
   if (chainId === 1 && aliasMap.has("mainnet")) {
@@ -56,4 +52,8 @@ function getChainIdByAlias(): Map<string, number> {
   }
 
   return aliasMap;
+}
+
+function normalizeAlias(value: string): string {
+  return value.trim().toLowerCase().split(/\s+/).join("-");
 }
