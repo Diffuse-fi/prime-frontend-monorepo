@@ -98,7 +98,7 @@ function buildStrategyIds(firstActualStrategyId: bigint, strategiesLength: bigin
   if (strategiesLength === 0n) return null;
 
   const ids = [];
-  for (let i = firstActualStrategyId; i < firstActualStrategyId + strategiesLength; i++) {
+  for (let i = firstActualStrategyId; i < strategiesLength; i++) {
     ids.push(i);
   }
 
