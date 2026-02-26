@@ -14,6 +14,7 @@ import {
 } from "@/lib/chains/ReadonlyChainContext";
 import { chainLogger } from "@/lib/core/utils/loggers";
 import { useQueryWriter } from "@/lib/misc/useQueryWriter";
+import { toast } from "@/lib/toast";
 
 const QUERY_OPTIONS = { replace: true };
 
@@ -85,6 +86,7 @@ export function ChainQuerySyncEffects() {
             error,
             requestedChainId: targetChainId,
           });
+          toast("Failed to switch network.");
           updateQuery(walletChainIdRef.current ?? readonlyChainId);
         }
       })();
@@ -115,7 +117,7 @@ export function ChainQuerySyncEffects() {
     if (
       isExternalQueryChange &&
       chainQueryValue !== undefined &&
-      desiredChainId != null &&
+      desiredChainId !== null &&
       desiredChainId !== readonlyChainId
     ) {
       applyRequestedChain(desiredChainId);

@@ -37,7 +37,9 @@ export function getChainQueryValue(value: unknown): string | undefined {
   }
 
   if (typeof value === "string") {
-    return value;
+    const trimmed = value.trim();
+    if (!trimmed) return undefined;
+    return trimmed;
   }
 
   return undefined;
