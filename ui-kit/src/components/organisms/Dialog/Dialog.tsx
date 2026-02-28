@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { cn, tv } from "@/lib";
 
-import { Heading, IconButton } from "../atoms";
+import { Heading, IconButton } from "../../atoms";
 
 const content = tv({
   base: [
