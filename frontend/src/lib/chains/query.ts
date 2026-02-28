@@ -35,7 +35,7 @@ export function parseChainQueryValue(value: unknown): null | number {
   if (!raw) return null;
 
   const normalized = normalizeAlias(raw);
-  return getChainIdByAlias().get(normalized) ?? null;
+  return CHAIN_ALIAS_MAP.get(normalized) ?? null;
 }
 
 function buildChainAliasMap(): Map<string, number> {
@@ -52,10 +52,6 @@ function buildChainAliasMap(): Map<string, number> {
   }
 
   return aliasMap;
-}
-
-function getChainIdByAlias(): Map<string, number> {
-  return CHAIN_ALIAS_MAP;
 }
 
 function normalizeAlias(value: string): string {

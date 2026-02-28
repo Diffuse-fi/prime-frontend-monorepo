@@ -44,6 +44,7 @@ export function useChainQuerySync({
   const lastQueryValueRef = useRef<string | undefined>(undefined);
   const pendingQueryValueRef = useRef<string | undefined>(undefined);
   const hasPendingRef = useRef(false);
+  // Avoid re-adding a default chain immediately after stripping an invalid query.
   const suppressAutoAddRef = useRef(false);
 
   const updateQuery = useCallback(
