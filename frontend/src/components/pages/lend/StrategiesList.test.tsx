@@ -74,7 +74,8 @@ describe("<StrategiesList />", () => {
         screen.getAllByRole("rowgroup")[TABLE_BODY_ROWGROUP_INDEX]
       ).getAllByRole("row");
       return rows.map(row => {
-        const cellText = within(row).getAllByRole("cell")[ASSET_CELL_INDEX].textContent ?? "";
+        const cellText =
+          within(row).getAllByRole("cell")[ASSET_CELL_INDEX].textContent ?? "";
         const symbol = symbols.find(item => cellText.includes(item));
         return symbol ?? "";
       });

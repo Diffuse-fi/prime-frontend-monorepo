@@ -1,7 +1,7 @@
 import { cn } from "@diffuse/ui-kit/cn";
 import dynamic from "next/dynamic";
 import Image, { ImageProps } from "next/image";
-import React, { useState } from "react";
+import { useState } from "react";
 
 const Jazzicon = dynamic(() => import("react-jazzicon"), { ssr: false });
 
