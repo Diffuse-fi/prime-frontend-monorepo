@@ -1,6 +1,7 @@
 import { getAvailableChains, getChainById } from ".";
 
 const CHAINS = getAvailableChains();
+const CHAIN_ALIAS_MAP = buildChainAliasMap();
 
 export function formatChainQueryValue(chainId: number): string {
   const aliasMap = getChainIdByAlias();
@@ -38,7 +39,7 @@ export function parseChainQueryValue(value: unknown): null | number {
   return getChainIdByAlias().get(normalized) ?? null;
 }
 
-function getChainIdByAlias(): Map<string, number> {
+function buildChainAliasMap(): Map<string, number> {
   const aliasMap = new Map<string, number>();
 
   for (const chain of CHAINS) {
@@ -52,6 +53,10 @@ function getChainIdByAlias(): Map<string, number> {
   }
 
   return aliasMap;
+}
+
+function getChainIdByAlias(): Map<string, number> {
+  return CHAIN_ALIAS_MAP;
 }
 
 function normalizeAlias(value: string): string {

@@ -44,6 +44,7 @@ export function useChainQuerySync({
   const lastQueryValueRef = useRef<string | undefined>(undefined);
   const pendingQueryValueRef = useRef<string | undefined>(undefined);
   const hasPendingRef = useRef(false);
+  const suppressAutoAddRef = useRef(false);
 
   const updateQuery = useCallback(
     (chainId?: number) => {
@@ -124,7 +125,17 @@ export function useChainQuerySync({
 
   useEffect(() => {
     if (chainQueryValue !== undefined && desiredChainId === null) {
+      suppressAutoAddRef.current = true;
       updateQuery();
+      return;
+    }
+
+    if (
+      suppressAutoAddRef.current &&
+      chainQueryValue === undefined &&
+      desiredChainId === null
+    ) {
+      suppressAutoAddRef.current = false;
       return;
     }
 
