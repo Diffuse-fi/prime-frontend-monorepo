@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { cn } from "@/lib";
 
-import { IconButton, IconButtonProps } from "../../atoms/buttons/IconButton";
+import { IconButton, IconButtonProps } from "../../atoms";
 import { Tooltip } from "../../molecules";
 
 export type CopyButtonProps = Omit<IconButtonProps, "aria-label" | "icon"> & {

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { RemoteText } from "./RemoteText";
 
-vi.mock("../../atoms", () => ({
+vi.mock("../../../atoms", () => ({
   Skeleton: (props: React.HTMLAttributes<HTMLDivElement>) => (
     <div role="status" {...props} />
   ),

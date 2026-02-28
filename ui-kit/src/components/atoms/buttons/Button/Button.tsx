@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { VariantProps } from "@/lib";
 
-import { button } from "./styles";
+import { button } from "../styles";
 
 export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof button>;

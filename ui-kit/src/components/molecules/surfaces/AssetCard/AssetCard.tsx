@@ -3,7 +3,7 @@ import * as React from "react";
 import { tv, VariantProps } from "@/lib";
 import { cn } from "@/lib/cn";
 
-import { Card } from "./Card";
+import { Card } from "../Card/Card";
 
 export interface AssetCardProps
   extends React.HTMLAttributes<HTMLDivElement>,

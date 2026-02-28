@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib";
 
-import { Tooltip, TooltipProps } from "./Tooltip";
+import { Tooltip, TooltipProps } from "../Tooltip/Tooltip";
 
 export type TextWithTooltipProps = {
   ariaLabel?: string;

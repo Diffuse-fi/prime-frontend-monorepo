@@ -1,7 +1,7 @@
 import type { Story, StoryDefault } from "@ladle/react";
 
+import { TooltipProvider } from "../Tooltip/Tooltip";
 import { TextWithTooltip } from "./TextWithTooltip";
-import { TooltipProvider } from "./Tooltip";
 
 export default {
   decorators: [

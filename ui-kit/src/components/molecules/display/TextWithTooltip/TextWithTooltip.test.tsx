@@ -3,8 +3,8 @@ import userEvent from "@testing-library/user-event";
 import * as React from "react";
 import { describe, expect, it } from "vitest";
 
+import { TooltipProvider } from "../Tooltip/Tooltip";
 import { TextWithTooltip } from "./TextWithTooltip";
-import { TooltipProvider } from "./Tooltip";
 
 const renderWithProvider = (ui: React.ReactNode) =>
   render(

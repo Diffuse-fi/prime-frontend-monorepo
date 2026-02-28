@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib";
 
-import { inputField, inputRoot } from "./inputStyles";
+import { inputField, inputRoot } from "../inputStyles";
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size"> {

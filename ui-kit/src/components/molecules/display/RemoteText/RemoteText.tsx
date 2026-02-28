@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib";
 
-import { Skeleton } from "../../atoms";
+import { Skeleton } from "../../../atoms";
 
 export interface RemoteTextProps {
   className?: string;

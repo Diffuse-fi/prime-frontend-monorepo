@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { cn, VariantProps } from "@/lib";
 
-import { button } from "./styles";
+import { button } from "../styles";
 
 export type ButtonLikeProps<T extends React.ElementType = "button"> = PolymorphicProps<
   T,

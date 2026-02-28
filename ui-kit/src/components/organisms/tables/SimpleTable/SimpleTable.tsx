@@ -3,7 +3,7 @@ import { VariantProps } from "tailwind-variants";
 
 import { cn } from "@/lib/cn";
 
-import { table, td, th, tr } from "./styles";
+import { table, td, th, tr } from "../styles";
 
 export interface SimpleTableProps
   extends React.TableHTMLAttributes<HTMLTableElement>,

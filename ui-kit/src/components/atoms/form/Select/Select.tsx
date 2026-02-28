@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { cn, tv } from "@/lib";
 
-import { inputRoot } from "./inputStyles";
+import { inputRoot } from "../inputStyles";
 
 export type SelectOption = {
   disabled?: boolean;

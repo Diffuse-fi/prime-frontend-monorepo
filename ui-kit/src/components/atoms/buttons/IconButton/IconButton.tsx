@@ -2,8 +2,8 @@ import * as React from "react";
 
 import { tv, VariantProps } from "@/lib";
 
-import { Button } from "./Button";
-import { button } from "./styles";
+import { Button } from "../Button/Button";
+import { button } from "../styles";
 
 export const iconButton = tv({
   defaultVariants: { icon: true, size: "md", variant: "ghost" },

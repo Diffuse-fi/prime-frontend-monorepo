@@ -12,7 +12,7 @@ import * as React from "react";
 import { VariantProps } from "@/lib";
 import { cn } from "@/lib/cn";
 
-import { table, td, th, tr } from "./styles";
+import { table, td, th, tr } from "../styles";
 
 export type DataTableProps<TData extends object> = Partial<VariantProps<typeof table>> &
   React.TableHTMLAttributes<HTMLTableElement> & {

@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { cn } from "@/lib";
 
-import { IconButton } from "../../atoms";
+import { IconButton } from "../../../atoms";
 
 export interface ToastProps extends React.HTMLAttributes<HTMLLIElement> {
   closeable?: boolean;
