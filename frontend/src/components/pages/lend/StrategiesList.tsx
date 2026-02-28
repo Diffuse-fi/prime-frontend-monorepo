@@ -1,6 +1,6 @@
 import { DataTable } from "@diffuse/ui-kit";
 import { useTranslations } from "next-intl";
-import React from "react";
+import { useMemo } from "react";
 
 import { AssetImage } from "@/components/misc/images/AssetImage";
 import { Strategy } from "@/lib/core/types";
@@ -13,7 +13,7 @@ export interface StrategiesListProps {
 
 export function StrategiesList({ strategies }: StrategiesListProps) {
   const t = useTranslations();
-  const data = React.useMemo(
+  const data = useMemo(
     () =>
       strategies.map(strategy => ({
         apr: strategy.apr,
