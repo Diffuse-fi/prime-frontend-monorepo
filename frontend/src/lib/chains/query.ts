@@ -4,8 +4,7 @@ const CHAINS = getAvailableChains();
 const CHAIN_ALIAS_MAP = buildChainAliasMap();
 
 export function formatChainQueryValue(chainId: number): string {
-  const aliasMap = getChainIdByAlias();
-  if (chainId === 1 && aliasMap.has("mainnet")) {
+  if (chainId === 1 && CHAIN_ALIAS_MAP.has("mainnet")) {
     return "mainnet";
   }
 

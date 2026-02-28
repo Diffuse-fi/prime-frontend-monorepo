@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-const rawChainId = Number(process.env.NEXT_PUBLIC_INITIAL_CHAIN_ID ?? "1");
-const defaultChainId = Number.isFinite(rawChainId) ? rawChainId : 1;
+const initialChainId = Number(process.env.NEXT_PUBLIC_INITIAL_CHAIN_ID ?? "1");
+const defaultChainId = Number.isFinite(initialChainId) ? initialChainId : 1;
 const defaultChainQueryValue =
   defaultChainId === 1 ? "mainnet" : String(defaultChainId);
 
