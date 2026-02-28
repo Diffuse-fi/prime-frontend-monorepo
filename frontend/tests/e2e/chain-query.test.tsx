@@ -1,14 +1,9 @@
 import { expect, test } from "@playwright/test";
 
-const parsedInitialChainId = Number.parseInt(
-  process.env.NEXT_PUBLIC_INITIAL_CHAIN_ID ?? "1",
-  10
-);
-const defaultChainId = Number.isFinite(parsedInitialChainId)
-  ? parsedInitialChainId
-  : 1;
-const defaultChainQueryValue =
-  defaultChainId === 1 ? "mainnet" : String(defaultChainId);
+import { getInitialChain } from "../../src/lib/chains";
+import { formatChainQueryValue } from "../../src/lib/chains/query";
+
+const defaultChainQueryValue = formatChainQueryValue(getInitialChain().id);
 
 test.describe("Chain query parameter", () => {
   test("keeps supported chain parameter", async ({ baseURL, page }) => {

@@ -136,6 +136,7 @@ export function useChainQuerySync({
       chainQueryValue === undefined &&
       desiredChainId === null
     ) {
+      // Reset once the invalid query has been cleared and no chain is requested.
       suppressAutoAddRef.current = false;
       return;
     }
