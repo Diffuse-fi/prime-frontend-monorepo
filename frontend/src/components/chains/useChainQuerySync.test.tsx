@@ -38,8 +38,7 @@ vi.mock(
     getChainQueryValue: (value: unknown) =>
       typeof value === "string" && value.trim() ? value.trim() : undefined,
     parseChainQueryValue: (value: unknown) => {
-      const raw =
-        typeof value === "string" && value.trim() ? value.trim() : undefined;
+      const raw = typeof value === "string" && value.trim() ? value.trim() : undefined;
       if (!raw) return null;
       return aliasMap.get(raw) ?? null;
     },
@@ -84,10 +83,7 @@ describe("useChainQuerySync", () => {
     renderSync();
 
     await waitFor(() =>
-      expect(setQuery).toHaveBeenCalledWith(
-        { chain: undefined },
-        { replace: true }
-      )
+      expect(setQuery).toHaveBeenCalledWith({ chain: undefined }, { replace: true })
     );
     expect(setReadonlyChainId).not.toHaveBeenCalled();
   });

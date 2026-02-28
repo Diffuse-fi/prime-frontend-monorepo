@@ -1,9 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-import { getInitialChain } from "../../src/lib/chains";
+import { getAvailableChains } from "../../src/lib/chains";
 import { formatChainQueryValue } from "../../src/lib/chains/query";
 
-const defaultChainQueryValue = formatChainQueryValue(getInitialChain().id);
+const envInitialChainId = Number(process.env.NEXT_PUBLIC_INITIAL_CHAIN_ID);
+const defaultChainId = Number.isFinite(envInitialChainId)
+  ? envInitialChainId
+  : (getAvailableChains()[0]?.id ?? 1);
+const defaultChainQueryValue = formatChainQueryValue(defaultChainId);
 
 test.describe("Chain query parameter", () => {
   test("keeps supported chain parameter", async ({ baseURL, page }) => {
@@ -34,8 +38,6 @@ test.describe("Chain query parameter", () => {
 
     await expect(page.getByRole("heading", { name: /lend/i })).toBeVisible();
 
-    await expect
-      .poll(() => new URL(page.url()).searchParams.get("chain"))
-      .toBeNull();
+    await expect.poll(() => new URL(page.url()).searchParams.get("chain")).toBeNull();
   });
 });

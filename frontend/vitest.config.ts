@@ -1,5 +1,9 @@
+import { fileURLToPath } from "node:url";
+
 import tsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
+
+const resolveAlias = (path: string) => fileURLToPath(new URL(path, import.meta.url));
 
 export default defineConfig({
   esbuild: {
@@ -7,6 +11,22 @@ export default defineConfig({
     jsxImportSource: "react",
   },
   plugins: [tsconfigPaths()],
+  resolve: {
+    alias: [
+      {
+        find: /^@diffuse\/config$/,
+        replacement: resolveAlias("../config/src/index.ts"),
+      },
+      {
+        find: /^@diffuse\/ui-kit$/,
+        replacement: resolveAlias("../ui-kit/src/index.ts"),
+      },
+      {
+        find: /^@diffuse\/ui-kit\/cn$/,
+        replacement: resolveAlias("../ui-kit/src/lib/cn.ts"),
+      },
+    ],
+  },
   test: {
     environment: "jsdom",
     include: ["src/**/*.test.{ts,tsx}"],
