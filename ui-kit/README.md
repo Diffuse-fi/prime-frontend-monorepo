@@ -100,13 +100,13 @@ npm run test:unit:snap
 Regenerate all component snapshots:
 
 ```bash
-npm run test:snapshots:update
+npm run test:snap:update
 ```
 
 Regenerate snapshots for a single component test:
 
 ```bash
-npm run test:snapshots:update:component -- src/components/atoms/buttons/Button/Button.snap.test.tsx
+npm run test:snap:update:component -- src/components/atoms/buttons/Button/Button.snap.test.tsx
 ```
 
 ### Component Development with Ladle
