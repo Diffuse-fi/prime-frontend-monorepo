@@ -31,3 +31,16 @@ export const isEmptyDataLike = (error: unknown) => {
 
   return false;
 };
+
+export const isInvalidDeadlineLike = (error: unknown) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const e = error as any;
+  let msg = "";
+  if (typeof e?.shortMessage === "string") {
+    msg = e.shortMessage;
+  } else if (typeof e?.message === "string") {
+    msg = e.message;
+  }
+
+  return msg.toLowerCase().includes("invaliddeadline");
+};

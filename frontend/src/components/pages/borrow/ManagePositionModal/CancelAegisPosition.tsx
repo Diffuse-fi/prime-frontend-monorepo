@@ -106,16 +106,6 @@ export function CancelAegisPosition({
     }
 
     if (stageNum === 2) {
-      const finalizeEnabled = false;
-
-      if (finalizeEnabled) {
-        return {
-          disabled: false,
-          label: "Finalize",
-          onClick: () => finalize(),
-        };
-      }
-
       return {
         disabled: true,
         label: "Waiting for approval…",
@@ -123,10 +113,18 @@ export function CancelAegisPosition({
       };
     }
 
+    if (stageNum === 3) {
+      return {
+        disabled: false,
+        label: "Finalize",
+        onClick: () => finalize(),
+      };
+    }
+
     return {
-      disabled: false,
-      label: "Finalize",
-      onClick: () => finalize(),
+      disabled: true,
+      label: "Status unavailable",
+      onClick: undefined,
     };
   }, [
     finalize,
@@ -139,7 +137,7 @@ export function CancelAegisPosition({
     t,
   ]);
 
-  const showRefresh = stageNum === 2;
+  const showRefresh = stageNum === 2 || stageNum === -1;
 
   return (
     <div className="grid grid-cols-1 gap-6">

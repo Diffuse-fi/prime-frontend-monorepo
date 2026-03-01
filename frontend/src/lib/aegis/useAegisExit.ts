@@ -94,6 +94,7 @@ const qKeys = {
 
 const buildMinAssetsOut = (routeLen: number) =>
   Array.from({ length: Math.max(1, routeLen) }, () => 0n);
+const getLiveDeadline = () => BigInt(Math.floor(Date.now() / 1000) + 3600);
 
 export function useAegisExit(
   selected: AegisExitSelected | null,
@@ -156,13 +157,14 @@ export function useAegisExit(
     mutationFn: async (): Promise<AegisExitResult> => {
       const result: AegisExitResult = {};
       if (!enabled || !selected || !addr || !wallet) return result;
+      const deadline = getLiveDeadline();
 
       const idemKey = makeIdempotencyKey(
         chainId!,
         addr,
         selected.positionId,
         selected.slippage,
-        selected.deadline,
+        deadline,
         wallet,
         "lock"
       );
@@ -187,7 +189,7 @@ export function useAegisExit(
           abi: vaultAbi,
           account: wallet,
           address: addr,
-          args: [selected.positionId, minAssetsOut, selected.deadline, "0x"],
+          args: [selected.positionId, minAssetsOut, deadline, "0x"],
           chain: publicClient!.chain,
           functionName: "unborrow",
         });
@@ -239,13 +241,14 @@ export function useAegisExit(
     mutationFn: async (): Promise<AegisExitResult> => {
       const result: AegisExitResult = {};
       if (!enabled || !selected || !addr || !wallet || !vault) return result;
+      const deadline = getLiveDeadline();
 
       const idemKey = makeIdempotencyKey(
         chainId!,
         addr,
         selected.positionId,
         selected.slippage,
-        selected.deadline,
+        deadline,
         wallet,
         "redeem"
       );
@@ -311,7 +314,7 @@ export function useAegisExit(
           abi: vaultAbi,
           account: wallet,
           address: addr,
-          args: [selected.positionId, minAssetsOut, selected.deadline, encodedData],
+          args: [selected.positionId, minAssetsOut, deadline, encodedData],
           chain: publicClient!.chain,
           functionName: "unborrow",
         });
@@ -362,13 +365,14 @@ export function useAegisExit(
     mutationFn: async (): Promise<AegisExitResult> => {
       const result: AegisExitResult = {};
       if (!enabled || !selected || !addr || !wallet) return result;
+      const deadline = getLiveDeadline();
 
       const idemKey = makeIdempotencyKey(
         chainId!,
         addr,
         selected.positionId,
         selected.slippage,
-        selected.deadline,
+        deadline,
         wallet,
         "finalize"
       );
@@ -378,6 +382,15 @@ export function useAegisExit(
 
       try {
         setPendingKey(idemKey);
+        setPhase("finalize", { phase: "checking" });
+
+        const stageResult = await stageQuery.refetch();
+        const stage = stageResult.data;
+        if (!stage || stage.stage !== 3) {
+          const reason = stage?.message ?? "Exit is not ready to finalize";
+          throw new Error(reason);
+        }
+
         setPhase("finalize", { phase: "awaiting-signature" });
 
         trackEvent("borrow_aegis_exit_finalize_start", {
@@ -393,7 +406,7 @@ export function useAegisExit(
           abi: vaultAbi,
           account: wallet,
           address: addr,
-          args: [selected.positionId, minAssetsOut, selected.deadline, "0x"],
+          args: [selected.positionId, minAssetsOut, deadline, "0x"],
           chain: publicClient!.chain,
           functionName: "unborrow",
         });
