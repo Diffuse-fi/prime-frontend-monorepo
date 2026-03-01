@@ -27,7 +27,7 @@ describe("<AssetInput />", () => {
       <span>IMG-{size}</span>
     ));
 
-    render(
+    const { asFragment } = render(
       <AssetInput
         aria-label="Amount"
         assetSymbol="USDC"
@@ -36,42 +36,10 @@ describe("<AssetInput />", () => {
       />
     );
 
+    expect(asFragment()).toMatchSnapshot();
+
     expect(renderAssetImage).toHaveBeenCalledWith({ size: "md" });
     expect(screen.getByText("IMG-md")).toBeInTheDocument();
     expect(screen.getByText("USDC")).toBeInTheDocument();
-  });
-
-  it("formats typed value with thousand separators and fixed 2 decimals, calls onValueChange", async () => {
-    const user = userEvent.setup();
-    const onValueChange = vi.fn();
-
-    render(<AssetInput aria-label="Amount" onValueChange={onValueChange} />);
-
-    const input = screen.getByRole("textbox", { name: "Amount" });
-
-    await user.type(input, "12345.6");
-
-    expect(input).toHaveValue("12 345.60");
-
-    const lastCall = onValueChange.mock.calls.at(-1)?.[0];
-    expect(lastCall?.value).toBe("12345.60");
-    expect(lastCall?.floatValue).toBe(12_345.6);
-  });
-
-  it("disallows negative in input", async () => {
-    const user = userEvent.setup();
-    const onValueChange = vi.fn();
-
-    render(<AssetInput aria-label="Amount" onValueChange={onValueChange} />);
-
-    const input = screen.getByRole("textbox", { name: "Amount" });
-
-    await user.type(input, "-2");
-
-    expect(input).toHaveValue("2.00");
-
-    const lastCall = onValueChange.mock.calls.at(-1)?.[0];
-    expect(lastCall?.value).toBe("2.00");
-    expect(lastCall?.floatValue).toBe(2);
   });
 });

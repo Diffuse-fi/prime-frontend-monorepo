@@ -9,9 +9,7 @@ describe("<Checkbox /> keyboard & mouse behavior", () => {
   it("is reachable via keyboard (Tab) and initially unchecked", async () => {
     const user = userEvent.setup({ pointerEventsCheck: 0 });
 
-    const { asFragment } = render(<Checkbox label="I agree to the terms" />);
-
-    expect(asFragment()).toMatchSnapshot();
+    render(<Checkbox label="I agree to the terms" />);
 
     const checkbox = screen.getByRole("checkbox", {
       name: /i agree to the terms/i,

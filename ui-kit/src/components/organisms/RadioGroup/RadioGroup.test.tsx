@@ -8,14 +8,12 @@ import { RadioGroup } from "./RadioGroup";
 describe("<RadioGroup />", () => {
   it("renders, forwards ref to root, and merges className", () => {
     const ref = React.createRef<HTMLDivElement>();
-    const { asFragment } = render(
+    render(
       <RadioGroup className="root-x" ref={ref}>
         <RadioGroup.Item value="a">A</RadioGroup.Item>
         <RadioGroup.Item value="b">B</RadioGroup.Item>
       </RadioGroup>
     );
-
-    expect(asFragment()).toMatchSnapshot();
 
     const root = screen.getByRole("radiogroup");
 

@@ -19,6 +19,7 @@ describe("<TextWithTooltip />", () => {
     const { asFragment } = renderWithProvider(
       <TextWithTooltip text="Variable APR" tooltip="APR changes each block." />
     );
+    expect(asFragment()).toMatchSnapshot();
 
     const trigger = screen.getByLabelText("Variable APR");
     expect(trigger).toBeInTheDocument();
@@ -28,27 +29,5 @@ describe("<TextWithTooltip />", () => {
     await user.hover(trigger);
     await screen.findByRole("tooltip", { hidden: true });
     expect(trigger).toHaveAccessibleDescription("APR changes each block.");
-  });
-
-  it("respects custom ariaLabel, side and merges className", async () => {
-    const user = userEvent.setup();
-    renderWithProvider(
-      <TextWithTooltip
-        ariaLabel="Custom label"
-        className="mx-2"
-        side="bottom"
-        text="More info"
-        tooltip="Detailed explanation here."
-      />
-    );
-
-    const trigger = screen.getByLabelText("Custom label");
-    expect(trigger).toHaveClass("mx-2");
-
-    await user.hover(trigger);
-    const contentDiv = await screen.findByText("Detailed explanation here.", {
-      selector: "div",
-    });
-    expect(contentDiv).toHaveAttribute("data-side", "bottom");
   });
 });

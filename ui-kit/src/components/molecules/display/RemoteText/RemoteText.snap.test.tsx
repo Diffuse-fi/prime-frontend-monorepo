@@ -14,23 +14,11 @@ describe("<RemoteText />", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("renders text when not loading and no skeleton present", () => {
-    render(<RemoteText text="Hello" />);
+    const { asFragment } = render(<RemoteText text="Hello" />);
+
+    expect(asFragment()).toMatchSnapshot();
     expect(screen.getByText("Hello")).toBeInTheDocument();
     expect(screen.getByText("Hello")).not.toHaveClass("invisible");
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
-  });
-
-  it("when loading, shows skeleton and hides text visually", () => {
-    render(<RemoteText isLoading text="Loading text" />);
-    expect(screen.getByRole("status")).toBeInTheDocument();
-    expect(screen.getByText("Loading text")).toHaveClass("invisible");
-  });
-
-  it("renders error alert and supports custom textComponent", () => {
-    render(
-      <RemoteText error="Failed to load" text="Strong text" textComponent="strong" />
-    );
-    expect(screen.getByText("Strong text", { selector: "strong" })).toBeInTheDocument();
-    expect(screen.getByRole("alert")).toHaveTextContent("Failed to load");
   });
 });

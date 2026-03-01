@@ -85,10 +85,16 @@ This will start a local development server and rebuild the package on any source
 
 ### Snapshot tests
 
-Run all unit tests (including component snapshot assertions):
+Run regular unit tests only (excluding snapshot modules):
 
 ```bash
 npm run test:unit
+```
+
+Run snapshot modules only:
+
+```bash
+npm run test:unit:snap
 ```
 
 Regenerate all component snapshots:
@@ -100,7 +106,7 @@ npm run test:snapshots:update
 Regenerate snapshots for a single component test:
 
 ```bash
-npm run test:snapshots:update:component -- src/components/atoms/buttons/Button/Button.test.tsx
+npm run test:snapshots:update:component -- src/components/atoms/buttons/Button/Button.snap.test.tsx
 ```
 
 ### Component Development with Ladle

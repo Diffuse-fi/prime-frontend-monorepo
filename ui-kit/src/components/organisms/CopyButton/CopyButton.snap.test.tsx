@@ -32,6 +32,7 @@ describe("<CopyButton />", () => {
     const { asFragment, rerender } = renderWithProviders(
       <CopyButton aria-label="Copy" size="sm" textToCopy="x" />
     );
+    expect(asFragment()).toMatchSnapshot();
 
     let btn = screen.getByRole("button", { name: "Copy" });
     let icon = within(btn).getByTestId("icon");
@@ -57,20 +58,5 @@ describe("<CopyButton />", () => {
     icon = within(btn).getByTestId("icon");
     expect(icon).toHaveAttribute("width", "24");
     expect(icon).toHaveAttribute("height", "24");
-  });
-
-  it("clears pending timeout on unmount and supports custom aria-label", () => {
-    vi.useFakeTimers();
-    const clearSpy = vi.spyOn(globalThis, "clearTimeout");
-    const { unmount } = renderWithProviders(
-      <CopyButton aria-label="Copy text" textToCopy="x" />
-    );
-
-    const btn = screen.getByRole("button", { name: "Copy text" });
-    fireEvent.click(btn);
-
-    unmount();
-    expect(clearSpy).toHaveBeenCalled();
-    vi.useRealTimers();
   });
 });

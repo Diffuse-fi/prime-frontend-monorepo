@@ -72,7 +72,7 @@ describe("<Slider />", () => {
 
   it("renders a slider and updates value via keyboard", async () => {
     const user = userEvent.setup();
-    render(
+    const { asFragment } = render(
       <Slider
         aria-label="Volume"
         max={20}
@@ -83,6 +83,8 @@ describe("<Slider />", () => {
       />
     );
 
+    expect(asFragment()).toMatchSnapshot();
+
     const slider = screen.getByRole("slider", { name: "Volume" });
     expect(slider).toHaveAttribute("aria-valuenow", "10");
 
@@ -92,43 +94,5 @@ describe("<Slider />", () => {
 
     await user.keyboard("{ArrowLeft}");
     expect(slider).toHaveAttribute("aria-valuenow", "10");
-  });
-
-  it("applies custom classes to root, track, range, and thumb", () => {
-    render(
-      <section aria-label="slider-region">
-        <Slider
-          aria-label="Progress"
-          className="root-x"
-          rangeClassName="range-x"
-          thumbClassName="thumb-x"
-          trackClassName="track-x"
-        />
-      </section>
-    );
-
-    const region = screen.getByRole("region", { name: "slider-region" });
-    const slider = screen.getByRole("slider", { name: "Progress" });
-    expect(slider).toHaveClass("root-x");
-
-    const track = within(region).getByTestId("track");
-    const range = within(region).getByTestId("range");
-    const thumb = within(region).getByTestId("thumb");
-
-    expect(track).toHaveClass("track-x");
-    expect(range).toHaveClass("range-x");
-    expect(thumb).toHaveClass("thumb-x");
-  });
-
-  it("respects disabled state and blocks interactions", async () => {
-    const user = userEvent.setup();
-    render(<Slider aria-label="Disabled" disabled value={[5]} />);
-
-    const slider = screen.getByRole("slider", { name: "Disabled" });
-    expect(slider).toHaveAttribute("aria-disabled", "true");
-
-    await user.click(slider);
-    await user.keyboard("{ArrowRight}");
-    expect(slider).toHaveAttribute("aria-valuenow", "5");
   });
 });

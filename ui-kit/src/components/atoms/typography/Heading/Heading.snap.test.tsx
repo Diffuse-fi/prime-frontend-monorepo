@@ -6,7 +6,9 @@ import { Heading } from "./Heading";
 
 describe("<Heading />", () => {
   it("renders defaults: h2 with base + default variant classes", () => {
-    render(<Heading>Title</Heading>);
+    const { asFragment } = render(<Heading>Title</Heading>);
+
+    expect(asFragment()).toMatchSnapshot();
 
     const el = screen.getByText("Title");
 
@@ -18,17 +20,5 @@ describe("<Heading />", () => {
       "text-h2",
       "text-left"
     );
-  });
-
-  it("applies level variants", () => {
-    render(
-      <Heading align="center" className="extra" level="4" tone="muted">
-        Hello
-      </Heading>
-    );
-
-    const el = screen.getByText("Hello");
-
-    expect(el.tagName).toBe("H4");
   });
 });

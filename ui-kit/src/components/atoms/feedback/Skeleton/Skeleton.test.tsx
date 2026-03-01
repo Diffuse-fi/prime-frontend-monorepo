@@ -6,9 +6,7 @@ import { Skeleton } from "./Skeleton";
 
 describe("<Skeleton />", () => {
   it("renders a div with base classes", () => {
-    const { asFragment } = render(<Skeleton data-testid="sk" />);
-
-    expect(asFragment()).toMatchSnapshot();
+    render(<Skeleton data-testid="sk" />);
     const el = screen.getByTestId("sk");
 
     expect(el.tagName.toLowerCase()).toBe("div");

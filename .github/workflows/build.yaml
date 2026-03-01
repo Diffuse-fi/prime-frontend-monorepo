@@ -140,7 +140,7 @@ jobs:
 
       - name: Run UI Kit tests
         working-directory: ui-kit
-        run: npm run test:unit
+        run: npm run test:unit && npm run test:unit:snap
 
   indexer-unit-tests:
     name: Unit Tests / Indexer

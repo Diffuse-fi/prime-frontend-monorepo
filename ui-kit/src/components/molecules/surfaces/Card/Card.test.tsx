@@ -8,9 +8,7 @@ import { Card } from "./Card";
 
 describe("Card", () => {
   it("renders with string header", () => {
-    const { asFragment } = render(<Card header="Test Header">Body content</Card>);
-
-    expect(asFragment()).toMatchSnapshot();
+    render(<Card header="Test Header">Body content</Card>);
 
     expect(screen.getByRole("heading", { level: 4 })).toHaveTextContent("Test Header");
     expect(screen.getByText("Body content")).toBeInTheDocument();

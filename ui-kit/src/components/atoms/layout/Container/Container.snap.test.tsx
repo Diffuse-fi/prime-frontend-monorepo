@@ -5,11 +5,13 @@ import "@testing-library/jest-dom";
 import { Container } from "./Container";
 
 it("renders children and applies base + default variant + custom classes", () => {
-  render(
+  const { asFragment } = render(
     <Container className="custom" data-testid="container">
       Hello
     </Container>
   );
+
+  expect(asFragment()).toMatchSnapshot();
 
   const el = screen.getByTestId("container");
 

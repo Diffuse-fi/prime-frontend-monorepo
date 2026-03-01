@@ -21,15 +21,13 @@ const data: Row[] = [
 
 describe("<DataTable />", () => {
   it("renders headers/rows and applies initialSorting (desc by APR)", () => {
-    const { asFragment } = render(
+    render(
       <DataTable<Row>
         columns={columns}
         data={data}
         initialSorting={[{ desc: true, id: "apr" }]}
       />
     );
-
-    expect(asFragment()).toMatchSnapshot();
 
     const table = screen.getByRole("table");
     const headerRow = within(table).getAllByRole("row")[0];

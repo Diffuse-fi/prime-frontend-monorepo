@@ -6,7 +6,7 @@ import { SimpleTable } from "./SimpleTable";
 
 describe("<SimpleTable />", () => {
   it("renders caption and rows with proper semantics", () => {
-    render(
+    const { asFragment } = render(
       <SimpleTable
         columns={["Chain", "Address"]}
         rows={[
@@ -15,6 +15,8 @@ describe("<SimpleTable />", () => {
         ]}
       />
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();
@@ -27,16 +29,5 @@ describe("<SimpleTable />", () => {
     const firstRow = rows[0];
     const td = within(firstRow).getByText("Ethereum");
     expect(td.tagName).toBe("TD");
-  });
-
-  it("merges className and forwards ref to <table>", () => {
-    const ref = React.createRef<HTMLTableElement>();
-    render(<SimpleTable className="extra" columns={[]} ref={ref} rows={[[]]} />);
-
-    const table = screen.getByRole("table");
-
-    expect(table).toHaveClass("w-full");
-    expect(table).toHaveClass("extra");
-    expect(ref.current).toBe(table);
   });
 });

@@ -16,7 +16,7 @@ describe("<Select /> keyboard-only", () => {
     const user = userEvent.setup({ pointerEventsCheck: 0 });
     const onValueChange = vi.fn();
 
-    render(
+    const { asFragment } = render(
       <Select
         defaultValue="eth"
         onValueChange={onValueChange}
@@ -24,6 +24,8 @@ describe("<Select /> keyboard-only", () => {
         placeholder="Pick token"
       />
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     const trigger = screen.getByRole("combobox");
     expect(trigger).toHaveTextContent("ETH");
@@ -38,37 +40,5 @@ describe("<Select /> keyboard-only", () => {
     expect(onValueChange).toHaveBeenCalledWith("usdc");
     expect(trigger).toHaveTextContent("USDC");
     expect(trigger).toHaveAttribute("aria-expanded", "false");
-  });
-
-  it("respects disabled root state (cannot open with keyboard)", async () => {
-    const user = userEvent.setup({ pointerEventsCheck: 0 });
-
-    render(
-      <Select className="mx-2" disabled options={OPTIONS} placeholder="Disabled select" />
-    );
-
-    const trigger = screen.getByRole("combobox");
-    expect(trigger).toHaveClass("mx-2");
-
-    await user.tab();
-    await user.keyboard("{ArrowDown}");
-
-    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
-  });
-
-  it("shows placeholder, merges classes, and renders disabled option in the list", async () => {
-    const user = userEvent.setup({ pointerEventsCheck: 0 });
-
-    render(<Select className="px-3" options={OPTIONS} placeholder="Choose token" />);
-
-    const trigger = screen.getByRole("combobox");
-    expect(trigger).toHaveTextContent("Choose token");
-    expect(trigger).toHaveClass("px-3");
-
-    await user.tab();
-    await user.keyboard("{ArrowDown}");
-    const listbox = await screen.findByRole("listbox");
-    expect(listbox).toBeInTheDocument();
   });
 });

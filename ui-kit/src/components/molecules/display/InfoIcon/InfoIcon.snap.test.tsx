@@ -17,6 +17,7 @@ describe("<InfoIcon />", () => {
   it("renders a focusable trigger with default a11y wiring and tooltip", async () => {
     const user = userEvent.setup();
     const { asFragment } = renderWithProvider(<InfoIcon text="Details here" />);
+    expect(asFragment()).toMatchSnapshot();
 
     const trigger = screen.getByLabelText("More info");
     expect(trigger).toHaveAttribute("tabIndex", "0");
@@ -27,24 +28,5 @@ describe("<InfoIcon />", () => {
     await screen.findByRole("tooltip", { hidden: true });
 
     expect(trigger).toHaveAccessibleDescription("Details here");
-  });
-
-  it("respects custom ariaLabel and merges className", async () => {
-    const user = userEvent.setup();
-    renderWithProvider(
-      <InfoIcon
-        ariaLabel="APR info"
-        className="mx-2"
-        side="bottom"
-        text="APR changes each block."
-      />
-    );
-
-    const trigger = screen.getByLabelText("APR info");
-    expect(trigger).toHaveClass("mx-2");
-
-    await user.hover(trigger);
-    const tooltip = await screen.findByRole("tooltip", { hidden: true });
-    expect(tooltip).toHaveTextContent("APR changes each block.");
   });
 });

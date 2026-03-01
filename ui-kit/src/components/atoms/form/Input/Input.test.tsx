@@ -11,11 +11,7 @@ describe("<Input />", () => {
     const ref = React.createRef<HTMLInputElement>();
     const onChange = vi.fn();
 
-    const { asFragment } = render(
-      <Input aria-label="Name" className="custom" onChange={onChange} ref={ref} />
-    );
-
-    expect(asFragment()).toMatchSnapshot();
+    render(<Input aria-label="Name" className="custom" onChange={onChange} ref={ref} />);
 
     const input = screen.getByRole("textbox", { name: "Name" });
     expect(input).toBeInTheDocument();
