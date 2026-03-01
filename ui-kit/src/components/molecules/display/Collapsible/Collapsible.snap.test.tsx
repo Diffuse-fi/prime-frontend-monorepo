@@ -4,7 +4,7 @@ import "@testing-library/jest-dom";
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 
-import { ControlledCollapsible, UncontrolledCollapsible } from "./Collapsible";
+import { ControlledCollapsible } from "./Collapsible";
 
 describe("Collapsible components", () => {
   it("controlledCollapsible: calls onOpenChange when toggled", async () => {

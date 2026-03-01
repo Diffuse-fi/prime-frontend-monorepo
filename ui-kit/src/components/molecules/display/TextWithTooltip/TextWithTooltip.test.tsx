@@ -16,7 +16,7 @@ const renderWithProvider = (ui: React.ReactNode) =>
 describe("<TextWithTooltip />", () => {
   it("renders focusable text with default aria-label and wires tooltip description", async () => {
     const user = userEvent.setup();
-    const { asFragment } = renderWithProvider(
+    renderWithProvider(
       <TextWithTooltip text="Variable APR" tooltip="APR changes each block." />
     );
 

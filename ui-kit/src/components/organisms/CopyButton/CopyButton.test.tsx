@@ -29,7 +29,7 @@ describe("<CopyButton />", () => {
   });
 
   it("respects size prop for icon dimensions (sm/md/lg)", () => {
-    const { asFragment, rerender } = renderWithProviders(
+    const { rerender } = renderWithProviders(
       <CopyButton aria-label="Copy" size="sm" textToCopy="x" />
     );
 
