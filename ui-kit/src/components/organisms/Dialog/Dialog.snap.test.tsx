@@ -7,13 +7,13 @@ import { Dialog } from "./Dialog";
 
 describe("<Dialog />", () => {
   it("renders open dialog with title, description, children and applies size variant", () => {
-    const { asFragment } = render(
+    const { baseElement } = render(
       <Dialog description="Desc" open size="sm" title="Title">
         <div>Body</div>
       </Dialog>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(baseElement).toMatchSnapshot();
 
     const dlg = screen.getByRole("dialog");
     expect(dlg).toBeInTheDocument();
