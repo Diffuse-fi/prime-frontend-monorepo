@@ -7,7 +7,7 @@ import { Nav } from "./Nav";
 
 describe("<Nav />", () => {
   it("marks items active using default logic (startsWith, exact, root) and applies activeClassName", () => {
-    render(
+    const { asFragment } = render(
       <Nav
         activeClassName="active-x"
         aria-label="main"
@@ -19,6 +19,8 @@ describe("<Nav />", () => {
         pathname="/lend/my-positions"
       />
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     const home = screen.getByRole("link", { name: "Home" });
     const lend = screen.getByRole("link", { name: "Lend" });

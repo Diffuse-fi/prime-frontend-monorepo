@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<RemoteText /> > renders text when not loading and no skeleton present 1`] = `
+<DocumentFragment>
+  <div
+    class="relative inline-flex flex-col gap-1"
+  >
+    <span
+      class=""
+    >
+      Hello
+    </span>
+  </div>
+</DocumentFragment>
+`;

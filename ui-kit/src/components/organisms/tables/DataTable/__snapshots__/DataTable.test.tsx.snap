@@ -1,0 +1,157 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<DataTable /> > renders headers/rows and applies initialSorting (desc by APR) 1`] = `
+<DocumentFragment>
+  <table
+    class="w-full border-separate border-spacing-0 text-sm leading-6"
+  >
+    <thead>
+      <tr>
+        <th
+          aria-sort="none"
+          class="px-3 py-2 text-left font-medium border-b border-border text-preset-gray-200 cursor-pointer"
+          scope="col"
+        >
+          <p
+            class="inline-flex items-center gap-1"
+          >
+            Asset
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-up h-3.5 w-3.5 transition-transform opacity-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m18 15-6-6-6 6"
+              />
+            </svg>
+          </p>
+        </th>
+        <th
+          aria-sort="descending"
+          class="px-3 py-2 text-left font-medium border-b border-border text-preset-gray-200 cursor-pointer"
+          scope="col"
+        >
+          <p
+            class="inline-flex items-center gap-1"
+          >
+            APR
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-up h-3.5 w-3.5 transition-transform text-primary rotate-180 opacity-100"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m18 15-6-6-6 6"
+              />
+            </svg>
+          </p>
+        </th>
+        <th
+          aria-sort="none"
+          class="px-3 py-2 text-left font-medium border-b border-border text-preset-gray-200 cursor-pointer"
+          scope="col"
+        >
+          <p
+            class="inline-flex items-center gap-1"
+          >
+            TVL
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-up h-3.5 w-3.5 transition-transform opacity-0"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m18 15-6-6-6 6"
+              />
+            </svg>
+          </p>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        class="hover:bg-muted/10"
+      >
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          BTC
+        </td>
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          0.06
+        </td>
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          20000000
+        </td>
+      </tr>
+      <tr
+        class="hover:bg-muted/10"
+      >
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          ETH
+        </td>
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          0.042
+        </td>
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          12300000
+        </td>
+      </tr>
+      <tr
+        class="hover:bg-muted/10"
+      >
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          USDC
+        </td>
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          0.018
+        </td>
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          5400000
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</DocumentFragment>
+`;

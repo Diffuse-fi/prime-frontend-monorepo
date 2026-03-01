@@ -10,11 +10,13 @@ describe("Collapsible components", () => {
     const user = userEvent.setup();
     const onOpenChange = vi.fn();
 
-    render(
+    const { asFragment } = render(
       <ControlledCollapsible onOpenChange={onOpenChange} open={false} summary="More">
         <div>Body</div>
       </ControlledCollapsible>
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     const summary = screen.getByText("More");
     await user.click(summary);

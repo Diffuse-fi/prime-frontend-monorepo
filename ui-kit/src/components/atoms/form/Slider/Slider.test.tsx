@@ -72,7 +72,7 @@ describe("<Slider />", () => {
 
   it("renders a slider and updates value via keyboard", async () => {
     const user = userEvent.setup();
-    render(
+    const { asFragment } = render(
       <Slider
         aria-label="Volume"
         max={20}
@@ -82,6 +82,8 @@ describe("<Slider />", () => {
         value={[10]}
       />
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     const slider = screen.getByRole("slider", { name: "Volume" });
     expect(slider).toHaveAttribute("aria-valuenow", "10");

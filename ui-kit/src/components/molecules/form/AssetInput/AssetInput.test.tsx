@@ -27,7 +27,7 @@ describe("<AssetInput />", () => {
       <span>IMG-{size}</span>
     ));
 
-    render(
+    const { asFragment } = render(
       <AssetInput
         aria-label="Amount"
         assetSymbol="USDC"
@@ -35,6 +35,8 @@ describe("<AssetInput />", () => {
         size="md"
       />
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     expect(renderAssetImage).toHaveBeenCalledWith({ size: "md" });
     expect(screen.getByText("IMG-md")).toBeInTheDocument();

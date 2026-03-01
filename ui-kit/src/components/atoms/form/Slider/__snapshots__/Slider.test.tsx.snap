@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Slider /> > renders a slider and updates value via keyboard 1`] = `
+<DocumentFragment>
+  <span
+    aria-label="Volume"
+    aria-valuemax="20"
+    aria-valuemin="0"
+    aria-valuenow="10"
+    class="relative flex w-full touch-none items-center select-none"
+    role="slider"
+    tabindex="0"
+  >
+    <div
+      class="bg-muted relative h-2 w-full grow overflow-hidden rounded-full"
+      data-testid="track"
+    >
+      <div
+        class="bg-primary absolute h-full"
+        data-testid="range"
+      />
+    </div>
+    <div
+      class="border-primary bg-primary block h-5 w-5 rounded-[10px] border-2 shadow-sm focus:ring-primary focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none disabled:opacity-50 hover:border-primary/80"
+      data-testid="thumb"
+    />
+  </span>
+</DocumentFragment>
+`;

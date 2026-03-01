@@ -11,11 +11,13 @@ describe("<Button />", () => {
     const ref = React.createRef<HTMLButtonElement>();
     const onClick = vi.fn();
 
-    render(
+    const { asFragment } = render(
       <Button onClick={onClick} ref={ref}>
         Click me
       </Button>
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     const btn = screen.getByRole("button", { name: "Click me" });
     expect(btn).toBeInTheDocument();

@@ -29,9 +29,11 @@ describe("<CopyButton />", () => {
   });
 
   it("respects size prop for icon dimensions (sm/md/lg)", () => {
-    const { rerender } = renderWithProviders(
+    const { asFragment, rerender } = renderWithProviders(
       <CopyButton aria-label="Copy" size="sm" textToCopy="x" />
     );
+    expect(asFragment()).toMatchSnapshot();
+
     let btn = screen.getByRole("button", { name: "Copy" });
     let icon = within(btn).getByTestId("icon");
     expect(icon).toHaveAttribute("width", "16");

@@ -14,7 +14,9 @@ describe("<RemoteText />", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("renders text when not loading and no skeleton present", () => {
-    render(<RemoteText text="Hello" />);
+    const { asFragment } = render(<RemoteText text="Hello" />);
+
+    expect(asFragment()).toMatchSnapshot();
     expect(screen.getByText("Hello")).toBeInTheDocument();
     expect(screen.getByText("Hello")).not.toHaveClass("invisible");
     expect(screen.queryByRole("status")).not.toBeInTheDocument();

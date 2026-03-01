@@ -6,7 +6,7 @@ import { ButtonLike } from "./ButtonLike";
 
 describe("ButtonLike", () => {
   it("renders a <button> by default, merges classes, and exposes aria-label", () => {
-    render(
+    const { asFragment } = render(
       <ButtonLike
         aria-label="Save changes"
         className="custom-class"
@@ -17,6 +17,8 @@ describe("ButtonLike", () => {
         Save
       </ButtonLike>
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     const btn = screen.getByRole("button", { name: /save changes/i });
 

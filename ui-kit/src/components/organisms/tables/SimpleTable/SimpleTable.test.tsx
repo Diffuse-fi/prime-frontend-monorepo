@@ -6,7 +6,7 @@ import { SimpleTable } from "./SimpleTable";
 
 describe("<SimpleTable />", () => {
   it("renders caption and rows with proper semantics", () => {
-    render(
+    const { asFragment } = render(
       <SimpleTable
         columns={["Chain", "Address"]}
         rows={[
@@ -15,6 +15,8 @@ describe("<SimpleTable />", () => {
         ]}
       />
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     const table = screen.getByRole("table");
     expect(table).toBeInTheDocument();

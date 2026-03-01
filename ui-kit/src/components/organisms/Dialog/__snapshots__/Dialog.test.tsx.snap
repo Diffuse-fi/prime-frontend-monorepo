@@ -1,0 +1,3 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Dialog /> > renders open dialog with title, description, children and applies size variant 1`] = `<DocumentFragment />`;

@@ -8,11 +8,13 @@ import { Toast } from "./Toast";
 describe("<Toast />", () => {
   it("renders, forwards ref to root, and merges className", () => {
     const ref = React.createRef<HTMLLIElement>();
-    render(
+    const { asFragment } = render(
       <Toast className="root-x" message="Message" open ref={ref}>
         Message
       </Toast>
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     const root = screen.getByRole("status");
     expect(root).toHaveClass("root-x");

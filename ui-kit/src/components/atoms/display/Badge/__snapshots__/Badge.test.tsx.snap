@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Badge /> > renders with defaults and shows children 1`] = `
+<DocumentFragment>
+  <span
+    class="inline-flex items-center font-medium whitespace-nowrap rounded-full text-success text-sm py-0.5 gap-1.5"
+    data-testid="badge"
+  >
+    <span
+      aria-hidden="true"
+      class="inline-block h-6 w-6 rounded-full bg-success"
+    />
+    <span>
+      Active
+    </span>
+  </span>
+</DocumentFragment>
+`;

@@ -16,7 +16,8 @@ const renderWithProvider = (ui: React.ReactNode) =>
 describe("<InfoIcon />", () => {
   it("renders a focusable trigger with default a11y wiring and tooltip", async () => {
     const user = userEvent.setup();
-    renderWithProvider(<InfoIcon text="Details here" />);
+    const { asFragment } = renderWithProvider(<InfoIcon text="Details here" />);
+    expect(asFragment()).toMatchSnapshot();
 
     const trigger = screen.getByLabelText("More info");
     expect(trigger).toHaveAttribute("tabIndex", "0");

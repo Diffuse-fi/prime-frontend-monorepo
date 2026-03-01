@@ -6,7 +6,7 @@ import { Navbar } from "./Navbar";
 
 describe("<Navbar />", () => {
   it("renders logo, navigation, wallet and merges classes", () => {
-    render(
+    const { asFragment } = render(
       <Navbar
         className="custom-class"
         data-testid="header"
@@ -19,6 +19,8 @@ describe("<Navbar />", () => {
         wallet={<button>Connect</button>}
       />
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     const nav = screen.getByTestId("header");
 

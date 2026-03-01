@@ -10,7 +10,9 @@ describe("<AssetCard />", () => {
   );
 
   it("renders the symbol text", () => {
-    render(<AssetCard renderImage={renderImage} symbol="USDC" />);
+    const { asFragment } = render(<AssetCard renderImage={renderImage} symbol="USDC" />);
+
+    expect(asFragment()).toMatchSnapshot();
 
     expect(screen.getByText("USDC")).toBeInTheDocument();
   });

@@ -22,7 +22,8 @@ function setup(ui?: React.ReactNode) {
 
 describe("<Tabs />", () => {
   it("renders tablist, tabs, and shows the selected tabpanel", async () => {
-    setup();
+    const { asFragment } = setup();
+    expect(asFragment()).toMatchSnapshot();
 
     const list = screen.getByRole("tablist", { name: /demo tabs/i });
     expect(list).toBeInTheDocument();

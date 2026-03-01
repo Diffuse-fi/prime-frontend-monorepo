@@ -6,13 +6,15 @@ import { Tooltip, TooltipProvider } from "./Tooltip";
 
 describe("Tooltip", () => {
   it("renders trigger content", () => {
-    render(
+    const { asFragment } = render(
       <TooltipProvider>
         <Tooltip content="Hello tooltip">
           <button>Hover me</button>
         </Tooltip>
       </TooltipProvider>
     );
+
+    expect(asFragment()).toMatchSnapshot();
     expect(screen.getByText("Hover me")).toBeInTheDocument();
   });
 });

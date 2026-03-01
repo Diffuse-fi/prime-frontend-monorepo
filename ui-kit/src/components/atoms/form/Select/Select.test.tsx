@@ -16,7 +16,7 @@ describe("<Select /> keyboard-only", () => {
     const user = userEvent.setup({ pointerEventsCheck: 0 });
     const onValueChange = vi.fn();
 
-    render(
+    const { asFragment } = render(
       <Select
         defaultValue="eth"
         onValueChange={onValueChange}
@@ -24,6 +24,8 @@ describe("<Select /> keyboard-only", () => {
         placeholder="Pick token"
       />
     );
+
+    expect(asFragment()).toMatchSnapshot();
 
     const trigger = screen.getByRole("combobox");
     expect(trigger).toHaveTextContent("ETH");

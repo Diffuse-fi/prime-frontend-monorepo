@@ -6,7 +6,9 @@ import { Badge } from "./Badge";
 
 describe("<Badge />", () => {
   it("renders with defaults and shows children", () => {
-    render(<Badge data-testid="badge">Active</Badge>);
+    const { asFragment } = render(<Badge data-testid="badge">Active</Badge>);
+
+    expect(asFragment()).toMatchSnapshot();
     const root = screen.getByTestId("badge");
     expect(root).toBeInTheDocument();
     expect(root).toHaveClass("inline-flex", "items-center", "rounded-full");
