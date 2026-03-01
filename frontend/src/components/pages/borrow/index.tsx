@@ -9,6 +9,7 @@ import { AssetsList } from "@/components/AssetsList";
 import { useReadonlyChain } from "@/lib/chains/useReadonlyChain";
 import { useBorrowerPositions } from "@/lib/core/hooks/useBorrowerPositions";
 import { useSelectedAsset } from "@/lib/core/hooks/useSelectedAsset";
+import { isPast } from "@/lib/formatters/date";
 import { useLocalization } from "@/lib/localization/useLocalization";
 import { showSkeletons } from "@/lib/misc/ui";
 
@@ -30,7 +31,11 @@ export default function Borrow() {
   const strategies = vaults
     .filter(v => v.assets?.some(a => a.address === selectedAsset?.address))
     .flatMap(v => v.strategies)
-    .filter(str => !str.isDisabled)
+    .filter(str => {
+      const isOutdated = isPast(str.endDate);
+
+      return !isOutdated && !str.isDisabled;
+    })
     .map(strategy => ({
       ...strategy,
       vault: vaults.find(v => v.strategies.some(s => s.id === strategy.id))!,
