@@ -1,6 +1,6 @@
 {
   "name": "@diffuse/indexer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Diffuse Prime indexer service",
   "license": "Apache-2.0",
@@ -45,7 +45,7 @@
   },
   "peerDependencies": {
     "@diffuse/config": "0.1.1",
-    "@diffuse/sdk-js": "0.3.0",
+    "@diffuse/sdk-js": "0.3.1",
     "viem": "2.38.5",
     "zod": "3.25.76"
   },
