@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<IconButton /> > renders with accessible name, default (ghost, md) classes, and the icon 1`] = `
+<DocumentFragment>
+  <button
+    aria-label="settings"
+    class="inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed transition-colors transition-duration-200 standard-focus-ring whitespace-nowrap rounded-md px-4 py-2 border bg-primary/80 border-primary text-fg hover:bg-primary active:bg-secondary disabled:bg-muted disabled:border-muted inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed transition-colors transition-duration-200 standard-focus-ring whitespace-nowrap p-0! text-text-dimmed border-none rounded-md px-4 py-2 bg-transparent hover:bg-muted/10 text-muted h-10 w-10"
+  >
+    <span
+      data-testid="ico"
+    />
+  </button>
+</DocumentFragment>
+`;

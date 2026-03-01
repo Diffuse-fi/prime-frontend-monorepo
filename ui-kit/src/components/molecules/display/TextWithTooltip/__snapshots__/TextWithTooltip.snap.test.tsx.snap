@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<TextWithTooltip /> > renders focusable text with default aria-label and wires tooltip description 1`] = `
+<DocumentFragment>
+  <span
+    aria-describedby="«r0»"
+    aria-label="Variable APR"
+    class="standard-focus-ring cursor-help underline decoration-dashed underline-offset-2"
+    data-state="closed"
+    tabindex="0"
+  >
+    Variable APR
+  </span>
+</DocumentFragment>
+`;

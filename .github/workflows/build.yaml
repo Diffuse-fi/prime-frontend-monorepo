@@ -100,6 +100,7 @@ jobs:
           setup-node: true
           audit: false
           build-config: true
+          setup-repo: true
 
       - name: Run frontend unit tests
         working-directory: frontend
@@ -123,8 +124,8 @@ jobs:
         working-directory: sdk-js
         run: npm run test:unit
 
-  ui-kit-unit-tests:
-    name: Unit Tests / UI Kit
+  ui-kit-tests:
+    name: Tests / UI Kit
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
@@ -137,9 +138,9 @@ jobs:
           audit: false
           build-config: true
 
-      - name: Run UI Kit unit tests
+      - name: Run UI Kit tests
         working-directory: ui-kit
-        run: npm run test:unit
+        run: npm run test:unit && npm run test:unit:snap
 
   indexer-unit-tests:
     name: Unit Tests / Indexer

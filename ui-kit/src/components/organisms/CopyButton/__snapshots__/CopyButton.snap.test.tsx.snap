@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<CopyButton /> > respects size prop for icon dimensions (sm/md/lg) 1`] = `
+<DocumentFragment>
+  <button
+    aria-label="Copy"
+    class="inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed transition-colors transition-duration-200 standard-focus-ring whitespace-nowrap text-sm px-3 py-1.5 rounded-sm border bg-primary/80 border-primary text-fg hover:bg-primary active:bg-secondary disabled:bg-muted disabled:border-muted inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed transition-colors transition-duration-200 standard-focus-ring whitespace-nowrap p-0! text-text-dimmed border-none text-sm px-3 py-1.5 rounded-sm bg-transparent hover:bg-muted/10 text-muted h-8 w-8 transition-transform duration-75 active:scale-110"
+    data-state="closed"
+  >
+    <svg
+      data-icon="copy"
+      data-testid="icon"
+      height="16"
+      width="16"
+    />
+  </button>
+</DocumentFragment>
+`;

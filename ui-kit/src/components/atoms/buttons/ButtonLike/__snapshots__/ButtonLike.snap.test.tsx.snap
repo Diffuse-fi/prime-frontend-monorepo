@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ButtonLike > renders a <button> by default, merges classes, and exposes aria-label 1`] = `
+<DocumentFragment>
+  <button
+    aria-label="Save changes"
+    class="inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed transition-colors transition-duration-200 standard-focus-ring whitespace-nowrap p-0! border-none rounded-md px-4 py-2 border bg-primary/80 border-primary text-fg hover:bg-primary active:bg-secondary disabled:bg-muted disabled:border-muted h-10 w-10 custom-class"
+  >
+    Save
+  </button>
+</DocumentFragment>
+`;

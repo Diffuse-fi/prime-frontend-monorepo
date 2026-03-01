@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<AssetCard /> > renders the symbol text 1`] = `
+<DocumentFragment>
+  <div
+    class="rounded-lg bg-fg overflow-hidden flex flex-col py-2 border border-border border rounded-xl py-0 bf-fg text-muted border-border"
+  >
+    <div
+      class="px-4 py-3 text-body grow flex flex-col px-2 py-2"
+    >
+      <div
+        class="flex grow flex-nowrap items-center gap-2"
+      >
+        <img
+          alt="USDC"
+          class="flex-shrink-0"
+          data-testid="token-img"
+        />
+        <p>
+          USDC
+        </p>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

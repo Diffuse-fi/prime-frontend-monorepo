@@ -17,6 +17,10 @@ inputs:
     description: "Run config setup after installation"
     default: false
     required: false
+  setup-repo:
+    description: "Run setup script after installation"
+    default: false
+    required: false
 
 runs:
   using: "composite"
@@ -47,4 +51,9 @@ runs:
       if: ${{ inputs.build-config == 'true' }}
       working-directory: ./config
       run: npm run build
+      shell: bash
+
+    - name: Run setup script
+      if: ${{ inputs.setup-repo == 'true' }}
+      run: npm run setup
       shell: bash

@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Button /> > renders, forwards ref, and handles click 1`] = `
+<DocumentFragment>
+  <button
+    class="inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed transition-colors transition-duration-200 standard-focus-ring whitespace-nowrap rounded-md px-4 py-2 border bg-primary/80 border-primary text-fg hover:bg-primary active:bg-secondary disabled:bg-muted disabled:border-muted"
+  >
+    Click me
+  </button>
+</DocumentFragment>
+`;

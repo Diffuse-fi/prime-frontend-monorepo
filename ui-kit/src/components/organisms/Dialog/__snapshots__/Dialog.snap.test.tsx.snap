@@ -1,0 +1,98 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Dialog /> > renders open dialog with title, description, children and applies size variant 1`] = `
+<body
+  data-scroll-locked="1"
+  style="pointer-events: none;"
+>
+  <span
+    aria-hidden="true"
+    data-aria-hidden="true"
+    data-radix-focus-guard=""
+    style="outline: none; opacity: 0; position: fixed; pointer-events: none;"
+    tabindex="0"
+  />
+  <div
+    aria-hidden="true"
+    data-aria-hidden="true"
+  />
+  <div
+    aria-hidden="true"
+    class="data-[state=open]:animate-in-fade data-[state=closed]:animate-out-fade fixed inset-0 z-60 bg-black/40 backdrop-blur-sm"
+    data-aria-hidden="true"
+    data-state="open"
+    style="pointer-events: auto;"
+  />
+  <div
+    aria-describedby="radix-«r2»"
+    aria-labelledby="radix-«r1»"
+    class="fixed z-100 max-h-[90dvh] overflow-y-auto max-sm:bottom-0 left-0 max-sm:right-0 sm:left-1/2 sm:top-1/2 sm:transform sm:-translate-x-1/2 sm:-translate-y-1/2 rounded-t-lg sm:rounded-lg bg-fg border border-border shadow-strong data-[state=open]:animate-modal-content-in focus:outline-none w-full sm:max-w-[360px]"
+    data-state="open"
+    id="radix-«r0»"
+    role="dialog"
+    style="pointer-events: auto;"
+    tabindex="-1"
+  >
+    <div
+      class="border-border bg-fg sticky top-0 z-10 flex items-start gap-3 border-b p-4"
+    >
+      <div
+        class="text-text-dimmed min-w-0 flex-1"
+      >
+        <h3
+          class="font-semibold tracking-tight text-balance text-left text-h3"
+          id="radix-«r1»"
+        >
+          Title
+        </h3>
+        <p
+          class="text-muted mt-1 text-sm"
+          id="radix-«r2»"
+        >
+          Desc
+        </p>
+      </div>
+      <button
+        aria-label="Close"
+        class="inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed transition-colors transition-duration-200 standard-focus-ring whitespace-nowrap text-sm px-3 py-1.5 rounded-sm bg-transparent hover:bg-muted/10 text-muted inline-flex items-center justify-center cursor-pointer disabled:cursor-not-allowed transition-colors transition-duration-200 standard-focus-ring whitespace-nowrap p-0! text-text-dimmed border-none text-sm px-3 py-1.5 rounded-sm bg-transparent hover:bg-muted/10 text-muted h-8 w-8 bg-muted/20 hover:bg-muted/20 transition-transform hover:scale-108"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-x"
+          fill="none"
+          height="20"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M18 6 6 18"
+          />
+          <path
+            d="m6 6 12 12"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="mt-2 p-4"
+    >
+      <div>
+        Body
+      </div>
+    </div>
+  </div>
+  <span
+    aria-hidden="true"
+    data-aria-hidden="true"
+    data-radix-focus-guard=""
+    style="outline: none; opacity: 0; position: fixed; pointer-events: none;"
+    tabindex="0"
+  />
+</body>
+`;

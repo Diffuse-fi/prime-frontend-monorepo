@@ -1,0 +1,56 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<SimpleTable /> > renders caption and rows with proper semantics 1`] = `
+<DocumentFragment>
+  <table
+    class="w-full border-separate border-spacing-0 text-sm leading-6"
+  >
+    <thead>
+      <tr>
+        <th
+          class="px-3 py-2 text-left font-medium border-b border-border text-preset-gray-200"
+          scope="col"
+        >
+          Chain
+        </th>
+        <th
+          class="px-3 py-2 text-left font-medium border-b border-border text-preset-gray-200"
+          scope="col"
+        >
+          Address
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr
+        class="hover:bg-muted/10"
+      >
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          Ethereum
+        </td>
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          0x1234...abcd
+        </td>
+      </tr>
+      <tr
+        class="hover:bg-muted/10"
+      >
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          Solana
+        </td>
+        <td
+          class="px-3 py-2 border-b border-dashed border-border text-text-dimmed align-top"
+        >
+          3f5g6h7j8k9l0m1n2o3p4q5r6s7t8u9v0w1x2y3z4a5b
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</DocumentFragment>
+`;
