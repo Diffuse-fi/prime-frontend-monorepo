@@ -1,0 +1,24 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Card > renders with string header 1`] = `
+<DocumentFragment>
+  <div
+    class="rounded-lg bg-fg overflow-hidden flex flex-col py-2 border border-border"
+  >
+    <div
+      class="px-4 py-4"
+    >
+      <h4
+        class="font-semibold tracking-tight text-balance text-left text-h4"
+      >
+        Test Header
+      </h4>
+    </div>
+    <div
+      class="px-4 py-3 text-body grow flex flex-col"
+    >
+      Body content
+    </div>
+  </div>
+</DocumentFragment>
+`;

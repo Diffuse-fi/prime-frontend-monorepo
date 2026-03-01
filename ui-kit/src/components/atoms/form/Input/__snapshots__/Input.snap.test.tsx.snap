@@ -1,0 +1,15 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Input /> > renders input, forwards ref, merges className, and fires onChange 1`] = `
+<DocumentFragment>
+  <div
+    class="relative flex items-center rounded-xs border bg-fg transition-colors duration-200 h-13 px-3 border-border focus-within:border-text-primary"
+  >
+    <input
+      aria-label="Name"
+      class="w-full flex-1 outline-none bg-transparent placeholder:text-border disabled:opacity-50 disabled:cursor-not-allowed text-lg custom"
+      type="text"
+    />
+  </div>
+</DocumentFragment>
+`;

@@ -1,0 +1,43 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Select /> keyboard-only > opens with keyboard and selects the next option 1`] = `
+<DocumentFragment>
+  <button
+    aria-autocomplete="none"
+    aria-controls="radix-«r0»"
+    aria-expanded="false"
+    class="relative flex items-center rounded-xs border bg-fg transition-colors duration-200 h-13 px-3 border-border focus-within:border-text-primary focus:outline-none"
+    data-state="closed"
+    dir="ltr"
+    role="combobox"
+    type="button"
+  >
+    <span
+      style="pointer-events: none;"
+    >
+      ETH
+    </span>
+    <span
+      class="ml-2 inline-flex items-center text-border"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-chevron-down h-4 w-4"
+        fill="none"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m6 9 6 6 6-6"
+        />
+      </svg>
+    </span>
+  </button>
+</DocumentFragment>
+`;

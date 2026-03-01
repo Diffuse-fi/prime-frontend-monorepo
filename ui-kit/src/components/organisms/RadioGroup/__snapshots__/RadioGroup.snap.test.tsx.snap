@@ -1,0 +1,39 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<RadioGroup /> > renders, forwards ref to root, and merges className 1`] = `
+<DocumentFragment>
+  <div
+    aria-required="false"
+    class="grid gap-6 root-x"
+    dir="ltr"
+    role="radiogroup"
+    style="outline: none;"
+    tabindex="0"
+  >
+    <button
+      aria-checked="false"
+      class="standard-focus-ring cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+      data-radix-collection-item=""
+      data-state="unchecked"
+      role="radio"
+      tabindex="-1"
+      type="button"
+      value="a"
+    >
+      A
+    </button>
+    <button
+      aria-checked="false"
+      class="standard-focus-ring cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+      data-radix-collection-item=""
+      data-state="unchecked"
+      role="radio"
+      tabindex="-1"
+      type="button"
+      value="b"
+    >
+      B
+    </button>
+  </div>
+</DocumentFragment>
+`;
