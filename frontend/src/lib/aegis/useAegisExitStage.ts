@@ -9,7 +9,7 @@ import { VaultFullInfo } from "../core/types";
 import { opt, qk } from "../query/helpers";
 import { QV } from "../query/versions";
 import { useClients } from "../wagmi/useClients";
-import { isEmptyDataLike, toErr } from "./errors";
+import { isEmptyDataLike, isInvalidDeadlineLike, toErr } from "./errors";
 
 const ROOT = "aegisExitStage";
 const version = QV.borrow;
@@ -32,6 +32,8 @@ const qKeys = {
 
 const buildMinAssetsOut = (routeLen: number) =>
   Array.from({ length: Math.max(1, routeLen) }, () => 0n);
+
+const getLiveDeadline = () => BigInt(Math.floor(Date.now() / 1000) + 3600);
 
 export function useAegisExitStage(
   selected: AegisExitSelected | null,
@@ -62,11 +64,11 @@ export function useAegisExitStage(
   const simulateUnborrowEmptyData = async (
     vaultAddress: Address,
     positionId: bigint,
-    strategyId: bigint,
-    deadline: bigint
+    strategyId: bigint
   ) => {
     const route = await readReverseRoute(vaultAddress, strategyId);
     const minAssetsOut = buildMinAssetsOut(route.length);
+    const deadline = getLiveDeadline();
 
     const sim = await publicClient!.simulateContract({
       abi: vaultAbi,
@@ -99,8 +101,7 @@ export function useAegisExitStage(
         const res = await simulateUnborrowEmptyData(
           addr,
           selected.positionId,
-          selected.strategyId,
-          selected.deadline
+          selected.strategyId
         );
 
         const finished = Array.isArray(res)
@@ -108,10 +109,12 @@ export function useAegisExitStage(
           : // eslint-disable-next-line @typescript-eslint/no-explicit-any
             Boolean((res as any)?.finished);
 
-        if (finished) return { message: "Exit completed", stage: 3 };
+        if (finished) return { message: "Ready to finalize", stage: 3 };
         return { message: "Waiting for approval", stage: 2 };
       } catch (error) {
         if (isEmptyDataLike(error)) return { message: "Need encodedData", stage: 1 };
+        if (isInvalidDeadlineLike(error))
+          return { message: "Status check failed: expired deadline", stage: -1 };
         return { message: toErr(error).message, stage: -1 };
       }
     },
