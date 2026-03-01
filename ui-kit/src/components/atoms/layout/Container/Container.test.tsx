@@ -11,7 +11,7 @@ it("renders children and applies base + default variant + custom classes", () =>
     </Container>
   );
 
-    expect(asFragment()).toMatchSnapshot();
+  expect(asFragment()).toMatchSnapshot();
 
   const el = screen.getByTestId("container");
 
