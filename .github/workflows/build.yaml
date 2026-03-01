@@ -100,6 +100,7 @@ jobs:
           setup-node: true
           audit: false
           build-config: true
+          setup-repo: true
 
       - name: Run frontend unit tests
         working-directory: frontend
