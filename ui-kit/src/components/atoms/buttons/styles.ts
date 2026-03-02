@@ -33,8 +33,8 @@ export const button = tv({
       ghost: "bg-transparent hover:bg-muted/10 text-muted",
       link: "bg-transparent underline decoration-dashed underline-offset-2 text-primary hover:text-primary/80 active:text-primary/60",
       solid:
-        "border bg-primary/80 border-primary text-fg hover:bg-primary active:bg-secondary " +
-        "disabled:bg-muted disabled:border-muted",
+        "border bg-primary/80 border-primary/80 hover:border-primary text-fg hover:bg-primary active:bg-secondary " +
+        "disabled:bg-muted disabled:border-muted active:border-secondary",
     },
   },
 });
