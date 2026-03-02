@@ -1,12 +1,18 @@
 {
+  "compilerOptions": {
+    "composite": false,
+    "jsx": "preserve"
+  },
+  "exclude": [],
   "extends": "./tsconfig.json",
   "include": [
     "src/**/*.test.ts",
     "src/**/*.test.tsx",
     "src/**/*.spec.ts",
     "src/**/*.spec.tsx",
-    "src/**/__tests__/**",
-    "tests/**",
+    "src/**/__tests__/**/*",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
     "**/*.test-d.ts",
     "**/*.vitest.*"
   ]

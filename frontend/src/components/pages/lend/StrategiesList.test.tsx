@@ -18,6 +18,8 @@ vi.mock("@/components/misc/images/AssetImage", () => ({
   AssetImage: () => <span aria-hidden="true" />,
 }));
 
+import { Strategy } from "@/lib/core/types";
+
 import { StrategiesList } from "./StrategiesList";
 
 const strategies = [
@@ -57,7 +59,7 @@ const strategies = [
   minLeverage: 0,
   name: "",
   pool: "0x0",
-}));
+})) as unknown as Strategy[];
 
 const TABLE_BODY_ROWGROUP_INDEX = 1;
 const ASSET_CELL_INDEX = 0;
