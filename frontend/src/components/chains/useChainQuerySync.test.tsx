@@ -21,30 +21,22 @@ let switchChainAsync:
 const toast = vi.fn();
 const chainLogger = { warn: vi.fn() };
 
-vi.mock(
-  "@/lib/chains",
-  () => ({
-    getChainById: (chainId: number) =>
-      chainId === 1 ? { id: 1, name: "Mainnet" } : undefined,
-  }),
-  { virtual: true }
-);
+vi.mock("@/lib/chains", () => ({
+  getChainById: (chainId: number) =>
+    chainId === 1 ? { id: 1, name: "Mainnet" } : undefined,
+}));
 
-vi.mock(
-  "@/lib/chains/query",
-  () => ({
-    formatChainQueryValue: (chainId: number) =>
-      chainId === 1 ? "mainnet" : String(chainId),
-    getChainQueryValue: (value: unknown) =>
-      typeof value === "string" && value.trim() ? value.trim() : undefined,
-    parseChainQueryValue: (value: unknown) => {
-      const raw = typeof value === "string" && value.trim() ? value.trim() : undefined;
-      if (!raw) return null;
-      return aliasMap.get(raw) ?? null;
-    },
-  }),
-  { virtual: true }
-);
+vi.mock("@/lib/chains/query", () => ({
+  formatChainQueryValue: (chainId: number) =>
+    chainId === 1 ? "mainnet" : String(chainId),
+  getChainQueryValue: (value: unknown) =>
+    typeof value === "string" && value.trim() ? value.trim() : undefined,
+  parseChainQueryValue: (value: unknown) => {
+    const raw = typeof value === "string" && value.trim() ? value.trim() : undefined;
+    if (!raw) return null;
+    return aliasMap.get(raw) ?? null;
+  },
+}));
 
 vi.mock("@/lib/toast", () => ({ toast }));
 vi.mock("@/lib/core/utils/loggers", () => ({ chainLogger }));
@@ -77,15 +69,29 @@ describe("useChainQuerySync", () => {
     chainLogger.warn.mockReset();
   });
 
-  it("removes unsupported chain query values", async () => {
+  it("replaces unsupported chain query with readonly chain when disconnected", async () => {
     queryObj = { chain: "unsupported" };
+    readonlyChainId = 1;
+    isConnected = false;
 
     renderSync();
 
     await waitFor(() =>
-      expect(setQuery).toHaveBeenCalledWith({ chain: undefined }, { replace: true })
+      expect(setQuery).toHaveBeenCalledWith({ chain: "mainnet" }, { replace: true })
     );
     expect(setReadonlyChainId).not.toHaveBeenCalled();
+  });
+
+  it("replaces unsupported chain query with wallet chain when connected", async () => {
+    queryObj = { chain: "unsupported" };
+    isConnected = true;
+    walletChainId = 1;
+    readonlyChainId = 5;
+    renderSync();
+
+    await waitFor(() =>
+      expect(setQuery).toHaveBeenCalledWith({ chain: "mainnet" }, { replace: true })
+    );
   });
 
   it("sets readonly chain when disconnected and query is supported", async () => {

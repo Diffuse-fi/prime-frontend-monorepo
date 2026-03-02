@@ -44,8 +44,6 @@ export function useChainQuerySync({
   const lastQueryValueRef = useRef<string | undefined>(undefined);
   const pendingQueryValueRef = useRef<string | undefined>(undefined);
   const hasPendingRef = useRef(false);
-  // Avoid re-adding a default chain immediately after stripping an invalid query.
-  const suppressAutoAddRef = useRef(false);
 
   const updateQuery = useCallback(
     (chainId?: number) => {
@@ -126,18 +124,11 @@ export function useChainQuerySync({
 
   useEffect(() => {
     if (chainQueryValue !== undefined && desiredChainId === null) {
-      suppressAutoAddRef.current = true;
-      updateQuery();
-      return;
-    }
-
-    if (
-      suppressAutoAddRef.current &&
-      chainQueryValue === undefined &&
-      desiredChainId === null
-    ) {
-      // Reset once the invalid query has been cleared and no chain is requested.
-      suppressAutoAddRef.current = false;
+      const supportedWalletChainId =
+        walletChainId !== undefined && getChainById(walletChainId)
+          ? walletChainId
+          : undefined;
+      updateQuery(supportedWalletChainId ?? readonlyChainId);
       return;
     }
 
@@ -162,5 +153,6 @@ export function useChainQuerySync({
     readonlyChainId,
     applyRequestedChain,
     updateQuery,
+    walletChainId,
   ]);
 }

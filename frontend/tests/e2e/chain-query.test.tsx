@@ -1,13 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-import { getAvailableChains } from "../../src/lib/chains";
-import { formatChainQueryValue } from "../../src/lib/chains/query";
-
 const envInitialChainId = Number(process.env.NEXT_PUBLIC_INITIAL_CHAIN_ID);
-const defaultChainId = Number.isFinite(envInitialChainId)
-  ? envInitialChainId
-  : (getAvailableChains()[0]?.id ?? 1);
-const defaultChainQueryValue = formatChainQueryValue(defaultChainId);
+const defaultChainId = Number.isFinite(envInitialChainId) ? envInitialChainId : 1;
+const defaultChainQueryValue = defaultChainId === 1 ? "mainnet" : String(defaultChainId);
 
 test.describe("Chain query parameter", () => {
   test("keeps supported chain parameter", async ({ baseURL, page }) => {
@@ -30,7 +25,7 @@ test.describe("Chain query parameter", () => {
       .toBe(defaultChainQueryValue);
   });
 
-  test("removes unsupported chain parameter without adding default", async ({
+  test("replaces unsupported chain parameter with default chain", async ({
     baseURL,
     page,
   }) => {
@@ -38,6 +33,8 @@ test.describe("Chain query parameter", () => {
 
     await expect(page.getByRole("heading", { name: /lend/i })).toBeVisible();
 
-    await expect.poll(() => new URL(page.url()).searchParams.get("chain")).toBeNull();
+    await expect
+      .poll(() => new URL(page.url()).searchParams.get("chain"))
+      .toBe(defaultChainQueryValue);
   });
 });
