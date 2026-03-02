@@ -19,7 +19,8 @@ const assetCard = tv({
   defaultVariants: { variant: "default" },
   variants: {
     variant: {
-      accented: "bg-accent text-primary-fg border-accent",
+      accented:
+        "bg-accent text-text-primary border-accent dark:bg-primary dark:border-primary",
       default: "bf-fg text-muted border-border",
     },
   },

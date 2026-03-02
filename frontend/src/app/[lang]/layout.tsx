@@ -121,10 +121,10 @@ export default async function RootLayout({
                           alt={env.NEXT_PUBLIC_APP_NAME}
                           height={32}
                           priority
-                          src="/logo.svg?v=1"
+                          src="/logo.svg?v=2"
                           width={32}
                         />
-                        <p className="text-secondary hidden text-lg font-bold whitespace-nowrap sm:block">
+                        <p className="text-primary hidden text-lg font-bold whitespace-nowrap sm:block">
                           {tCommon("navbar.title")}
                         </p>
                       </AppLink>
