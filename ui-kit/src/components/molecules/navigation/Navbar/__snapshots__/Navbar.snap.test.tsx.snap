@@ -1,0 +1,30 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Navbar /> > renders logo, navigation, wallet and merges classes 1`] = `
+<DocumentFragment>
+  <header
+    class="bg-fg border-border w-full border-b custom-class"
+    data-testid="header"
+  >
+    <div
+      class="mx-auto w-full px-4 sm:px-6 lg:px-8 max-w-screen-xl flex h-16 items-center justify-between gap-4"
+    >
+      <span>
+        Logo
+      </span>
+      <nav
+        aria-label="site"
+      >
+        <a>
+          Home
+        </a>
+      </nav>
+      <div>
+        <button>
+          Connect
+        </button>
+      </div>
+    </div>
+  </header>
+</DocumentFragment>
+`;

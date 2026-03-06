@@ -11,6 +11,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { ThemeProvider } from "next-themes";
 import Image from "next/image";
 
+import { ChainQuerySyncEffects } from "@/components/chains/ChainQuerySyncEffects";
 import { ChainSyncEffects } from "@/components/chains/ChainSyncEffects";
 import { ReadonlyChainProvider } from "@/components/chains/ReadonlyChainProvider";
 import { AppLink } from "@/components/misc/AppLink";
@@ -107,6 +108,7 @@ export default async function RootLayout({
               <ReadonlyChainProvider>
                 <Providers locale={lang}>
                   {trackingEnabled && <WalletTracker />}
+                  <ChainQuerySyncEffects />
                   <ChainSyncEffects />
                   <Navbar
                     className="pt-safe sticky top-0 z-50"
@@ -119,10 +121,10 @@ export default async function RootLayout({
                           alt={env.NEXT_PUBLIC_APP_NAME}
                           height={32}
                           priority
-                          src="/logo.svg?v=1"
+                          src="/logo.svg?v=2"
                           width={32}
                         />
-                        <p className="text-secondary hidden text-lg font-bold whitespace-nowrap sm:block">
+                        <p className="text-primary hidden text-lg font-bold whitespace-nowrap sm:block">
                           {tCommon("navbar.title")}
                         </p>
                       </AppLink>

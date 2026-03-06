@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Checkbox /> keyboard & mouse behavior > is reachable via keyboard (Tab) and initially unchecked 1`] = `
+<DocumentFragment>
+  <label
+    class="flex cursor-pointer items-start gap-3"
+  >
+    <button
+      aria-checked="false"
+      class="inline-flex shrink-0 items-center justify-center rounded-[6px] border border-border bg-fg cursor-pointer transition-colors duration-150 standard-focus-ring disabled:cursor-not-allowed disabled:opacity-40 data-[state=checked]:border-preset-gray-200 data-[state=checked]:bg-preset-gray-200 data-[state=indeterminate]:border-preset-gray-200 data-[state=indeterminate]:bg-preset-gray-200 dark:border-primary dark:data-[state=checked]:bg-primary dark:data-[state=indeterminate]:bg-primary h-5 w-5 mt-0.75"
+      data-state="unchecked"
+      role="checkbox"
+      type="button"
+      value="on"
+    />
+    <div
+      class="flex flex-col text-left"
+    >
+      <span
+        class="text-sm"
+      >
+        I agree to the terms
+      </span>
+    </div>
+  </label>
+</DocumentFragment>
+`;

@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Heading /> > renders defaults: h2 with base + default variant classes 1`] = `
+<DocumentFragment>
+  <h2
+    class="font-semibold tracking-tight text-balance text-left text-h2"
+  >
+    Title
+  </h2>
+</DocumentFragment>
+`;

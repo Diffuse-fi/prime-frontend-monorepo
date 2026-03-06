@@ -1,0 +1,27 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Toast /> > renders, forwards ref to root, and merges className 1`] = `
+<DocumentFragment>
+  <li
+    aria-atomic="true"
+    aria-live="polite"
+    class="shadow-strong bg-fg flex gap-2 rounded-md p-4 root-x"
+    data-state="open"
+    role="status"
+  >
+    <div
+      class="flex flex-1 items-center rounded-md"
+    >
+      <div
+        class="flex flex-1 flex-col"
+      >
+        <p
+          class="whitespace-pre-wrap"
+        >
+          Message
+        </p>
+      </div>
+    </div>
+  </li>
+</DocumentFragment>
+`;

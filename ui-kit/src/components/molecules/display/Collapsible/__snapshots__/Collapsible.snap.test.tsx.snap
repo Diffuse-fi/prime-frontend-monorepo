@@ -1,0 +1,41 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Collapsible components > controlledCollapsible: calls onOpenChange when toggled 1`] = `
+<DocumentFragment>
+  <details>
+    <summary
+      class="standard-focus-ring flex cursor-pointer list-none items-center select-none"
+    >
+      <p
+        class="text-sm font-semibold"
+      >
+        More
+      </p>
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-chevron-down ml-1 transition-transform rotate-0"
+        fill="none"
+        height="16"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="16"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m6 9 6 6 6-6"
+        />
+      </svg>
+    </summary>
+    <div
+      class="mt-2"
+    >
+      <div>
+        Body
+      </div>
+    </div>
+  </details>
+</DocumentFragment>
+`;

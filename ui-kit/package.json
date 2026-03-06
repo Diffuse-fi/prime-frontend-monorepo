@@ -50,7 +50,10 @@
     "ladle": "ladle serve",
     "ladle:build": "ladle build",
     "ladle:preview": "ladle preview",
-    "test:unit": "vitest run --coverage",
+    "test:snap:update": "vitest run --update snap.test.tsx",
+    "test:snap:update:component": "vitest run --update --",
+    "test:unit": "vitest run --coverage --exclude '**/*.snap.test.tsx'",
+    "test:unit:snap": "vitest run snap.test.tsx",
     "test:unit:watch": "vitest"
   },
   "devDependencies": {

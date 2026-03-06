@@ -1,0 +1,79 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Tabs /> > renders tablist, tabs, and shows the selected tabpanel 1`] = `
+<DocumentFragment>
+  <div
+    data-orientation="horizontal"
+    dir="ltr"
+  >
+    <div
+      aria-label="Demo tabs"
+      aria-orientation="horizontal"
+      class="relative items-center gap-1 rounded-sm h-10 px-1.5 justify-start flex"
+      data-orientation="horizontal"
+      role="tablist"
+      style="outline: none;"
+      tabindex="0"
+    >
+      <button
+        aria-controls="radix-«r0»-content-one"
+        aria-selected="true"
+        class="group inline-flex items-center gap-2 select-none px-3 py-2 font-medium text-text-dimmed whitespace-nowrap standard-focus-ring transition-colors data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary"
+        data-orientation="horizontal"
+        data-radix-collection-item=""
+        data-state="active"
+        id="radix-«r0»-trigger-one"
+        role="tab"
+        tabindex="-1"
+        type="button"
+      >
+        <span
+          class="min-w-0 overflow-hidden text-ellipsis"
+        >
+          One
+        </span>
+      </button>
+      <button
+        aria-controls="radix-«r0»-content-two"
+        aria-selected="false"
+        class="group inline-flex items-center gap-2 select-none px-3 py-2 font-medium text-text-dimmed whitespace-nowrap standard-focus-ring transition-colors data-[disabled]:opacity-50 data-[disabled]:cursor-not-allowed border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary"
+        data-orientation="horizontal"
+        data-radix-collection-item=""
+        data-state="inactive"
+        id="radix-«r0»-trigger-two"
+        role="tab"
+        tabindex="-1"
+        type="button"
+      >
+        <span
+          class="min-w-0 overflow-hidden text-ellipsis"
+        >
+          Two
+        </span>
+      </button>
+    </div>
+    <div
+      aria-labelledby="radix-«r0»-trigger-one"
+      class="pt-3 outline-none focus-visible:standard-focus-ring"
+      data-orientation="horizontal"
+      data-state="active"
+      id="radix-«r0»-content-one"
+      role="tabpanel"
+      style="animation-duration: 0s;"
+      tabindex="0"
+    >
+      Panel One
+    </div>
+    <div
+      aria-labelledby="radix-«r0»-trigger-two"
+      class="pt-3 outline-none focus-visible:standard-focus-ring"
+      data-orientation="horizontal"
+      data-state="inactive"
+      hidden=""
+      id="radix-«r0»-content-two"
+      role="tabpanel"
+      tabindex="0"
+    />
+  </div>
+</DocumentFragment>
+`;
