@@ -1,5 +1,19 @@
 # diffuse-frontend
 
+## 0.4.0
+
+### Minor Changes
+
+- [#226](https://github.com/Diffuse-fi/prime-frontend-monorepo/pull/226) [`5b812d7`](https://github.com/Diffuse-fi/prime-frontend-monorepo/commit/5b812d72c32747e613df99a97177232344bd9105) Thanks [@ukorvl](https://github.com/ukorvl)! - fix strategyIds calculation for lender accruedLenderYield() call
+
+- [#226](https://github.com/Diffuse-fi/prime-frontend-monorepo/pull/226) [`5b812d7`](https://github.com/Diffuse-fi/prime-frontend-monorepo/commit/5b812d72c32747e613df99a97177232344bd9105) Thanks [@ukorvl](https://github.com/ukorvl)! - allow withdrawing from outdated strategies
+
+### Patch Changes
+
+- Updated dependencies [[`5b812d7`](https://github.com/Diffuse-fi/prime-frontend-monorepo/commit/5b812d72c32747e613df99a97177232344bd9105)]:
+  - @diffuse/sdk-js@0.3.1
+  - @diffuse/indexer@1.0.1
+
 ## 0.3.0
 
 ### Minor Changes
