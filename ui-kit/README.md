@@ -83,6 +83,32 @@ npm run dev
 
 This will start a local development server and rebuild the package on any source code changes.
 
+### Snapshot tests
+
+Run regular unit tests only (excluding snapshot modules):
+
+```bash
+npm run test:unit
+```
+
+Run snapshot modules only:
+
+```bash
+npm run test:unit:snap
+```
+
+Regenerate all component snapshots:
+
+```bash
+npm run test:snap:update
+```
+
+Regenerate snapshots for a single component test:
+
+```bash
+npm run test:snap:update:component -- src/components/atoms/buttons/Button/Button.snap.test.tsx
+```
+
 ### Component Development with Ladle
 
 This package uses [Ladle](https://ladle.dev/) as a lightweight component playground for developing and testing UI components in isolation.

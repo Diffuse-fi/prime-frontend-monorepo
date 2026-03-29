@@ -28,7 +28,7 @@ export function Providers({ children, locale }: ProvidersProps) {
           appInfo={{
             appName: env.NEXT_PUBLIC_APP_NAME,
           }}
-          avatar={() => <Image alt="Avatar" height={64} src="/logo.svg?v=1" width={64} />}
+          avatar={() => <Image alt="Avatar" height={64} src="/logo.svg?v=2" width={64} />}
           initialChain={readonlyChainId}
           locale={locale as Locale}
           modalSize="compact"

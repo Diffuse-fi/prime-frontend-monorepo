@@ -1,0 +1,26 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<AssetInput /> > renders right adornment with asset image & symbol and passes size to image renderer 1`] = `
+<DocumentFragment>
+  <div>
+    <input
+      aria-label="Amount"
+      inputmode="decimal"
+      type="text"
+      value=""
+    />
+    <div
+      class="mr-2 flex items-center space-x-1"
+    >
+      <span>
+        IMG-md
+      </span>
+      <span
+        class="text-sm font-medium"
+      >
+        USDC
+      </span>
+    </div>
+  </div>
+</DocumentFragment>
+`;

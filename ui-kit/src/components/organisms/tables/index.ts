@@ -1,2 +1,2 @@
-export * from "./DataTable";
-export * from "./SimpleTable";
+export * from "./DataTable/DataTable";
+export * from "./SimpleTable/SimpleTable";

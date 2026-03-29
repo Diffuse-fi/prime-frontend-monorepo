@@ -1,0 +1,52 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Nav /> > marks items active using default logic (startsWith, exact, root) and applies activeClassName 1`] = `
+<DocumentFragment>
+  <nav
+    aria-label="main"
+  >
+    <ul
+      class="flex items-center gap-2 text-subtle"
+    >
+      <li
+        class=""
+      >
+        <a
+          class="inline-flex items-center gap-2 px-3 py-2 font-medium transition-colors standard-focus-ring rounded-md text-foreground/80 hover:text-primary"
+          href="/"
+        >
+          <p>
+            Home
+          </p>
+        </a>
+      </li>
+      <li
+        class=""
+      >
+        <a
+          aria-current="page"
+          class="inline-flex items-center gap-2 px-3 py-2 transition-colors standard-focus-ring rounded-md hover:text-primary text-primary font-bold active-x"
+          href="/lend"
+        >
+          <p>
+            Lend
+          </p>
+        </a>
+      </li>
+      <li
+        class=""
+      >
+        <a
+          aria-current="page"
+          class="inline-flex items-center gap-2 px-3 py-2 transition-colors standard-focus-ring rounded-md hover:text-primary text-primary font-bold active-x"
+          href="/lend/my-positions"
+        >
+          <p>
+            My Positions
+          </p>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</DocumentFragment>
+`;

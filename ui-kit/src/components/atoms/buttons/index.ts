@@ -1,3 +1,3 @@
-export * from "./Button";
-export * from "./ButtonLike";
-export * from "./IconButton";
+export * from "./Button/Button";
+export * from "./ButtonLike/ButtonLike";
+export * from "./IconButton/IconButton";
