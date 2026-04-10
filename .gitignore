@@ -46,3 +46,7 @@ next-env.d.ts
 
 # eslint
 .eslintcache
+
+# local/project Codex skills (experimental)
+.agents/skills/
+skills-lock.json

@@ -2,4 +2,4 @@
 "@diffuse/ui-kit": patch
 ---
 
-break toast component long lines
+fix toast messages so long text wraps instead of overflowing
