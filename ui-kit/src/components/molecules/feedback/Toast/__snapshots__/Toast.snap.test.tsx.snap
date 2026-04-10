@@ -16,7 +16,7 @@ exports[`<Toast /> > renders, forwards ref to root, and merges className 1`] = `
         class="flex min-w-0 flex-1 flex-col"
       >
         <p
-          class="overflow-hidden whitespace-pre-wrap break-words [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] [overflow-wrap:anywhere]"
+          class="[display:-webkit-box] overflow-hidden [overflow-wrap:anywhere] break-words whitespace-pre-wrap [-webkit-box-orient:vertical] [-webkit-line-clamp:4]"
           title="Message"
         >
           Message
