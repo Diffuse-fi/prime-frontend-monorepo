@@ -117,7 +117,7 @@ export default function ToastProvider({
         <ul
           aria-label="Notifications"
           className={cn(
-            "pointer-events-none fixed flex w-fit list-none flex-col",
+            "pointer-events-none fixed flex w-[calc(100vw-2rem)] list-none flex-col",
             defaultPosition === "top-left" && "top-4 left-4 items-start",
             defaultPosition === "top-right" && "top-4 right-4 items-end",
             defaultPosition === "bottom-left" && "bottom-4 left-4 items-start",

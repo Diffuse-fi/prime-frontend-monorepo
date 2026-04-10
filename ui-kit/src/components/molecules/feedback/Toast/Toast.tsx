@@ -52,18 +52,27 @@ export const Toast = React.forwardRef<HTMLLIElement, ToastProps>(
       <li
         aria-atomic="true"
         aria-live="polite"
-        className={cn("shadow-strong bg-fg flex gap-2 rounded-md p-4", className)}
+        className={cn(
+          "shadow-strong bg-fg flex w-full min-w-0 gap-2 rounded-md p-4",
+          className
+        )}
         data-state={open ? "open" : "closed"}
         onMouseEnter={pause}
         onMouseLeave={resume}
         ref={ref}
         role={role}
       >
-        <div className="flex flex-1 items-center rounded-md">
-          <div className="flex flex-1 flex-col">
-            {title && <p className="mb-1 font-semibold">{title}</p>}
+        <div className="flex min-w-0 flex-1 items-center rounded-md">
+          <div className="flex min-w-0 flex-1 flex-col">
+            {title && (
+              <p className="mb-1 truncate font-semibold" title={title}>
+                {title}
+              </p>
+            )}
             {typeof message === "string" ? (
-              <p className="whitespace-pre-wrap">{message}</p>
+              <p className="truncate" title={message}>
+                {message}
+              </p>
             ) : (
               message
             )}

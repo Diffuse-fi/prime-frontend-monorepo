@@ -21,8 +21,10 @@ describe("<Toast />", () => {
 
   it("renders message and title", () => {
     const { rerender } = render(<Toast message="Message" open title="Title" />);
-    expect(screen.getByText("Message")).toBeInTheDocument();
-    expect(screen.getByText("Title")).toBeInTheDocument();
+    expect(screen.getByText("Message")).toHaveAttribute("title", "Message");
+    expect(screen.getByText("Message")).toHaveClass("truncate");
+    expect(screen.getByText("Title")).toHaveAttribute("title", "Title");
+    expect(screen.getByText("Title")).toHaveClass("truncate");
 
     rerender(<Toast message={<span>Message2</span>} open />);
     expect(screen.getByText("Message2")).toBeInTheDocument();

@@ -5,18 +5,19 @@ exports[`<Toast /> > renders, forwards ref to root, and merges className 1`] = `
   <li
     aria-atomic="true"
     aria-live="polite"
-    class="shadow-strong bg-fg flex gap-2 rounded-md p-4 root-x"
+    class="shadow-strong bg-fg flex w-full min-w-0 gap-2 rounded-md p-4 root-x"
     data-state="open"
     role="status"
   >
     <div
-      class="flex flex-1 items-center rounded-md"
+      class="flex min-w-0 flex-1 items-center rounded-md"
     >
       <div
-        class="flex flex-1 flex-col"
+        class="flex min-w-0 flex-1 flex-col"
       >
         <p
-          class="whitespace-pre-wrap"
+          class="truncate"
+          title="Message"
         >
           Message
         </p>
