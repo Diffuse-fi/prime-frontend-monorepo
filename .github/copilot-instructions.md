@@ -13,7 +13,7 @@ When behavior, architecture, or package boundaries are unclear, inspect the code
 
 ## Repo Map
 
-- `frontend/`: Next.js 15 app-router app. Routes live in `frontend/src/app/[lang]`; UI in `frontend/src/components`; business logic in `frontend/src/lib`; localization in `frontend/src/dictionaries`; tests in `frontend/tests` and colocated `*.test.ts(x)`.
+- `frontend/`: Next.js 15 app-router app. Routes live in `frontend/src/app/[lang]`; UI in `frontend/src/components`; business logic in `frontend/src/lib`; localization in `frontend/src/dictionaries`; tests in `frontend/tests` and colocated `*.test.ts(x)`. Frontend-specific guidance lives in `.github/instructions/frontend.instructions.md`.
 - `ui-kit/`: shared React 19 component library. Source in `ui-kit/src`; stories in Ladle; tests in Vitest.
 - `sdk-js/`: shared contract SDK. Source in `sdk-js/src`; contract assets in `sdk-js/src/contracts/*/abi.json`.
 - `indexer/`: Drizzle/Postgres indexing package. Source in `indexer/src`; DB code in `indexer/src/features/db`; migrations in `indexer/migrations`.
@@ -38,8 +38,12 @@ When behavior, architecture, or package boundaries are unclear, inspect the code
 - Read before editing. Start with the nearest package `README.md`, `package.json`, and the files already implementing the same pattern.
 - Keep diffs narrow. Do not introduce new frameworks, architectural layers, or coding styles when the repo already has an established pattern.
 - Prefer progressive disclosure: this file is the map; package READMEs, workflow files, env schemas, and source code are the deeper source of truth.
+- Reusable task prompts live in `.github/prompts/`.
 - If a package grows special rules that make this file too long, add a package-local `AGENTS.md` or a path-specific `.github/instructions/*.instructions.md` file instead of bloating this one.
 - If you cannot run a needed verification step, say so explicitly in your final report.
+- Prefer to make one commit per logical change and verify that the commit name satisfies the existing commit message style (find it in `commitlint.config.ts`).
+- When making a UI change ensure it will work correctly in both light and dark mode, and that it is responsive across screen sizes.
+- If you are unsure about the design implications of a change, say so explicitly in your final report.
 
 ## Package Boundaries
 
@@ -54,18 +58,9 @@ When behavior, architecture, or package boundaries are unclear, inspect the code
 ## TypeScript And Imports
 
 - Use the existing path aliases defined in each package `tsconfig.json`.
-- Do not reintroduce `compilerOptions.baseUrl`; this repo now relies on `paths` only.
 - Preserve ESM conventions already used across packages.
 - Prefer explicit types for exported APIs and shared utilities.
 - Match existing import style and file organization in the touched package.
-
-## Frontend Rules
-
-- Default to server-first Next.js patterns where possible; add `"use client"` only when interactivity, browser APIs, or wallet operations require it.
-- Contract writes and wallet prompts belong in client-side Wagmi flows.
-- Keep localization changes synchronized across dictionaries and localization config.
-- Respect current security features such as headers, CSP-related code, and Sentry instrumentation unless the task explicitly requires changing them.
-- Treat anything prefixed with `NEXT_PUBLIC_` as public.
 
 ## Validation
 
@@ -75,12 +70,6 @@ Use the smallest relevant validation first, then broader checks if the change to
 
 - `npm run lint`, `npm run test:unit`, `npm run build`
 - `npm run check:format`, `npm run check:syncpack`, `npm run check:packages-sync`, `npm run check:licenses`
-
-### Frontend
-
-- `npm run dev -w frontend`, `npm run test:unit -w frontend`, `npm run test:e2e -w frontend`
-- `npm run check:i18n -w frontend`, `npm run build -w frontend`
-- If building from inside `frontend/`, `npm run build:deps` prepares workspace dependencies first.
 
 ### UI Kit
 
@@ -106,6 +95,9 @@ Use the smallest relevant validation first, then broader checks if the change to
 - Do not move server-only values into client-exposed env vars.
 - Avoid suggesting server-side signing flows for user wallets.
 - Preserve dependency and install-script hardening unless the task explicitly changes security posture.
+- If you cannot verify the security implications of a change, say so explicitly in your final report.
+- Ensure eslint, tests, prettier, knip and other checks pass before suggesting a change that would be merged.
+- Ensure Typescript errors are resolved before suggesting a change that would be merged.
 
 ## Good Agent Behavior In This Repo
 
