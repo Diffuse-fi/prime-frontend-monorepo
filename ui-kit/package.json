@@ -62,7 +62,7 @@
     "@tailwindcss/vite": "4.1.12",
     "fast-glob": "^3.3.3",
     "jsdom-testing-mocks": "^1.15.2",
-    "typescript": "5.8.2"
+    "typescript": "5.9.2"
   },
   "peerDependencies": {
     "@tanstack/react-table": "8.21.3",

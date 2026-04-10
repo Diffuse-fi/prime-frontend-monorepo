@@ -73,7 +73,7 @@
     "@types/react-portal": "^4.0.7",
     "baseline-browser-mapping": "^2.8.31",
     "schema-dts": "^1.1.5",
-    "typescript": "5.8.2",
+    "typescript": "5.9.2",
     "utility-types": "^3.11.0"
   },
   "engines": {

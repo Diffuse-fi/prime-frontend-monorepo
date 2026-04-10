@@ -65,12 +65,15 @@ export const Toast = React.forwardRef<HTMLLIElement, ToastProps>(
         <div className="flex min-w-0 flex-1 items-center rounded-md">
           <div className="flex min-w-0 flex-1 flex-col">
             {title && (
-              <p className="mb-1 truncate font-semibold" title={title}>
+              <p className="mb-1 font-semibold [overflow-wrap:anywhere] break-words">
                 {title}
               </p>
             )}
             {typeof message === "string" ? (
-              <p className="truncate" title={message}>
+              <p
+                className="[display:-webkit-box] overflow-hidden [overflow-wrap:anywhere] break-words whitespace-pre-wrap [-webkit-box-orient:vertical] [-webkit-line-clamp:4]"
+                title={message}
+              >
                 {message}
               </p>
             ) : (
