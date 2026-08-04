@@ -1,6 +1,6 @@
 {
   "name": "diffuse-frontend",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Diffuse Prime web application",
   "license": "PolyForm-Noncommercial-1.0.0",
@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "@diffuse/config": "0.1.1",
-    "@diffuse/indexer": "1.0.0",
-    "@diffuse/sdk-js": "0.3.0",
+    "@diffuse/indexer": "1.0.1",
+    "@diffuse/sdk-js": "0.3.1",
     "@diffuse/ui-kit": "0.1.0",
     "@next/third-parties": "15.5.3",
     "@rainbow-me/rainbowkit": "2.2.9",

@@ -1,5 +1,12 @@
 # @diffuse/indexer
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [[`5b812d7`](https://github.com/Diffuse-fi/prime-frontend-monorepo/commit/5b812d72c32747e613df99a97177232344bd9105)]:
+  - @diffuse/sdk-js@0.3.1
+
 ## 1.0.0
 
 ### Patch Changes
