@@ -1,15 +1,3 @@
 version: 2
-updates:
-  - package-ecosystem: "npm"
-    directory: "/frontend"
-    schedule:
-      interval: "monthly"
-    allow:
-      - dependency-name: "baseline-browser-mapping"
-        dependency-type: "all"
-    commit-message:
-      prefix: "chore"
-      include: "scope"
-    labels:
-      - "dependencies"
-    target-branch: "dev"
+# Dependabot version updates are disabled.
+updates: []
