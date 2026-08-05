@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`<Skeleton /> > renders a div with base classes 1`] = `
+<DocumentFragment>
+  <div
+    class="animate-pulse bg-gray-200 dark:bg-gray-700 rounded-md"
+    data-testid="sk"
+  />
+</DocumentFragment>
+`;

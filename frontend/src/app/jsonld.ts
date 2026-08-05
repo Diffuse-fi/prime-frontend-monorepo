@@ -19,7 +19,7 @@ export const org: Organization = {
     "@id": logoId,
     "@type": "ImageObject",
     caption: env.NEXT_PUBLIC_APP_NAME,
-    url: `${origin}/logo.svg?v=1`,
+    url: `${origin}/logo.svg?v=2`,
   },
   name: env.NEXT_PUBLIC_APP_NAME,
   sameAs: [

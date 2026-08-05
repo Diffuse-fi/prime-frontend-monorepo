@@ -16,7 +16,7 @@ const transports = transportsWithInjectedRpcOverrides(chains);
 
 export const config = getDefaultConfig({
   appDescription: env.NEXT_PUBLIC_APP_DESCRIPTION,
-  appIcon: "/logo.svg?v=1",
+  appIcon: "/logo.svg?v=2",
   appName: env.NEXT_PUBLIC_APP_NAME,
   chains,
   projectId: env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID,

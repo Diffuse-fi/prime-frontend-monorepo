@@ -1,0 +1,11 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Tooltip > renders trigger content 1`] = `
+<DocumentFragment>
+  <button
+    data-state="closed"
+  >
+    Hover me
+  </button>
+</DocumentFragment>
+`;

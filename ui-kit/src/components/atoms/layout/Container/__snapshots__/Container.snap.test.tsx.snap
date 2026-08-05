@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renders children and applies base + default variant + custom classes 1`] = `
+<DocumentFragment>
+  <div
+    class="mx-auto w-full px-4 sm:px-6 lg:px-8 max-w-screen-xl custom"
+    data-testid="container"
+  >
+    Hello
+  </div>
+</DocumentFragment>
+`;

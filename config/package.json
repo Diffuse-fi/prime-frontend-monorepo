@@ -30,7 +30,7 @@
     "dev": "vite build --watch"
   },
   "devDependencies": {
-    "typescript": "5.8.2"
+    "typescript": "5.9.2"
   },
   "peerDependencies": {
     "viem": "2.38.5",
